@@ -1,0 +1,20 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+fastapi>=0.103.0
+uvicorn>=0.23.0
+SQLAlchemy>=2.0.0
+pydantic>=2.0.0
+pydantic-settings
+python-dotenv>=1.0.0
+openai>=1.40.0
+requests
+PyJWT
+passlib
+bcrypt==4.0.1
+python-multipart
+faiss-cpu
+sentence-transformers
+PyMuPDF
+email-validator
+langchain
+langchain-huggingface
+langchain-community
