@@ -14,10 +14,10 @@ import schema
 from database import get_db
 
 # SECRET_KEY must be set via environment variable
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY") or os.environ.get("JWT_SECRET")
 if not SECRET_KEY:
     raise RuntimeError(
-        "SECRET_KEY environment variable is not set. "
+        "SECRET_KEY or JWT_SECRET environment variable is not set. "
         "Generate a strong random key and set it before starting the app."
     )
 
