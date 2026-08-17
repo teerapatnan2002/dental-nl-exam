@@ -37,6 +37,7 @@ env/
 *.sql
 *.pdf
 *.txt
+!requirements.txt
 *.png
 get
 scratch/
