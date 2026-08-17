@@ -1,6 +1,4 @@
 import os
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
 
 # Global variables to cache the embeddings and vectorstore so we don't reload them on every request
 _embeddings = None
@@ -15,6 +13,12 @@ def _get_vectorstore():
         
     if _vectorstore is None:
         if _embeddings is None:
+            # Lazy import to prevent massive RAM usage on app startup (useful for 512MB Render free tier)
+            try:
+                from langchain_huggingface import HuggingFaceEmbeddings
+                from langchain_community.vectorstores import FAISS
+            except ImportError:
+                return None
             _embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
         
         # Load the FAISS index. allow_dangerous_deserialization=True is required for local files.
