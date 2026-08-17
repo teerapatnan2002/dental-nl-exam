@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: nl-dental-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-80}:8000"
+    volumes:
+      # Map the data directory to persist database files across container restarts
+      - ./data:/app/data
+      - ./images:/app/images
+      # FAISS index (read-only inside container)
+      - ./faiss_index:/app/faiss_index:ro
+    environment:
+      - PORT=8000
+      - DATABASE_URL=sqlite:///./data/exam_bank.db
+      # ── Required secrets (set in your shell before running, or use .env file) ──
+      - SECRET_KEY=${SECRET_KEY:?SECRET_KEY must be set}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:?OPENROUTER_API_KEY must be set}
+      # ── Optional ──
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:8000}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

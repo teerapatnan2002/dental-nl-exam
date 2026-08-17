@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: dental-nl-exam
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
+    plan: free
+    region: singapore # หรือ oregon / frankfurt
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: DATABASE_URL
+        value: "sqlite:///./data/exam_bank.db"
