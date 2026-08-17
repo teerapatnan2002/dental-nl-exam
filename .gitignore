@@ -1,0 +1,55 @@
+# Environment variables
+.env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+
+# Node / Frontend
+frontend/node_modules/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+!data/exam_bank.db
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.docker/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# Logs & Dumps & Temps
+*.log
+*.sql
+*.pdf
+*.txt
+*.png
+get
+scratch/
+faiss_index/
+output*.json
+exam_bank.json
+
+# Images (keep clinical images in repo)
+!images/
+!images/**
+
+# Exam PDFs
+NL2Test*/
+NLLaw/
+Obsidian_NL_Exam/
+parsed_exams/
