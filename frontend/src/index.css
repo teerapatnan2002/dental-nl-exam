@@ -246,40 +246,41 @@ a  { color: var(--primary-light); }
 ═══════════════════════════════════════════════════ */
 .dashboard-tab-bar {
   display: flex;
-  gap: 0.35rem;
-  padding: 5px;
-  background: rgba(255,255,255,0.04);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 6px;
+  background: rgba(255,255,255,0.03);
   border: 1px solid var(--border);
   border-radius: 14px;
   margin-bottom: 1.5rem;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  align-items: center;
 }
-.dashboard-tab-bar::-webkit-scrollbar { display: none; }
 
 .dashboard-tab-item {
-  flex: none; /* Don't squish items, allow horizontal scroll */
+  flex: 1 1 auto;
+  min-width: 130px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  padding: 0.85rem 1.25rem; /* WCAG minimum tap target 44x44+ */
-  min-height: 48px; /* Ensure at least 48px tap target */
+  gap: 0.55rem;
+  padding: 0.75rem 1.15rem;
+  min-height: 46px;
   border-radius: 10px;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 600;
   cursor: pointer;
-  border: none;
+  border: 1px solid transparent;
   background: transparent;
   color: var(--text-muted);
-  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
   font-family: inherit;
   white-space: nowrap;
+  user-select: none;
 }
 .dashboard-tab-item:hover, .dashboard-tab-item:focus-visible {
   color: var(--text);
-  background: rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.08);
   outline: none;
 }
 .dashboard-tab-item:focus-visible {
@@ -288,16 +289,123 @@ a  { color: var(--primary-light); }
 .dashboard-tab-item.active {
   background: var(--primary);
   color: #fff;
+  border-color: rgba(255,255,255,0.15);
   box-shadow: 0 4px 14px var(--glow-purple);
 }
 .dashboard-tab-emoji {
-  font-size: 1rem;
+  font-size: 1.05rem;
 }
 
-@media (max-width: 480px) {
+/* Tab Dropdown Container & Menu */
+.tab-dropdown-wrapper {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 140px;
+}
+
+.tab-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  max-width: 90vw;
+  background: rgba(18, 18, 30, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 0.5rem;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  z-index: 50;
+  animation: fadeInDropdown 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInDropdown {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.tab-dropdown-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.65rem 0.2rem;
+}
+
+.tab-dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 9px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  font-family: inherit;
+}
+.tab-dropdown-item:hover, .tab-dropdown-item:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  outline: none;
+}
+.tab-dropdown-item.active {
+  background: rgba(124, 58, 237, 0.22);
+  color: var(--primary-light);
+  font-weight: 600;
+  border-left: 3px solid var(--primary-light);
+}
+
+.tab-dropdown-item-icon {
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+}
+
+.tab-dropdown-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tab-dropdown-item-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.tab-dropdown-item-desc {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.tab-dropdown-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 0.4rem 0;
+}
+
+@media (max-width: 600px) {
   .dashboard-tab-item {
-    padding: 0.6rem 0.7rem;
+    min-width: 100px;
+    padding: 0.6rem 0.8rem;
     font-size: 0.82rem;
+    min-height: 42px;
+  }
+  .tab-dropdown-wrapper {
+    min-width: 100px;
+  }
+  .tab-dropdown-menu {
+    right: auto;
+    left: 0;
   }
 }
 
