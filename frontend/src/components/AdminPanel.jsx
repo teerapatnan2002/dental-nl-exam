@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, Loader2, AlertTriangle, CheckCircle2, XCircle, Eye } from 'lucide-react';
+import { ShieldCheck, Loader2, AlertTriangle, CircleCheck, XCircle, Eye } from 'lucide-react';
 import { API_BASE } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -144,7 +144,7 @@ export default function AdminPanel() {
                     )}
                     {r.status !== 'resolved' && (
                       <button className="btn btn-success btn-sm" disabled={updatingId === r.id} onClick={() => setStatus(r.id, 'resolved')}>
-                        <CheckCircle2 size={13} /> แก้ไขแล้ว
+                        <CircleCheck size={13} /> แก้ไขแล้ว
                       </button>
                     )}
                     {r.status !== 'rejected' && (
