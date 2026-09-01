@@ -10,6 +10,14 @@ const STATUS_STYLES = {
   rejected:  { label: 'ไม่รับเรื่อง', color: '#f43f5e', bg: 'rgba(244,63,94,0.12)' },
 };
 
+const ISSUE_LABELS = {
+  wrong_answer: 'เฉลยผิด',
+  missing_stem: 'โจทย์/เนื้อหาไม่ครบถ้วน',
+  missing_image: 'รูปภาพไม่แสดงหรือผิดพลาด',
+  typo: 'พิมพ์ผิด / สะกดคำผิด',
+  other: 'อื่นๆ',
+};
+
 function formatDate(ts) {
   try {
     return new Date(ts * 1000).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' });
@@ -78,7 +86,7 @@ export default function MyReports() {
                 </div>
 
                 <div style={{ fontSize: '0.9rem', color: 'var(--danger)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <AlertTriangle size={14} /> <strong>{r.issue_type}</strong>
+                  <AlertTriangle size={14} /> <strong>{ISSUE_LABELS[r.issue_type] || r.issue_type}</strong>
                 </div>
 
                 {r.description && (
