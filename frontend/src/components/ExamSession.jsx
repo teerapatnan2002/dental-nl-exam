@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  CheckCircle2, ChevronRight, ChevronLeft, Clock,
+  CircleCheck, ChevronRight, ChevronLeft, Clock,
   Sparkles, Loader2, XCircle, Lightbulb, AlertTriangle,
-  Bookmark, BookmarkCheck, StickyNote, HelpCircle
+  Bookmark, BookmarkCheck, StickyNote, HelpCircle,
+  Flag, Strikethrough
 } from 'lucide-react';
 import { API_BASE } from '../config';
 import ReportModal from './ReportModal';
@@ -62,8 +63,11 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
   const pageEnterRef = useRef(Date.now());
   const prevPageIndexRef = useRef(0);
 
-  // ── Bookmarks & notes state ──
+  // ── Bookmarks, Flags, Notes, and Elimination state ──
   const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
+  const [flaggedIds, setFlaggedIds] = useState(new Set());
+  const [eliminatedChoices, setEliminatedChoices] = useState({}); // question_id -> Set of choice labels
+  const [fontSizeLevel, setFontSizeLevel] = useState(1); // 0: standard, 1: medium, 2: large
   const [notes, setNotes] = useState({});          // question_id -> note text
   const [noteEditorOpen, setNoteEditorOpen] = useState({}); // question_id -> bool
   const [confidence, setConfidence] = useState({}); // question_id -> 'confident' | 'unsure' | 'hard'
@@ -79,6 +83,32 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
       [questionId]: prev[questionId] === level ? null : level
     }));
   };
+
+  const toggleFlag = (questionId) => {
+    setFlaggedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(questionId)) next.delete(questionId);
+      else next.add(questionId);
+      return next;
+    });
+  };
+
+  const toggleEliminateChoice = (questionId, choiceLabel, e) => {
+    if (e) e.stopPropagation();
+    setEliminatedChoices(prev => {
+      const current = prev[questionId] ? new Set(prev[questionId]) : new Set();
+      if (current.has(choiceLabel)) current.delete(choiceLabel);
+      else current.add(choiceLabel);
+      return { ...prev, [questionId]: current };
+    });
+  };
+
+  const fontSizes = [
+    { stem: '1rem', prop: '1.05rem', choice: '0.92rem' },
+    { stem: '1.12rem', prop: '1.18rem', choice: '0.98rem' },
+    { stem: '1.25rem', prop: '1.32rem', choice: '1.1rem' },
+  ];
+  const fs = fontSizes[fontSizeLevel] || fontSizes[1];
 
   // Group questions by stem
   const pages = React.useMemo(() => {
@@ -352,6 +382,27 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
             </span>
           </div>
 
+          {/* Text size controls */}
+          <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.06)', borderRadius: '8px', padding: '2px 4px', flexShrink: 0 }}>
+            <button
+              onClick={() => setFontSizeLevel(l => Math.max(0, l - 1))}
+              style={{ background: 'none', border: 'none', color: fontSizeLevel === 0 ? 'var(--text-muted)' : 'var(--text)', cursor: 'pointer', padding: '2px 6px', fontSize: '0.75rem', fontWeight: 700 }}
+              title="ลดขนาดตัวอักษร"
+            >
+              A-
+            </button>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 4px' }}>
+              ฟอนต์
+            </span>
+            <button
+              onClick={() => setFontSizeLevel(l => Math.min(2, l + 1))}
+              style={{ background: 'none', border: 'none', color: fontSizeLevel === 2 ? 'var(--text-muted)' : 'var(--text)', cursor: 'pointer', padding: '2px 6px', fontSize: '0.85rem', fontWeight: 700 }}
+              title="เพิ่มขนาดตัวอักษร"
+            >
+              A+
+            </button>
+          </div>
+
           {/* Nav arrows */}
           <div style={{ display: 'flex', gap: '0.4rem' }}>
             <button
@@ -412,6 +463,7 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
                         style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.4)', cursor: 'pointer' }}
                         onClick={() => { setLightboxImg(`${API_BASE}/images/${imgQ.image_path}`); setZoom(1); setPan({x:0, y:0}); }}
                       />
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>🔍 คลิกรูปภาพเพื่อซูมขยายเต็มจอ</div>
                     </div>
                   );
                 }
@@ -420,7 +472,7 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
 
               <div className="question-stem" style={{ border: 'none', background: 'transparent', padding: 0 }}>
                 {cleanStemText(currentPage.stem).split('\n').map((line, i) => (
-                  <p key={i} style={{ margin: 0, lineHeight: 1.75, fontSize: '1.1rem' }}>{line}</p>
+                  <p key={i} style={{ margin: 0, lineHeight: 1.75, fontSize: fs.stem }}>{line}</p>
                 ))}
               </div>
             </div>
@@ -431,13 +483,14 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
             {currentPage.questions.map((q, localIdx) => {
               const expl = explanations[q.id];
               const isRevealed = revealed[q.id];
+              const isFlagged = flaggedIds.has(q.id);
 
               return (
                 <div key={q.id} style={{ padding: currentPage.stem ? '1.5rem' : '0', background: currentPage.stem ? 'rgba(255,255,255,0.02)' : 'transparent', borderRadius: '12px', border: currentPage.stem ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
                   
                   {/* Meta badges for sub-question */}
-                  <div className="question-meta" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <div className="question-meta" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
                       <span className="badge badge-primary">
                         Q{q.globalIndex + 1}
                       </span>
@@ -453,7 +506,29 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
                         </span>
                       )}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      {/* Flag for Review Button */}
+                      <button
+                        onClick={() => toggleFlag(q.id)}
+                        style={{
+                          background: isFlagged ? 'rgba(245,158,11,0.2)' : 'none',
+                          border: isFlagged ? '1px solid rgba(245,158,11,0.4)' : '1px solid transparent',
+                          borderRadius: '6px',
+                          color: isFlagged ? '#f59e0b' : 'var(--text-muted)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          fontSize: '0.8rem',
+                          cursor: 'pointer',
+                          padding: '0.25rem 0.5rem',
+                          fontWeight: isFlagged ? 700 : 500
+                        }}
+                        title={isFlagged ? 'ยกเลิกการปักธง' : 'ปักธงข้อนี้เพื่อกลับมาทบทวน'}
+                      >
+                        <Flag size={13} fill={isFlagged ? '#f59e0b' : 'none'} />
+                        {isFlagged ? 'ปักธงแล้ว' : 'ปักธง'}
+                      </button>
+
                       {user && (
                         <>
                           <button
@@ -501,7 +576,7 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
                     </div>
                   )}
 
-                  {/* Image (if no stem, or if this specific sub-question has its own image which is rare but possible) */}
+                  {/* Image (if no stem, or if this specific sub-question has its own image) */}
                   {!currentPage.stem && q.image_path && (
                     <div style={{ textAlign: 'center', margin: '1rem 0' }}>
                       <img
@@ -510,19 +585,20 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
                         style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.4)', cursor: 'pointer' }}
                         onClick={() => { setLightboxImg(`${API_BASE}/images/${q.image_path}`); setZoom(1); setPan({x:0, y:0}); }}
                       />
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>🔍 คลิกรูปภาพเพื่อซูมขยายเต็มจอ</div>
                     </div>
                   )}
 
                   {/* Proposition or Question Text */}
                   {currentPage.stem ? (
-                    <div className="question-proposition" style={{ marginTop: 0, fontSize: '1.15rem' }}>
+                    <div className="question-proposition" style={{ marginTop: 0, fontSize: fs.prop }}>
                       <span style={{ fontWeight: 700, color: 'var(--primary-light)', marginRight: '6px' }}>
                         {q.globalIndex + 1}.
                       </span>
                       {cleanQuestionText(getProposition(q))}
                     </div>
                   ) : (
-                    <h2 style={{ fontSize: '1.3rem', lineHeight: 1.65, marginBottom: '0.5rem', color: 'var(--text)' }}>
+                    <h2 style={{ fontSize: fs.prop, lineHeight: 1.65, marginBottom: '0.5rem', color: 'var(--text)' }}>
                       <span style={{ fontWeight: 700, color: 'var(--primary-light)', marginRight: '8px' }}>
                         {q.globalIndex + 1}.
                       </span>
@@ -534,19 +610,37 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
                   <div className="choice-list">
                     {q.choices.map((choice) => {
                       const selected = answers[q.id] === choice.label;
+                      const isEliminated = (eliminatedChoices[q.id] && eliminatedChoices[q.id].has(choice.label));
                       const isCorrect = isRevealed && expl && expl.correct_answer === choice.label;
                       const isWrongSelected = isRevealed && selected && expl && expl.correct_answer !== choice.label;
                       let cls = 'choice-item';
                       if (selected) cls += ' selected';
                       if (isCorrect) cls += ' correct-reveal';
                       if (isWrongSelected) cls += ' wrong-reveal';
+                      if (isEliminated) cls += ' eliminated';
 
                       return (
                         <div key={choice.id} className={cls} onClick={() => handleSelectChoice(q.id, choice.label)}>
                           <div className="choice-label">{choice.label}</div>
-                          <div style={{ flexGrow: 1, lineHeight: 1.5 }}>{choice.text}</div>
-                          {selected && !isRevealed && <CheckCircle2 size={19} color="var(--primary-light)" />}
-                          {isCorrect && <CheckCircle2 size={19} color="var(--success)" />}
+                          <div className="choice-text" style={{ flexGrow: 1, lineHeight: 1.55, fontSize: fs.choice }}>
+                            {choice.text}
+                          </div>
+                          
+                          {/* Strike-through / Elimination Button */}
+                          {!isRevealed && (
+                            <button
+                              type="button"
+                              className="choice-eliminate-btn"
+                              onClick={(e) => toggleEliminateChoice(q.id, choice.label, e)}
+                              title={isEliminated ? 'ยกเลิกการตัดช้อยส์' : 'ตัดช้อยส์ข้อนี้ทิ้ง'}
+                            >
+                              <Strikethrough size={13} />
+                              {isEliminated ? 'ยกเลิกตัด' : 'ตัดช้อยส์'}
+                            </button>
+                          )}
+
+                          {selected && !isRevealed && <CircleCheck size={19} color="var(--primary-light)" />}
+                          {isCorrect && <CircleCheck size={19} color="var(--success)" />}
                           {isWrongSelected && <XCircle size={19} color="var(--danger)" />}
                         </div>
                       );
@@ -562,7 +656,7 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
                       onClick={() => toggleConfidence(q.id, 'confident')}
                       title="ทำแล้วมั่นใจ"
                     >
-                      <CheckCircle2 size={15} /> มั่นใจ
+                      <CircleCheck size={15} /> มั่นใจ
                     </button>
                     <button
                       type="button"
@@ -678,6 +772,7 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
           <div className="legend-item"><span className="legend-dot green"></span> มั่นใจ</div>
           <div className="legend-item"><span className="legend-dot yellow"></span> ไม่มั่นใจ</div>
           <div className="legend-item"><span className="legend-dot red"></span> ทำไม่ได้/เดา</div>
+          <div className="legend-item"><span style={{ fontSize: '0.9rem' }}>🚩</span> ปักธงทบทวน</div>
         </div>
         <div className="question-dots">
           {questions.map((q, i) => {
@@ -688,10 +783,12 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
             else if (conf === 'hard') cls += ' status-red';
             else if (answers[q.id]) cls += ' answered';
 
+            if (flaggedIds.has(q.id)) cls += ' flagged';
+
             const pageIndex = pages.findIndex(p => p.questions.some(pq => pq.globalIndex === i));
             if (pageIndex === currentPageIndex) cls += ' current';
             return (
-              <button key={q.id} className={cls} onClick={() => setCurrentPageIndex(pageIndex)} title={`ข้อ ${i + 1}`}>
+              <button key={q.id} className={cls} onClick={() => setCurrentPageIndex(pageIndex)} title={`ข้อ ${i + 1}${flaggedIds.has(q.id) ? ' (ปักธงไว้)' : ''}`}>
                 {i + 1}
               </button>
             );
@@ -720,7 +817,7 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
         ) : (
           <button className="btn btn-success" onClick={handleSubmit}>
             {mode === 'practice' ? 'Finish Practice' : 'Submit Exam'}
-            <CheckCircle2 size={18} />
+            <CircleCheck size={18} />
           </button>
         )}
       </div>
