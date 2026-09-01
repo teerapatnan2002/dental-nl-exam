@@ -3,6 +3,7 @@ import { Home, CheckCircle2, XCircle, Clock, Lightbulb, ChevronDown, ChevronUp, 
 import { API_BASE } from '../config';
 import TutorChat from './TutorChat';
 import ReportModal from './ReportModal';
+import ExplanationBox from './ExplanationBox';
 
 function formatTime(ms) {
   if (!ms) return '—';
@@ -510,69 +511,13 @@ export default function ExamResult({ questions, userAnswers, startTime, analysis
                     </div>
 
                     {/* Explanation */}
-                    {explanation && (() => {
-                      let parsedExpl = null;
-                      try { parsedExpl = JSON.parse(explanation); } catch (e) {}
-
-                      if (parsedExpl && parsedExpl.core_principle) {
-                        return (
-                          <div className="explanation-box">
-                            <h4 style={{ color: 'var(--primary-light)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem' }}>
-                              <Lightbulb size={16} /> หลักการและเหตุผล
-                            </h4>
-                            <div style={{ lineHeight: 1.7, marginBottom: '1rem', whiteSpace: 'pre-wrap', color: 'var(--text-sub)', fontSize: '0.92rem' }}>
-                              {parsedExpl.core_principle}
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                              {Object.entries(parsedExpl.choice_explanations || {}).map(([label, text]) => {
-                                const ok = label === correctAnswer;
-                                return (
-                                  <div key={label} style={{
-                                    background: ok ? 'rgba(16,185,129,0.08)' : 'rgba(255,255,255,0.02)',
-                                    padding: '0.75rem',
-                                    borderRadius: '6px',
-                                    borderLeft: ok ? '3px solid var(--success)' : '3px solid transparent',
-                                    fontSize: '0.89rem',
-                                  }}>
-                                    <strong style={{ color: ok ? 'var(--success)' : 'var(--text-sub)' }}>ตัวเลือก {label}: </strong>
-                                    <span style={{ color: 'var(--text-muted)' }}>{text}</span>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                            
-                            {parsedExpl.future_prediction && (
-                              <div style={{
-                                marginTop: '1rem',
-                                padding: '1rem',
-                                borderRadius: '8px',
-                                background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(6, 182, 212, 0.05))',
-                                border: '1px solid rgba(124, 58, 237, 0.2)',
-                              }}>
-                                <h4 style={{ color: 'var(--primary-light)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem' }}>
-                                  <Lightbulb size={16} /> Professor's Wisdom
-                                </h4>
-                                <div style={{ color: 'var(--text-sub)', fontSize: '0.9rem', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
-                                  {parsedExpl.future_prediction}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      } else {
-                        return (
-                          <div className="explanation-box">
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '0.4rem' }}>
-                              <Lightbulb size={15} color="var(--primary-light)" />
-                              <strong style={{ fontSize: '0.88rem', color: 'var(--primary-light)' }}>คำอธิบาย</strong>
-                            </div>
-                            <div style={{ color: 'var(--text-sub)', fontSize: '0.92rem', lineHeight: 1.7 }}>
-                              {explanation}
-                            </div>
-                          </div>
-                        );
-                      }
-                    })()}
+                    {explanation && (
+                      <ExplanationBox 
+                        explanation={explanation} 
+                        correctAnswer={correctAnswer} 
+                        isCached={true} 
+                      />
+                    )}
 
                     {!hasKnownAnswer && (
                       <div style={{
