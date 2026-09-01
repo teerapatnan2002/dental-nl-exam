@@ -101,6 +101,7 @@ class ReportedQuestion(Base):
     issue_type = Column(String, nullable=False)
     description = Column(String, nullable=True)
     status = Column(String, default="pending")
+    admin_reply = Column(String, nullable=True)
     created_at = Column(Integer, nullable=False)
 
     user = relationship("User")

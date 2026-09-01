@@ -11,6 +11,7 @@ import Leaderboard from './Leaderboard';
 import SearchPanel from './SearchPanel';
 import BookmarksPanel from './BookmarksPanel';
 import AdminPanel from './AdminPanel';
+import MyReports from './MyReports';
 
 const lawCategoryName = 'กฎหมายและจรรยาบรรณ';
 
@@ -91,6 +92,7 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
   if (user) {
     tabs.push({ id: 'bookmarks', label: 'บุ๊กมาร์ก', icon: <BookmarkCheck size={16} />, emoji: '🔖' });
     tabs.push({ id: 'mystats', label: 'สถิติของฉัน', icon: <Activity size={16} />, emoji: '📊' });
+    tabs.push({ id: 'myreports', label: 'ประวัติแจ้งปัญหา', icon: <AlertTriangle size={16} />, emoji: '⚠️' });
   }
 
   if (user && user.role === 'admin') {
@@ -179,6 +181,15 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
       {activeTab === 'admin' && user && user.role === 'admin' && (
         <div className="animate-fade-in">
           <AdminPanel />
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════
+         TAB: ประวัติการแจ้งปัญหาของฉัน
+      ════════════════════════════════════════════════ */}
+      {activeTab === 'myreports' && user && (
+        <div className="animate-fade-in">
+          <MyReports />
         </div>
       )}
 

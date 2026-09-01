@@ -27,11 +27,13 @@ class ReportResponse(BaseModel):
     issue_type: str
     description: Optional[str]
     status: str
+    admin_reply: Optional[str] = None
     created_at: int
 
 
 class ReportStatusUpdate(BaseModel):
     status: str
+    admin_reply: Optional[str] = None
 
 
 @router.post("", response_model=ReportResponse)
@@ -87,6 +89,7 @@ def list_reports(
                 "issue_type": r.issue_type,
                 "description": r.description,
                 "status": r.status,
+                "admin_reply": r.admin_reply,
                 "created_at": r.created_at,
                 "reporter_username": reporter.username if reporter else None,
                 "question_text": question.question_text if question else "(question deleted)",
@@ -105,7 +108,7 @@ def update_report_status(
     admin: models.User = Depends(get_current_admin),
     db: Session = Depends(get_db),
 ):
-    """Update a report's status (admin only)."""
+    """Update a report's status and reply (admin only)."""
     if req.status not in VALID_STATUSES:
         raise HTTPException(status_code=400, detail=f"Invalid status. Use one of {sorted(VALID_STATUSES)}")
 
@@ -114,6 +117,34 @@ def update_report_status(
         raise HTTPException(status_code=404, detail="Report not found")
 
     report.status = req.status
+    if req.admin_reply is not None:
+        report.admin_reply = req.admin_reply
     db.commit()
     db.refresh(report)
     return report
+
+
+@router.get("/my", response_model=List[dict])
+def list_my_reports(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """List reports created by the current user."""
+    rows = db.query(models.ReportedQuestion).filter(models.ReportedQuestion.user_id == current_user.id).order_by(models.ReportedQuestion.created_at.desc()).all()
+    
+    result = []
+    for r in rows:
+        question = db.query(models.Question).filter(models.Question.id == r.question_id).first()
+        result.append(
+            {
+                "id": r.id,
+                "question_id": r.question_id,
+                "issue_type": r.issue_type,
+                "description": r.description,
+                "status": r.status,
+                "admin_reply": r.admin_reply,
+                "created_at": r.created_at,
+                "question_text": question.question_text if question else "(question deleted)",
+            }
+        )
+    return result
