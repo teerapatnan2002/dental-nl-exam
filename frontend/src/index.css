@@ -259,15 +259,15 @@ a  { color: var(--primary-light); }
 .dashboard-tab-bar::-webkit-scrollbar { display: none; }
 
 .dashboard-tab-item {
-  flex: 1;
-  min-width: 0;
+  flex: none; /* Don't squish items, allow horizontal scroll */
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  padding: 0.7rem 1rem;
+  gap: 0.6rem;
+  padding: 0.85rem 1.25rem; /* WCAG minimum tap target 44x44+ */
+  min-height: 48px; /* Ensure at least 48px tap target */
   border-radius: 10px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   border: none;
@@ -277,9 +277,13 @@ a  { color: var(--primary-light); }
   font-family: inherit;
   white-space: nowrap;
 }
-.dashboard-tab-item:hover {
+.dashboard-tab-item:hover, .dashboard-tab-item:focus-visible {
   color: var(--text);
   background: rgba(255,255,255,0.06);
+  outline: none;
+}
+.dashboard-tab-item:focus-visible {
+  box-shadow: 0 0 0 2px var(--primary-light);
 }
 .dashboard-tab-item.active {
   background: var(--primary);
