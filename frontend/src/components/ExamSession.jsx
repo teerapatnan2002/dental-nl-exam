@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { API_BASE } from '../config';
 import ReportModal from './ReportModal';
+import ExplanationBox from './ExplanationBox';
 import { useAuth } from '../contexts/AuthContext';
 
 function formatTime(ms) {
@@ -700,62 +701,13 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
                         </div>
                       )}
 
-                      {isRevealed && expl && expl.explanation && (() => {
-                        let parsedExpl = null;
-                        try { parsedExpl = JSON.parse(expl.explanation); } catch (e) {}
-
-                        if (parsedExpl && parsedExpl.core_principle) {
-                          return (
-                            <div className="explanation-box" style={{ marginTop: '1.25rem' }}>
-                              <div style={{ marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>เฉลยที่ถูกต้อง</span>
-                                <span style={{ color: 'var(--success)', fontWeight: 800, fontSize: '1.4rem', marginLeft: '0.6rem' }}>
-                                  {expl.correct_answer}
-                                </span>
-                                {expl.cached && <span className="badge" style={{ marginLeft: 8 }}>จากคลัง</span>}
-                              </div>
-
-                              <h4 style={{ color: 'var(--primary-light)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.95rem' }}>
-                                <Lightbulb size={17} /> หลักการและเหตุผล
-                              </h4>
-                              <div style={{ lineHeight: 1.7, marginBottom: '1.25rem', whiteSpace: 'pre-wrap', color: 'var(--text-sub)', fontSize: '0.94rem' }}>
-                                {parsedExpl.core_principle}
-                              </div>
-
-                              <h4 style={{ color: 'var(--accent)', marginBottom: '0.6rem', fontSize: '0.9rem', fontWeight: 700 }}>วิเคราะห์ตัวเลือก</h4>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                                {Object.entries(parsedExpl.choice_explanations || {}).map(([label, text]) => {
-                                  const ok = label === expl.correct_answer;
-                                  return (
-                                    <div key={label} style={{
-                                      background: ok ? 'rgba(16,185,129,0.09)' : 'rgba(255,255,255,0.03)',
-                                      padding: '0.85rem 1rem',
-                                      borderRadius: '8px',
-                                      borderLeft: ok ? '3px solid var(--success)' : '3px solid transparent',
-                                    }}>
-                                      <strong style={{ color: ok ? 'var(--success)' : 'var(--text-sub)' }}>ตัวเลือก {label}: </strong>
-                                      <span style={{ color: 'var(--text-muted)', lineHeight: 1.55, fontSize: '0.92rem' }}>{text}</span>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          );
-                        } else {
-                          return (
-                            <div className="explanation-box" style={{ marginTop: '1.25rem' }}>
-                              <div style={{ marginBottom: '0.5rem' }}>
-                                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>เฉลยที่ถูกต้อง </span>
-                                <span style={{ color: 'var(--success)', fontWeight: 800, fontSize: '1.2rem' }}>{expl.correct_answer}</span>
-                                {expl.cached && <span className="badge" style={{ marginLeft: 8 }}>จากคลัง</span>}
-                              </div>
-                              <div style={{ marginTop: '0.5rem', lineHeight: 1.7, whiteSpace: 'pre-wrap', color: 'var(--text-sub)', fontSize: '0.94rem' }}>
-                                {expl.explanation}
-                              </div>
-                            </div>
-                          );
-                        }
-                      })()}
+                      {isRevealed && expl && expl.explanation && (
+                        <ExplanationBox 
+                          explanation={expl.explanation} 
+                          correctAnswer={expl.correct_answer} 
+                          isCached={expl.cached} 
+                        />
+                      )}
                     </div>
                   )}
 
