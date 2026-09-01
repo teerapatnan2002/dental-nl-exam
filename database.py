@@ -44,6 +44,9 @@ _COLUMN_MIGRATIONS = {
     "user_answers": {
         "time_spent_seconds": "ALTER TABLE user_answers ADD COLUMN time_spent_seconds INTEGER",
     },
+    "reported_questions": {
+        "admin_reply": "ALTER TABLE reported_questions ADD COLUMN admin_reply VARCHAR",
+    },
 }
 
 

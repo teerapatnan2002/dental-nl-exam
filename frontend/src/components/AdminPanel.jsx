@@ -48,12 +48,15 @@ export default function AdminPanel() {
 
   useEffect(() => { load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [statusFilter]);
 
-  const setStatus = async (reportId, status) => {
+  const setStatus = async (reportId, status, adminReply = null) => {
     setUpdatingId(reportId);
     try {
+      const payload = { status };
+      if (adminReply !== null) payload.admin_reply = adminReply;
+      
       const res = await authFetch(`${API_BASE}/api/reports/${reportId}`, {
         method: 'PATCH',
-        body: JSON.stringify({ status }),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       // Remove from current filtered list if it no longer matches
@@ -136,19 +139,31 @@ export default function AdminPanel() {
                     {r.correct_answer && <span style={{ marginLeft: '0.6rem', color: 'var(--success)' }}>(เฉลยปัจจุบัน: {r.correct_answer})</span>}
                   </div>
 
-                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  {r.admin_reply && (
+                    <div style={{ fontSize: '0.85rem', color: 'var(--success)', marginBottom: '0.85rem', padding: '0.55rem 0.8rem', background: 'rgba(16,185,129,0.1)', borderRadius: '8px', borderLeft: '3px solid var(--success)' }}>
+                      <strong>ตอบกลับจาก Admin:</strong> {r.admin_reply}
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
                     {r.status !== 'reviewing' && (
                       <button className="btn btn-secondary btn-sm" disabled={updatingId === r.id} onClick={() => setStatus(r.id, 'reviewing')}>
                         <Eye size={13} /> กำลังตรวจสอบ
                       </button>
                     )}
                     {r.status !== 'resolved' && (
-                      <button className="btn btn-success btn-sm" disabled={updatingId === r.id} onClick={() => setStatus(r.id, 'resolved')}>
+                      <button className="btn btn-success btn-sm" disabled={updatingId === r.id} onClick={() => {
+                        const reply = prompt('ตอบกลับผู้แจ้ง (ไม่บังคับ):', r.admin_reply || '');
+                        if (reply !== null) setStatus(r.id, 'resolved', reply);
+                      }}>
                         <CircleCheck size={13} /> แก้ไขแล้ว
                       </button>
                     )}
                     {r.status !== 'rejected' && (
-                      <button className="btn btn-danger btn-sm" disabled={updatingId === r.id} onClick={() => setStatus(r.id, 'rejected')}>
+                      <button className="btn btn-danger btn-sm" disabled={updatingId === r.id} onClick={() => {
+                        const reply = prompt('เหตุผลที่ไม่รับเรื่อง (ไม่บังคับ):', r.admin_reply || '');
+                        if (reply !== null) setStatus(r.id, 'rejected', reply);
+                      }}>
                         <XCircle size={13} /> ไม่รับเรื่อง
                       </button>
                     )}
