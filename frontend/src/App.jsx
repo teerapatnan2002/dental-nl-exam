@@ -6,7 +6,7 @@ import ExamResult from './components/ExamResult';
 import AIHub from './components/AIHub';
 import AuthModal from './components/AuthModal';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { XCircle, User as UserIcon, LogOut } from 'lucide-react';
+import { XCircle, User as UserIcon, LogOut, Sun, Moon } from 'lucide-react';
 import { API_BASE } from './config';
 
 function useSessionState(defaultValue, key) {
@@ -39,6 +39,25 @@ function AppContent() {
   const [userAnswers, setUserAnswers] = useSessionState({}, 'nl_v4_userAnswers');
   const [startTime, setStartTime] = useSessionState(null, 'nl_v4_startTime');
   const [analysisData, setAnalysisData] = useSessionState(null, 'nl_v4_analysisData');
+
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem('nl_theme') || 'dark';
+    } catch {
+      return 'dark';
+    }
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    try {
+      localStorage.setItem('nl_theme', theme);
+    } catch {}
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(t => (t === 'dark' ? 'light' : 'dark'));
+  };
 
   const [categories, setCategories] = useState({ categories: [], tasks: [] });
   const [stats, setStats] = useState([]);
@@ -216,9 +235,31 @@ function AppContent() {
               <XCircle size={15} /> Abort
             </button>
           )}
+
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            style={{
+              background: 'rgba(255, 255, 255, 0.06)',
+              border: '1px solid var(--border)',
+              borderRadius: '50%',
+              width: '34px',
+              height: '34px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+            title={theme === 'dark' ? 'เปลี่ยนเป็นธีมสว่าง (Light Mode)' : 'เปลี่ยนเป็นธีมมืด (Dark Mode)'}
+            aria-label="Toggle Theme"
+          >
+            {theme === 'dark' ? <Sun size={17} color="#f59e0b" /> : <Moon size={17} color="var(--primary-light)" />}
+          </button>
           
           {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: '1rem', paddingLeft: '1rem', borderLeft: '1px solid rgba(255,255,255,0.1)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: '0.5rem', paddingLeft: '0.75rem', borderLeft: '1px solid var(--border)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.9rem', color: 'var(--text-sub)' }}>
                 <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 600 }}>
                   {user.username.charAt(0).toUpperCase()}
@@ -234,7 +275,7 @@ function AppContent() {
               </button>
             </div>
           ) : (
-            <button className="btn btn-primary btn-sm" onClick={() => setIsAuthModalOpen(true)} style={{ marginLeft: '1rem' }}>
+            <button className="btn btn-primary btn-sm" onClick={() => setIsAuthModalOpen(true)} style={{ marginLeft: '0.5rem' }}>
               <UserIcon size={14} /> เข้าสู่ระบบ
             </button>
           )}

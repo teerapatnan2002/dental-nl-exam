@@ -702,106 +702,203 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
       {/* ════════════════════════════════════════════════
          TAB 2: ฝึกซ้อมรายวิชา (Practice by Subject)
       ════════════════════════════════════════════════ */}
-      {activeTab === 'practice' && (
-        <div className="animate-fade-in">
+      {activeTab === 'practice' && (() => {
+        const clinicalGroupsDef = [
+          {
+            id: 'restorative',
+            title: 'ทันตกรรมบูรณะ, รักษาราก, ใส่ฟัน & ปริทันต์',
+            sub: 'Restorative, Endodontics, Prosthodontics & Periodontology',
+            color: '#06b6d4',
+            bg: 'rgba(6, 182, 212, 0.12)',
+            borderColor: 'rgba(6, 182, 212, 0.3)',
+            icon: '🦷',
+            keywords: ['หัตถการ', 'เอ็นโด', 'ปริทันต์', 'ประดิษฐ์', 'Operative', 'Endo', 'Perio', 'Prosth', 'ฟันปลอม', 'ครอบฟัน', 'บูรณะ', 'อุดฟัน']
+          },
+          {
+            id: 'surgery_patho',
+            title: 'ศัลยศาสตร์, พยาธิ & รังสีวิทยาช่องปาก',
+            sub: 'Oral & Maxillofacial Surgery, Pathology, Medicine & Radiology',
+            color: '#a78bfa',
+            bg: 'rgba(124, 58, 237, 0.12)',
+            borderColor: 'rgba(124, 58, 237, 0.3)',
+            icon: '🩺',
+            keywords: ['ศัลย', 'พยาธิ', 'เวชศาสตร์', 'รังสี', 'วินิจฉัย', 'Surgery', 'Patho', 'Medicine', 'Radiology', 'Diagnosis', 'ถอนฟัน', 'ผ่าฟันคุด']
+          },
+          {
+            id: 'pediatric_ortho',
+            title: 'ทันตกรรมสำหรับเด็ก, จัดฟัน & ทันตสาธารณสุข',
+            sub: 'Pediatric Dentistry, Orthodontics & Dental Public Health',
+            color: '#10b981',
+            bg: 'rgba(16, 185, 129, 0.12)',
+            borderColor: 'rgba(16, 185, 129, 0.3)',
+            icon: '👶',
+            keywords: ['เด็ก', 'จัดฟัน', 'ชุมชน', 'ป้องกัน', 'สาธารณสุข', 'Pedo', 'Ortho', 'Community', 'Preventive']
+          }
+        ];
 
-          {/* ── Section: ภาคทฤษฎีคลินิก ───── */}
-          <div className="section-header">
-            <div className="section-header-left">
-              <div className="section-icon clinical"><Stethoscope size={18} /></div>
+        const grouped = clinicalGroupsDef.map(grp => {
+          const items = clinicalStats.filter(stat => grp.keywords.some(kw => (stat.category || '').toLowerCase().includes(kw.toLowerCase())));
+          return { ...grp, items, count: items.reduce((acc, c) => acc + c.count, 0) };
+        });
+
+        const matchedCats = new Set(grouped.flatMap(g => g.items.map(i => i.category)));
+        const otherItems = clinicalStats.filter(s => !matchedCats.has(s.category));
+
+        return (
+          <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+
+            {/* Quick Random Buttons */}
+            <div className="glass-panel" style={{ padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
-                <h2 className="section-title">ภาคทฤษฎีคลินิก</h2>
-                <p className="section-subtitle">{totalClinical} ข้อ — เลือกวิชาที่ต้องการฝึกซ้อม</p>
+                <h2 style={{ fontSize: '1.25rem', margin: '0 0 0.2rem 0', color: 'var(--text)' }}>
+                  📚 ฝึกซ้อมแยกตามสาขาวิชาทันตกรรม
+                </h2>
+                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+                  รวมข้อสอบทั้งหมด {totalQuestions.toLocaleString()} ข้อ (ทฤษฎีคลินิก {totalClinical} ข้อ | กฎหมาย {totalLaw} ข้อ)
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '0.6rem' }}>
+                <button className="btn btn-secondary btn-sm" onClick={() => handleStart('', '', 20, 'exam')}>
+                  <PlayCircle size={14} /> สุ่มสอบคลินิก 20 ข้อ
+                </button>
+                <button className="btn btn-primary btn-sm" onClick={() => handleStart('', '', 20, 'practice')}>
+                  <BookOpen size={14} /> สุ่มฝึกคลินิก 20 ข้อ
+                </button>
               </div>
             </div>
-            <div style={{ display: 'flex', gap: '0.6rem' }}>
-              <button className="btn btn-secondary btn-sm" onClick={() => handleStart('', '', 20, 'exam')}>
-                <PlayCircle size={14} /> สุ่มสอบ 20 ข้อ
-              </button>
-              <button className="btn btn-primary btn-sm" onClick={() => handleStart('', '', 20, 'practice')}>
-                <BookOpen size={14} /> สุ่มฝึก 20 ข้อ
-              </button>
-            </div>
-          </div>
 
-          <div className="category-grid">
-            {clinicalStats.map((stat, i) => (
-              <div
-                key={stat.category}
-                className={`category-card animate-fade-in delay-${Math.min(i * 100 + 100, 400)}`}
-              >
-                <div>
-                  <div className="category-count">{stat.count}</div>
-                  <div className="category-card-name">{stat.category}</div>
+            {/* Render 3 Clinical Groups */}
+            {grouped.map(grp => (
+              grp.items.length > 0 && (
+                <div key={grp.id} className="day-sim-section" style={{ borderTop: `3px solid ${grp.color}`, margin: 0 }}>
+                  <div className="day-sim-header" style={{ marginBottom: '1rem', paddingBottom: '0.75rem' }}>
+                    <div>
+                      <div className="day-sim-title" style={{ fontSize: '1.1rem' }}>
+                        <span>{grp.icon} {grp.title}</span>
+                        <span className="badge" style={{ background: grp.bg, color: grp.color, border: `1px solid ${grp.borderColor}`, fontSize: '0.8rem' }}>
+                          {grp.count} ข้อ
+                        </span>
+                      </div>
+                      <div className="day-sim-subtitle" style={{ fontSize: '0.82rem' }}>{grp.sub}</div>
+                    </div>
+                  </div>
+
+                  <div className="category-grid">
+                    {grp.items.map((stat, i) => (
+                      <div
+                        key={stat.category}
+                        className="category-card"
+                        style={{ borderLeft: `3px solid ${grp.color}` }}
+                      >
+                        <div>
+                          <div className="category-count" style={{ color: grp.color }}>{stat.count}</div>
+                          <div className="category-card-name">{stat.category}</div>
+                        </div>
+                        <div className="category-actions">
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            style={{ flex: 1 }}
+                            onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'exam')}
+                          >
+                            <PlayCircle size={13} /> สอบ
+                          </button>
+                          <button
+                            className="btn btn-sm"
+                            style={{ flex: 1, background: grp.bg, color: grp.color, border: `1px solid ${grp.borderColor}` }}
+                            onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'practice')}
+                          >
+                            <BookOpen size={13} /> ฝึก
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="category-actions">
-                  <button
-                    className="btn btn-secondary btn-sm"
-                    style={{ flex: 1 }}
-                    onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'exam')}
-                  >
-                    <PlayCircle size={13} /> สอบ
-                  </button>
-                  <button
-                    className="btn btn-primary btn-sm"
-                    style={{ flex: 1 }}
-                    onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'practice')}
-                  >
-                    <BookOpen size={13} /> ฝึก
-                  </button>
-                </div>
-              </div>
+              )
             ))}
-          </div>
 
-          {/* ── Section: ภาคกฎหมาย ───── */}
-          <div className="section-header" style={{ marginTop: '2.5rem' }}>
-            <div className="section-header-left">
-              <div className="section-icon law"><ShieldAlert size={18} /></div>
-              <div>
-                <h2 className="section-title">ภาคกฎหมายและจรรยาบรรณ</h2>
-                <p className="section-subtitle">{totalLaw} ข้อ — ข้อสอบกฎหมาย ระเบียบ และจรรยาบรรณ</p>
+            {/* Other Clinical Categories (if any) */}
+            {otherItems.length > 0 && (
+              <div className="day-sim-section" style={{ borderTop: '3px solid var(--text-muted)', margin: 0 }}>
+                <div className="day-sim-header" style={{ marginBottom: '1rem', paddingBottom: '0.75rem' }}>
+                  <div className="day-sim-title" style={{ fontSize: '1.1rem' }}>
+                    <span>🔬 หมวดหมู่อื่นๆ (Other Clinical Topics)</span>
+                    <span className="badge badge-primary">{otherItems.reduce((a, b) => a + b.count, 0)} ข้อ</span>
+                  </div>
+                </div>
+                <div className="category-grid">
+                  {otherItems.map((stat) => (
+                    <div key={stat.category} className="category-card">
+                      <div>
+                        <div className="category-count">{stat.count}</div>
+                        <div className="category-card-name">{stat.category}</div>
+                      </div>
+                      <div className="category-actions">
+                        <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'exam')}>
+                          <PlayCircle size={13} /> สอบ
+                        </button>
+                        <button className="btn btn-primary btn-sm" style={{ flex: 1 }} onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'practice')}>
+                          <BookOpen size={13} /> ฝึก
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Section: ภาคกฎหมายและจรรยาบรรณ ───── */}
+            <div className="day-sim-section law" style={{ margin: 0 }}>
+              <div className="day-sim-header" style={{ marginBottom: '1rem', paddingBottom: '0.75rem' }}>
+                <div>
+                  <div className="day-sim-title" style={{ fontSize: '1.1rem', color: 'var(--danger)' }}>
+                    <span>⚖️ ภาคกฎหมายและจรรยาบรรณวิชาชีพทันตกรรม</span>
+                    <span className="badge badge-danger">{totalLaw} ข้อ</span>
+                  </div>
+                  <div className="day-sim-subtitle" style={{ fontSize: '0.82rem' }}>พ.ร.บ. วิชาชีพทันตกรรม, พ.ร.บ. สถานพยาบาล และจรรยาบรรณแห่งวิชาชีพ</div>
+                </div>
+              </div>
+
+              <div className="category-grid">
+                {taskStats.filter(t => [
+                  "พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537",
+                  "จรรยาบรรณแห่งวิชาชีพทันตกรรม",
+                  "พ.ร.บ. สถานพยาบาล พ.ศ. 2541",
+                  "กฎหมายอื่นๆ ที่เกี่ยวข้อง"
+                ].includes(t.task)).map((stat) => (
+                  <div
+                    key={stat.task}
+                    className="category-card"
+                    style={{ borderLeft: '3px solid var(--danger)' }}
+                  >
+                    <div>
+                      <div className="category-count" style={{ color: 'var(--danger)' }}>{stat.count}</div>
+                      <div className="category-card-name" style={{ fontSize: '0.88rem' }}>{stat.task}</div>
+                    </div>
+                    <div className="category-actions">
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        style={{ flex: 1 }}
+                        onClick={() => handleStart(lawCategoryName, stat.task, Math.min(stat.count, 20), 'exam')}
+                      >
+                        <PlayCircle size={13} /> สอบ
+                      </button>
+                      <button
+                        className="btn btn-accent btn-sm"
+                        style={{ flex: 1 }}
+                        onClick={() => handleStart(lawCategoryName, stat.task, Math.min(stat.count, 20), 'practice')}
+                      >
+                        <BookOpen size={13} /> ฝึก
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
 
-          <div className="category-grid">
-            {taskStats.filter(t => [
-              "พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537",
-              "จรรยาบรรณแห่งวิชาชีพทันตกรรม",
-              "พ.ร.บ. สถานพยาบาล พ.ศ. 2541",
-              "กฎหมายอื่นๆ ที่เกี่ยวข้อง"
-            ].includes(t.task)).map((stat, i) => (
-              <div
-                key={stat.task}
-                className={`category-card animate-fade-in delay-${Math.min(i * 100 + 100, 400)}`}
-                style={{ borderLeft: '3px solid var(--danger)' }}
-              >
-                <div>
-                  <div className="category-count" style={{ color: 'var(--danger)' }}>{stat.count}</div>
-                  <div className="category-card-name" style={{ fontSize: '0.85rem' }}>{stat.task}</div>
-                </div>
-                <div className="category-actions">
-                  <button
-                    className="btn btn-secondary btn-sm"
-                    style={{ flex: 1 }}
-                    onClick={() => handleStart(lawCategoryName, stat.task, Math.min(stat.count, 20), 'exam')}
-                  >
-                    <PlayCircle size={13} /> สอบ
-                  </button>
-                  <button
-                    className="btn btn-accent btn-sm"
-                    style={{ flex: 1 }}
-                    onClick={() => handleStart(lawCategoryName, stat.task, Math.min(stat.count, 20), 'practice')}
-                  >
-                    <BookOpen size={13} /> ฝึก
-                  </button>
-                </div>
-              </div>
-            ))}
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ════════════════════════════════════════════════
          TAB 4: Leaderboard
