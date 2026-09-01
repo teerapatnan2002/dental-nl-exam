@@ -135,10 +135,13 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
       </div>
 
       {/* ── Tab Bar ──────────────────────────────────── */}
-      <div className="dashboard-tab-bar">
+      <div className="dashboard-tab-bar" role="tablist" aria-label="Main Navigation">
         {tabs.map(tab => (
           <button
             key={tab.id}
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            tabIndex={activeTab === tab.id ? 0 : -1}
             className={`dashboard-tab-item ${activeTab === tab.id ? 'active' : ''}`}
             onClick={() => {
               if (tab.id === 'aihub') {
@@ -148,7 +151,7 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
               }
             }}
           >
-            <span className="dashboard-tab-emoji">{tab.emoji}</span>
+            <span className="dashboard-tab-emoji" aria-hidden="true">{tab.emoji}</span>
             <span>{tab.label}</span>
           </button>
         ))}
