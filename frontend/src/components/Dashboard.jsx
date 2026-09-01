@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   BookOpen, PlayCircle, ShieldAlert, Brain,
   Stethoscope, ChevronDown, ChevronUp, Sparkles, Settings2,
   Target, GraduationCap, Wrench, Clock, AlertTriangle, User as UserIcon, Activity, Trophy,
-  Search, BookmarkCheck, ShieldCheck
+  Search, BookmarkCheck, ShieldCheck, MoreHorizontal
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { API_BASE } from '../config';
@@ -24,6 +24,18 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
   const [selectedYear, setSelectedYear] = useState('');
   const [userStats, setUserStats] = useState(null);
   const [reviewData, setReviewData] = useState(null);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setMoreMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (activeTab === 'mystats' && token) {
@@ -80,24 +92,31 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
 
   const selectedYearData = selectedYear ? years.find(y => y.year === selectedYear) : null;
 
-  const tabs = [
-    { id: 'fullExam', label: 'สอบจัดเต็ม', icon: <Target size={16} />, emoji: '🎯' },
-    { id: 'practice', label: 'ฝึกซ้อมรายวิชา', icon: <GraduationCap size={16} />, emoji: '📚' },
-    { id: 'custom', label: 'สร้างข้อสอบเอง', icon: <Wrench size={16} />, emoji: '⚙️' },
-    { id: 'search', label: 'ค้นหา', icon: <Search size={16} />, emoji: '🔍' },
-    { id: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={16} />, emoji: '🏆' },
-    { id: 'aihub', label: 'AI Hub', icon: <Brain size={16} />, emoji: '🧠' },
+  const mainTabs = [
+    { id: 'fullExam', label: 'สอบจัดเต็ม', emoji: '🎯' },
+    { id: 'practice', label: 'ฝึกซ้อมรายวิชา', emoji: '📚' },
+    { id: 'custom', label: 'สร้างข้อสอบเอง', emoji: '⚙️' },
+    { id: 'aihub', label: 'AI Hub', emoji: '🧠' },
   ];
 
-  if (user) {
-    tabs.push({ id: 'bookmarks', label: 'บุ๊กมาร์ก', icon: <BookmarkCheck size={16} />, emoji: '🔖' });
-    tabs.push({ id: 'mystats', label: 'สถิติของฉัน', icon: <Activity size={16} />, emoji: '📊' });
-    tabs.push({ id: 'myreports', label: 'ประวัติแจ้งปัญหา', icon: <AlertTriangle size={16} />, emoji: '⚠️' });
-  }
+  const toolsGroup = [
+    { id: 'search', label: 'ค้นหาข้อสอบ', desc: 'ค้นหาโจทย์ตามคำค้นหา', emoji: '🔍' },
+    { id: 'leaderboard', label: 'Leaderboard', desc: 'อันดับคะแนนและผู้ทำโจทย์', emoji: '🏆' },
+  ];
 
-  if (user && user.role === 'admin') {
-    tabs.push({ id: 'admin', label: 'Admin', icon: <ShieldCheck size={16} />, emoji: '🛡️' });
-  }
+  const personalGroup = user ? [
+    { id: 'bookmarks', label: 'บุ๊กมาร์กของฉัน', desc: 'ข้อสอบที่บันทึกไว้ทบทวน', emoji: '🔖' },
+    { id: 'mystats', label: 'สถิติของฉัน', desc: 'ประวัติและวิเคราะห์จุดอ่อน', emoji: '📊' },
+    { id: 'myreports', label: 'ประวัติแจ้งปัญหา', desc: 'ติดตามสถานะการแจ้งข้อสอบ', emoji: '⚠️' },
+  ] : [];
+
+  const adminGroup = (user && user.role === 'admin') ? [
+    { id: 'admin', label: 'Admin Panel', desc: 'จัดการข้อสอบและรายงานปัญหา', emoji: '🛡️' },
+  ] : [];
+
+  const allMoreTabs = [...toolsGroup, ...personalGroup, ...adminGroup];
+  const activeMoreTab = allMoreTabs.find(t => t.id === activeTab);
+  const isMoreActive = Boolean(activeMoreTab);
 
   return (
     <div className="animate-fade-in">
@@ -134,9 +153,9 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
         </div>
       </div>
 
-      {/* ── Tab Bar ──────────────────────────────────── */}
+      {/* ── Grouped Tab Bar with Dropdown ─────────────── */}
       <div className="dashboard-tab-bar" role="tablist" aria-label="Main Navigation">
-        {tabs.map(tab => (
+        {mainTabs.map(tab => (
           <button
             key={tab.id}
             role="tab"
@@ -148,6 +167,7 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
                 onOpenAIHub();
               } else {
                 setActiveTab(tab.id);
+                setMoreMenuOpen(false);
               }
             }}
           >
@@ -155,6 +175,100 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
             <span>{tab.label}</span>
           </button>
         ))}
+
+        {/* Dropdown Menu for Extra & Personal Features */}
+        <div className="tab-dropdown-wrapper" ref={dropdownRef}>
+          <button
+            type="button"
+            className={`dashboard-tab-item ${isMoreActive ? 'active' : ''}`}
+            style={{ width: '100%', justifyContent: 'space-between' }}
+            onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+            aria-expanded={moreMenuOpen}
+            aria-haspopup="true"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span className="dashboard-tab-emoji" aria-hidden="true">
+                {activeMoreTab ? activeMoreTab.emoji : '✨'}
+              </span>
+              <span>{activeMoreTab ? activeMoreTab.label : 'เพิ่มเติม'}</span>
+            </div>
+            {moreMenuOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+
+          {moreMenuOpen && (
+            <div className="tab-dropdown-menu" role="menu">
+              {/* Group 1: Tools & Community */}
+              <div className="tab-dropdown-section-title">เครื่องมือ & สถิติ</div>
+              {toolsGroup.map(item => (
+                <button
+                  key={item.id}
+                  role="menuitem"
+                  className={`tab-dropdown-item ${activeTab === item.id ? 'active' : ''}`}
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    setMoreMenuOpen(false);
+                  }}
+                >
+                  <span className="tab-dropdown-item-icon" aria-hidden="true">{item.emoji}</span>
+                  <div className="tab-dropdown-item-info">
+                    <span className="tab-dropdown-item-label">{item.label}</span>
+                    <span className="tab-dropdown-item-desc">{item.desc}</span>
+                  </div>
+                </button>
+              ))}
+
+              {/* Group 2: Personal */}
+              {personalGroup.length > 0 && (
+                <>
+                  <div className="tab-dropdown-divider" />
+                  <div className="tab-dropdown-section-title">ข้อมูลของฉัน</div>
+                  {personalGroup.map(item => (
+                    <button
+                      key={item.id}
+                      role="menuitem"
+                      className={`tab-dropdown-item ${activeTab === item.id ? 'active' : ''}`}
+                      onClick={() => {
+                        setActiveTab(item.id);
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <span className="tab-dropdown-item-icon" aria-hidden="true">{item.emoji}</span>
+                      <div className="tab-dropdown-item-info">
+                        <span className="tab-dropdown-item-label">{item.label}</span>
+                        <span className="tab-dropdown-item-desc">{item.desc}</span>
+                      </div>
+                    </button>
+                  ))}
+                </>
+              )}
+
+              {/* Group 3: Admin */}
+              {adminGroup.length > 0 && (
+                <>
+                  <div className="tab-dropdown-divider" />
+                  <div className="tab-dropdown-section-title">ผู้ดูแลระบบ</div>
+                  {adminGroup.map(item => (
+                    <button
+                      key={item.id}
+                      role="menuitem"
+                      className={`tab-dropdown-item ${activeTab === item.id ? 'active' : ''}`}
+                      onClick={() => {
+                        setActiveTab(item.id);
+                        setMoreMenuOpen(false);
+                      }}
+                    >
+                      <span className="tab-dropdown-item-icon" aria-hidden="true">{item.emoji}</span>
+                      <div className="tab-dropdown-item-info">
+                        <span className="tab-dropdown-item-label">{item.label}</span>
+                        <span className="tab-dropdown-item-desc">{item.desc}</span>
+                      </div>
+                    </button>
+                  ))}
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ════════════════════════════════════════════════
