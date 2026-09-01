@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, X, CheckCircle2 } from 'lucide-react';
+import { AlertTriangle, X, CircleCheck } from 'lucide-react';
 import { API_BASE } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -82,7 +82,7 @@ export default function ReportModal({ questionId, onClose }) {
 
         {success ? (
           <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-            <CheckCircle2 size={48} color="var(--success)" style={{ margin: '0 auto 1rem' }} />
+            <CircleCheck size={48} color="var(--success)" style={{ margin: '0 auto 1rem' }} />
             <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>ขอบคุณที่แจ้งปัญหา!</h2>
             <p style={{ color: 'var(--text-sub)' }}>ระบบได้รับรายงานของคุณเรียบร้อยแล้ว ทีมงานจะรีบดำเนินการตรวจสอบ</p>
           </div>
