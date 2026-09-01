@@ -239,23 +239,21 @@ function AppContent() {
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            style={{
-              background: 'rgba(255, 255, 255, 0.06)',
-              border: '1px solid var(--border)',
-              borderRadius: '50%',
-              width: '34px',
-              height: '34px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--text)',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            title={theme === 'dark' ? 'เปลี่ยนเป็นธีมสว่าง (Light Mode)' : 'เปลี่ยนเป็นธีมมืด (Dark Mode)'}
-            aria-label="Toggle Theme"
+            className="theme-toggle-btn"
+            title={theme === 'dark' ? 'เปลี่ยนเป็นธีมสว่าง (Clinical Light Mode)' : 'เปลี่ยนเป็นธีมมืด (Midnight Dark Mode)'}
+            aria-label="Toggle Light and Dark Theme"
           >
-            {theme === 'dark' ? <Sun size={17} color="#f59e0b" /> : <Moon size={17} color="var(--primary-light)" />}
+            {theme === 'dark' ? (
+              <>
+                <Sun size={15} color="#f59e0b" />
+                <span className="theme-toggle-label">โหมดสว่าง</span>
+              </>
+            ) : (
+              <>
+                <Moon size={15} color="var(--primary)" />
+                <span className="theme-toggle-label">โหมดมืด</span>
+              </>
+            )}
           </button>
           
           {user ? (
