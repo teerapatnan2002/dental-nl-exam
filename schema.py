@@ -57,23 +57,23 @@ class UserCreate(BaseModel):
     @field_validator('password')
     @classmethod
     def validate_password(cls, v):
-        if len(v) < 12:
-            raise ValueError('Password must be at least 12 characters long')
+        if len(v) < 8:
+            raise ValueError('รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร')
         if not any(char.isupper() for char in v):
-            raise ValueError('Password must contain at least one uppercase letter')
+            raise ValueError('รหัสผ่านต้องมีตัวพิมพ์ใหญ่อย่างน้อย 1 ตัว (A-Z)')
         if not any(char.islower() for char in v):
-            raise ValueError('Password must contain at least one lowercase letter')
+            raise ValueError('รหัสผ่านต้องมีตัวพิมพ์เล็กอย่างน้อย 1 ตัว (a-z)')
         if not any(char.isdigit() for char in v):
-            raise ValueError('Password must contain at least one number')
+            raise ValueError('รหัสผ่านต้องมีตัวเลขอย่างน้อย 1 ตัว (0-9)')
         if not any(char in '!@#$%^&*()-_=+[]{}|;:,.<>?/~`' for char in v):
-            raise ValueError('Password must contain at least one special character')
+            raise ValueError('รหัสผ่านต้องมีอักขระพิเศษอย่างน้อย 1 ตัว (เช่น !@#$%^&*...)')
         # Block extremely common passwords
         _COMMON_PASSWORDS = {
             'password', 'password123', '12345678', 'qwerty123',
             'adminadmin', 'letmein12', 'welcome123', 'changeme',
         }
         if v.lower() in _COMMON_PASSWORDS:
-            raise ValueError('This password is too common. Please choose a stronger one.')
+            raise ValueError('รหัสผ่านนี้คาดเดาได้ง่ายเกินไป กรุณาตั้งรหัสผ่านใหม่ที่ปลอดภัยขึ้น')
         return v
 
 class UserLogin(BaseModel):
