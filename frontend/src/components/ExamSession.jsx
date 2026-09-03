@@ -311,17 +311,18 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
   };
 
   const handleJumpToQuestion = (q, targetPageIndex) => {
-    setTargetQuestionId(q.id);
-    setCurrentPageIndex(targetPageIndex);
-  };
+    const targetPage = pages[targetPageIndex];
+    const isFirstQuestionInPage = targetPage && targetPage.questions[0]?.id === q.id;
 
-  const jumpToFirstUnanswered = () => {
-    const unansweredQ = questions.find(q => !answers[q.id]);
-    if (unansweredQ) {
-      const targetPgIdx = pages.findIndex(p => p.questions.some(pq => pq.id === unansweredQ.id));
-      if (targetPgIdx !== -1) {
-        handleJumpToQuestion(unansweredQ, targetPgIdx);
-      }
+    if (isFirstQuestionInPage) {
+      // If it is the first question of this STEM page (e.g. Q1, Q4, Q7), always scroll to the very top to read the STEM!
+      setTargetQuestionId(null);
+      setCurrentPageIndex(targetPageIndex);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // If it is a subsequent sub-question inside the STEM (e.g. Q2, Q3 in STEM 1, or Q5, Q6 in STEM 2), scroll directly to that question
+      setTargetQuestionId(q.id);
+      setCurrentPageIndex(targetPageIndex);
     }
   };
 
@@ -816,30 +817,8 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
           <ChevronLeft size={18} /> Previous
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-            {answeredCount} / {questions.length} ตอบแล้ว
-          </span>
-          {questions.length - answeredCount > 0 && (
-            <button
-              onClick={jumpToFirstUnanswered}
-              className="btn btn-secondary btn-sm"
-              style={{
-                fontSize: '0.76rem',
-                padding: '0.2rem 0.6rem',
-                border: '1px solid rgba(245, 158, 11, 0.35)',
-                color: 'var(--warning)',
-                background: 'rgba(245, 158, 11, 0.08)',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-              title="กระโดดไปยังข้อแรกที่ยังไม่ได้ตอบ"
-            >
-              ข้ามไปข้อค้าง ({questions.length - answeredCount})
-            </button>
-          )}
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center' }}>
+          {answeredCount} / {questions.length} ตอบแล้ว
         </div>
 
         {currentPageIndex < pages.length - 1 ? (
