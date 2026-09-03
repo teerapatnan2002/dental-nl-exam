@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { X, Mail, Lock, User, AlertCircle, Loader2, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
+import { X, Mail, Lock, User, AlertCircle, Loader2, Eye, EyeOff, CheckCircle2, Check, ShieldCheck } from 'lucide-react';
 
 export default function AuthModal({ isOpen, onClose }) {
   const { login, register } = useAuth();
@@ -18,6 +18,36 @@ export default function AuthModal({ isOpen, onClose }) {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
 
+  const passwordCriteria = [
+    {
+      id: 'length',
+      label: 'ความยาวอย่างน้อย 8 ตัวอักษร',
+      met: formData.password.length >= 8,
+    },
+    {
+      id: 'upper',
+      label: 'ตัวอักษรพิมพ์ใหญ่ (A-Z) อย่างน้อย 1 ตัว',
+      met: /[A-Z]/.test(formData.password),
+    },
+    {
+      id: 'lower',
+      label: 'ตัวอักษรพิมพ์เล็ก (a-z) อย่างน้อย 1 ตัว',
+      met: /[a-z]/.test(formData.password),
+    },
+    {
+      id: 'number',
+      label: 'ตัวเลข (0-9) อย่างน้อย 1 ตัว',
+      met: /[0-9]/.test(formData.password),
+    },
+    {
+      id: 'special',
+      label: 'อักขระพิเศษ (!@#$%^&*...) อย่างน้อย 1 ตัว',
+      met: /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?/~`]/.test(formData.password),
+    },
+  ];
+
+  const metCount = passwordCriteria.filter(c => c.met).length;
+
   useEffect(() => {
     if (!isOpen) {
       // Reset state when closed
@@ -29,30 +59,24 @@ export default function AuthModal({ isOpen, onClose }) {
   }, [isOpen]);
 
   useEffect(() => {
-    // Calculate password strength
-    const pwd = formData.password;
-    let strength = 0;
-    if (pwd.length >= 8) strength += 1;
-    if (/[A-Z]/.test(pwd)) strength += 1;
-    if (/[0-9]/.test(pwd)) strength += 1;
-    if (/[^A-Za-z0-9]/.test(pwd)) strength += 1;
-    setPasswordStrength(strength);
-  }, [formData.password]);
+    setPasswordStrength(metCount);
+  }, [formData.password, metCount]);
 
   if (!isOpen) return null;
 
   const validateForm = () => {
     if (!isLogin) {
+      if (!formData.username || formData.username.trim().length < 3) {
+        setError('ชื่อผู้ใช้งานต้องมีความยาวอย่างน้อย 3 ตัวอักษร');
+        return false;
+      }
       if (formData.password !== formData.confirmPassword) {
         setError('รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน');
         return false;
       }
-      if (formData.password.length < 8) {
-        setError('รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร');
-        return false;
-      }
-      if (!/[A-Z]/.test(formData.password) || !/[0-9]/.test(formData.password)) {
-        setError('รหัสผ่านต้องมีตัวพิมพ์ใหญ่และตัวเลขอย่างน้อย 1 ตัว');
+      const missing = passwordCriteria.filter(c => !c.met);
+      if (missing.length > 0) {
+        setError(`รหัสผ่านยังไม่ครบตามมาตรฐาน: ${missing[0].label}`);
         return false;
       }
     }
@@ -82,16 +106,16 @@ export default function AuthModal({ isOpen, onClose }) {
   };
 
   const getStrengthColor = () => {
-    if (passwordStrength <= 1) return 'var(--danger)';
-    if (passwordStrength === 2) return 'var(--warning)';
+    if (metCount <= 2) return 'var(--danger)';
+    if (metCount <= 4) return 'var(--warning)';
     return 'var(--success)';
   };
 
   const getStrengthLabel = () => {
     if (formData.password.length === 0) return '';
-    if (passwordStrength <= 1) return 'อ่อน (Weak)';
-    if (passwordStrength === 2) return 'ปานกลาง (Medium)';
-    return 'ปลอดภัย (Strong)';
+    if (metCount <= 2) return 'ยังไม่ปลอดภัย (Weak)';
+    if (metCount <= 4) return 'ปานกลาง (Medium)';
+    return 'ปลอดภัยตามมาตรฐานสากล (Strong)';
   };
 
   return (
@@ -229,15 +253,70 @@ export default function AuthModal({ isOpen, onClose }) {
                 </button>
               </div>
               
-              {!isLogin && formData.password.length > 0 && (
-                <div style={{ marginTop: '0.75rem' }} className="animate-fade-in">
-                  <div style={{ display: 'flex', gap: '4px', height: '4px', marginBottom: '0.5rem' }}>
-                    <div style={{ flex: 1, background: passwordStrength >= 1 ? getStrengthColor() : 'rgba(255,255,255,0.1)', borderRadius: '2px', transition: 'background 0.3s' }}></div>
-                    <div style={{ flex: 1, background: passwordStrength >= 2 ? getStrengthColor() : 'rgba(255,255,255,0.1)', borderRadius: '2px', transition: 'background 0.3s' }}></div>
-                    <div style={{ flex: 1, background: passwordStrength >= 3 ? getStrengthColor() : 'rgba(255,255,255,0.1)', borderRadius: '2px', transition: 'background 0.3s' }}></div>
+              {!isLogin && (
+                <div style={{
+                  marginTop: '0.85rem',
+                  padding: '0.85rem 1rem',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '10px',
+                }} className="animate-fade-in">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <ShieldCheck size={15} color="var(--primary-light)" /> เกณฑ์รหัสผ่านตามมาตรฐานสากล
+                    </span>
+                    {formData.password.length > 0 && (
+                      <span style={{ fontSize: '0.76rem', color: getStrengthColor(), fontWeight: 600 }}>
+                        {getStrengthLabel()}
+                      </span>
+                    )}
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-sub)' }}>
-                    <span>ความปลอดภัยรหัสผ่าน: <span style={{ color: getStrengthColor(), fontWeight: 500 }}>{getStrengthLabel()}</span></span>
+
+                  {formData.password.length > 0 && (
+                    <div style={{ display: 'flex', gap: '4px', height: '4px', marginBottom: '0.75rem' }}>
+                      {[1, 2, 3, 4, 5].map(step => (
+                        <div
+                          key={step}
+                          style={{
+                            flex: 1,
+                            background: metCount >= step ? getStrengthColor() : 'rgba(255,255,255,0.08)',
+                            borderRadius: '2px',
+                            transition: 'background 0.3s'
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                    {passwordCriteria.map(c => (
+                      <div 
+                        key={c.id} 
+                        style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '7px', 
+                          fontSize: '0.78rem', 
+                          color: c.met ? 'var(--success)' : 'var(--text-muted)', 
+                          transition: 'color 0.2s',
+                          fontWeight: c.met ? 500 : 400
+                        }}
+                      >
+                        {c.met ? (
+                          <CheckCircle2 size={14} color="var(--success)" strokeWidth={2.5} />
+                        ) : (
+                          <span style={{
+                            display: 'inline-block',
+                            width: '14px',
+                            height: '14px',
+                            borderRadius: '50%',
+                            border: '1px solid rgba(255, 255, 255, 0.2)',
+                            boxSizing: 'border-box'
+                          }} />
+                        )}
+                        <span>{c.label}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
