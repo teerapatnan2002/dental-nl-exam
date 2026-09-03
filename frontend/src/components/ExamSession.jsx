@@ -56,6 +56,7 @@ function getStemLabel(stemText, pageIndex) {
 export default function ExamSession({ questions, mode = 'exam', config = {}, startTime, onFinish }) {
   const { token, authFetch, user } = useAuth();
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [targetQuestionId, setTargetQuestionId] = useState(null);
   const [answers, setAnswers] = useState({});
   const [elapsed, setElapsed] = useState(0);
 
@@ -262,17 +263,65 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
     setAnswers({ ...answers, [questionId]: choiceLabel });
   };
 
+  // ── Smart Scrolling Logic ──
+  // 1. If targetQuestionId is set (jumping directly to a specific question from dot navigator or shortcut):
+  //    Smoothly scroll directly to that question card and highlight it.
+  // 2. If targetQuestionId is null (normal Next / Prev page navigation):
+  //    Smoothly scroll to the very top of the page so the user can immediately read the STEM.
+  useEffect(() => {
+    if (targetQuestionId) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById(`question-card-${targetQuestionId}`);
+        if (el) {
+          const headerOffset = 85; // Account for sticky exam header
+          const elementPosition = el.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          window.scrollTo({
+            top: Math.max(0, offsetPosition),
+            behavior: 'smooth'
+          });
+          el.classList.remove('question-highlight-pulse');
+          void el.offsetWidth; // force DOM reflow
+          el.classList.add('question-highlight-pulse');
+          setTimeout(() => {
+            el.classList.remove('question-highlight-pulse');
+          }, 2000);
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 60);
+      return () => clearTimeout(timer);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [currentPageIndex, targetQuestionId]);
+
   const handleNext = () => {
     if (currentPageIndex < pages.length - 1) {
+      setTargetQuestionId(null);
       setCurrentPageIndex(prev => prev + 1);
-      window.scrollTo(0, 0);
     }
   };
 
   const handlePrev = () => {
     if (currentPageIndex > 0) {
+      setTargetQuestionId(null);
       setCurrentPageIndex(prev => prev - 1);
-      window.scrollTo(0, 0);
+    }
+  };
+
+  const handleJumpToQuestion = (q, targetPageIndex) => {
+    setTargetQuestionId(q.id);
+    setCurrentPageIndex(targetPageIndex);
+  };
+
+  const jumpToFirstUnanswered = () => {
+    const unansweredQ = questions.find(q => !answers[q.id]);
+    if (unansweredQ) {
+      const targetPgIdx = pages.findIndex(p => p.questions.some(pq => pq.id === unansweredQ.id));
+      if (targetPgIdx !== -1) {
+        handleJumpToQuestion(unansweredQ, targetPgIdx);
+      }
     }
   };
 
@@ -485,9 +534,18 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
               const expl = explanations[q.id];
               const isRevealed = revealed[q.id];
               const isFlagged = flaggedIds.has(q.id);
-
               return (
-                <div key={q.id} style={{ padding: currentPage.stem ? '1.5rem' : '0', background: currentPage.stem ? 'rgba(255,255,255,0.02)' : 'transparent', borderRadius: '12px', border: currentPage.stem ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                <div 
+                  key={q.id} 
+                  id={`question-card-${q.id}`}
+                  style={{ 
+                    padding: currentPage.stem ? '1.5rem' : '0', 
+                    background: currentPage.stem ? 'rgba(255,255,255,0.02)' : 'transparent', 
+                    borderRadius: '12px', 
+                    border: currentPage.stem ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                    transition: 'border-color 0.3s, box-shadow 0.3s'
+                  }}
+                >
                   
                   {/* Meta badges for sub-question */}
                   <div className="question-meta" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -740,7 +798,7 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
             const pageIndex = pages.findIndex(p => p.questions.some(pq => pq.globalIndex === i));
             if (pageIndex === currentPageIndex) cls += ' current';
             return (
-              <button key={q.id} className={cls} onClick={() => setCurrentPageIndex(pageIndex)} title={`ข้อ ${i + 1}${flaggedIds.has(q.id) ? ' (ปักธงไว้)' : ''}`}>
+              <button key={q.id} className={cls} onClick={() => handleJumpToQuestion(q, pageIndex)} title={`ข้อ ${i + 1}${flaggedIds.has(q.id) ? ' (ปักธงไว้)' : ''}`}>
                 {i + 1}
               </button>
             );
@@ -758,8 +816,30 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
           <ChevronLeft size={18} /> Previous
         </button>
 
-        <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center' }}>
-          {answeredCount} / {questions.length} answered
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+            {answeredCount} / {questions.length} ตอบแล้ว
+          </span>
+          {questions.length - answeredCount > 0 && (
+            <button
+              onClick={jumpToFirstUnanswered}
+              className="btn btn-secondary btn-sm"
+              style={{
+                fontSize: '0.76rem',
+                padding: '0.2rem 0.6rem',
+                border: '1px solid rgba(245, 158, 11, 0.35)',
+                color: 'var(--warning)',
+                background: 'rgba(245, 158, 11, 0.08)',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+              title="กระโดดไปยังข้อแรกที่ยังไม่ได้ตอบ"
+            >
+              ข้ามไปข้อค้าง ({questions.length - answeredCount})
+            </button>
+          )}
         </div>
 
         {currentPageIndex < pages.length - 1 ? (
