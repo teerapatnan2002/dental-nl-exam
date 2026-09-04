@@ -15,7 +15,7 @@ import MyReports from './MyReports';
 
 const lawCategoryName = 'กฎหมายและจรรยาบรรณ';
 
-export default function Dashboard({ categories, stats, taskStats, years, onStart, onOpenAIHub }) {
+export default function Dashboard({ categories, stats, taskStats, years, onStart, onOpenAIHub, onOpenLawHub }) {
   const { user, token } = useAuth();
   const [activeTab, setActiveTab] = useState('fullExam');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -96,10 +96,12 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
     { id: 'fullExam', label: 'สอบจัดเต็ม', emoji: '🎯' },
     { id: 'practice', label: 'ฝึกซ้อมรายวิชา', emoji: '📚' },
     { id: 'custom', label: 'สร้างข้อสอบเอง', emoji: '⚙️' },
+    { id: 'law_hub', label: 'สรุปกฎหมาย & บัตรคำ', emoji: '⚖️' },
     { id: 'aihub', label: 'AI Hub', emoji: '🧠' },
   ];
 
   const toolsGroup = [
+    { id: 'law_hub_tool', label: 'สรุปกฎหมาย & Flashcards', desc: 'ผังมโนทัศน์ 5 เสาหลัก & บัตรคำช่วยจำ', emoji: '⚖️' },
     { id: 'search', label: 'ค้นหาข้อสอบ', desc: 'ค้นหาโจทย์ตามคำค้นหา', emoji: '🔍' },
     { id: 'leaderboard', label: 'Leaderboard', desc: 'อันดับคะแนนและผู้ทำโจทย์', emoji: '🏆' },
   ];
@@ -165,6 +167,8 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
             onClick={() => {
               if (tab.id === 'aihub') {
                 onOpenAIHub();
+              } else if (tab.id === 'law_hub') {
+                if (onOpenLawHub) onOpenLawHub();
               } else {
                 setActiveTab(tab.id);
                 setMoreMenuOpen(false);
@@ -205,6 +209,11 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
                   role="menuitem"
                   className={`tab-dropdown-item ${activeTab === item.id ? 'active' : ''}`}
                   onClick={() => {
+                    if (item.id === 'law_hub_tool') {
+                      if (onOpenLawHub) onOpenLawHub();
+                      setMoreMenuOpen(false);
+                      return;
+                    }
                     setActiveTab(item.id);
                     setMoreMenuOpen(false);
                   }}
@@ -849,7 +858,7 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
 
             {/* ── Section: ภาคกฎหมายและจรรยาบรรณ ───── */}
             <div className="day-sim-section law" style={{ margin: 0 }}>
-              <div className="day-sim-header" style={{ marginBottom: '1rem', paddingBottom: '0.75rem' }}>
+              <div className="day-sim-header" style={{ marginBottom: '1rem', paddingBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <div>
                   <div className="day-sim-title" style={{ fontSize: '1.1rem', color: 'var(--danger)' }}>
                     <span>⚖️ ภาคกฎหมายและจรรยาบรรณวิชาชีพทันตกรรม</span>
@@ -857,6 +866,26 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
                   </div>
                   <div className="day-sim-subtitle" style={{ fontSize: '0.82rem' }}>พ.ร.บ. วิชาชีพทันตกรรม, พ.ร.บ. สถานพยาบาล และจรรยาบรรณแห่งวิชาชีพ</div>
                 </div>
+                {onOpenLawHub && (
+                  <button
+                    className="btn btn-sm"
+                    onClick={onOpenLawHub}
+                    style={{
+                      background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
+                      color: '#fff',
+                      border: 'none',
+                      boxShadow: '0 2px 10px rgba(124, 58, 237, 0.3)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      fontWeight: 600,
+                      padding: '0.45rem 0.9rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <span>🎴 สรุปกฎหมาย & Flashcards</span>
+                  </button>
+                )}
               </div>
 
               <div className="category-grid">

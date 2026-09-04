@@ -4,9 +4,10 @@ import Dashboard from './components/Dashboard';
 import ExamSession from './components/ExamSession';
 import ExamResult from './components/ExamResult';
 import AIHub from './components/AIHub';
+import LawStudyHub from './components/LawStudyHub';
 import AuthModal from './components/AuthModal';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { XCircle, User as UserIcon, LogOut, Sun, Moon } from 'lucide-react';
+import { XCircle, User as UserIcon, LogOut, Sun, Moon, Scale } from 'lucide-react';
 import { API_BASE } from './config';
 
 function useSessionState(defaultValue, key) {
@@ -227,7 +228,7 @@ function AppContent() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          {currentView !== 'dashboard' && currentView !== 'aihub' && (
+          {currentView !== 'dashboard' && currentView !== 'aihub' && currentView !== 'law_hub' && (
             <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', display: 'none' }}></span>
           )}
           {currentView === 'exam' && (
@@ -235,6 +236,22 @@ function AppContent() {
               <XCircle size={15} /> Abort
             </button>
           )}
+
+          {/* Law Study Hub Quick Access Button */}
+          <button
+            onClick={() => setCurrentView('law_hub')}
+            className="theme-toggle-btn"
+            style={{
+              background: currentView === 'law_hub' ? 'var(--primary)' : 'rgba(124, 58, 237, 0.12)',
+              color: currentView === 'law_hub' ? '#fff' : 'var(--primary-light)',
+              border: '1px solid rgba(124, 58, 237, 0.3)',
+              cursor: 'pointer'
+            }}
+            title="สรุปกฎหมายทันตกรรม, ผังมโนทัศน์ & Flashcards"
+          >
+            <Scale size={15} color={currentView === 'law_hub' ? '#fff' : 'var(--primary-light)'} />
+            <span className="theme-toggle-label" style={{ fontWeight: 600 }}>สรุปกฎหมาย</span>
+          </button>
 
           {/* Theme Toggle Button */}
           <button
@@ -291,6 +308,7 @@ function AppContent() {
             taskStats={taskStats}
             years={years}
             onStart={startExam}
+            onOpenLawHub={() => setCurrentView('law_hub')}
             onOpenAIHub={() => {
               if (!user) {
                 setIsAuthModalOpen(true);
@@ -298,6 +316,13 @@ function AppContent() {
               }
               setCurrentView('aihub');
             }}
+          />
+        )}
+
+        {currentView === 'law_hub' && (
+          <LawStudyHub
+            onBack={goHome}
+            onStartExam={startExam}
           />
         )}
 
