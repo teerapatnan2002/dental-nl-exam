@@ -137,7 +137,7 @@ const FLASHCARDS = [
     question: 'คลินิกทันตกรรมต้องเก็บรักษาเวชระเบียน (ประวัติผู้ป่วยและฟิล์มเอกซเรย์) ไว้อย่างน้อยกี่ปี?',
     answer: 'อย่างน้อย "5 ปี" นับแต่วันที่ผู้ป่วยมารับการตรวจรักษาครั้งสุดท้าย',
     statute: 'พ.ร.บ. สถานพยาบาล พ.ศ. 2541 มาตรา 35 (3) และกฎกระทรวง',
-    trap: 'อย่าสับสนกับอายุความละเมิด (3 ปี/10 ปี) เวชระเบียนต้องเก็บอย่างน้อย 5 ปี'
+    trap: 'อย่าสับสนกับอายุความละเมิด (1 ปี/10 ปี หรือคดีผู้บริโภค 3 ปี) เวชระเบียนต้องเก็บอย่างน้อย 5 ปี'
   },
 
   // ทันตาภิบาล & บุคลากรช่วยงาน
@@ -1486,7 +1486,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
                     <td style={{ padding: '0.75rem 0.8rem', color: '#10b981' }}>✓ ผ่านการตรวจทาน 100%</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '0.75rem 0.8rem', fontWeight: 600, color: 'var(--text)' }}>NL2 2020 กฏหมายรอบแรก</td>
+                    <td style={{ padding: '0.75rem 0.8rem', fontWeight: 600, color: 'var(--text)' }}>NL2 2020 กฎหมายรอบแรก</td>
                     <td style={{ padding: '0.75rem 0.8rem' }}>30 ข้อ</td>
                     <td style={{ padding: '0.75rem 0.8rem', color: 'var(--text-sub)' }}>Root transparency, Pink tooth, กระดูกไหปลาร้า (Clavicle)</td>
                     <td style={{ padding: '0.75rem 0.8rem', color: '#10b981' }}>✓ ผ่านการตรวจทาน 100%</td>
