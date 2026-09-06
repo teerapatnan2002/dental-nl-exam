@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { X, Mail, Lock, User, AlertCircle, Loader2, Eye, EyeOff, CheckCircle2, ShieldCheck, PhoneCall } from 'lucide-react';
 
@@ -8,6 +9,15 @@ export default function AuthModal({ isOpen, onClose }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showForgotHelp, setShowForgotHelp] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen]);
   
   const [formData, setFormData] = useState({
     email: '',
@@ -120,12 +130,13 @@ export default function AuthModal({ isOpen, onClose }) {
     return 'ปลอดภัยตามมาตรฐานสากล (Strong)';
   };
 
-  return (
+  return createPortal(
     <div style={{
-      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      position: 'fixed', inset: 0,
       background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(10px)',
+      WebkitBackdropFilter: 'blur(10px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      zIndex: 9999, padding: '1rem'
+      zIndex: 100000, padding: '1rem', boxSizing: 'border-box'
     }}>
       <div className="glass-panel animate-fade-in" style={{ 
         width: '100%', maxWidth: '460px', maxHeight: 'min(92vh, 660px)', padding: 0,
@@ -457,6 +468,7 @@ export default function AuthModal({ isOpen, onClose }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

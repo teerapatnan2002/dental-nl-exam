@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, PlayCircle, BookOpen, Layers, Sparkles } from 'lucide-react';
 
 export default function CategoryDetailModal({
@@ -46,22 +47,22 @@ export default function CategoryDetailModal({
     '#3b82f6', '#14b8a6', '#f43f5e', '#a855f7'
   ];
 
-  return (
+  return createPortal(
     <div
       style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'rgba(0, 0, 0, 0.75)',
+        inset: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'rgba(0, 0, 0, 0.78)',
         backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 9999,
+        zIndex: 99999,
         padding: '1.5rem 1rem',
-        overflowY: 'auto'
+        boxSizing: 'border-box'
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -72,13 +73,17 @@ export default function CategoryDetailModal({
         style={{
           width: '100%',
           maxWidth: '680px',
+          maxHeight: 'min(88vh, 760px)',
+          display: 'flex',
+          flexDirection: 'column',
           padding: '2rem',
           position: 'relative',
           margin: 'auto',
           borderRadius: '16px',
           border: `1px solid ${category.borderColor || 'var(--border)'}`,
-          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.5)',
-          animation: 'slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
+          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.65)',
+          animation: 'slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+          overflow: 'hidden'
         }}
       >
         {/* Close Button */}
@@ -267,7 +272,7 @@ export default function CategoryDetailModal({
         {/* Header with Question Count Selector */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
           <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)' }}>
-            🎯 เลือกฝึกซ้อมตามสมรรถนะ / หัวข้อเล็ก:
+            {category.isLaw ? '⚖️ เลือกฝึกซ้อมตามหมวดกฎหมาย:' : '🎯 เลือกฝึกซ้อมตามสมรรถนะ / หัวข้อเล็ก:'}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             <span>จำนวนข้อ:</span>
@@ -293,7 +298,7 @@ export default function CategoryDetailModal({
         </div>
 
         {/* Task List */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', maxHeight: '340px', overflowY: 'auto', paddingRight: '0.25rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', overflowY: 'auto', flex: 1, minHeight: 0, paddingRight: '0.25rem' }}>
           {tasks.map((t, idx) => {
             const pct = totalQuestions > 0 ? Math.round((t.count / totalQuestions) * 100) : 0;
             const taskColor = taskColors[idx % taskColors.length];
@@ -366,7 +371,7 @@ export default function CategoryDetailModal({
                     }}
                     title={`ฝึกซ้อมหัวข้อ ${t.task} (${qCount} ข้อ)`}
                   >
-                    <BookOpen size={13} /> ฝึกซ้อม
+                    <BookOpen size={13} /> ฝึก {qCount} ข้อ
                   </button>
                 </div>
               </div>
@@ -374,6 +379,7 @@ export default function CategoryDetailModal({
           })}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
