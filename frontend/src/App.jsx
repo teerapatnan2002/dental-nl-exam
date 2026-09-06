@@ -60,9 +60,10 @@ function AppContent() {
     setTheme(t => (t === 'dark' ? 'light' : 'dark'));
   };
 
-  const [categories, setCategories] = useState({ categories: [], tasks: [] });
+  const [categories, setCategories] = useState({ categories: [], tasks: [], clinical_tasks: [], law_tasks: [] });
   const [stats, setStats] = useState([]);
   const [taskStats, setTaskStats] = useState([]);
+  const [categoryTasks, setCategoryTasks] = useState({});
   const [years, setYears] = useState([]);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
@@ -77,6 +78,7 @@ function AppContent() {
         setCategories(catData);
         setStats(statsData.categories || statsData);
         setTaskStats(statsData.tasks || []);
+        setCategoryTasks(statsData.category_tasks || {});
         setYears(yearsData.years_data || []);
       })
       .catch(err => console.error('Failed to load initial data:', err));
@@ -306,6 +308,7 @@ function AppContent() {
             categories={categories}
             stats={stats}
             taskStats={taskStats}
+            categoryTasks={categoryTasks}
             years={years}
             onStart={startExam}
             onOpenLawHub={() => setCurrentView('law_hub')}
