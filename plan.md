@@ -354,27 +354,49 @@ git push
 | 605 | 4 | 1 | Community | Common Risk Factor Approach (CRFA โดย Sheiham & Watt / WHO) คือ Upstream intervention จัดการปัจจัยเสี่ยงร่วมเชิงนโยบาย/สิ่งแวดล้อม; Caries risk assessment เป็น downstream ระดับบุคคล |
 | 220 | B | B | Prostho | Abutment 36 ติดกับ distal extension space ใช้ Reverse Akers (Mesial rest) เพื่อหลีกเลี่ยง Class I lever force ทำลายฟันหลัก (ปรับปรุงคำอธิบายให้ถูกต้องตรงกับหลักการ) |
 
+### สรุปการแก้ไขใน Batch 4 (245 ข้อ — 2026-09-06)
+
+| ID | เดิม | แก้เป็น | หมวด | เหตุผลทางวิชาการ |
+|----|------|---------|------|-----------------|
+| 737 | 2 | 1 | Endo / Medical Emergency | Hyperventilation tetany (มือเท้างอ) เกิดจาก Hypocapnia -> Respiratory alkalosis: ห้ามให้ออกซิเจนเด็ดขาด! ให้ Rebreathing ก๊าซ CO2 ด้วย Ambubag ครอบปากและจมูกโดยไม่เปิด O2 หรือถุงกระดาษ |
+| 924 | E | A | Endo / Operative | ผุเพิ่มด้าน mesial ลึกใกล้ pulp ในกล่อง mesial box ผนังโพรงฟันที่ขนานกับแกนฟันและปิดทับโพรงประสาทฟันคือ Axial wall การใส่ Base/Liner ป้องกันพัลพ์ต้องวางบน Axial wall ไม่ใช่วางบน Distal wall |
+| 847 | 4 | 1 | Perio | การตรวจทางคลินิกที่จำเพาะสำหรับ Occlusal trauma บนฟันบนคือ Fremitus test (แตะนิ้วด้าน labial ขณะสบฟัน/เคี้ยวขากรรไกร) ตามตำรา Carranza; Shimstock foil ตรวจได้เพียง holding contact |
+| 597 | text | 1 | Oral Med | Occlusal cross-sectional radiograph ใช้ระบุตำแหน่งพยาธิสภาพในแนว buccolingual (ปรับแก้จาก text string เป็น Choice label 1) |
+| 472 | ค | ง | Pedo | ฟันกรามแท้ขึ้นบางส่วน (Partially erupted 36) และเด็กดาวน์ซินโดรมไม่ร่วมมือ ควบคุมความชื้นไม่ได้ เรซินซีลแลนท์จะล้มเหลวทันที AAPD แนะนำให้ใช้ Glass Ionomer Sealant (GI) |
+| 518 | ก | ง | Pedo | ฟลูออไรด์วาร์นิชมาตรฐานทางทันตกรรมมีสูตรเดียวคือ 5% Sodium Fluoride (5% NaF varnish = 22,600 ppm F, Duraphat) ไม่มีสูตร 2% varnish ในคลินิกทันตกรรม |
+| 604 | 5 | 1 | Pedo | ข้อบ่งชี้ทางคลินิกของการทำ Pit and Fissure Sealant (ADA/AAPD) คือหลุมร่องฟันลึกที่ยังไม่ผุ หรือผุระยะแรกเริ่มที่ไม่เป็นรู (ICDAS 0, 1, 2) ส่วนฟันงอกเต็มซี่เป็นเพียงเงื่อนไขการกันความชื้น |
+| 655 | 3 | 2 | Prostho | Immediate Denture: 24 ชม. แรกต้องใส่ตลอดเวลาห้ามถอด (ทำหน้าที่เป็น surgical splint คุมบวมและห้ามเลือด) และต้องนัดตรวจครั้งแรกที่ 24 ชม. เสมอ ห้ามปล่อย 1 สัปดาห์ และห้าม reline ถาวรที่ 1 สัปดาห์ |
+| 776 | 1, 2, 3, 4, 5 | 1 | Operative | การซักประวัติที่เป็นหัวใจสำคัญในการประเมินสาเหตุและความเสี่ยงฟันผุคือ Sugar intake (ปรับจากสตริงรวมเป็น Choice 1 เดี่ยวให้ตรงกับ ID 780 และระบบตรวจข้อสอบ) |
+| 779 | 4 | 1 | Operative | ไหมแยกเหงือก (Pack cord) ในบริเวณฟันหน้าต้องชุบ AlCl3 เพราะหดเหงือกได้ดีและไม่ทำให้เกิดคราบดำ; ห้ามใช้ FeSO4 เพราะเกิดคราบดำคล้ำ; Glutaraldehyde ไม่ใช้ชุบไหมแยกเหงือก |
+| 844 | 5 | 2 | Operative | Class II Posterior Composite Restoration: ต้องใช้ Sectional matrix system (Metal band + Sectional ring + Wedge) เพื่อให้ได้ Contact แน่นและ Proximal contour ที่ถูกต้อง ห้ามใช้ Mylar strip ในฟันหลัง |
+| 908 | E | D | Operative | Class V กับ Universal Adhesive: ขอบ occlusal อยู่ในเคลือบฟัน ขอบล่างอยู่ในเนื้อฟัน เทคนิคมาตรฐานที่ดีที่สุดคือ Selective Enamel Etch (ทากรด phosphoric acid เฉพาะที่ occlusal margin แล้วทา universal adhesive) |
+| 1315 | 5 | 3 | Ortho | Skeletal Class II with retrognathic mandible ในเด็กวัยเจริญเติบโต (11 ปี): รักษาด้วย Functional appliance เช่น Activator เพื่อกระตุ้น mandible มาข้างหน้า; Protraction headgear ใช้กับ Class III maxilla |
+| 1240 | 1 | 3 | Ortho / Pedo | Turner's hypoplasia บนฟันแท้ 11 เกิดจากฟันน้ำนม 51 ได้รับอุบัติเหตุกระแทกพื้นในช่วงอายุ 1-2 ปี ซึ่งเป็นวัยหัดเดินและหน่อฟันแท้ 11 กำลังสร้างเคลือบฟัน; ในครรภ์ฟันน้ำนมยังไม่ขึ้นและฟันแท้ยังไม่เริ่มสร้างแร่ธาตุ |
+| 1162 | D | C | Community | หลักสุขภาพองค์รวมและ Patient-Centered Care: ทันตแพทย์ปฏิเสธทำฟันปลอมถอดได้ให้คนขับรถรับจ้างรายได้น้อยและบังคับทำรากเทียม ถือว่าไม่เหมาะสมอย่างยิ่งเพราะไม่วางแผนการรักษาร่วมกับผู้ป่วย |
+| 1163 | D | C | Community | ผู้ใหญ่อายุ 45 ปีที่มีฟันผุหลายซี่ (High caries risk): มาตรการป้องกันฟันผุในชีวิตประจำวันคือการแปรงฟันด้วยยาสีฟันผสมฟลูออไรด์ 1,500 ppm; Sealant มีข้อบ่งชี้สำหรับหลุมร่องฟันเด็ก/วัยรุ่น |
+| 1126 | E | B | Community | Common Risk Factor Approach (CRFA โดย Sheiham & Watt / WHO): อาหารหวาน/น้ำตาลเป็นปัจจัยเสี่ยงร่วมของทั้งโรคอ้วน (วัดด้วย BMI) และโรคฟันผุ (วัดด้วยสภาวะช่องปาก); ตัวเลือกปัจจัยนำ-เสริม-เอื้อคือ PRECEDE-PROCEED |
+
 ---
 
-## 9. สิ่งที่ยังต้องตรวจ (Batch 4 เป็นต้นไป)
+## 9. สิ่งที่ยังต้องตรวจ (Batch 5 เป็นต้นไป)
 
 ### สถานะปัจจุบัน:
-- **ตรวจแล้วสะสม:** 103 ข้อ (กฎหมาย) + 195 ข้อ (Batch 1) + 250 ข้อ (Batch 2) + 250 ข้อ (Batch 3) = **798 ข้อ**
-- **คงเหลือยังไม่ได้ตรวจ:** ประมาณ **1,313 ข้อ** (จาก sources ปี 2021–2026 และ mock tests)
+- **ตรวจแล้วสะสม:** 103 ข้อ (กฎหมาย) + 195 ข้อ (Batch 1) + 250 ข้อ (Batch 2) + 250 ข้อ (Batch 3) + 245 ข้อ (Batch 4) = **1,043 ข้อ** (957 unique IDs)
+- **คงเหลือยังไม่ได้ตรวจ:** ประมาณ **1,068 ข้อ** (จาก sources ปี 2021–2026 และ mock tests)
 
 ### จำนวนข้อที่ยังไม่ได้ตรวจโดยประมาณตามหมวด:
 | หมวด | คงเหลือ |
 |------|---------|
-| Oral Med | ~256 |
-| Pedo | ~255 |
-| Prostho | ~146 |
-| Surgery | ~142 |
-| Endo | ~134 |
-| Operative | ~112 |
-| Perio | ~108 |
-| Community | ~99 |
-| Ortho | ~36 |
-| Occlusion/TMD | ~16 |
+| Oral Med | ~231 |
+| Pedo | ~230 |
+| Prostho | ~121 |
+| Surgery | ~117 |
+| Endo | ~109 |
+| Operative | ~87 |
+| Perio | ~83 |
+| Community | ~74 |
+| Ortho | ~11 |
+| Occlusion/TMD | 0 (ตรวจครบทุกข้อใน DB แล้ว!) |
 | ไม่มี category | 9 |
 
 ---
