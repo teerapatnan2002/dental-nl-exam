@@ -13,10 +13,11 @@ import BookmarksPanel from './BookmarksPanel';
 import AdminPanel from './AdminPanel';
 import MyReports from './MyReports';
 import CategoryDetailModal from './CategoryDetailModal';
+import ExamCountdown from './ExamCountdown';
 
 const lawCategoryName = 'กฎหมายและจรรยาบรรณ';
 
-export default function Dashboard({ categories, stats, taskStats, categoryTasks = {}, years, onStart, onOpenAIHub, onOpenLawHub }) {
+export default function Dashboard({ categories, stats, taskStats, categoryTasks = {}, years, onStart, onOpenAIHub, onOpenLawHub, onOpenScheduleModal }) {
   const { user, token } = useAuth();
   const [activeTab, setActiveTab] = useState('fullExam');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -187,6 +188,13 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
           </div>
         </div>
       </div>
+
+      {/* ── Official Exam Countdown Banner ────────────── */}
+      <ExamCountdown
+        onStartExam={handleStart}
+        onOpenLawHub={onOpenLawHub}
+        onOpenScheduleModal={onOpenScheduleModal}
+      />
 
       {/* ── Grouped Tab Bar with Dropdown ─────────────── */}
       <div className="dashboard-tab-bar" role="tablist" aria-label="Main Navigation">
