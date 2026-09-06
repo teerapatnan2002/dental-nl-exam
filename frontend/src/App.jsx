@@ -6,9 +6,11 @@ import ExamResult from './components/ExamResult';
 import AIHub from './components/AIHub';
 import LawStudyHub from './components/LawStudyHub';
 import AuthModal from './components/AuthModal';
+import ExamScheduleModal from './components/ExamScheduleModal';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { XCircle, User as UserIcon, LogOut, Sun, Moon, Scale } from 'lucide-react';
+import { XCircle, User as UserIcon, LogOut, Sun, Moon, Scale, Clock } from 'lucide-react';
 import { API_BASE } from './config';
+import { EXAM_SCHEDULES, calculateTimeRemaining } from './data/examSchedule';
 
 function useSessionState(defaultValue, key) {
   const [value, setValue] = useState(() => {
@@ -66,6 +68,11 @@ function AppContent() {
   const [categoryTasks, setCategoryTasks] = useState({});
   const [years, setYears] = useState([]);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+
+  // Compute countdown for sticky header badge (Law 3/2569)
+  const nextExam = EXAM_SCHEDULES[0];
+  const nextExamTimeLeft = calculateTimeRemaining(nextExam.targetDate);
 
   // Fetch categories and stats on load
   useEffect(() => {
@@ -239,6 +246,24 @@ function AppContent() {
             </button>
           )}
 
+          {/* Official Exam Schedule & Countdown Pill */}
+          <button
+            onClick={() => setIsScheduleModalOpen(true)}
+            className="theme-toggle-btn"
+            style={{
+              background: 'rgba(244, 63, 94, 0.12)',
+              color: '#f43f5e',
+              border: '1px solid rgba(244, 63, 94, 0.3)',
+              cursor: 'pointer'
+            }}
+            title="คลิกเพื่อดูตารางสอบทางการและประกาศ ศ.ป.ท."
+          >
+            <Clock size={15} color="#f43f5e" />
+            <span className="theme-toggle-label" style={{ fontWeight: 600 }}>
+              {nextExamTimeLeft && !nextExamTimeLeft.isExpired ? `สอบกฎหมาย: อีก ${nextExamTimeLeft.days} วัน` : 'ตารางสอบ ศ.ป.ท.'}
+            </span>
+          </button>
+
           {/* Law Study Hub Quick Access Button */}
           <button
             onClick={() => setCurrentView('law_hub')}
@@ -300,6 +325,12 @@ function AppContent() {
       </header>
 
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      <ExamScheduleModal
+        isOpen={isScheduleModalOpen}
+        onClose={() => setIsScheduleModalOpen(false)}
+        onStartExam={startExam}
+        onOpenLawHub={() => setCurrentView('law_hub')}
+      />
 
       {/* ── Main Content ───────────────────────────── */}
       <main className="container">
@@ -312,6 +343,7 @@ function AppContent() {
             years={years}
             onStart={startExam}
             onOpenLawHub={() => setCurrentView('law_hub')}
+            onOpenScheduleModal={() => setIsScheduleModalOpen(true)}
             onOpenAIHub={() => {
               if (!user) {
                 setIsAuthModalOpen(true);

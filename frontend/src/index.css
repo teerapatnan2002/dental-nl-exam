@@ -1547,4 +1547,44 @@ a  { color: var(--primary-light); }
   animation: questionTargetPulse 2s ease-out forwards;
 }
 
+/* ═══════════════════════════════════════════════════
+   EXAM COUNTDOWN & OFFICIAL SCHEDULE SYSTEM
+═══════════════════════════════════════════════════ */
+.exam-countdown-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-theme="light"] .exam-countdown-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+  border-color: rgba(124, 58, 237, 0.22) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .exam-countdown-card .countdown-clock-wrapper {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .exam-countdown-card .countdown-digit-box {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%) !important;
+  border-color: rgba(124, 58, 237, 0.25) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .exam-countdown-card .countdown-digit-box.countdown-digit-seconds {
+  border-color: rgba(244, 63, 94, 0.3) !important;
+  box-shadow: 0 6px 16px rgba(244, 63, 94, 0.1) !important;
+}
+
+[data-theme="light"] .exam-countdown-card .countdown-digit-num {
+  color: #0f172a !important;
+}
+
+@keyframes countdownPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+
 
