@@ -26,6 +26,7 @@ export default function CategoryDetailModal({
   if (!category) return null;
 
   const totalQuestions = category.count || tasks.reduce((sum, t) => sum + t.count, 0);
+  const fullCategoryCount = selectedCount === 'all' ? totalQuestions : Math.min(totalQuestions, selectedCount);
 
   // Icon mapping for tasks
   const getTaskIcon = (taskName) => {
@@ -191,21 +192,21 @@ export default function CategoryDetailModal({
             <button
               className="btn btn-secondary btn-sm"
               onClick={() => {
-                onStart(category.name, '', Math.min(totalQuestions, selectedCount), 'exam');
+                onStart(category.name, '', fullCategoryCount, 'exam');
                 onClose();
               }}
             >
-              <PlayCircle size={14} /> สอบ {Math.min(totalQuestions, selectedCount)} ข้อ
+              <PlayCircle size={14} /> สอบ {fullCategoryCount} ข้อ
             </button>
             <button
               className="btn btn-primary btn-sm"
               style={{ background: category.bg, color: category.color, border: `1px solid ${category.borderColor}` }}
               onClick={() => {
-                onStart(category.name, '', Math.min(totalQuestions, selectedCount), 'practice');
+                onStart(category.name, '', fullCategoryCount, 'practice');
                 onClose();
               }}
             >
-              <BookOpen size={14} /> ฝึก {Math.min(totalQuestions, selectedCount)} ข้อ
+              <BookOpen size={14} /> ฝึก {fullCategoryCount} ข้อ
             </button>
             {category.isLaw && onOpenLawHub && (
               <button
@@ -271,28 +272,35 @@ export default function CategoryDetailModal({
         )}
 
         {/* Header with Question Count Selector */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)' }}>
             {category.isLaw ? '⚖️ เลือกฝึกซ้อมตามหมวดกฎหมาย:' : '🎯 เลือกฝึกซ้อมตามสมรรถนะ / หัวข้อเล็ก:'}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             <span>จำนวนข้อ:</span>
-            {[10, 20, 30].map(cnt => (
+            {[
+              { val: 10, label: '10' },
+              { val: 20, label: '20' },
+              { val: 30, label: '30' },
+              { val: 'all', label: 'ทั้งหมด' }
+            ].map(opt => (
               <button
-                key={cnt}
+                key={String(opt.val)}
                 type="button"
-                onClick={() => setSelectedCount(cnt)}
+                onClick={() => setSelectedCount(opt.val)}
                 style={{
-                  background: selectedCount === cnt ? 'var(--primary)' : 'rgba(255, 255, 255, 0.05)',
-                  color: selectedCount === cnt ? '#fff' : 'var(--text-muted)',
-                  border: '1px solid var(--border)',
+                  background: selectedCount === opt.val ? 'var(--primary)' : 'rgba(255, 255, 255, 0.05)',
+                  color: selectedCount === opt.val ? '#fff' : 'var(--text-muted)',
+                  border: `1px solid ${selectedCount === opt.val ? 'var(--primary)' : 'var(--border)'}`,
                   borderRadius: '4px',
-                  padding: '0.15rem 0.45rem',
+                  padding: '0.15rem 0.5rem',
                   fontSize: '0.75rem',
-                  cursor: 'pointer'
+                  fontWeight: selectedCount === opt.val ? 600 : 400,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
                 }}
               >
-                {cnt}
+                {opt.label}
               </button>
             ))}
           </div>
@@ -303,7 +311,7 @@ export default function CategoryDetailModal({
           {tasks.map((t, idx) => {
             const pct = totalQuestions > 0 ? Math.round((t.count / totalQuestions) * 100) : 0;
             const taskColor = taskColors[idx % taskColors.length];
-            const qCount = Math.min(t.count, selectedCount);
+            const qCount = selectedCount === 'all' ? t.count : Math.min(t.count, selectedCount);
 
             return (
               <div

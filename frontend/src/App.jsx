@@ -104,14 +104,12 @@ function AppContent() {
           timeLimit = 105 * 60 * 1000; // 1 hr 45 min = 105 minutes (75 questions)
         } else if (config.part === 'day1' || config.part === 'day2') {
           timeLimit = 210 * 60 * 1000; // 3 hr 30 min = 210 minutes (150 questions)
-        } else if (config.part === 'law') {
-          timeLimit = 60 * 60 * 1000; // 1 hr = 60 minutes
+        } else if (config.part === 'law' || (config.category === 'กฎหมายและจรรยาบรรณ' && (!config.task && config.count >= 60))) {
+          timeLimit = 60 * 60 * 1000; // 1 hr for full law exam
         } else if (config.clinical_only) {
           timeLimit = 420 * 60 * 1000; // 7 hr (300 questions full exam)
-        } else if (config.count && config.count <= 30) {
-          timeLimit = Math.round(config.count * 1.4 * 60 * 1000); // 1.4 min per question
-        } else if (config.category === 'กฎหมายและจรรยาบรรณ') {
-          timeLimit = 60 * 60 * 1000; // 1 hr for full law category
+        } else if (config.count) {
+          timeLimit = Math.round(config.count * 1.4 * 60 * 1000); // 1.4 min per question for any custom or 'all' count
         }
       }
 
