@@ -62,7 +62,8 @@ export default function CategoryDetailModal({
         justifyContent: 'center',
         zIndex: 99999,
         padding: '1.5rem 1rem',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
+        overflowY: 'auto'
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -82,7 +83,7 @@ export default function CategoryDetailModal({
           borderRadius: '16px',
           border: `1px solid ${category.borderColor || 'var(--border)'}`,
           boxShadow: '0 24px 60px rgba(0, 0, 0, 0.65)',
-          animation: 'slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+          animation: 'slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
           overflow: 'hidden'
         }}
       >
