@@ -92,8 +92,8 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
     }
   }, [token]);
 
-  const handleStart = (category = '', task = '', count = 10, mode = 'exam', ordered = false, clinical_only = false, part = '') => {
-    onStart({ category, task, count, mode, year: selectedYear, ordered, clinical_only, part });
+  const handleStart = (category = '', task = '', count = 10, mode = 'exam', ordered = false, clinical_only = false, part = '', year = undefined) => {
+    onStart({ category, task, count, mode, year: year !== undefined ? year : selectedYear, ordered, clinical_only, part });
   };
 
   const handleStartReview = () => {
@@ -834,10 +834,10 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                 </p>
               </div>
               <div style={{ display: 'flex', gap: '0.6rem' }}>
-                <button className="btn btn-secondary btn-sm" onClick={() => handleStart('', '', 20, 'exam')}>
+                <button className="btn btn-secondary btn-sm" onClick={() => handleStart('', '', 20, 'exam', false, false, '', '')}>
                   <PlayCircle size={14} /> สุ่มสอบคลินิก 20 ข้อ
                 </button>
-                <button className="btn btn-primary btn-sm" onClick={() => handleStart('', '', 20, 'practice')}>
+                <button className="btn btn-primary btn-sm" onClick={() => handleStart('', '', 20, 'practice', false, false, '', '')}>
                   <BookOpen size={14} /> สุ่มฝึกคลินิก 20 ข้อ
                 </button>
               </div>
@@ -862,7 +862,6 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                   <div className="category-grid">
                     {grp.items.map((stat) => {
                       const subtasks = categoryTasks[stat.category] || [];
-                      const isExpanded = !!expandedCategories[stat.category];
 
                       return (
                         <div
@@ -880,7 +879,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                             <button
                               className="btn btn-secondary btn-sm"
                               style={{ flex: 1 }}
-                              onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'exam')}
+                              onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'exam', false, false, '', '')}
                               title={`สุ่มสอบ ${stat.category} 20 ข้อ`}
                             >
                               <PlayCircle size={13} /> สอบ
@@ -888,7 +887,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                             <button
                               className="btn btn-sm"
                               style={{ flex: 1, background: grp.bg, color: grp.color, border: `1px solid ${grp.borderColor}` }}
-                              onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'practice')}
+                              onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'practice', false, false, '', '')}
                               title={`ฝึกซ้อม ${stat.category} 20 ข้อ`}
                             >
                               <BookOpen size={13} /> ฝึก
@@ -1141,7 +1140,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
           category={activeCategoryModal}
           tasks={activeCategoryModal.tasks}
           onClose={() => setActiveCategoryModal(null)}
-          onStart={(cat, task, count, mode) => handleStart(cat, task, count, mode)}
+          onStart={(cat, task, count, mode) => handleStart(cat, task, count, mode, false, false, '', '')}
           onOpenLawHub={onOpenLawHub}
         />
       )}
