@@ -283,12 +283,7 @@ cd /Users/admin/Downloads/NL\ Test
 git add data/exam_bank.db
 git commit -m "fix(audit): correct answers batch N - [หมวด] (X ข้อ)"
 git push
-```
-> **หมายเหตุ:** `git add/commit/push` ต้องใช้ `BypassSandbox: true` ในเครื่องมือ run_command
-
----
-
-## 8. สิ่งที่ตรวจแล้ว (Batch 1 — completed 2026-09-05)
+### 8. สิ่งที่ตรวจแล้ว (Batch 1 & Batch 2 — completed)
 
 ### สรุปการแก้ไขใน Batch 1 (~195 ข้อ, commit: `db71c7b`)
 
@@ -318,39 +313,50 @@ git push
 | 90 | ค | จ | Ortho |
 | 174 | E | A | Ortho |
 | 207 | A | D | Ortho |
+| 362 | ก | ง | Ortho |
 | 95 | ข | ค | TMD |
 | 257 | ข | ค | Prostho (RPD) |
 
-### ข้อที่แก้ explanation (ไม่ได้แก้เฉลย):
-- ID=171: explanation ผิด (บอก Headgear แต่ถูกคือ Twin blocks)
-- ID=172: explanation ผิด (บอก mp3u แต่ถูกคือ mp3cap)
-- ID=202: explanation ผิด (บอก OFD แต่ถูกคือ Gingivectomy)
-- ID=211: explanation ผิด (บอก Vitality test สำคัญสุดแต่ฟันมีครอบ)
+### สรุปการแก้ไขใน Batch 2 (250 ข้อ, commit: `e9eec52` — 2026-09-06)
 
-### Source ที่ตรวจใน Batch 1:
-- ส่วนใหญ่เป็น **NL2 2020 part 1, 2, 3** (IDs ต่ำ ≈ 80-270)
+| ID | เดิม | แก้เป็น | หมวด | เหตุผลทางวิชาการ |
+|----|------|---------|------|-----------------|
+| 247 | ง | ก | Surgery / Patho | PGCG เป็นก้อนเนื้อเยื่ออ่อน ไม่เกิด soap bubble ในกระดูก; Soap bubble diff dx หลักคือ OKC, Ameloblastoma |
+| 248 | ค | ก | Surgery | รอยโรค multilocular ใหญ่ ฟันข้างเคียงมีชีวิต ต้อง Incisional biopsy ก่อนเสมอ ห้ามถอนฟันดีแล้ว enucleate |
+| 260 | ง | จ | Oral Med | เริม (HSV-1) ห้ามใช้ Topical/Systemic Steroid เด็ดขาด (ไวรัสจะลุกลาม); ต้องให้ Antiviral และรอหายค่อยขูดหินปูน |
+| 278 | ข | ก | Occlusion / TMD | Crepitation (Cripitation) เป็น Pathognomonic hallmark sign ของ TMJ OA ตามเกณฑ์ DC/TMD |
+| 302 | ค | ข | Endo | Failed RCT / Persistent infection เชื้อเด่นคือ Facultative anaerobes (*E. faecalis*) ต่างจาก Primary ที่เป็น Strict anaerobes |
+| 313 | ค | ง | Endo / Perio | $CAL = PD + GR = 3 + 2 = 5\text{ mm}$ (คีย์เดิมคลาดเคลื่อน) |
+| 390 | ค | ข | Oral Med | แสบร้อนเหงือกเรื้อรัง 5 เดือนเวลากินเผ็ดคือ Desquamative Gingivitis จาก Erosive LP; NUG เป็นโรคเฉียบพลันไม่เป็น 5 เดือน |
+| 399 | จ | ค | Ortho | ช่องว่าง 14 และ 16 แคบลงจากการสูญเสียฟันน้ำนม ทำให้ฟันกรามน้อยแท้ซี่ 15 ขาดพื้นที่และขึ้นผิดตำแหน่ง |
+| 403 | ค | ก | Prostho | ตรวจจุดกดเจ็บใต้ pontic บนเนื้อเยื่ออ่อนต้องใช้ PIP (Pressure Indicating Paste); Shim stock ใช้ตรวจ occlusal contacts |
+| 448 | ข | ค | Prostho / Perio | ฟันหลัก 37 มี periodontitis ต้อง ScRP ก่อนทำสะพานฟัน; 37OB AF คือด้าน Occlusal-Buccal เดิมสภาพดี ไม่ต้องรื้อ |
+| 468 | จ | ข | Prostho / Perio | การละเมิด Biologic width เกิดจาก Overextended margin (< 2 mm จากกระดูก); Overcontour ทำให้เกิด gingivitis |
+| 477 | จ | ก | Oral Med / Pros | CD เก่าใส่ 24 ชม. หลายปี เพดานแดงคือ Denture stomatitis (Newton II); Erythroplakia เป็น diagnosis of exclusion |
+| 489 | ก | ค | Operative | RMGIC มี chemical ionic bond ไม่ต้องใช้ bonding agent; Compomer ต้องใช้ bonding agent เสมอ |
+| 545 | string | ก | Community | ทันตาภิบาลทำทันตกรรมป้องกันได้ภายใต้การมอบหมาย/กำกับดูแลของทันตแพทย์ (แก้ไข string ยาวที่ทำให้ระบบ error) |
 
 ---
 
-## 9. สิ่งที่ยังต้องตรวจ (Batch 2 เป็นต้นไป)
+## 9. สิ่งที่ยังต้องตรวจ (Batch 3 เป็นต้นไป)
 
-### สถานะ Batch 2 (กำลังดำเนินการ — 2026-09-06)
-ดึง 25 ข้อแรกจากแต่ละ category จาก sources ปี 2021-2026 ออกมาตรวจ:
-- Sources: NL2 2021, 2022, 2566, 2567, 2025, 2026, AI_MOCK_TEST
+### สถานะปัจจุบัน:
+- **ตรวจแล้วสะสม:** 103 ข้อ (กฎหมาย) + 195 ข้อ (Batch 1) + 250 ข้อ (Batch 2) = **548 ข้อ**
+- **คงเหลือยังไม่ได้ตรวจ:** ประมาณ **1,563 ข้อ** (จาก sources ปี 2021–2026 และ mock tests)
 
-### จำนวนข้อที่ยังไม่ได้ตรวจ (~1,813 ข้อ):
-| หมวด | จำนวน |
-|------|-------|
-| Oral Med | 306 |
-| Pedo | 305 |
-| Prostho | 196 |
-| Surgery | 192 |
-| Endo | 184 |
-| Operative | 162 |
-| Perio | 158 |
-| Community | 149 |
-| Ortho | 86 |
-| Occlusion/TMD | 66 |
+### จำนวนข้อที่ยังไม่ได้ตรวจโดยประมาณตามหมวด:
+| หมวด | คงเหลือ |
+|------|---------|
+| Oral Med | ~281 |
+| Pedo | ~280 |
+| Prostho | ~171 |
+| Surgery | ~167 |
+| Endo | ~159 |
+| Operative | ~137 |
+| Perio | ~133 |
+| Community | ~124 |
+| Ortho | ~61 |
+| Occlusion/TMD | ~41 |
 | ไม่มี category | 9 |
 
 ---
