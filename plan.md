@@ -336,27 +336,45 @@ git push
 | 489 | ก | ค | Operative | RMGIC มี chemical ionic bond ไม่ต้องใช้ bonding agent; Compomer ต้องใช้ bonding agent เสมอ |
 | 545 | string | ก | Community | ทันตาภิบาลทำทันตกรรมป้องกันได้ภายใต้การมอบหมาย/กำกับดูแลของทันตแพทย์ (แก้ไข string ยาวที่ทำให้ระบบ error) |
 
+### สรุปการแก้ไขใน Batch 3 (250 ข้อ — 2026-09-06)
+
+| ID | เดิม | แก้เป็น | หมวด | เหตุผลทางวิชาการ |
+|----|------|---------|------|-----------------|
+| 585 | ข | ก | Endo | เคาะและคลำเจ็บ (Tender to percussion & palpation) เป็นนิยามมาตรฐานของ Symptomatic Apical Periodontitis (AAE Consensus) จะตอบ Asymptomatic ไม่ได้เด็ดขาด |
+| 667 | 2 | 3 | Endo | ฟันตัดล่างมีโอกาสพบ 2 canals (Buccal/Lingual) สูงถึง 40% รูปร่างการเปิด access cavity ต้องเป็นรูปวงรีกว้างในแนว Inciso-cervical (labiolingual) ยื่นหา cingulum |
+| 664 | 2 | 4 | Perio | DIGO จากยากันชักเกิดเฉพาะบริเวณที่มีฟันและเริ่มที่ interdental papilla ไม่เกิดบนสันเหงือกว่าง (edentulous ridge); รอยโรคเดี่ยวบนสันเหงือกว่างเกิดจาก Chronic irritation |
+| 665 | 3 | 2 | Perio | ห้ามทันตแพทย์สั่งหยุดยากันชักเองโดยพลการ (เสี่ยงต่อ Status epilepticus ถึงแก่ชีวิต); ก้อนเนื้อ reactive hyperplasia บนสันเหงือกรักษาด้วย Surgical excision + ScRP + OHI |
+| 491 | จ | ง | Oral Med | ผู้ป่วย Peptic Ulcer Disease มีข้อห้ามใช้ Non-selective NSAIDs (Ibuprofen) เพราะยับยั้ง COX-1 ทำลายเยื่อบุกระเพาะอาหาร; ยาแก้ปวดต้านการอักเสบที่ปลอดภัยคือ Selective COX-2 inhibitor (Celecoxib) |
+| 540 | ง | ก | Prostho | Applegate Rule 8: Kennedy Class IV ห้ามมี modification เด็ดขาด; ช่องว่างหลังสุดเป็นตัวกำหนด Class เสมอ สูญเสียฟันหลังสองข้าง = Class I ช่องว่างฟันหน้า = mod 1 สรุปคือ Class I mod 1 |
+| 562 | ข | ค | Surgery | ภาวะขากรรไกรค้างเฉียบพลัน (Open lock / TMJ Dislocation) จัด condyle เข้าที่ด้วย Nelaton maneuver โดย "กดลง + ไปข้างหลัง" (Downward and backward); ห้ามดันไปข้างหน้า |
+| 588 | ค | ก | Surgery | คำสั่งการรักษาผู้ป่วยใน Order for one day คือคำสั่งวันแรก เช่น สารน้ำ 5% D/N/2 1000 ml IV drip in 24 hr; ยา oral tid เป็นคำสั่งต่อเนื่องใน Order for continuation |
+| 818 | 2 | 1 | Ortho | Canine 13 สบลง embrasure ระหว่าง 43 และ 44 พอดี คือนิยามของ Class I canine relationship ตามระบบ Angle และ canine ไม่มี division 1/2 |
+| 1453 | C | B | Occlusion / TMD | ปวดฟันสองข้างคลุมเครือ 3 เดือน + Masseter tenderness สองข้าง คือ Referred pain จากกล้ามเนื้อบดเคี้ยว (Trigger points) ไม่ใช่ Pulpal inflammation |
+| 1454 | C | D | Occlusion / TMD | ปวดตื้อเรื้อรังสองข้าง + Masseter tenderness = Myofascial pain with referral ตามเกณฑ์ DC/TMD (ไม่ใช่ Trigeminal neuralgia ที่ต้องปวดช็อตเสี้ยววินาทีข้างเดียว) |
+| 605 | 4 | 1 | Community | Common Risk Factor Approach (CRFA โดย Sheiham & Watt / WHO) คือ Upstream intervention จัดการปัจจัยเสี่ยงร่วมเชิงนโยบาย/สิ่งแวดล้อม; Caries risk assessment เป็น downstream ระดับบุคคล |
+| 220 | B | B | Prostho | Abutment 36 ติดกับ distal extension space ใช้ Reverse Akers (Mesial rest) เพื่อหลีกเลี่ยง Class I lever force ทำลายฟันหลัก (ปรับปรุงคำอธิบายให้ถูกต้องตรงกับหลักการ) |
+
 ---
 
-## 9. สิ่งที่ยังต้องตรวจ (Batch 3 เป็นต้นไป)
+## 9. สิ่งที่ยังต้องตรวจ (Batch 4 เป็นต้นไป)
 
 ### สถานะปัจจุบัน:
-- **ตรวจแล้วสะสม:** 103 ข้อ (กฎหมาย) + 195 ข้อ (Batch 1) + 250 ข้อ (Batch 2) = **548 ข้อ**
-- **คงเหลือยังไม่ได้ตรวจ:** ประมาณ **1,563 ข้อ** (จาก sources ปี 2021–2026 และ mock tests)
+- **ตรวจแล้วสะสม:** 103 ข้อ (กฎหมาย) + 195 ข้อ (Batch 1) + 250 ข้อ (Batch 2) + 250 ข้อ (Batch 3) = **798 ข้อ**
+- **คงเหลือยังไม่ได้ตรวจ:** ประมาณ **1,313 ข้อ** (จาก sources ปี 2021–2026 และ mock tests)
 
 ### จำนวนข้อที่ยังไม่ได้ตรวจโดยประมาณตามหมวด:
 | หมวด | คงเหลือ |
 |------|---------|
-| Oral Med | ~281 |
-| Pedo | ~280 |
-| Prostho | ~171 |
-| Surgery | ~167 |
-| Endo | ~159 |
-| Operative | ~137 |
-| Perio | ~133 |
-| Community | ~124 |
-| Ortho | ~61 |
-| Occlusion/TMD | ~41 |
+| Oral Med | ~256 |
+| Pedo | ~255 |
+| Prostho | ~146 |
+| Surgery | ~142 |
+| Endo | ~134 |
+| Operative | ~112 |
+| Perio | ~108 |
+| Community | ~99 |
+| Ortho | ~36 |
+| Occlusion/TMD | ~16 |
 | ไม่มี category | 9 |
 
 ---
