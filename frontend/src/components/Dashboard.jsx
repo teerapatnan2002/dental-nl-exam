@@ -3,7 +3,7 @@ import {
   BookOpen, PlayCircle, ShieldAlert, Brain,
   Stethoscope, ChevronDown, ChevronUp, Sparkles, Settings2,
   Target, GraduationCap, Wrench, Clock, AlertTriangle, User as UserIcon, Activity, Trophy,
-  Search, BookmarkCheck, ShieldCheck, MoreHorizontal
+  Search, BookmarkCheck, ShieldCheck, MoreHorizontal, ChevronRight
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { API_BASE } from '../config';
@@ -12,6 +12,7 @@ import SearchPanel from './SearchPanel';
 import BookmarksPanel from './BookmarksPanel';
 import AdminPanel from './AdminPanel';
 import MyReports from './MyReports';
+import CategoryDetailModal from './CategoryDetailModal';
 
 const lawCategoryName = 'กฎหมายและจรรยาบรรณ';
 
@@ -25,6 +26,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
   const [userStats, setUserStats] = useState(null);
   const [reviewData, setReviewData] = useState(null);
   const [expandedCategories, setExpandedCategories] = useState({});
+  const [activeCategoryModal, setActiveCategoryModal] = useState(null);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -919,55 +921,28 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                             </button>
                           )}
 
-                          {/* Expandable Subtopics / Tasks */}
+                          {/* Drill-down Subtopics / Tasks Modal Trigger */}
                           {subtasks.length > 0 && (
-                            <div style={{ marginTop: '0.25rem' }}>
-                              <button
-                                type="button"
-                                onClick={() => toggleCategoryExpand(stat.category)}
-                                className="subtopics-toggle-btn"
-                              >
-                                <span>
-                                  {isExpanded ? '▲ ซ่อนหัวข้อเล็ก' : `▼ หัวข้อเล็ก / สมรรถนะ (${subtasks.length})`}
-                                </span>
-                                {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-                              </button>
-
-                              {isExpanded && (
-                                <div className="animate-fade-in" style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                  {subtasks.map((st) => (
-                                    <div key={st.task} className="subtopic-item">
-                                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.4rem' }}>
-                                        <span style={{ fontSize: '0.8rem', color: 'var(--text)', fontWeight: 500 }}>
-                                          {st.task}
-                                        </span>
-                                        <span className="badge" style={{ fontSize: '0.72rem', background: 'rgba(255, 255, 255, 0.08)', color: 'var(--text-muted)' }}>
-                                          {st.count} ข้อ
-                                        </span>
-                                      </div>
-                                      <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.15rem' }}>
-                                        <button
-                                          className="btn btn-secondary btn-xs"
-                                          style={{ flex: 1 }}
-                                          onClick={() => handleStart(stat.category, st.task, Math.min(st.count, 20), 'exam')}
-                                          title={`สอบหัวข้อ ${st.task}`}
-                                        >
-                                          <PlayCircle size={11} /> สอบ
-                                        </button>
-                                        <button
-                                          className="btn btn-xs"
-                                          style={{ flex: 1, background: grp.bg, color: grp.color, border: `1px solid ${grp.borderColor}` }}
-                                          onClick={() => handleStart(stat.category, st.task, Math.min(st.count, 20), 'practice')}
-                                          title={`ฝึกซ้อมหัวข้อ ${st.task}`}
-                                        >
-                                          <BookOpen size={11} /> ฝึก
-                                        </button>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setActiveCategoryModal({
+                                name: stat.category,
+                                count: stat.count,
+                                color: grp.color,
+                                bg: grp.bg,
+                                borderColor: grp.borderColor,
+                                icon: grp.icon,
+                                isLaw: grp.isLaw,
+                                tasks: subtasks
+                              })}
+                              className="drilldown-subtopics-btn"
+                              title={`ดูรายละเอียดและเลือกทำตามสมรรถนะของ ${stat.category}`}
+                            >
+                              <span>
+                                🎯 {grp.isLaw ? 'เลือกตามหมวดกฎหมาย' : 'เลือกตามสมรรถนะ'} ({subtasks.length})
+                              </span>
+                              <ChevronRight size={14} />
+                            </button>
                           )}
                         </div>
                       );
@@ -1158,6 +1133,17 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
             )}
           </div>
         </div>
+      )}
+
+      {/* Category Detail Drill-down Modal */}
+      {activeCategoryModal && (
+        <CategoryDetailModal
+          category={activeCategoryModal}
+          tasks={activeCategoryModal.tasks}
+          onClose={() => setActiveCategoryModal(null)}
+          onStart={(cat, task, count, mode) => handleStart(cat, task, count, mode)}
+          onOpenLawHub={onOpenLawHub}
+        />
       )}
 
     </div>
