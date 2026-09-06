@@ -146,9 +146,24 @@ def _serialize_question(q: models.Question) -> dict:
 
 @app.get("/api/categories")
 def get_categories():
+    clinical_tasks = [
+        ProfessionalTask.HEALTH_PROMOTION_AND_PREVENTION.value,
+        ProfessionalTask.MECHANISM_OF_DISEASES.value,
+        ProfessionalTask.DATA_GATHERING_AND_DIAGNOSIS.value,
+        ProfessionalTask.PATIENT_MANAGEMENT_AND_TREATMENT.value,
+        ProfessionalTask.PROCEDURES.value,
+    ]
+    law_tasks = [
+        ProfessionalTask.LAW_ACT.value,
+        ProfessionalTask.LAW_ETHICS.value,
+        ProfessionalTask.LAW_CLINIC.value,
+        ProfessionalTask.LAW_OTHER.value,
+    ]
     return {
         "categories": [c.value for c in ClinicalCategory],
         "tasks": [t.value for t in ProfessionalTask],
+        "clinical_tasks": clinical_tasks,
+        "law_tasks": law_tasks,
     }
 
 
@@ -164,9 +179,28 @@ def get_stats(db: Session = Depends(get_db)):
         .group_by(models.Question.task)
         .all()
     )
+    # Breakdown of tasks per category
+    cat_task_rows = (
+        db.query(models.Question.category, models.Question.task, func.count(models.Question.id))
+        .group_by(models.Question.category, models.Question.task)
+        .all()
+    )
+    category_tasks = {}
+    for cat, task, count in cat_task_rows:
+        if not cat:
+            continue
+        if cat not in category_tasks:
+            category_tasks[cat] = []
+        if task:
+            category_tasks[cat].append({"task": task, "count": count})
+
+    for cat in category_tasks:
+        category_tasks[cat].sort(key=lambda x: x["count"], reverse=True)
+
     return {
         "categories": [{"category": c, "count": count} for c, count in cat_stats],
         "tasks": [{"task": t, "count": count} for t, count in task_stats],
+        "category_tasks": category_tasks,
     }
 
 

@@ -15,7 +15,7 @@ import MyReports from './MyReports';
 
 const lawCategoryName = 'กฎหมายและจรรยาบรรณ';
 
-export default function Dashboard({ categories, stats, taskStats, years, onStart, onOpenAIHub, onOpenLawHub }) {
+export default function Dashboard({ categories, stats, taskStats, categoryTasks = {}, years, onStart, onOpenAIHub, onOpenLawHub }) {
   const { user, token } = useAuth();
   const [activeTab, setActiveTab] = useState('fullExam');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -24,8 +24,39 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
   const [selectedYear, setSelectedYear] = useState('');
   const [userStats, setUserStats] = useState(null);
   const [reviewData, setReviewData] = useState(null);
+  const [expandedCategories, setExpandedCategories] = useState({});
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  const toggleCategoryExpand = (catName) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [catName]: !prev[catName]
+    }));
+  };
+
+  const handleCategorySelect = (cat) => {
+    setSelectedCategory(cat);
+    const isLaw = cat === lawCategoryName;
+    const clinicalTasks = categories.clinical_tasks || [
+      "การวินิจฉัยโรค",
+      "การจัดการและการรักษาผู้ป่วย",
+      "ขั้นตอนและวิธีการรักษา",
+      "การเกิดและการดำเนินโรค",
+      "การสร้างเสริมสุขภาพและการป้องกัน"
+    ];
+    const lawTasks = categories.law_tasks || [
+      "พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537",
+      "จรรยาบรรณแห่งวิชาชีพทันตกรรม",
+      "พ.ร.บ. สถานพยาบาล พ.ศ. 2541",
+      "กฎหมายอื่นๆ ที่เกี่ยวข้อง"
+    ];
+    if (isLaw && clinicalTasks.includes(selectedTask)) {
+      setSelectedTask('');
+    } else if (cat && !isLaw && lawTasks.includes(selectedTask)) {
+      setSelectedTask('');
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -712,46 +743,80 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
          TAB 2: ฝึกซ้อมรายวิชา (Practice by Subject)
       ════════════════════════════════════════════════ */}
       {activeTab === 'practice' && (() => {
-        const clinicalGroupsDef = [
+        const domainGroupsDef = [
           {
             id: 'restorative',
-            title: 'ทันตกรรมบูรณะ, รักษาราก, ใส่ฟัน & ปริทันต์',
-            sub: 'Restorative, Endodontics, Prosthodontics & Periodontology',
+            title: 'กลุ่มทันตกรรมบูรณะและการฟื้นฟูสภาพช่องปาก',
+            sub: 'Restorative, Endodontics, Prosthodontics, Periodontics & Occlusion',
             color: '#06b6d4',
             bg: 'rgba(6, 182, 212, 0.12)',
             borderColor: 'rgba(6, 182, 212, 0.3)',
             icon: '🦷',
-            keywords: ['หัตถการ', 'เอ็นโด', 'ปริทันต์', 'ประดิษฐ์', 'Operative', 'Endo', 'Perio', 'Prosth', 'ฟันปลอม', 'ครอบฟัน', 'บูรณะ', 'อุดฟัน']
+            categoryNames: [
+              'ทันตกรรมบูรณะ/หัตถการ',
+              'วิทยาเอ็นโดดอนต์',
+              'ปริทันตวิทยา',
+              'ทันตกรรมประดิษฐ์',
+              'ทันตกรรมบดเคี้ยวและอาการปวดบริเวณช่องปากและใบหน้า'
+            ]
           },
           {
-            id: 'surgery_patho',
-            title: 'ศัลยศาสตร์, พยาธิ & รังสีวิทยาช่องปาก',
-            sub: 'Oral & Maxillofacial Surgery, Pathology, Medicine & Radiology',
+            id: 'surgery_diagnosis',
+            title: 'กลุ่มศัลยศาสตร์และวิทยาการวินิจฉัยโรคช่องปาก',
+            sub: 'Oral & Maxillofacial Surgery, Oral Medicine, Pathology & Radiology',
             color: '#a78bfa',
             bg: 'rgba(124, 58, 237, 0.12)',
             borderColor: 'rgba(124, 58, 237, 0.3)',
             icon: '🩺',
-            keywords: ['ศัลย', 'พยาธิ', 'เวชศาสตร์', 'รังสี', 'วินิจฉัย', 'Surgery', 'Patho', 'Medicine', 'Radiology', 'Diagnosis', 'ถอนฟัน', 'ผ่าฟันคุด']
+            categoryNames: [
+              'วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก',
+              'ศัลยศาสตร์ช่องปาก'
+            ]
           },
           {
-            id: 'pediatric_ortho',
-            title: 'ทันตกรรมสำหรับเด็ก, จัดฟัน & ทันตสาธารณสุข',
+            id: 'pediatric_ortho_community',
+            title: 'กลุ่มทันตกรรมเด็ก จัดฟัน และทันตสาธารณสุข',
             sub: 'Pediatric Dentistry, Orthodontics & Dental Public Health',
             color: '#10b981',
             bg: 'rgba(16, 185, 129, 0.12)',
             borderColor: 'rgba(16, 185, 129, 0.3)',
             icon: '👶',
-            keywords: ['เด็ก', 'จัดฟัน', 'ชุมชน', 'ป้องกัน', 'สาธารณสุข', 'Pedo', 'Ortho', 'Community', 'Preventive']
+            categoryNames: [
+              'ทันตกรรมสำหรับเด็ก',
+              'ทันตกรรมจัดฟัน',
+              'ทันตกรรมชุมชน'
+            ]
+          },
+          {
+            id: 'law_ethics',
+            title: 'กลุ่มกฎหมาย จรรยาบรรณ และการบริหารงานทันตกรรม',
+            sub: 'Dental Law, Professional Ethics & Healthcare Facilities Act',
+            color: '#f43f5e',
+            bg: 'rgba(244, 63, 94, 0.12)',
+            borderColor: 'rgba(244, 63, 94, 0.3)',
+            icon: '⚖️',
+            isLaw: true,
+            categoryNames: [
+              'กฎหมายและจรรยาบรรณ'
+            ]
           }
         ];
 
-        const grouped = clinicalGroupsDef.map(grp => {
-          const items = clinicalStats.filter(stat => grp.keywords.some(kw => (stat.category || '').toLowerCase().includes(kw.toLowerCase())));
-          return { ...grp, items, count: items.reduce((acc, c) => acc + c.count, 0) };
+        // Match categories to domain groups
+        const grouped = domainGroupsDef.map(grp => {
+          const items = grp.categoryNames.map(cName => {
+            const found = stats.find(s => s.category === cName);
+            return {
+              category: cName,
+              count: found ? found.count : 0
+            };
+          }).filter(item => item.count > 0);
+          return {
+            ...grp,
+            items,
+            count: items.reduce((acc, c) => acc + c.count, 0)
+          };
         });
-
-        const matchedCats = new Set(grouped.flatMap(g => g.items.map(i => i.category)));
-        const otherItems = clinicalStats.filter(s => !matchedCats.has(s.category));
 
         return (
           <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -776,7 +841,7 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
               </div>
             </div>
 
-            {/* Render 3 Clinical Groups */}
+            {/* Render 4 Domain Groups */}
             {grouped.map(grp => (
               grp.items.length > 0 && (
                 <div key={grp.id} className="day-sim-section" style={{ borderTop: `3px solid ${grp.color}`, margin: 0 }}>
@@ -793,137 +858,124 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
                   </div>
 
                   <div className="category-grid">
-                    {grp.items.map((stat, i) => (
-                      <div
-                        key={stat.category}
-                        className="category-card"
-                        style={{ borderLeft: `3px solid ${grp.color}` }}
-                      >
-                        <div>
-                          <div className="category-count" style={{ color: grp.color }}>{stat.count}</div>
-                          <div className="category-card-name">{stat.category}</div>
+                    {grp.items.map((stat) => {
+                      const subtasks = categoryTasks[stat.category] || [];
+                      const isExpanded = !!expandedCategories[stat.category];
+
+                      return (
+                        <div
+                          key={stat.category}
+                          className="category-card"
+                          style={{ borderLeft: `3px solid ${grp.color}` }}
+                        >
+                          <div>
+                            <div className="category-count" style={{ color: grp.color }}>{stat.count}</div>
+                            <div className="category-card-name">{stat.category}</div>
+                          </div>
+
+                          {/* Primary actions: Entire category */}
+                          <div className="category-actions">
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              style={{ flex: 1 }}
+                              onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'exam')}
+                              title={`สุ่มสอบ ${stat.category} 20 ข้อ`}
+                            >
+                              <PlayCircle size={13} /> สอบ
+                            </button>
+                            <button
+                              className="btn btn-sm"
+                              style={{ flex: 1, background: grp.bg, color: grp.color, border: `1px solid ${grp.borderColor}` }}
+                              onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'practice')}
+                              title={`ฝึกซ้อม ${stat.category} 20 ข้อ`}
+                            >
+                              <BookOpen size={13} /> ฝึก
+                            </button>
+                          </div>
+
+                          {/* Law Flashcard Hub Button if Law Category */}
+                          {grp.isLaw && onOpenLawHub && (
+                            <button
+                              className="btn btn-sm"
+                              onClick={onOpenLawHub}
+                              style={{
+                                background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
+                                color: '#fff',
+                                border: 'none',
+                                boxShadow: '0 2px 10px rgba(124, 58, 237, 0.25)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.4rem',
+                                fontWeight: 600,
+                                padding: '0.4rem 0.6rem',
+                                fontSize: '0.78rem',
+                                borderRadius: '6px',
+                                cursor: 'pointer',
+                                width: '100%'
+                              }}
+                            >
+                              <span>🎴 สรุปกฎหมาย & Flashcards</span>
+                            </button>
+                          )}
+
+                          {/* Expandable Subtopics / Tasks */}
+                          {subtasks.length > 0 && (
+                            <div style={{ marginTop: '0.25rem' }}>
+                              <button
+                                type="button"
+                                onClick={() => toggleCategoryExpand(stat.category)}
+                                className="subtopics-toggle-btn"
+                              >
+                                <span>
+                                  {isExpanded ? '▲ ซ่อนหัวข้อเล็ก' : `▼ หัวข้อเล็ก / สมรรถนะ (${subtasks.length})`}
+                                </span>
+                                {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                              </button>
+
+                              {isExpanded && (
+                                <div className="animate-fade-in" style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                                  {subtasks.map((st) => (
+                                    <div key={st.task} className="subtopic-item">
+                                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.4rem' }}>
+                                        <span style={{ fontSize: '0.8rem', color: 'var(--text)', fontWeight: 500 }}>
+                                          {st.task}
+                                        </span>
+                                        <span className="badge" style={{ fontSize: '0.72rem', background: 'rgba(255, 255, 255, 0.08)', color: 'var(--text-muted)' }}>
+                                          {st.count} ข้อ
+                                        </span>
+                                      </div>
+                                      <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.15rem' }}>
+                                        <button
+                                          className="btn btn-secondary btn-xs"
+                                          style={{ flex: 1 }}
+                                          onClick={() => handleStart(stat.category, st.task, Math.min(st.count, 20), 'exam')}
+                                          title={`สอบหัวข้อ ${st.task}`}
+                                        >
+                                          <PlayCircle size={11} /> สอบ
+                                        </button>
+                                        <button
+                                          className="btn btn-xs"
+                                          style={{ flex: 1, background: grp.bg, color: grp.color, border: `1px solid ${grp.borderColor}` }}
+                                          onClick={() => handleStart(stat.category, st.task, Math.min(st.count, 20), 'practice')}
+                                          title={`ฝึกซ้อมหัวข้อ ${st.task}`}
+                                        >
+                                          <BookOpen size={11} /> ฝึก
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
-                        <div className="category-actions">
-                          <button
-                            className="btn btn-secondary btn-sm"
-                            style={{ flex: 1 }}
-                            onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'exam')}
-                          >
-                            <PlayCircle size={13} /> สอบ
-                          </button>
-                          <button
-                            className="btn btn-sm"
-                            style={{ flex: 1, background: grp.bg, color: grp.color, border: `1px solid ${grp.borderColor}` }}
-                            onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'practice')}
-                          >
-                            <BookOpen size={13} /> ฝึก
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )
             ))}
-
-            {/* Other Clinical Categories (if any) */}
-            {otherItems.length > 0 && (
-              <div className="day-sim-section" style={{ borderTop: '3px solid var(--text-muted)', margin: 0 }}>
-                <div className="day-sim-header" style={{ marginBottom: '1rem', paddingBottom: '0.75rem' }}>
-                  <div className="day-sim-title" style={{ fontSize: '1.1rem' }}>
-                    <span>🔬 หมวดหมู่อื่นๆ (Other Clinical Topics)</span>
-                    <span className="badge badge-primary">{otherItems.reduce((a, b) => a + b.count, 0)} ข้อ</span>
-                  </div>
-                </div>
-                <div className="category-grid">
-                  {otherItems.map((stat) => (
-                    <div key={stat.category} className="category-card">
-                      <div>
-                        <div className="category-count">{stat.count}</div>
-                        <div className="category-card-name">{stat.category}</div>
-                      </div>
-                      <div className="category-actions">
-                        <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'exam')}>
-                          <PlayCircle size={13} /> สอบ
-                        </button>
-                        <button className="btn btn-primary btn-sm" style={{ flex: 1 }} onClick={() => handleStart(stat.category, '', Math.min(stat.count, 20), 'practice')}>
-                          <BookOpen size={13} /> ฝึก
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ── Section: ภาคกฎหมายและจรรยาบรรณ ───── */}
-            <div className="day-sim-section law" style={{ margin: 0 }}>
-              <div className="day-sim-header" style={{ marginBottom: '1rem', paddingBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-                <div>
-                  <div className="day-sim-title" style={{ fontSize: '1.1rem', color: 'var(--danger)' }}>
-                    <span>⚖️ ภาคกฎหมายและจรรยาบรรณวิชาชีพทันตกรรม</span>
-                    <span className="badge badge-danger">{totalLaw} ข้อ</span>
-                  </div>
-                  <div className="day-sim-subtitle" style={{ fontSize: '0.82rem' }}>พ.ร.บ. วิชาชีพทันตกรรม, พ.ร.บ. สถานพยาบาล และจรรยาบรรณแห่งวิชาชีพ</div>
-                </div>
-                {onOpenLawHub && (
-                  <button
-                    className="btn btn-sm"
-                    onClick={onOpenLawHub}
-                    style={{
-                      background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
-                      color: '#fff',
-                      border: 'none',
-                      boxShadow: '0 2px 10px rgba(124, 58, 237, 0.3)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.4rem',
-                      fontWeight: 600,
-                      padding: '0.45rem 0.9rem',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <span>🎴 สรุปกฎหมาย & Flashcards</span>
-                  </button>
-                )}
-              </div>
-
-              <div className="category-grid">
-                {taskStats.filter(t => [
-                  "พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537",
-                  "จรรยาบรรณแห่งวิชาชีพทันตกรรม",
-                  "พ.ร.บ. สถานพยาบาล พ.ศ. 2541",
-                  "กฎหมายอื่นๆ ที่เกี่ยวข้อง"
-                ].includes(t.task)).map((stat) => (
-                  <div
-                    key={stat.task}
-                    className="category-card"
-                    style={{ borderLeft: '3px solid var(--danger)' }}
-                  >
-                    <div>
-                      <div className="category-count" style={{ color: 'var(--danger)' }}>{stat.count}</div>
-                      <div className="category-card-name" style={{ fontSize: '0.88rem' }}>{stat.task}</div>
-                    </div>
-                    <div className="category-actions">
-                      <button
-                        className="btn btn-secondary btn-sm"
-                        style={{ flex: 1 }}
-                        onClick={() => handleStart(lawCategoryName, stat.task, Math.min(stat.count, 20), 'exam')}
-                      >
-                        <PlayCircle size={13} /> สอบ
-                      </button>
-                      <button
-                        className="btn btn-accent btn-sm"
-                        style={{ flex: 1 }}
-                        onClick={() => handleStart(lawCategoryName, stat.task, Math.min(stat.count, 20), 'practice')}
-                      >
-                        <BookOpen size={13} /> ฝึก
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
 
           </div>
         );
@@ -953,7 +1005,7 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
                 <select
                   className="input-select"
                   value={selectedCategory}
-                  onChange={e => setSelectedCategory(e.target.value)}
+                  onChange={e => handleCategorySelect(e.target.value)}
                 >
                   <option value="">ทุกวิชา (ทั้งหมด)</option>
                   {categories.categories?.map(c => (
@@ -970,9 +1022,38 @@ export default function Dashboard({ categories, stats, taskStats, years, onStart
                   onChange={e => setSelectedTask(e.target.value)}
                 >
                   <option value="">ทุก Task (ทั้งหมด)</option>
-                  {categories.tasks?.map(t => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
+                  {(() => {
+                    const clinicalTasks = categories.clinical_tasks || [
+                      "การวินิจฉัยโรค",
+                      "การจัดการและการรักษาผู้ป่วย",
+                      "ขั้นตอนและวิธีการรักษา",
+                      "การเกิดและการดำเนินโรค",
+                      "การสร้างเสริมสุขภาพและการป้องกัน"
+                    ];
+                    const lawTasks = categories.law_tasks || [
+                      "พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537",
+                      "จรรยาบรรณแห่งวิชาชีพทันตกรรม",
+                      "พ.ร.บ. สถานพยาบาล พ.ศ. 2541",
+                      "กฎหมายอื่นๆ ที่เกี่ยวข้อง"
+                    ];
+
+                    if (selectedCategory === lawCategoryName) {
+                      return lawTasks.map(t => <option key={t} value={t}>{t}</option>);
+                    } else if (selectedCategory && selectedCategory !== '') {
+                      return clinicalTasks.map(t => <option key={t} value={t}>{t}</option>);
+                    } else {
+                      return (
+                        <>
+                          <optgroup label="🩺 ทักษะทางคลินิก (Clinical Tasks)">
+                            {clinicalTasks.map(t => <option key={t} value={t}>{t}</option>)}
+                          </optgroup>
+                          <optgroup label="⚖️ หมวดกฎหมาย (Law & Ethics)">
+                            {lawTasks.map(t => <option key={t} value={t}>{t}</option>)}
+                          </optgroup>
+                        </>
+                      );
+                    }
+                  })()}
                 </select>
               </div>
 

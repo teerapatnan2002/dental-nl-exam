@@ -20,6 +20,19 @@ export default function AIHub({ categories, tasks, onStartMockTest, onBack }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [genError, setGenError] = useState('');
 
+  const handleCategoryChange = (newCat) => {
+    setMockCategory(newCat);
+    const isLaw = newCat === 'กฎหมายและจรรยาบรรณ';
+    const isCurrentLaw = mockTask.includes('พ.ร.บ.') || mockTask.includes('กฎหมาย') || mockTask.includes('จรรยาบรรณ');
+    if (isLaw && !isCurrentLaw) {
+      const firstLaw = tasks.find(t => t.includes('พ.ร.บ.') || t.includes('กฎหมาย') || t.includes('จรรยาบรรณ'));
+      if (firstLaw) setMockTask(firstLaw);
+    } else if (!isLaw && isCurrentLaw) {
+      const firstClinical = tasks.find(t => !t.includes('พ.ร.บ.') && !t.includes('กฎหมาย') && !t.includes('จรรยาบรรณ'));
+      if (firstClinical) setMockTask(firstClinical);
+    }
+  };
+
   const fetchPrediction = async () => {
     setIsPredicting(true);
     try {
@@ -172,33 +185,29 @@ export default function AIHub({ categories, tasks, onStartMockTest, onBack }) {
                 <select
                   className="input-select"
                   value={mockCategory}
-                  onChange={e => setMockCategory(e.target.value)}
+                  onChange={e => handleCategoryChange(e.target.value)}
                 >
                   {categories.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
 
               <div className="input-group">
-                <label className="input-label">บทบาทหน้าที่</label>
+                <label className="input-label">บทบาทหน้าที่ (Task)</label>
                 <select
                   className="input-select"
                   value={mockTask}
                   onChange={e => setMockTask(e.target.value)}
                 >
-                  {tasks.filter(t => !t.includes('พ.ร.บ.') && !t.includes('กฎหมาย') && !t.includes('จรรยาบรรณ')).length > 0 && (
-                    <optgroup label="หมวดคลินิก">
-                      {tasks.filter(t => !t.includes('พ.ร.บ.') && !t.includes('กฎหมาย') && !t.includes('จรรยาบรรณ')).map(t => (
-                        <option key={t} value={t}>{t}</option>
-                      ))}
-                    </optgroup>
-                  )}
-                  {tasks.filter(t => t.includes('พ.ร.บ.') || t.includes('กฎหมาย') || t.includes('จรรยาบรรณ')).length > 0 && (
-                    <optgroup label="หมวดกฎหมาย">
-                      {tasks.filter(t => t.includes('พ.ร.บ.') || t.includes('กฎหมาย') || t.includes('จรรยาบรรณ')).map(t => (
-                        <option key={t} value={t}>{t}</option>
-                      ))}
-                    </optgroup>
-                  )}
+                  {(() => {
+                    const isLaw = mockCategory === 'กฎหมายและจรรยาบรรณ';
+                    const filteredTasks = tasks.filter(t => {
+                      const isLawTask = t.includes('พ.ร.บ.') || t.includes('กฎหมาย') || t.includes('จรรยาบรรณ');
+                      return isLaw ? isLawTask : !isLawTask;
+                    });
+                    return filteredTasks.map(t => (
+                      <option key={t} value={t}>{t}</option>
+                    ));
+                  })()}
                 </select>
               </div>
 
