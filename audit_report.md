@@ -645,6 +645,37 @@ Ring clasp ออกแบบสำหรับฟันกรามเดี่
 
 ---
 
+## 📌 Batch 7 (ข้อสอบ 250 ข้อ) — สรุปรายการแก้ไข (24 ข้อ)
+
+| ID | เฉลยเดิม | เฉลยใหม่ | หมวดวิชา | เหตุผลทางวิชาการและแหล่งอ้างอิง |
+| :---: | :---: | :---: | :---: | :--- |
+| **2176** | c | **a** | Operative | การขูดฟันผุลึกซี่ 35, 36 ต้องใช้ slow-speed latch-type round steel bur เพื่อคง tactile sensation และคุมความลึก ไม่ให้ทะลุโพรงประสาทฟัน (Sturdevant) |
+| **2062** | E | **A** | Operative / Perio | ขอบโพรงฟันอยู่ใต้เหงือก 2 mm ห่างจาก alveolar crest 3 mm (ครบ biologic width พอดี) และมี KT 6 mm ตัดออก 2 mm เหลือ 4 mm รักษาด้วย Gingivectomy ได้ทันที |
+| **2063** | D | **A** | Operative | สาเหตุอันดับ 1 ของการแตกหักของอมัลกัม (Amalgam fracture) คือ Improper cavity preparation (ความลึกไม่พอ, มุมไม่ได้ 90 องศา, ไม่ลบเหลี่ยม axiopulpal line angle) |
+| **2123** | B | **E** | Perio | คนไข้มี lingual torus ขนาดใหญ่และฟันซ้อนเก การทำความสะอาดด้านลิ้นต้องใช้แปรงพุ่มเดียว (End-tuft brush) ซึ่งออกแบบเฉพาะสำหรับซอกแคบหลังปุ่มกระดูก |
+| **2211** | c | **a** | Perio | Acute NUG การรักษาเบื้องต้นคือ Supragingival scaling อย่างนุ่มนวลและล้างด้วย 0.1% H2O2 ห้ามทำ deep subgingival scaling ทันทีและไม่ถอดเครื่องมือจัดฟัน |
+| **1473** | B | **C** | Perio | ซี่ 14 มี PD 6 mm, mobility degree 1, horizontal bone loss 50% ตามเกณฑ์ McGuire & Nunn (1996) จัดเป็น Poor prognosis |
+| **2136** | E | **B** | Perio | ซี่ 13 มี vertical bone loss 50% หลัง hygienic phase เหลือ pocket 7 mm การรักษาคือ Guided Tissue Regeneration (GTR) with bone graft เพื่อฟื้นฟูเนื้อเยื่อปริทันต์ในฟันหน้า |
+| **1766** | 3 | **1** | Perio / Endo | การหายของแผลปริทันต์ 6 สัปดาห์หลังทำ SRP สมานตัวทางมิญชวิทยาด้วย Long Junctional Epithelium (LJE) เสมอ ไม่เกิด new connective tissue attachment |
+| **1769** | 1 | **2** | Endo / Operative | ซี่ 17 ผุ OML ลึกถึง inner 1/3 dentin (SIP with SAP) ฟันกรามหลัง RCT เสียเนื้อมูลฐานหลายด้าน ต้องบูรณะด้วย Resin composite core with Crown เพื่อ cuspal coverage |
+| **1670** | 2 | **3** | Endo / Prostho | STEM 8 ซี่ 15 ทำ All-Ceramic Crown (ACC) ต้องใช้ Resin composite ทำ core build-up ห้ามใช้ Amalgam เพราะสีเทาดำจะส่องทะลุผ่านเซรามิก |
+| **1697** | 2 | **3** | Endo / Prostho | STEM 17 ซี่ 15 ทำ ACC (ข้อคู่ขนาน 1670) แกนฟันต้องใช้วัสดุสีเหมือนฟันคือ Resin composite |
+| **1698** | 2 | **1** | Endo | STEM 17 ซี่ 15 อมัลกัมบิ่นและขยับได้ (ข้อคู่ขนาน 1671) ตัดสินใจ re-treat เนื่องจากเกิด Coronal leakage อย่างรุนแรงสูญเสีย coronal seal |
+| **1672** | 4 | **2** | Endo | ฟัน RCT มี amalgam บิ่นขยับได้ เชื้อใหม่ที่รั่วเข้าสู่ระบบคลองรากฟันจัดเป็น Secondary intraradicular infection ตามเกณฑ์ Siqueira & Rôças และ AAE |
+| **1699** | 3 | **2** | Endo | ข้อคู่ขนานของ 1672: การติดเชื้อจาก coronal leakage ภายหลัง RCT นิยามเป็น Secondary intraradicular infection |
+| **1457** | D | **A** | Prostho | ออกแบบการสบฟันป้องกัน Combination syndrome: ฟันหลังสบหนักใน Centric relation + ฟันหน้าสบเบาหรือไม่แตะ + มี bilateral balancing contacts |
+| **1461** | B | **E** | Prostho / Oral Med | Denture stomatitis จากเชื้อรา Candida albicans ตรวจยืนยันในคลินิกด้วย Potassium hydroxide (KOH) examination |
+| **1482** | E | **D** | Prostho / Surgery | STEM 19 ฟันล่างมี 37, 35-44 และ 48: ก่อนถอน 48 มี bounded space สองข้าง = Kennedy Class III mod 1; หลังถอน 48 ซีกขวาเป็น free-end = Kennedy Class II mod 1 |
+| **1484** | E | **B** | Oral Med / Surgery | STEM 20 ปวดเสียวเหมือนไฟช็อตที่ขากรรไกร ถอนฟันหลายซี่ไม่ดีขึ้น คือ Trigeminal neuralgia (และได้ล้าง choices ในฐานข้อมูลให้ถูกต้อง) |
+| **1063** | C | **A** | Pedo | เด็ก 5 ขวบ Hemophilia A ปวดกลางคืนซี่ 85 (46 ยังไม่ขึ้น) รักษาด้วย Pulpectomy with ZOE and SSC ปลอดภัยสูงสุดและเลี่ยงการถอน/การใส่ distal shoe ที่เสี่ยงตกเลือด |
+| **1064** | C | **B** | Pedo | เด็ก 5 ขวบ Hemophilia A หนัก 20 kg ให้ Paracetamol syrup (120 mg/5 ml) ขนาด 10 ml (= 240 mg หรือ 12 mg/kg q4-6h) ตรงตามเกณฑ์ 10-15 mg/kg พอดี (15 ml = 18 mg/kg เกินขนาด) |
+| **900** | ไม่สามารถระบุได้ | **A** | Oral Med | ชาย 19 ปี operculum คลุม distal half 37O มีหนอง ปวดกรามล่างซ้าย 38 impaction คือ Pericoronitis |
+| **914** | B | **A** | Oral Med / Surgery | หญิงกิน Prednisolone ผ่าฟันคุด 38 รากหักหลุดเข้า lingual pouch ระวัง Fascial space infection รุนแรงถึงชีวิตจากภาวะกดภูมิต้านทาน |
+| **917** | A | **B** | Oral Med / TMD | หญิงเสียงคลิก TMJ ขวา อ้าปากเจ็บหน้าหูขวา (DDwR ขวา) ขากรรไกรจะเบี่ยงเบนไปทางขวา (Rt deviation) ก่อนกลับเข้าแนวกลาง |
+| **920** | B | **C** | Oral Med / TMD | หญิงปวดกล้ามเนื้อ Masseter เฉียบพลันหลังเคี้ยวของแข็ง ตรวจประเมินฟังก์ชันด้วยการวัดระยะอ้าปากสูงสุด (Maximum mouth opening) |
+
+---
+
 ## 📈 ยอดสรุปสะสม (Cumulative Progress)
 - **NL กฎหมาย:** 103 ข้อ
 - **Batch 1:** 195 ข้อ (แก้ไข 26 ข้อ)
@@ -653,13 +684,16 @@ Ring clasp ออกแบบสำหรับฟันกรามเดี่
 - **Batch 4:** 245 ข้อ (แก้ไข 17 ข้อ)
 - **Batch 5:** 250 ข้อ (แก้ไข 12 ข้อ)
 - **Batch 6:** 250 ข้อ (แก้ไข 21 ข้อ)
-- **รวมตรวจแล้วทั้งหมด:** **1,543 ข้อ** (1,457 unique IDs คิดเป็น **63.5%** | แก้ไขใน DB สะสมทั้งสิ้น **102 ข้อ**)
-- **หมวดที่ตรวจจบครบ 100% แล้ว:** 
+- **Batch 7:** 250 ข้อ (แก้ไข 24 ข้อ + เคลียร์ Unclassified 9 ข้อ)
+- **รวมตรวจแล้วทั้งหมด:** **1,793 ครั้ง** (**1,707 unique IDs** คิดเป็น **74.4%** | แก้ไขใน DB สะสมทั้งสิ้น **126 ข้อ**)
+- **หมวดที่ตรวจจบครบ 100% แล้ว (6 หมวดวิชา):** 
   1. กฎหมายและจรรยาบรรณ (133/133 ข้อ — 100%)
   2. ทันตกรรมจัดฟัน / Ortho (107/107 ข้อ — 100%)
   3. ทันตกรรมบดเคี้ยว / TMD (74/74 ข้อ — 100%)
-  4. ทันตกรรมชุมชน / Community (180/180 ข้อ — 100%)
-- **คงเหลือรอตรวจ:** **836 ข้อ** (มุ่งสู่ Batch 7)
+  4. ทันตกรรมชุมชน / Community (183/183 ข้อ — 100%)
+  5. ทันตกรรมบูรณะ/หัตถการ / Operative (188/188 ข้อ — 100%)
+  6. ปริทันตวิทยา / Perio (204/204 ข้อ — 100%)
+- **คงเหลือรอตรวจ:** **586 ข้อ** (มุ่งสู่ Batch 8)
 
 ---
 *รายงานโดย ทีมผู้เชี่ยวชาญทันตกรรม | ตรวจสอบด้วย Antigravity AI*
