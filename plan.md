@@ -422,28 +422,52 @@ git push
 | 1074 | B | C | Surgery | การผ่าฟันคุด 38 ชนิด horizontal impaction (Pell & Gregory Class II Position B) ขั้นตอนการแบ่งฟันมาตรฐานคือตัดขวางบริเวณคอฟันแบ่งเป็น 2 ส่วน: Crown segment และ Root segment |
 | 1211 | 3 | 1 | Prostho | การจัดระเบียบการสบฟันเพื่อป้องกัน Combination syndrome (Kelly syndrome) ในขากรรไกรบน CD สบกับ RPD ล่าง: ฟันหลังสบหนักใน Centric relation, ฟันหน้าสบเบาหรือหลีกเลี่ยงการสบ และมี bilateral balance contacts ใน eccentric movements |
 | 1215 | 2 | 5 | Prostho | ผู้ป่วยใส่ฟันเทียมตลอดเวลา เพดานปากมี diffuse erythema สันนิษฐานว่าติดเชื้อรา Candida albicans (Denture stomatitis) การตรวจทางห้องปฏิบัติการเพื่อยืนยันคือ Potassium hydroxide (KOH) examination |
+| 2176 | c | a | Operative | การขูดฟันผุลึกซี่ 35, 36 ต้องใช้ slow-speed latch-type round steel bur เพื่อคง tactile sensation และคุมความลึก ไม่ให้ทะลุโพรงประสาทฟัน (Sturdevant) |
+| 2062 | E | A | Operative / Perio | ขอบโพรงฟันอยู่ใต้เหงือก 2 mm ห่างจาก alveolar crest 3 mm (ครบ biologic width พอดี) และมี KT 6 mm ตัดออก 2 mm เหลือ 4 mm รักษาด้วย Gingivectomy ได้ทันที |
+| 2063 | D | A | Operative | สาเหตุอันดับ 1 ของการแตกหักของอมัลกัม (Amalgam fracture) คือ Improper cavity preparation |
+| 2123 | B | E | Perio | คนไข้มี lingual torus ขนาดใหญ่และฟันซ้อนเก การทำความสะอาดด้านลิ้นต้องใช้แปรงพุ่มเดียว (End-tuft brush) |
+| 2211 | c | a | Perio | Acute NUG การรักษาเบื้องต้นคือ Supragingival scaling อย่างนุ่มนวลและล้างด้วย 0.1% H2O2 ห้ามทำ deep subgingival scaling ทันทีและไม่ถอดเครื่องมือจัดฟัน |
+| 1473 | B | C | Perio | ซี่ 14 มี PD 6 mm, mobility degree 1, horizontal bone loss 50% ตามเกณฑ์ McGuire & Nunn (1996) จัดเป็น Poor prognosis |
+| 2136 | E | B | Perio | ซี่ 13 มี vertical bone loss 50% หลัง hygienic phase เหลือ pocket 7 mm การรักษาคือ Guided Tissue Regeneration (GTR) with bone graft |
+| 1766 | 3 | 1 | Perio / Endo | การหายของแผลปริทันต์ 6 สัปดาห์หลังทำ SRP สมานตัวทางมิญชวิทยาด้วย Long Junctional Epithelium (LJE) เสมอ |
+| 1769 | 1 | 2 | Endo / Operative | ซี่ 17 ผุ OML ลึกถึง inner 1/3 dentin (SIP with SAP) ฟันกรามหลัง RCT เสียเนื้อมูลฐานหลายด้าน ต้องบูรณะด้วย Resin composite core with Crown |
+| 1670 | 2 | 3 | Endo / Prostho | STEM 8 ซี่ 15 ทำ All-Ceramic Crown (ACC) ต้องใช้ Resin composite ทำ core build-up ห้ามใช้ Amalgam |
+| 1697 | 2 | 3 | Endo / Prostho | STEM 17 ซี่ 15 ทำ ACC (ข้อคู่ขนาน 1670) แกนฟันต้องใช้วัสดุสีเหมือนฟันคือ Resin composite |
+| 1698 | 2 | 1 | Endo | STEM 17 ซี่ 15 อมัลกัมบิ่นและขยับได้ (ข้อคู่ขนาน 1671) ตัดสินใจ re-treat เนื่องจากเกิด Coronal leakage อย่างรุนแรงสูญเสีย coronal seal |
+| 1672 | 4 | 2 | Endo | ฟัน RCT มี amalgam บิ่นขยับได้ เชื้อใหม่ที่รั่วเข้าสู่ระบบคลองรากฟันจัดเป็น Secondary intraradicular infection ตามเกณฑ์ AAE |
+| 1699 | 3 | 2 | Endo | ข้อคู่ขนานของ 1672: การติดเชื้อจาก coronal leakage ภายหลัง RCT นิยามเป็น Secondary intraradicular infection |
+| 1457 | D | A | Prostho | ออกแบบการสบฟันป้องกัน Combination syndrome: ฟันหลังสบหนักใน Centric relation + ฟันหน้าสบเบาหรือไม่แตะ + มี bilateral balancing contacts |
+| 1461 | B | E | Prostho / Oral Med | Denture stomatitis จากเชื้อรา Candida albicans ตรวจยืนยันในคลินิกด้วย Potassium hydroxide (KOH) examination |
+| 1482 | E | D | Prostho / Surgery | STEM 19 ฟันล่างมี 37, 35-44 และ 48: ก่อนถอน 48 มี bounded space สองข้าง = Kennedy Class III mod 1; หลังถอน 48 ซีกขวาเป็น free-end = Kennedy Class II mod 1 |
+| 1484 | E | B | Oral Med / Surgery | STEM 20 ปวดเสียวเหมือนไฟช็อตที่ขากรรไกร ถอนฟันหลายซี่ไม่ดีขึ้น คือ Trigeminal neuralgia |
+| 1063 | C | A | Pedo | เด็ก 5 ขวบ Hemophilia A ปวดกลางคืนซี่ 85 (46 ยังไม่ขึ้น) รักษาด้วย Pulpectomy with ZOE and SSC |
+| 1064 | C | B | Pedo | เด็ก 5 ขวบ Hemophilia A หนัก 20 kg ให้ Paracetamol syrup (120 mg/5 ml) ขนาด 10 ml (= 240 mg หรือ 12 mg/kg q4-6h) |
+| 900 | ไม่สามารถระบุได้ | A | Oral Med | ชาย 19 ปี operculum คลุม distal half 37O มีหนอง ปวดกรามล่างซ้าย 38 impaction คือ Pericoronitis |
+| 914 | B | A | Oral Med / Surgery | หญิงกิน Prednisolone ผ่าฟันคุด 38 รากหักหลุดเข้า lingual pouch ระวัง Fascial space infection รุนแรงถึงชีวิตจากภาวะกดภูมิต้านทาน |
+| 917 | A | B | Oral Med / TMD | หญิงเสียงคลิก TMJ ขวา อ้าปากเจ็บหน้าหูขวา (DDwR ขวา) ขากรรไกรจะเบี่ยงเบนไปทางขวา (Rt deviation) ก่อนกลับเข้าแนวกลาง |
+| 920 | B | C | Oral Med / TMD | หญิงปวดกล้ามเนื้อ Masseter เฉียบพลันหลังเคี้ยวของแข็ง ตรวจประเมินฟังก์ชันด้วยการวัดระยะอ้าปากสูงสุด (Maximum mouth opening) |
 
 ---
 
-## 9. สิ่งที่ยังต้องตรวจ (Batch 7 เป็นต้นไป)
+## 9. สิ่งที่ยังต้องตรวจ (Batch 8 เป็นต้นไป)
 
 ### สถานะปัจจุบัน:
-- **ตรวจแล้วสะสม:** 103 ข้อ (กฎหมาย) + 195 ข้อ (Batch 1) + 250 ข้อ (Batch 2) + 250 ข้อ (Batch 3) + 245 ข้อ (Batch 4) + 250 ข้อ (Batch 5) + 250 ข้อ (Batch 6) = **1,543 ข้อ** (1,457 unique IDs คิดเป็น **63.5%**)
-- **แก้ไขใน DB สะสม:** **102 ข้อ**
-- **คงเหลือยังไม่ได้ตรวจ:** **836 ข้อ**
+- **ตรวจแล้วสะสม:** 103 ข้อ (กฎหมาย) + 195 ข้อ (Batch 1) + 250 ข้อ (Batch 2) + 250 ข้อ (Batch 3) + 245 ข้อ (Batch 4) + 250 ข้อ (Batch 5) + 250 ข้อ (Batch 6) + 250 ข้อ (Batch 7) = **1,793 ข้อ** (**1,707 unique IDs** คิดเป็น **74.4%**)
+- **แก้ไขใน DB สะสม:** **126 ข้อ**
+- **คงเหลือยังไม่ได้ตรวจ:** **586 ข้อ**
 
 ### จำนวนข้อที่ยังไม่ได้ตรวจตามหมวด:
 | หมวด | ตรวจแล้ว / ทั้งหมด | คงเหลือ | สถานะ |
 |------|-------------------|---------|-------|
-| วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก (Oral Med) | 122 / 359 (34.0%) | 237 | รอตรวจใน Batch 7+ |
-| ทันตกรรมสำหรับเด็ก (Pedo) | 144 / 348 (41.4%) | 204 | รอตรวจใน Batch 7+ |
-| ศัลยศาสตร์ช่องปาก (Surgery) | 134 / 236 (56.8%) | 102 | รอตรวจใน Batch 7+ |
-| ทันตกรรมประดิษฐ์ (Prostho) | 144 / 240 (60.0%) | 96 | รอตรวจใน Batch 7+ |
-| วิทยาเอ็นโดดอนต์ (Endo) | 132 / 217 (60.8%) | 85 | รอตรวจใน Batch 7+ |
-| ปริทันตวิทยา (Perio) | 135 / 202 (66.8%) | 67 | รอตรวจใน Batch 7+ |
-| ทันตกรรมบูรณะ/หัตถการ (Operative) | 151 / 188 (80.3%) | 37 | รอตรวจใน Batch 7+ |
-| ไม่ระบุหมวด (None) | 0 / 9 (0.0%) | 9 | รอตรวจใน Batch 7 |
-| ทันตกรรมชุมชน (Community) | 180 / 180 (100.0%) | **0** | **✅ เสร็จสมบูรณ์ 100% (Batch 6)** |
+| วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก (Oral Med) | 144 / 364 (39.6%) | 220 | รอตรวจใน Batch 8+ |
+| ทันตกรรมสำหรับเด็ก (Pedo) | 164 / 348 (47.1%) | 184 | รอตรวจใน Batch 8+ |
+| ศัลยศาสตร์ช่องปาก (Surgery) | 165 / 237 (69.6%) | 72 | รอตรวจใน Batch 8+ |
+| ทันตกรรมประดิษฐ์ (Prostho) | 171 / 237 (72.2%) | 66 | รอตรวจใน Batch 8+ |
+| วิทยาเอ็นโดดอนต์ (Endo) | 173 / 218 (79.4%) | 45 | รอตรวจใน Batch 8+ |
+| ปริทันตวิทยา (Perio) | 204 / 204 (100.0%) | **0** | **✅ เสร็จสมบูรณ์ 100% (Batch 7)** |
+| ทันตกรรมบูรณะ/หัตถการ (Operative) | 188 / 188 (100.0%) | **0** | **✅ เสร็จสมบูรณ์ 100% (Batch 7)** |
+| ไม่ระบุหมวด (Unclassified) | 9 / 9 (100.0%) | **0** | **✅ เคลียร์หมด 100% (จัดเข้าหมวดถูกต้อง)** |
+| ทันตกรรมชุมชน (Community) | 183 / 183 (100.0%) | **0** | **✅ เสร็จสมบูรณ์ 100% (Batch 6+7)** |
 | กฎหมายและจรรยาบรรณ (Law) | 133 / 133 (100.0%) | **0** | **✅ เสร็จสมบูรณ์ 100%** |
 | ทันตกรรมจัดฟัน (Ortho) | 107 / 107 (100.0%) | **0** | **✅ เสร็จสมบูรณ์ 100% (Batch 5)** |
 | ทันตกรรมบดเคี้ยว/TMD (Occlusion) | 74 / 74 (100.0%) | **0** | **✅ เสร็จสมบูรณ์ 100%** |
