@@ -77,8 +77,16 @@ class UserCreate(BaseModel):
         return v
 
 class UserLogin(BaseModel):
-    email: EmailStr
+    email: str = Field(..., description="Email or Username")
     password: str
+
+    @field_validator('email')
+    @classmethod
+    def strip_identifier(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError('กรุณากรอกอีเมลหรือชื่อผู้ใช้งาน')
+        return v
 
 class UserResponse(BaseModel):
     id: int

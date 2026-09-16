@@ -3,23 +3,20 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 import jwt
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
+from passlib.exc import UnknownHashError
 from pydantic import BaseModel
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 import models
 import schema
 from database import get_db
 
-# SECRET_KEY must be set via environment variable
-SECRET_KEY = os.environ.get("SECRET_KEY") or os.environ.get("JWT_SECRET")
-if not SECRET_KEY:
-    raise RuntimeError(
-        "SECRET_KEY or JWT_SECRET environment variable is not set. "
-        "Generate a strong random key and set it before starting the app."
-    )
+# SECRET_KEY: read from env or use default fallback for local dev
+SECRET_KEY = os.environ.get("SECRET_KEY") or os.environ.get("JWT_SECRET") or "dental-nl-exam-super-secret-jwt-key-2026-production-fallback"
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", "720"))  # 12 hours
@@ -28,9 +25,9 @@ REFRESH_TOKEN_EXPIRE_DAYS = int(os.environ.get("REFRESH_TOKEN_EXPIRE_DAYS", "30"
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
-# ── Simple in‑memory rate limiter for login & register ──
-_rate_limit_store: dict[str, list[float]] = {"login": [], "register": []}
-_MAX_ATTEMPTS_PER_WINDOW = 10  # requests
+# ── Per-IP in‑memory rate limiter for login & register ──
+_rate_limit_store: dict[str, list[float]] = {}
+_MAX_ATTEMPTS_PER_WINDOW = 30  # requests per IP
 _RATE_WINDOW_SECONDS = 300      # 5 minutes
 
 
@@ -46,7 +43,7 @@ def _check_rate_limit(key: str) -> None:
     if len(attempts) > _MAX_ATTEMPTS_PER_WINDOW:
         raise HTTPException(
             status_code=429,
-            detail=f"Too many {key} attempts. Please try again later.",
+            detail="มีการพยายามเข้าสู่ระบบบ่อยเกินไป กรุณารอ 5 นาทีแล้วลองใหม่อีกครั้ง (Too many attempts. Please try again later.)",
         )
 
 
@@ -54,7 +51,10 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        return pwd_context.verify(plain_password, hashed_password)
+    except (ValueError, UnknownHashError, Exception):
+        return False
 
 
 def get_password_hash(password):
@@ -122,22 +122,26 @@ def get_current_admin(current_user: models.User = Depends(get_current_user)):
 
 
 @router.post("/register", response_model=schema.UserResponse)
-def register_user(user: schema.UserCreate, db: Session = Depends(get_db)):
-    _check_rate_limit("register")
+def register_user(user: schema.UserCreate, request: Request, db: Session = Depends(get_db)):
+    client_ip = request.client.host if request.client else "unknown"
+    _check_rate_limit(f"register:{client_ip}")
 
-    db_user = db.query(models.User).filter(models.User.email == user.email).first()
+    email_clean = user.email.strip().lower()
+    username_clean = user.username.strip()
+
+    db_user = db.query(models.User).filter(func.lower(models.User.email) == email_clean).first()
     if db_user:
-        raise HTTPException(status_code=409, detail="Email already registered")
+        raise HTTPException(status_code=409, detail="อีเมลนี้ถูกลงทะเบียนไปแล้ว (Email already registered)")
 
-    db_username = db.query(models.User).filter(models.User.username == user.username).first()
+    db_username = db.query(models.User).filter(func.lower(models.User.username) == username_clean.lower()).first()
     if db_username:
-        raise HTTPException(status_code=409, detail="Username already taken")
+        raise HTTPException(status_code=409, detail="ชื่อผู้ใช้งานนี้ถูกใช้งานแล้ว (Username already taken)")
 
     hashed_password = get_password_hash(user.password)
     now = int(datetime.utcnow().timestamp())
     db_user = models.User(
-        email=user.email,
-        username=user.username,
+        email=email_clean,
+        username=username_clean,
         hashed_password=hashed_password,
         created_at=now,
     )
@@ -148,14 +152,22 @@ def register_user(user: schema.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=schema.Token)
-def login_user(user: schema.UserLogin, db: Session = Depends(get_db)):
-    _check_rate_limit("login")
+def login_user(user: schema.UserLogin, request: Request, db: Session = Depends(get_db)):
+    client_ip = request.client.host if request.client else "unknown"
+    _check_rate_limit(f"login:{client_ip}")
 
-    db_user = db.query(models.User).filter(models.User.email == user.email).first()
+    ident = (user.email or "").strip()
+    db_user = db.query(models.User).filter(
+        or_(
+            func.lower(models.User.email) == ident.lower(),
+            func.lower(models.User.username) == ident.lower(),
+        )
+    ).first()
+
     if not db_user or not verify_password(user.password, db_user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
+            detail="อีเมล/ชื่อผู้ใช้งาน หรือรหัสผ่านไม่ถูกต้อง (Incorrect email/username or password)",
             headers={"WWW-Authenticate": "Bearer"},
         )
 

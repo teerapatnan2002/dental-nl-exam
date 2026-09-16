@@ -82,6 +82,10 @@ export default function AuthModal({ isOpen, onClose }) {
         setError('ชื่อผู้ใช้งานต้องมีความยาวอย่างน้อย 3 ตัวอักษร');
         return false;
       }
+      if (!formData.email || !formData.email.trim()) {
+        setError('กรุณากรอกอีเมล');
+        return false;
+      }
       if (formData.password !== formData.confirmPassword) {
         setError('รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน');
         return false;
@@ -89,6 +93,15 @@ export default function AuthModal({ isOpen, onClose }) {
       const missing = passwordCriteria.filter(c => !c.met);
       if (missing.length > 0) {
         setError(`รหัสผ่านยังไม่ครบตามมาตรฐาน: ${missing[0].label}`);
+        return false;
+      }
+    } else {
+      if (!formData.email || !formData.email.trim()) {
+        setError('กรุณากรอกอีเมลหรือชื่อผู้ใช้งาน');
+        return false;
+      }
+      if (!formData.password) {
+        setError('กรุณากรอกรหัสผ่าน');
         return false;
       }
     }
@@ -248,16 +261,23 @@ export default function AuthModal({ isOpen, onClose }) {
 
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-sub)', marginBottom: '0.35rem', fontWeight: 500 }}>
-                อีเมล (Email)
+                {isLogin ? 'อีเมล หรือ ชื่อผู้ใช้งาน (Email or Username)' : 'อีเมล (Email)'}
               </label>
               <div style={{ position: 'relative' }}>
-                <Mail size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                {isLogin ? (
+                  <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                ) : (
+                  <Mail size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                )}
                 <input
-                  type="email"
+                  type={isLogin ? "text" : "email"}
                   required
-                  placeholder="your@email.com"
+                  placeholder={isLogin ? "your@email.com หรือ ชื่อผู้ใช้งาน" : "your@email.com"}
                   value={formData.email}
                   onChange={e => setFormData({...formData, email: e.target.value})}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck="false"
                   style={{
                     width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem',
                     background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)',
