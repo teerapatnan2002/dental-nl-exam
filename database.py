@@ -9,7 +9,14 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 logger = logging.getLogger(__name__)
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/exam_bank.db")
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "")
+
+if not SQLALCHEMY_DATABASE_URL:
+    if os.getenv("VERCEL"):
+        # On Vercel, filesystem is read-only except /tmp
+        SQLALCHEMY_DATABASE_URL = "sqlite:////tmp/exam_bank.db"
+    else:
+        SQLALCHEMY_DATABASE_URL = "sqlite:///./data/exam_bank.db"
 
 # Normalize postgres:// to postgresql:// for SQLAlchemy compatibility
 if SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
@@ -24,6 +31,8 @@ else:
     # Recommended pool settings for PostgreSQL (Supabase / Serverless)
     engine_kwargs["pool_pre_ping"] = True
     engine_kwargs["pool_recycle"] = 300
+    if "sslmode" not in SQLALCHEMY_DATABASE_URL:
+        connect_args["sslmode"] = "require"
 
 if connect_args:
     engine_kwargs["connect_args"] = connect_args

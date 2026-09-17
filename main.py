@@ -34,11 +34,22 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Create tables if not exist, then apply lightweight column/FTS migrations
-Base.metadata.create_all(bind=engine)
-run_migrations()
-run_fts_migration()
+try:
+    Base.metadata.create_all(bind=engine)
+    run_migrations()
+    run_fts_migration()
+except Exception as e:
+    logger.warning("Startup DB migration deferred: %s", e)
 
 app = FastAPI(title="Dental Exam API")
+
+@app.get("/api/health")
+def health_check(db: Session = Depends(get_db)):
+    try:
+        db.execute(text("SELECT 1"))
+        return {"status": "ok", "database": "connected"}
+    except Exception as e:
+        return {"status": "degraded", "database_error": str(e)}
 
 # ── Import routers ──
 from auth import router as auth_router, get_current_user
