@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 import jwt
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Response
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from passlib.exc import UnknownHashError
@@ -204,3 +204,44 @@ def refresh_access_token(req: RefreshRequest, db: Session = Depends(get_db)):
 @router.get("/me", response_model=schema.UserResponse)
 def read_users_me(current_user: models.User = Depends(get_current_user)):
     return current_user
+
+
+@router.get("/admin/users", response_model=list[schema.UserResponse])
+def get_all_users(
+    admin: models.User = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+):
+    """Admin only: list all registered users."""
+    return db.query(models.User).order_by(models.User.id.asc()).all()
+
+
+@router.get("/admin/users/export")
+def export_users_csv(
+    admin: models.User = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+):
+    """Admin only: export all registered users as a CSV file with UTF-8 BOM."""
+    import io
+    import csv
+
+    users = db.query(models.User).order_by(models.User.id.asc()).all()
+    output = io.StringIO()
+    # Write UTF-8 BOM for seamless Thai & Excel compatibility
+    output.write("\ufeff")
+    writer = csv.writer(output)
+    writer.writerow(["id", "email", "username", "role", "registered_at"])
+
+    for u in users:
+        reg_date = "-"
+        if u.created_at:
+            try:
+                reg_date = datetime.fromtimestamp(int(u.created_at)).strftime("%Y-%m-%d %H:%M:%S")
+            except Exception:
+                reg_date = str(u.created_at)
+        writer.writerow([u.id, u.email, u.username, u.role, reg_date])
+
+    return Response(
+        content=output.getvalue(),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=registered_users.csv"},
+    )

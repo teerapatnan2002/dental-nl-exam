@@ -44,6 +44,7 @@ scratch/
 faiss_index/
 output*.json
 exam_bank.json
+applicant_emails.*
 
 # Images (keep clinical images in repo)
 !images/
