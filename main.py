@@ -845,12 +845,16 @@ def get_cache_status(
 
 @app.api_route("/{full_path:path}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"])
 def catch_all_debug(full_path: str, request: Request):
+    import os
     return {
         "detail": "Catch-all reached",
         "full_path": full_path,
         "request_url_path": str(request.url.path),
         "scope_path": str(request.scope.get("path")),
-        "headers": dict(request.headers),
+        "cwd": os.getcwd(),
+        "dir_contents": os.listdir("."),
+        "frontend_exists": os.path.exists("frontend"),
+        "frontend_dist_exists": os.path.exists("frontend/dist") if os.path.exists("frontend") else False,
     }
 
 # Mount the static React frontend (only when NOT on Vercel; Vercel serves static files via Edge CDN)
