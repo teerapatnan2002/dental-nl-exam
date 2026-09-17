@@ -843,6 +843,15 @@ def get_cache_status(
         "coverage_pct": round(full_cache / total * 100, 1) if total > 0 else 0,
     }
 
+@app.api_route("/{full_path:path}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"])
+def catch_all_debug(full_path: str, request: Request):
+    return {
+        "detail": "Catch-all reached",
+        "full_path": full_path,
+        "request_url_path": str(request.url.path),
+        "scope_path": str(request.scope.get("path")),
+        "headers": dict(request.headers),
+    }
 
 # Mount the static React frontend (only when NOT on Vercel; Vercel serves static files via Edge CDN)
 if not os.getenv("VERCEL"):

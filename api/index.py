@@ -9,17 +9,20 @@ from main import app
 
 @app.middleware("http")
 async def ensure_api_prefix(request: Request, call_next):
-    # Vercel might pass path as /health, /categories (stripping /api)
-    # or as /api/index.py with x-matched-path or x-invoke-path header
-    matched = request.headers.get("x-matched-path") or request.headers.get("x-invoke-path")
-    if matched:
-        path = matched.split("?")[0]
-    else:
-        path = request.scope.get("path", "")
-
-    # Ensure path starts with /api if it doesn't already
-    if not path.startswith("/api") and path != "/":
-        path = "/api" + path
-
-    request.scope["path"] = path
+    raw_path = request.scope.get("path", "")
+    
+    # If Vercel stripped /api (e.g. sent /health or /categories), restore /api prefix
+    if raw_path and not raw_path.startswith("/api") and raw_path != "/" and not raw_path.endswith(".py"):
+        request.scope["path"] = f"/api{raw_path}"
+        
     return await call_next(request)
+
+@app.get("/api/index.py")
+@app.get("/api/debug")
+def debug_vercel(request: Request):
+    return {
+        "status": "ok",
+        "url_path": request.url.path,
+        "scope_path": request.scope.get("path"),
+        "headers": dict(request.headers),
+    }
