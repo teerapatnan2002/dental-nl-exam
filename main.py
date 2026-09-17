@@ -96,9 +96,13 @@ async def add_security_headers(request: Request, call_next):
 # GZip middleware
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-# Serve static images
-os.makedirs("images", exist_ok=True)
-app.mount("/images", StaticFiles(directory="images"), name="images")
+# Serve static images (only when NOT on Vercel; Vercel CDN serves /images directly)
+if not os.getenv("VERCEL"):
+    try:
+        os.makedirs("images", exist_ok=True)
+        app.mount("/images", StaticFiles(directory="images"), name="images")
+    except Exception as e:
+        logger.warning("Could not mount /images: %s", e)
 
 
 # ── Health endpoint ──
@@ -840,10 +844,11 @@ def get_cache_status(
     }
 
 
-# Mount the static React frontend (must be last)
-frontend_path = os.path.join(os.path.dirname(__file__), "frontend/dist")
-if os.path.exists(frontend_path):
-    app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="frontend")
+# Mount the static React frontend (only when NOT on Vercel; Vercel serves static files via Edge CDN)
+if not os.getenv("VERCEL"):
+    frontend_path = os.path.join(os.path.dirname(__file__), "frontend/dist")
+    if os.path.exists(frontend_path):
+        app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="frontend")
 
 if __name__ == "__main__":
     import uvicorn
