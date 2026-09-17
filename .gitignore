@@ -38,6 +38,7 @@ env/
 *.pdf
 *.txt
 !requirements.txt
+!requirements-offline.txt
 *.png
 get
 scratch/

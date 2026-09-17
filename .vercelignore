@@ -1,0 +1,11 @@
+venv/
+.venv/
+data/*.db
+faiss_index/
+vector_db/
+parsed_exams/
+Obsidian_NL_Exam/
+NLLaw/
+NL2Test*/
+*.pdf
+scratch/
