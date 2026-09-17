@@ -6,6 +6,7 @@ import logging
 from typing import List, Optional
 
 from fastapi import FastAPI, Depends, HTTPException, Query, Request
+from fastapi.responses import FileResponse
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -96,13 +97,12 @@ async def add_security_headers(request: Request, call_next):
 # GZip middleware
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-# Serve static images (only when NOT on Vercel; Vercel CDN serves /images directly)
-if not os.getenv("VERCEL"):
-    try:
-        os.makedirs("images", exist_ok=True)
-        app.mount("/images", StaticFiles(directory="images"), name="images")
-    except Exception as e:
-        logger.warning("Could not mount /images: %s", e)
+# Serve static images
+try:
+    os.makedirs("images", exist_ok=True)
+    app.mount("/images", StaticFiles(directory="images"), name="images")
+except Exception as e:
+    logger.warning("Could not mount /images: %s", e)
 
 
 # ── Health endpoint ──
@@ -843,25 +843,29 @@ def get_cache_status(
         "coverage_pct": round(full_cache / total * 100, 1) if total > 0 else 0,
     }
 
-@app.api_route("/{full_path:path}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"])
-def catch_all_debug(full_path: str, request: Request):
-    import os
-    return {
-        "detail": "Catch-all reached",
-        "full_path": full_path,
-        "request_url_path": str(request.url.path),
-        "scope_path": str(request.scope.get("path")),
-        "cwd": os.getcwd(),
-        "dir_contents": os.listdir("."),
-        "frontend_exists": os.path.exists("frontend"),
-        "frontend_dist_exists": os.path.exists("frontend/dist") if os.path.exists("frontend") else False,
-    }
+# ── Serve static React frontend and SPA fallback ──
+frontend_path = os.path.join(os.path.dirname(__file__), "frontend/dist")
+if os.path.exists(frontend_path):
+    assets_path = os.path.join(frontend_path, "assets")
+    if os.path.exists(assets_path):
+        app.mount("/assets", StaticFiles(directory=assets_path), name="assets")
 
-# Mount the static React frontend (only when NOT on Vercel; Vercel serves static files via Edge CDN)
-if not os.getenv("VERCEL"):
-    frontend_path = os.path.join(os.path.dirname(__file__), "frontend/dist")
-    if os.path.exists(frontend_path):
-        app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="frontend")
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        # Do not intercept /api routes (let them 404 properly if unmatched)
+        if full_path.startswith("api"):
+            raise HTTPException(status_code=404, detail="Not Found")
+
+        # Serve static file if it directly exists in frontend/dist (e.g. favicon.svg)
+        target_file = os.path.join(frontend_path, full_path)
+        if full_path and os.path.isfile(target_file):
+            return FileResponse(target_file)
+
+        # Fallback to index.html for React SPA client-side routing
+        index_file = os.path.join(frontend_path, "index.html")
+        if os.path.exists(index_file):
+            return FileResponse(index_file)
+        raise HTTPException(status_code=404, detail="index.html not found")
 
 if __name__ == "__main__":
     import uvicorn
