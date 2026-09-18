@@ -12,6 +12,7 @@ import { XCircle, User as UserIcon, LogOut, Sun, Moon, Scale, Clock } from 'luci
 import { API_BASE } from './config';
 import { EXAM_SCHEDULES, calculateTimeRemaining } from './data/examSchedule';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function useSessionState(defaultValue, key) {
   const [value, setValue] = useState(() => {
@@ -412,6 +413,7 @@ export default function App() {
       <AuthProvider>
         <AppContent />
         <Analytics />
+        <SpeedInsights />
       </AuthProvider>
     </ErrorBoundary>
   );
