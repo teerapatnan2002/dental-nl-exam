@@ -11,6 +11,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { XCircle, User as UserIcon, LogOut, Sun, Moon, Scale, Clock } from 'lucide-react';
 import { API_BASE } from './config';
 import { EXAM_SCHEDULES, calculateTimeRemaining } from './data/examSchedule';
+import { Analytics } from '@vercel/analytics/react';
 
 function useSessionState(defaultValue, key) {
   const [value, setValue] = useState(() => {
@@ -410,6 +411,7 @@ export default function App() {
     <ErrorBoundary>
       <AuthProvider>
         <AppContent />
+        <Analytics />
       </AuthProvider>
     </ErrorBoundary>
   );
