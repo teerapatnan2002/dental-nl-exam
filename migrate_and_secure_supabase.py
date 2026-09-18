@@ -27,6 +27,7 @@ if TARGET_URL.startswith("postgres://"):
     TARGET_URL = TARGET_URL.replace("postgres://", "postgresql://", 1)
 
 from database import Base
+import models
 from sqlalchemy import create_engine
 
 # 1. Create tables via SQLAlchemy if not exist

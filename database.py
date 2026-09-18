@@ -11,12 +11,17 @@ logger = logging.getLogger(__name__)
 
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "")
 
+# Automatic transition: if pointing to old Tokyo project or unset on Vercel, use new Singapore project
+SINGAPORE_SUPABASE_URL = "postgresql://postgres.fgexylhuyaaedmtnplra:HuBAfgLaZ5IGeqpm@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require"
+
 if not SQLALCHEMY_DATABASE_URL:
     if os.getenv("VERCEL"):
-        # On Vercel, filesystem is read-only except /tmp
-        SQLALCHEMY_DATABASE_URL = "sqlite:////tmp/exam_bank.db"
+        SQLALCHEMY_DATABASE_URL = SINGAPORE_SUPABASE_URL
     else:
         SQLALCHEMY_DATABASE_URL = "sqlite:///./data/exam_bank.db"
+elif "cbaytqufljdiwsetsgry" in SQLALCHEMY_DATABASE_URL:
+    # Auto-redirect legacy Tokyo Supabase URL to new Singapore Supabase
+    SQLALCHEMY_DATABASE_URL = SINGAPORE_SUPABASE_URL
 
 # Normalize postgres:// to postgresql:// for SQLAlchemy compatibility
 if SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
