@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import ErrorBoundary from './components/ErrorBoundary';
 import Dashboard from './components/Dashboard';
 import ExamSession from './components/ExamSession';
@@ -411,6 +412,7 @@ export default function App() {
       <AuthProvider>
         <AppContent />
       </AuthProvider>
+      <SpeedInsights />
     </ErrorBoundary>
   );
 }
