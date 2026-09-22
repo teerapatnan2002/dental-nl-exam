@@ -3,8 +3,8 @@ import { Clock, Calendar, AlertTriangle, ArrowRight, BookOpen, PlayCircle, Info,
 import { EXAM_SCHEDULES, calculateTimeRemaining } from '../data/examSchedule';
 
 export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenScheduleModal }) {
-  // Default to the first upcoming exam (Law 3/2569)
-  const [selectedExamId, setSelectedExamId] = useState('law-3-2569');
+  // Default to the first upcoming exam (Mock Law 2570)
+  const [selectedExamId, setSelectedExamId] = useState(EXAM_SCHEDULES[0]?.id || 'mock-law-2570');
   const [timeLeft, setTimeLeft] = useState(() => calculateTimeRemaining(EXAM_SCHEDULES[0].targetDate));
 
   const currentExam = EXAM_SCHEDULES.find(e => e.id === selectedExamId) || EXAM_SCHEDULES[0];
@@ -23,21 +23,32 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
   // Format 2 digits
   const pad = (n) => String(n).padStart(2, '0');
 
-  const handleStartExamQuick = () => {
+  const handleStartExamQuick = (mode = 'exam') => {
     if (!onStartExam) return;
-    if (currentExam.type === 'law') {
+    if (currentExam.id === 'mock-law-2570' || currentExam.quickAction?.year === '2570') {
       onStartExam({
         category: 'กฎหมายและจรรยาบรรณ',
         task: '',
         count: 30,
-        mode: 'exam'
+        year: '2570',
+        mode: mode,
+        ordered: true,
+        part: 'law'
+      });
+    } else if (currentExam.type === 'law') {
+      onStartExam({
+        category: 'กฎหมายและจรรยาบรรณ',
+        task: '',
+        count: 30,
+        mode: mode,
+        part: 'law'
       });
     } else {
       onStartExam({
         category: '',
         task: '',
         count: 150,
-        mode: 'exam',
+        mode: mode,
         part: 'day1',
         ordered: true
       });
@@ -194,7 +205,7 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginTop: '1.1rem', flexWrap: 'wrap' }}>
             <button
               className="btn btn-primary btn-sm"
-              onClick={handleStartExamQuick}
+              onClick={() => handleStartExamQuick('exam')}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -205,6 +216,22 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
               }}
             >
               <PlayCircle size={15} /> {currentExam.quickAction.label}
+            </button>
+
+            <button
+              className="btn btn-secondary btn-sm"
+              onClick={() => handleStartExamQuick('practice')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                borderRadius: '8px',
+                padding: '0.45rem 0.85rem',
+                fontSize: '0.82rem'
+              }}
+              title="ฝึกซ้อมพร้อมดูเฉลยละเอียดทีละข้อ"
+            >
+              <BookOpen size={14} /> ฝึกซ้อม (เฉลยทันที)
             </button>
 
             {currentExam.type === 'law' && onOpenLawHub && (

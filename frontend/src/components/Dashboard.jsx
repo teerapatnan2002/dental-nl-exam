@@ -3,7 +3,7 @@ import {
   BookOpen, PlayCircle, ShieldAlert, Brain,
   Stethoscope, ChevronDown, ChevronUp, Sparkles, Settings2,
   Target, GraduationCap, Wrench, Clock, AlertTriangle, User as UserIcon, Activity, Trophy,
-  Search, BookmarkCheck, ShieldCheck, MoreHorizontal, ChevronRight
+  Search, BookmarkCheck, ShieldCheck, MoreHorizontal, ChevronRight, Calendar, Flame
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { API_BASE } from '../config';
@@ -14,6 +14,7 @@ import AdminPanel from './AdminPanel';
 import MyReports from './MyReports';
 import CategoryDetailModal from './CategoryDetailModal';
 import ExamCountdown from './ExamCountdown';
+import { calculateTimeRemaining } from '../data/examSchedule';
 
 const lawCategoryName = 'กฎหมายและจรรยาบรรณ';
 
@@ -30,6 +31,16 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
   const [activeCategoryModal, setActiveCategoryModal] = useState(null);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  // Live countdown to Saturday Mock 70 Exam (26 Sep 2026, 17:35)
+  const [mock70TimeLeft, setMock70TimeLeft] = useState(() => calculateTimeRemaining('2026-09-26T17:35:00+07:00'));
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setMock70TimeLeft(calculateTimeRemaining('2026-09-26T17:35:00+07:00'));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const toggleCategoryExpand = (catName) => {
     setExpandedCategories(prev => ({
@@ -385,9 +396,17 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                   key={yData.year}
                   className={`btn btn-sm ${selectedYear === yData.year ? 'btn-primary' : 'btn-secondary'}`}
                   onClick={() => setSelectedYear(yData.year)}
-                  style={{ borderRadius: '20px' }}
+                  style={{
+                    borderRadius: '20px',
+                    ...(yData.year === '2570' ? {
+                      border: '1px solid #ec4899',
+                      background: selectedYear === '2570' ? 'linear-gradient(135deg, #7c3aed, #ec4899)' : 'rgba(236, 72, 153, 0.15)',
+                      color: selectedYear === '2570' ? '#fff' : '#f472b6',
+                      fontWeight: 700
+                    } : {})
+                  }}
                 >
-                  พ.ศ. {yData.year}
+                  {yData.year === '2570' ? '🎯 พ.ศ. 2570 (Mock 70)' : `พ.ศ. ${yData.year}`}
                 </button>
               ))}
             </div>
@@ -395,6 +414,272 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
 
           {/* Year Insights & Action Buttons */}
           {selectedYearData ? (
+            selectedYearData.year === '2570' ? (
+              <div className="glass-panel animate-fade-in" style={{
+                padding: '2rem',
+                borderRadius: '20px',
+                border: '1px solid rgba(236, 72, 153, 0.35)',
+                background: 'linear-gradient(135deg, rgba(20, 15, 35, 0.95) 0%, rgba(35, 15, 40, 0.9) 100%)',
+                boxShadow: '0 12px 36px rgba(236, 72, 153, 0.12)'
+              }}>
+                {/* ── Mock 70 Header ── */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
+                  <div>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.3rem 0.8rem', borderRadius: '20px', background: 'rgba(236, 72, 153, 0.15)', border: '1px solid rgba(236, 72, 153, 0.4)', color: '#f472b6', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.6rem' }}>
+                      <Flame size={14} /> ข้อสอบเก็งเสมือนจริง พิมพ์เขียว ศ.ป.ท. พ.ศ. 2570
+                    </div>
+                    <h2 style={{ fontSize: '1.6rem', fontWeight: 800, margin: '0 0 0.4rem 0', color: '#fff', letterSpacing: '-0.02em' }}>
+                      🎯 ศ.ป.ท. Mock Exam 2570: กฎหมายและจรรยาบรรณวิชาชีพ
+                    </h2>
+                    <div style={{ color: 'var(--text-sub)', fontSize: '0.95rem', maxWidth: '680px', lineHeight: 1.5 }}>
+                      ชุดข้อสอบจำลองเสมือนจริง <strong>30 ข้อ (10 STEM สถานการณ์คลินิก × 3 ข้อย่อย)</strong> คัดสรรครอบคลุมประเด็นข้อสอบจริง พ.ร.บ. วิชาชีพทันตกรรม, พ.ร.บ. สถานพยาบาล, สิทธิผู้ป่วย, PDPA และทันตนิติเวชศาสตร์
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+                    <div className="badge badge-accent" style={{ fontSize: '0.85rem', padding: '0.4rem 0.85rem', background: 'linear-gradient(135deg, #ec4899, #be185d)', border: 'none', color: '#fff' }}>
+                      30 ข้อ • 45 นาที
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      เกณฑ์ผ่าน: 60% (18/30 ข้อ)
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── Schedule & Live Countdown Banner ── */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                  gap: '1.25rem',
+                  marginBottom: '1.75rem',
+                  background: 'rgba(15, 23, 42, 0.65)',
+                  padding: '1.25rem 1.5rem',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(255, 255, 255, 0.08)'
+                }}>
+                  {/* Schedule Info */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#f472b6', fontWeight: 700, fontSize: '0.95rem' }}>
+                      <Calendar size={16} /> กำหนดการสอบรอบเสมือนจริง (ตามตารางจริง ศ.ป.ท.)
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.88rem', color: 'var(--text)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ color: 'var(--text-muted)', width: '90px' }}>🗓️ วันที่สอบ:</span>
+                        <strong>วันเสาร์ที่ 26 กันยายน 2569</strong>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ color: 'var(--text-muted)', width: '90px' }}>⏰ เวลาสอบ:</span>
+                        <strong style={{ color: '#ec4899' }}>17:35 – 18:20 น.</strong>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ color: 'var(--text-muted)', width: '90px' }}>⏳ ระยะเวลา:</span>
+                        <span><strong>45 นาที</strong> (ข้อละ 1.5 นาที เป๊ะตามเวลาสอบจริง)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Countdown Box */}
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '1rem',
+                    borderRadius: '12px',
+                    background: 'rgba(236, 72, 153, 0.08)',
+                    border: '1px solid rgba(236, 72, 153, 0.25)',
+                    textAlign: 'center'
+                  }}>
+                    <div style={{ fontSize: '0.78rem', color: '#f472b6', fontWeight: 600, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <Clock size={13} /> {mock70TimeLeft.isExpired ? '🔥 ระบบเปิดให้สอบรอบจริงแล้ว' : 'นับถอยหลังสู่เวลาสอบวันเสาร์นี้ (17:35 น.)'}
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', margin: '0.2rem 0' }}>
+                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.4rem 0.6rem', borderRadius: '8px', minWidth: '46px' }}>
+                        <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.days).padStart(2, '0')}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>วัน</div>
+                      </div>
+                      <span style={{ fontWeight: 700, color: '#ec4899' }}>:</span>
+                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.4rem 0.6rem', borderRadius: '8px', minWidth: '46px' }}>
+                        <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.hours).padStart(2, '0')}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>ชม.</div>
+                      </div>
+                      <span style={{ fontWeight: 700, color: '#ec4899' }}>:</span>
+                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.4rem 0.6rem', borderRadius: '8px', minWidth: '46px' }}>
+                        <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.minutes).padStart(2, '0')}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>นาที</div>
+                      </div>
+                      <span style={{ fontWeight: 700, color: '#ec4899' }}>:</span>
+                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.4rem 0.6rem', borderRadius: '8px', minWidth: '46px' }}>
+                        <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f472b6', fontFamily: 'monospace' }}>{String(mock70TimeLeft.seconds).padStart(2, '0')}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>วินาที</div>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-sub)', marginTop: '0.4rem' }}>
+                      *ระบบเปิดให้ผู้สอบเข้าฝึกซ้อมและทำข้อสอบล่วงหน้าได้ตลอด 24 ชม.*
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── Main Action Buttons Grid ── */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                  gap: '1rem',
+                  marginBottom: '2rem'
+                }}>
+                  {/* 1. Real Exam Simulation Mode */}
+                  <button
+                    onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 30, 'exam', true, false, 'law', '2570')}
+                    className="btn"
+                    style={{
+                      background: 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)',
+                      color: '#ffffff',
+                      border: 'none',
+                      padding: '1.25rem',
+                      borderRadius: '16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      textAlign: 'left',
+                      gap: '0.4rem',
+                      boxShadow: '0 6px 20px rgba(236, 72, 153, 0.35)',
+                      cursor: 'pointer',
+                      transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.05rem' }}>
+                        <PlayCircle size={20} /> เข้าสอบจำลองเสมือนจริง (Exam Mode)
+                      </div>
+                      <span style={{ background: 'rgba(255,255,255,0.2)', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>45 นาที</span>
+                    </div>
+                    <div style={{ fontSize: '0.82rem', opacity: 0.9, lineHeight: 1.4 }}>
+                      จับเวลาถอยหลัง 45 นาที ไม่แสดงเฉลยระหว่างทำ ประมวลผลและตัดเกรดเสมือนห้องสอบจริง
+                    </div>
+                  </button>
+
+                  {/* 2. Practice Mode */}
+                  <button
+                    onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 30, 'practice', true, false, 'law', '2570')}
+                    className="btn"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      color: 'var(--text)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      padding: '1.25rem',
+                      borderRadius: '16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      textAlign: 'left',
+                      gap: '0.4rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.05rem', color: 'var(--primary-light)' }}>
+                        <BookOpen size={20} /> ซ้อมทำทีละข้อ (Practice Mode)
+                      </div>
+                      <span style={{ background: 'rgba(124, 58, 237, 0.2)', color: 'var(--primary-light)', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>เฉลยทันที</span>
+                    </div>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-sub)', lineHeight: 1.4 }}>
+                      ทำทีละข้อ ดูเฉลยละเอียดและวิเคราะห์กับดักข้อสอบทันทีที่ตอบ ไม่จำกัดเวลา
+                    </div>
+                  </button>
+
+                  {/* 3. Law Hub / Flashcards */}
+                  <button
+                    onClick={() => onOpenLawHub && onOpenLawHub()}
+                    className="btn"
+                    style={{
+                      background: 'rgba(244, 63, 94, 0.08)',
+                      color: '#fb7185',
+                      border: '1px solid rgba(244, 63, 94, 0.25)',
+                      padding: '1.25rem',
+                      borderRadius: '16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      textAlign: 'left',
+                      gap: '0.4rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.05rem' }}>
+                        <Sparkles size={20} /> สรุปมาตรา & Flashcards กฎหมาย
+                      </div>
+                      <span style={{ background: 'rgba(244, 63, 94, 0.2)', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>ติวเข้ม</span>
+                    </div>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-sub)', lineHeight: 1.4 }}>
+                      สรุปหัวใจสำคัญของ พ.ร.บ. วิชาชีพ, พ.ร.บ. สถานพยาบาล, ทันตนิติเวช และแนววินิจฉัยคดี
+                    </div>
+                  </button>
+                </div>
+
+                {/* ── 10 STEMs Breakdown Grid ── */}
+                <div style={{ marginTop: '2rem' }}>
+                  <div className="divider" style={{ margin: '1.5rem 0' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <h3 style={{ margin: 0, color: 'var(--primary-light)', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <ShieldAlert size={18} color="#ec4899" /> โครงสร้าง 10 STEM สถานการณ์ใน Mock 70 (30 ข้อเต็ม)
+                    </h3>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      10 สถานการณ์ STEM คลินิก × 3 ข้อย่อย = 30 ข้อ
+                    </span>
+                  </div>
+
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                    gap: '0.85rem'
+                  }}>
+                    {[
+                      { stem: 1, qRange: "ข้อ 1 - 3", title: "โฆษณาจัดฟันใส Before-After & แอบอ้างผู้เชี่ยวชาญ", law: "พ.ร.บ.วิชาชีพ ม.28, พ.ร.บ.สถานพยาบาล ม.34, อำนาจทันตแพทยสภา" },
+                      { stem: 2, qRange: "ข้อ 4 - 6", title: "การเปิดคลินิกเอกชน & อายุใบอนุญาตสถานพยาบาล", law: "พ.ร.บ.สถานพยาบาล ม.16, ม.26 (สิ้นปีที่ 2), คลินิกเถื่อน ม.16" },
+                      { stem: 3, qRange: "ข้อ 7 - 9", title: "ขอบเขตงานทันตาภิบาล รพ.สต. & การควบคุมกำกับ", law: "ประกาศกระทรวงฯ ขอบเขตงาน, ห้ามผ่าฟันคุด/รักษาราก, วินัยข้าราชการ" },
+                      { stem: 4, qRange: "ข้อ 10 - 12", title: "สิทธิผู้ป่วยขอเวชระเบียน & ข้อพิพาทการชำระเงิน", law: "พ.ร.บ.สุขภาพแห่งชาติ ม.7, ห้ามยึดเวชระเบียนเพื่อทวงหนี้" },
+                      { stem: 5, qRange: "ข้อ 13 - 15", title: "ภาวะแทรกซ้อนผ่าฟันคุด, Informed Consent & คดีละเมิด", law: "ป.พ.พ. ม.420 ละเมิด, ม.448 อายุความ 1 ปี/10 ปี, การส่งต่อผู้ป่วย" },
+                      { stem: 6, qRange: "ข้อ 16 - 18", title: "การคุ้มครองข้อมูลส่วนบุคคล (PDPA) & ความลับผู้ป่วย HIV", law: "ป.อาญา ม.323 เปิดเผยความลับ, พ.ร.บ.สุขภาพแห่งชาติ, PDPA" },
+                      { stem: 7, qRange: "ข้อ 19 - 21", title: "ทันตนิติเวชศาสตร์ & ตรวจพิสูจน์เอกลักษณ์บุคคลเหตุเพลิงไหม้", law: "Ante-mortem vs Post-mortem records, Root Transparency, ฟันกรามทนความร้อน" },
+                      { stem: 8, qRange: "ข้อ 22 - 24", title: "ทันตแพทย์ต้องคดีอาญา & ผลต่อใบประกอบวิชาชีพ", law: "พ.ร.บ.วิชาชีพ ม.24 ลักษณะต้องห้าม, คณะกรรมการฯ วินิจฉัยพักใช้/เพิกถอน" },
+                      { stem: 9, qRange: "ข้อ 25 - 27", title: "การออกใบรับรองแพทย์เท็จ & โทษทางอาญาและวิชาชีพ", law: "ป.อาญา ม.269 รับรองเอกสารเท็จ, ม.39 พักใช้/เพิกถอน, ขอใหม่ได้หลัง 2 ปี" },
+                      { stem: 10, qRange: "ข้อ 28 - 30", title: "สัญญาจ้างคลินิกเอกชน & ข้อกำหนดห้ามเปิดคลินิกแข่งขัน", law: "พ.ร.บ.ข้อสัญญาไม่เป็นธรรม พ.ศ. 2540, บทบาทสภาในข้อพิพาทธุรกิจ" }
+                    ].map((item) => (
+                      <div
+                        key={item.stem}
+                        style={{
+                          padding: '0.85rem 1rem',
+                          borderRadius: '12px',
+                          background: 'rgba(255, 255, 255, 0.03)',
+                          border: '1px solid rgba(255, 255, 255, 0.06)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '0.3rem'
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#f472b6' }}>
+                            STEM {item.stem} ({item.qRange})
+                          </span>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                            3 ข้อย่อย
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text)' }}>
+                          {item.title}
+                        </div>
+                        <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)' }}>
+                          📌 {item.law}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
             <div className="glass-panel animate-fade-in" style={{ padding: '2rem' }}>
               <div style={{ marginBottom: '1.5rem' }}>
                 <h2 style={{ fontSize: '1.4rem', margin: '0 0 0.3rem 0', color: 'var(--primary-light)' }}>
@@ -783,7 +1068,8 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                 </div>
               </div>
             </div>
-          ) : (
+          )
+        ) : (
             /* No year selected – show overview */
             <div className="glass-panel animate-fade-in" style={{ padding: '2rem', textAlign: 'center' }}>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📝</div>
