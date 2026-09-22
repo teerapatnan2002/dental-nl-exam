@@ -56,6 +56,7 @@ function getStemLabel(stemText, pageIndex) {
 export default function ExamSession({ questions, mode = 'exam', config = {}, startTime, onFinish }) {
   const { token, authFetch, user } = useAuth();
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [focusedQuestionIndex, setFocusedQuestionIndex] = useState(0);
   const [targetQuestionId, setTargetQuestionId] = useState(null);
   const [answers, setAnswers] = useState({});
   const [elapsed, setElapsed] = useState(0);
@@ -313,6 +314,8 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
   const handleJumpToQuestion = (q, targetPageIndex) => {
     const targetPage = pages[targetPageIndex];
     const isFirstQuestionInPage = targetPage && targetPage.questions[0]?.id === q.id;
+    const qIndexInPage = targetPage ? targetPage.questions.findIndex(item => item.id === q.id) : 0;
+    setFocusedQuestionIndex(qIndexInPage !== -1 ? qIndexInPage : 0);
 
     if (isFirstQuestionInPage) {
       // If it is the first question of this STEM page (e.g. Q1, Q4, Q7), always scroll to the very top to read the STEM!
@@ -325,6 +328,15 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
       setCurrentPageIndex(targetPageIndex);
     }
   };
+
+  // Sync focused question on page change
+  useEffect(() => {
+    const curPage = pages[currentPageIndex];
+    if (curPage && curPage.questions) {
+      const firstUnanswered = curPage.questions.findIndex(q => !answers[q.id]);
+      setFocusedQuestionIndex(firstUnanswered !== -1 ? firstUnanswered : 0);
+    }
+  }, [currentPageIndex, pages]);
 
   const handleSubmit = () => {
     const finish = () => onFinish(answers, Date.now() - startTime, buildQuestionTimes());
@@ -382,11 +394,364 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
     }
   };
 
+  // ── Keyboard Shortcuts Engine (Mac & Windows) ──
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ignore when user is actively typing in inputs / textareas / contenteditable
+      const activeEl = document.activeElement;
+      const tag = activeEl ? activeEl.tagName : '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (activeEl && activeEl.isContentEditable)) {
+        return;
+      }
+
+      // Escape key to dismiss modals / lightboxes
+      if (e.key === 'Escape') {
+        if (lightboxImg) {
+          setLightboxImg(null);
+          return;
+        }
+        if (reportingQuestionId) {
+          setReportingQuestionId(null);
+          return;
+        }
+      }
+
+      // Disable other shortcuts if modal / lightbox is active
+      if (lightboxImg || reportingQuestionId) return;
+
+      const curPage = pages[currentPageIndex];
+      if (!curPage || !curPage.questions || curPage.questions.length === 0) return;
+      const curQ = curPage.questions[focusedQuestionIndex] || curPage.questions[0];
+
+      // Navigation: Left / Right arrows
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (currentPageIndex > 0) {
+          setTargetQuestionId(null);
+          setCurrentPageIndex(prev => prev - 1);
+        }
+        return;
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (currentPageIndex < pages.length - 1) {
+          setTargetQuestionId(null);
+          setCurrentPageIndex(prev => prev + 1);
+        }
+        return;
+      }
+
+      // Flag current question: F key
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        if (curQ) toggleFlag(curQ.id);
+        return;
+      }
+
+      // Reveal explanation in practice mode: Spacebar
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        if (mode === 'practice' && curQ) {
+          e.preventDefault();
+          toggleReveal(curQ);
+        }
+        return;
+      }
+
+      // Choice selection: 1-5 or A-E
+      const numMatch = ['1', '2', '3', '4', '5'].indexOf(e.key);
+      const alphaMatch = ['a', 'b', 'c', 'd', 'e'].indexOf(e.key.toLowerCase());
+      const choiceIdx = numMatch !== -1 ? numMatch : alphaMatch;
+
+      if (choiceIdx !== -1 && curQ && curQ.choices) {
+        let targetChoice = curQ.choices[choiceIdx];
+        if (!targetChoice) {
+          targetChoice = curQ.choices.find(c => 
+            String(c.label).trim().toLowerCase() === e.key.toLowerCase()
+          );
+        }
+
+        if (targetChoice) {
+          e.preventDefault();
+          handleSelectChoice(curQ.id, targetChoice.label);
+
+          // If current STEM page has multiple sub-questions, auto advance focus to next sub-question
+          if (curPage.questions.length > 1 && focusedQuestionIndex < curPage.questions.length - 1) {
+            setFocusedQuestionIndex(prev => prev + 1);
+            const nextQ = curPage.questions[focusedQuestionIndex + 1];
+            if (nextQ) {
+              const el = document.getElementById(`question-card-${nextQ.id}`);
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              }
+            }
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentPageIndex, focusedQuestionIndex, pages, lightboxImg, reportingQuestionId, mode, answers]);
+
   const progressPercentage = (Object.keys(answers).length / questions.length) * 100;
   const answeredCount = Object.keys(answers).length;
 
+  const renderQuestion = (q, localIdx) => {
+    const expl = explanations[q.id];
+    const isRevealed = revealed[q.id];
+    const isFlagged = flaggedIds.has(q.id);
+    const isFocused = focusedQuestionIndex === localIdx;
+
+    return (
+      <div 
+        key={q.id} 
+        id={`question-card-${q.id}`}
+        className={`exam-subquestion-card ${isFocused ? 'subquestion-card-focused' : ''}`}
+        onClick={() => setFocusedQuestionIndex(localIdx)}
+        style={{ 
+          padding: currentPage.stem ? '1.5rem' : '0', 
+          background: currentPage.stem ? (isFocused ? 'rgba(124,58,237,0.06)' : 'rgba(255,255,255,0.02)') : 'transparent', 
+          borderRadius: '12px', 
+          border: currentPage.stem ? (isFocused ? '1px solid rgba(124,58,237,0.45)' : '1px solid rgba(255,255,255,0.06)') : 'none',
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          cursor: 'default'
+        }}
+      >
+        {/* Meta badges for sub-question */}
+        <div className="question-meta" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <span className="badge badge-primary">
+              Q{q.globalIndex + 1}
+            </span>
+            {q.category && (
+              <span className="badge">{q.category}</span>
+            )}
+            {q.task && (
+              <span className="badge">{q.task}</span>
+            )}
+            {q.source_exam && (
+              <span className="badge" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+                📝 {q.source_exam}
+              </span>
+            )}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            {/* Flag for Review Button */}
+            <button
+              onClick={() => toggleFlag(q.id)}
+              style={{
+                background: isFlagged ? 'rgba(245,158,11,0.2)' : 'none',
+                border: isFlagged ? '1px solid rgba(245,158,11,0.4)' : '1px solid transparent',
+                borderRadius: '6px',
+                color: isFlagged ? '#f59e0b' : 'var(--text-muted)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                padding: '0.25rem 0.5rem',
+                fontWeight: isFlagged ? 700 : 500
+              }}
+              title={isFlagged ? 'ยกเลิกการปักธง' : 'ปักธงข้อนี้เพื่อกลับมาทบทวน'}
+            >
+              <Flag size={13} fill={isFlagged ? '#f59e0b' : 'none'} />
+              {isFlagged ? 'ปักธงแล้ว' : 'ปักธง'}
+            </button>
+
+            {user && (
+              <>
+                <button
+                  onClick={() => toggleBookmark(q)}
+                  style={{ background: 'none', border: 'none', color: bookmarkedIds.has(q.id) ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0.2rem' }}
+                  title={bookmarkedIds.has(q.id) ? 'ลบบุ๊กมาร์ก' : 'บุ๊กมาร์กข้อนี้'}
+                >
+                  {bookmarkedIds.has(q.id) ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}
+                </button>
+                <button
+                  onClick={() => toggleNoteEditor(q)}
+                  style={{ background: 'none', border: 'none', color: noteEditorOpen[q.id] || notes[q.id] ? 'var(--primary-light)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0.2rem' }}
+                  title="โน้ตส่วนตัว"
+                >
+                  <StickyNote size={17} />
+                </button>
+              </>
+            )}
+            <button
+              onClick={() => setReportingQuestionId(q.id)}
+              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', cursor: 'pointer', padding: '0.2rem' }}
+              title="แจ้งข้อผิดพลาด"
+            >
+              <AlertTriangle size={14} /> แจ้งปัญหา
+            </button>
+          </div>
+        </div>
+
+        {/* Personal note editor */}
+        {noteEditorOpen[q.id] && user && (
+          <div style={{ marginBottom: '1rem', padding: '0.9rem', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <StickyNote size={13} /> โน้ตส่วนตัวของคุณ (เห็นเฉพาะคุณ)
+            </div>
+            <textarea
+              value={notes[q.id] || ''}
+              onChange={(e) => setNotes(prev => ({ ...prev, [q.id]: e.target.value }))}
+              placeholder="จดบันทึก สูตร หรือจุดที่ต้องจำสำหรับข้อนี้..."
+              rows={3}
+              style={{ width: '100%', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'var(--text)', padding: '0.6rem', fontSize: '0.9rem', resize: 'vertical', fontFamily: 'inherit' }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <button className="btn btn-primary btn-sm" onClick={() => saveNote(q)}>บันทึกโน้ต</button>
+            </div>
+          </div>
+        )}
+
+        {/* Image (if no stem, or if this specific sub-question has its own image) */}
+        {!currentPage.stem && q.image_path && (
+          <div style={{ textAlign: 'center', margin: '1rem 0' }}>
+            <img
+              src={`${API_BASE}/images/${q.image_path}`}
+              alt="Question Figure"
+              style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.4)', cursor: 'pointer' }}
+              onClick={() => { setLightboxImg(`${API_BASE}/images/${q.image_path}`); setZoom(1); setPan({x:0, y:0}); }}
+            />
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>🔍 คลิกรูปภาพเพื่อซูมขยายเต็มจอ</div>
+          </div>
+        )}
+
+        {/* Proposition or Question Text */}
+        {currentPage.stem ? (
+          <div className="question-proposition" style={{ marginTop: 0, fontSize: fs.prop }}>
+            <span style={{ fontWeight: 700, color: 'var(--primary-light)', marginRight: '6px' }}>
+              {q.globalIndex + 1}.
+            </span>
+            {cleanQuestionText(getProposition(q))}
+          </div>
+        ) : (
+          <h2 style={{ fontSize: fs.prop, lineHeight: 1.65, marginBottom: '0.5rem', color: 'var(--text)' }}>
+            <span style={{ fontWeight: 700, color: 'var(--primary-light)', marginRight: '8px' }}>
+              {q.globalIndex + 1}.
+            </span>
+            {cleanQuestionText(q.question_text)}
+          </h2>
+        )}
+
+        {/* Choices */}
+        <div className="choice-list">
+          {q.choices.map((choice) => {
+            const selected = answers[q.id] === choice.label;
+            const isEliminated = (eliminatedChoices[q.id] && eliminatedChoices[q.id].has(choice.label));
+            const isCorrect = isRevealed && expl && expl.correct_answer === choice.label;
+            const isWrongSelected = isRevealed && selected && expl && expl.correct_answer !== choice.label;
+            let cls = 'choice-item';
+            if (selected) cls += ' selected';
+            if (isCorrect) cls += ' correct-reveal';
+            if (isWrongSelected) cls += ' wrong-reveal';
+            if (isEliminated) cls += ' eliminated';
+
+            return (
+              <div 
+                key={choice.id} 
+                className={cls} 
+                onClick={() => {
+                  setFocusedQuestionIndex(localIdx);
+                  handleSelectChoice(q.id, choice.label);
+                }}
+              >
+                <div className="choice-label">{choice.label}</div>
+                <div className="choice-text" style={{ flexGrow: 1, lineHeight: 1.55, fontSize: fs.choice }}>
+                  {choice.text}
+                </div>
+                
+                {/* Strike-through / Elimination Button */}
+                {!isRevealed && (
+                  <button
+                    type="button"
+                    className="choice-eliminate-btn"
+                    onClick={(e) => toggleEliminateChoice(q.id, choice.label, e)}
+                    title={isEliminated ? 'ยกเลิกการตัดช้อยส์' : 'ตัดช้อยส์ข้อนี้ทิ้ง'}
+                  >
+                    <Strikethrough size={13} />
+                    {isEliminated ? 'ยกเลิกตัด' : 'ตัดช้อยส์'}
+                  </button>
+                )}
+
+                {selected && !isRevealed && <CircleCheck size={19} color="var(--primary-light)" />}
+                {isCorrect && <CircleCheck size={19} color="var(--success)" />}
+                {isWrongSelected && <XCircle size={19} color="var(--danger)" />}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Confidence Level Selector */}
+        <div className="confidence-selector">
+          <span className="confidence-label">ระดับความมั่นใจ:</span>
+          <button
+            type="button"
+            className={`confidence-btn green ${confidence[q.id] === 'confident' ? 'active' : ''}`}
+            onClick={() => toggleConfidence(q.id, 'confident')}
+            title="ทำแล้วมั่นใจ"
+          >
+            <CircleCheck size={15} /> มั่นใจ
+          </button>
+          <button
+            type="button"
+            className={`confidence-btn yellow ${confidence[q.id] === 'unsure' ? 'active' : ''}`}
+            onClick={() => toggleConfidence(q.id, 'unsure')}
+            title="ทำแล้วไม่มั่นใจ"
+          >
+            <HelpCircle size={15} /> ไม่มั่นใจ
+          </button>
+          <button
+            type="button"
+            className={`confidence-btn red ${confidence[q.id] === 'hard' ? 'active' : ''}`}
+            onClick={() => toggleConfidence(q.id, 'hard')}
+            title="ทำแล้วทำไม่ได้แต่ตอบ / เดา"
+          >
+            <AlertTriangle size={15} /> ทำไม่ได้ / เดา
+          </button>
+        </div>
+
+        {/* Practice: reveal button + explanation */}
+        {mode === 'practice' && (
+          <div style={{ marginTop: '1.5rem' }}>
+            <button
+              className="btn btn-accent"
+              onClick={() => toggleReveal(q)}
+              disabled={expl && expl.loading}
+              style={{ minWidth: '180px' }}
+            >
+              {expl && expl.loading ? (
+                <><Loader2 size={17} className="spin" /> กำลังโหลด...</>
+              ) : isRevealed ? (
+                <>ซ่อนเฉลย</>
+              ) : (
+                <><Sparkles size={17} /> ดูเฉลยข้อ {q.globalIndex + 1} (AI)</>
+              )}
+            </button>
+
+            {expl && expl.error && (
+              <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(244,63,94,0.1)', borderRadius: '10px', border: '1px solid rgba(244,63,94,0.2)', color: '#fb7185', fontSize: '0.9rem' }}>
+                <strong>ไม่สามารถโหลดเฉลยได้:</strong> {expl.error}
+              </div>
+            )}
+
+            {isRevealed && expl && expl.explanation && (
+              <ExplanationBox 
+                explanation={expl.explanation} 
+                correctAnswer={expl.correct_answer} 
+                isCached={expl.cached} 
+              />
+            )}
+          </div>
+        )}
+
+      </div>
+    );
+  };
+
   return (
-    <div style={{ paddingBottom: '80px' }}>
+    <div style={{ paddingBottom: 'calc(96px + var(--sab))' }}>
 
       {/* ── Sticky Top Bar ──────────────────────────── */}
       <div className="exam-sticky-header">
@@ -415,6 +780,16 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
           {/* Progress bar */}
           <div className="progress-bar" style={{ flex: 1, minWidth: '80px' }}>
             <div className="progress-fill" style={{ width: `${progressPercentage}%` }} />
+          </div>
+
+          {/* Desktop Keyboard Hints Pill */}
+          <div className="keyboard-hints-pill" title="คีย์ลัดสำหรับคอมพิวเตอร์ (Desktop Keyboard Shortcuts)">
+            <span>⌨️ <kbd>1</kbd>-<kbd>5</kbd> ตอบ</span>
+            <span>•</span>
+            <span><kbd>←</kbd> <kbd>→</kbd> ข้อ</span>
+            <span>•</span>
+            <span><kbd>F</kbd> ธง</span>
+            {mode === 'practice' && <span>• <kbd>Space</kbd> เฉลย</span>}
           </div>
 
           {/* Timer + mode badge */}
@@ -478,302 +853,70 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
 
       {/* ── Question Card(s) ───────────────────────────── */}
       <div style={{ padding: '1.25rem 0' }}>
-        <div className="glass-panel question-card animate-fade-in" style={{ padding: '2rem' }}>
+        <div className="glass-panel question-card animate-fade-in" style={{ padding: 'clamp(1rem, 2.5vw, 2rem)' }}>
           
-          {/* Stem Area (Rendered once per page if exists) */}
-          {currentPage.stem && (
-            <div className="glass-panel" style={{ 
-              marginBottom: '2rem', 
-              padding: '1.5rem', 
-              borderLeft: '4px solid var(--primary)',
-              background: 'linear-gradient(135deg, rgba(124,58,237,0.08) 0%, rgba(18,18,30,0.8) 100%)'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <div className="badge badge-primary" style={{ background: 'rgba(124, 58, 237, 0.25)', fontSize: '0.9rem', fontWeight: 800, padding: '0.35rem 0.75rem', border: '1px solid rgba(124,58,237,0.4)' }}>
-                    📌 {getStemLabel(currentPage.stem, currentPageIndex)}
-                  </div>
-                  <span style={{ fontSize: '0.88rem', color: 'var(--text-sub)', fontWeight: 600 }}>
-                    ข้อย่อยที่ {currentPage.questions[0].globalIndex + 1} {currentPage.questions.length > 1 && `- ${currentPage.questions[currentPage.questions.length - 1].globalIndex + 1}`}
-                  </span>
-                </div>
-                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-                  Stem ที่ {currentPageIndex + 1} จาก {pages.length}
-                </div>
-              </div>
-              
-              {/* Show image for the stem if any question in the group has it */}
-              {(() => {
-                const imgQ = currentPage.questions.find(q => q.image_path);
-                if (imgQ) {
-                  return (
-                    <div style={{ textAlign: 'center', margin: '1rem 0' }}>
-                      <img
-                        src={`${API_BASE}/images/${imgQ.image_path}`}
-                        alt="Stem Figure"
-                        style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.4)', cursor: 'pointer' }}
-                        onClick={() => { setLightboxImg(`${API_BASE}/images/${imgQ.image_path}`); setZoom(1); setPan({x:0, y:0}); }}
-                      />
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>🔍 คลิกรูปภาพเพื่อซูมขยายเต็มจอ</div>
+          {currentPage.stem ? (
+            <div className="exam-split-grid">
+              {/* Left Column: Sticky Clinical Vignette / STEM + Diagnostic Imaging */}
+              <div className="exam-stem-sticky-panel">
+                <div className="glass-panel" style={{ 
+                  padding: '1.5rem', 
+                  borderLeft: '4px solid var(--primary)',
+                  background: 'linear-gradient(135deg, rgba(124,58,237,0.08) 0%, rgba(18,18,30,0.8) 100%)',
+                  borderRadius: '12px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <div className="badge badge-primary" style={{ background: 'rgba(124, 58, 237, 0.25)', fontSize: '0.9rem', fontWeight: 800, padding: '0.35rem 0.75rem', border: '1px solid rgba(124,58,237,0.4)' }}>
+                        📌 {getStemLabel(currentPage.stem, currentPageIndex)}
+                      </div>
+                      <span style={{ fontSize: '0.88rem', color: 'var(--text-sub)', fontWeight: 600 }}>
+                        ข้อย่อยที่ {currentPage.questions[0].globalIndex + 1} {currentPage.questions.length > 1 && `- ${currentPage.questions[currentPage.questions.length - 1].globalIndex + 1}`}
+                      </span>
                     </div>
-                  );
-                }
-                return null;
-              })()}
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+                      Stem ที่ {currentPageIndex + 1} จาก {pages.length}
+                    </div>
+                  </div>
+                  
+                  {/* Show image for the stem if any question in the group has it */}
+                  {(() => {
+                    const imgQ = currentPage.questions.find(q => q.image_path);
+                    if (imgQ) {
+                      return (
+                        <div style={{ textAlign: 'center', margin: '1rem 0' }}>
+                          <img
+                            src={`${API_BASE}/images/${imgQ.image_path}`}
+                            alt="Stem Figure"
+                            style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.4)', cursor: 'pointer' }}
+                            onClick={() => { setLightboxImg(`${API_BASE}/images/${imgQ.image_path}`); setZoom(1); setPan({x:0, y:0}); }}
+                          />
+                          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>🔍 คลิกรูปภาพเพื่อซูมขยายเต็มจอ</div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
 
-              <div className="question-stem" style={{ border: 'none', background: 'transparent', padding: 0 }}>
-                {cleanStemText(currentPage.stem).split('\n').map((line, i) => (
-                  <p key={i} style={{ margin: 0, lineHeight: 1.75, fontSize: fs.stem }}>{line}</p>
-                ))}
+                  <div className="question-stem" style={{ border: 'none', background: 'transparent', padding: 0 }}>
+                    {cleanStemText(currentPage.stem).split('\n').map((line, i) => (
+                      <p key={i} style={{ margin: 0, lineHeight: 1.75, fontSize: fs.stem }}>{line}</p>
+                    ))}
+                  </div>
+                </div>
               </div>
+
+              {/* Right Column: Sub-questions and choices */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+                {currentPage.questions.map((q, localIdx) => renderQuestion(q, localIdx))}
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+              {currentPage.questions.map((q, localIdx) => renderQuestion(q, localIdx))}
             </div>
           )}
 
-          {/* Render individual questions for this page */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            {currentPage.questions.map((q, localIdx) => {
-              const expl = explanations[q.id];
-              const isRevealed = revealed[q.id];
-              const isFlagged = flaggedIds.has(q.id);
-              return (
-                <div 
-                  key={q.id} 
-                  id={`question-card-${q.id}`}
-                  style={{ 
-                    padding: currentPage.stem ? '1.5rem' : '0', 
-                    background: currentPage.stem ? 'rgba(255,255,255,0.02)' : 'transparent', 
-                    borderRadius: '12px', 
-                    border: currentPage.stem ? '1px solid rgba(255,255,255,0.05)' : 'none',
-                    transition: 'border-color 0.3s, box-shadow 0.3s'
-                  }}
-                >
-                  
-                  {/* Meta badges for sub-question */}
-                  <div className="question-meta" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                      <span className="badge badge-primary">
-                        Q{q.globalIndex + 1}
-                      </span>
-                      {q.category && (
-                        <span className="badge">{q.category}</span>
-                      )}
-                      {q.task && (
-                        <span className="badge">{q.task}</span>
-                      )}
-                      {q.source_exam && (
-                        <span className="badge" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
-                          📝 {q.source_exam}
-                        </span>
-                      )}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                      {/* Flag for Review Button */}
-                      <button
-                        onClick={() => toggleFlag(q.id)}
-                        style={{
-                          background: isFlagged ? 'rgba(245,158,11,0.2)' : 'none',
-                          border: isFlagged ? '1px solid rgba(245,158,11,0.4)' : '1px solid transparent',
-                          borderRadius: '6px',
-                          color: isFlagged ? '#f59e0b' : 'var(--text-muted)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '4px',
-                          fontSize: '0.8rem',
-                          cursor: 'pointer',
-                          padding: '0.25rem 0.5rem',
-                          fontWeight: isFlagged ? 700 : 500
-                        }}
-                        title={isFlagged ? 'ยกเลิกการปักธง' : 'ปักธงข้อนี้เพื่อกลับมาทบทวน'}
-                      >
-                        <Flag size={13} fill={isFlagged ? '#f59e0b' : 'none'} />
-                        {isFlagged ? 'ปักธงแล้ว' : 'ปักธง'}
-                      </button>
-
-                      {user && (
-                        <>
-                          <button
-                            onClick={() => toggleBookmark(q)}
-                            style={{ background: 'none', border: 'none', color: bookmarkedIds.has(q.id) ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0.2rem' }}
-                            title={bookmarkedIds.has(q.id) ? 'ลบบุ๊กมาร์ก' : 'บุ๊กมาร์กข้อนี้'}
-                          >
-                            {bookmarkedIds.has(q.id) ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}
-                          </button>
-                          <button
-                            onClick={() => toggleNoteEditor(q)}
-                            style={{ background: 'none', border: 'none', color: noteEditorOpen[q.id] || notes[q.id] ? 'var(--primary-light)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0.2rem' }}
-                            title="โน้ตส่วนตัว"
-                          >
-                            <StickyNote size={17} />
-                          </button>
-                        </>
-                      )}
-                      <button
-                        onClick={() => setReportingQuestionId(q.id)}
-                        style={{ background: 'none', border: 'none', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', cursor: 'pointer', padding: '0.2rem' }}
-                        title="แจ้งข้อผิดพลาด"
-                      >
-                        <AlertTriangle size={14} /> แจ้งปัญหา
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Personal note editor */}
-                  {noteEditorOpen[q.id] && user && (
-                    <div style={{ marginBottom: '1rem', padding: '0.9rem', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <StickyNote size={13} /> โน้ตส่วนตัวของคุณ (เห็นเฉพาะคุณ)
-                      </div>
-                      <textarea
-                        value={notes[q.id] || ''}
-                        onChange={(e) => setNotes(prev => ({ ...prev, [q.id]: e.target.value }))}
-                        placeholder="จดบันทึก สูตร หรือจุดที่ต้องจำสำหรับข้อนี้..."
-                        rows={3}
-                        style={{ width: '100%', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'var(--text)', padding: '0.6rem', fontSize: '0.9rem', resize: 'vertical', fontFamily: 'inherit' }}
-                      />
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-                        <button className="btn btn-primary btn-sm" onClick={() => saveNote(q)}>บันทึกโน้ต</button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Image (if no stem, or if this specific sub-question has its own image) */}
-                  {!currentPage.stem && q.image_path && (
-                    <div style={{ textAlign: 'center', margin: '1rem 0' }}>
-                      <img
-                        src={`${API_BASE}/images/${q.image_path}`}
-                        alt="Question Figure"
-                        style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.4)', cursor: 'pointer' }}
-                        onClick={() => { setLightboxImg(`${API_BASE}/images/${q.image_path}`); setZoom(1); setPan({x:0, y:0}); }}
-                      />
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>🔍 คลิกรูปภาพเพื่อซูมขยายเต็มจอ</div>
-                    </div>
-                  )}
-
-                  {/* Proposition or Question Text */}
-                  {currentPage.stem ? (
-                    <div className="question-proposition" style={{ marginTop: 0, fontSize: fs.prop }}>
-                      <span style={{ fontWeight: 700, color: 'var(--primary-light)', marginRight: '6px' }}>
-                        {q.globalIndex + 1}.
-                      </span>
-                      {cleanQuestionText(getProposition(q))}
-                    </div>
-                  ) : (
-                    <h2 style={{ fontSize: fs.prop, lineHeight: 1.65, marginBottom: '0.5rem', color: 'var(--text)' }}>
-                      <span style={{ fontWeight: 700, color: 'var(--primary-light)', marginRight: '8px' }}>
-                        {q.globalIndex + 1}.
-                      </span>
-                      {cleanQuestionText(q.question_text)}
-                    </h2>
-                  )}
-
-                  {/* Choices */}
-                  <div className="choice-list">
-                    {q.choices.map((choice) => {
-                      const selected = answers[q.id] === choice.label;
-                      const isEliminated = (eliminatedChoices[q.id] && eliminatedChoices[q.id].has(choice.label));
-                      const isCorrect = isRevealed && expl && expl.correct_answer === choice.label;
-                      const isWrongSelected = isRevealed && selected && expl && expl.correct_answer !== choice.label;
-                      let cls = 'choice-item';
-                      if (selected) cls += ' selected';
-                      if (isCorrect) cls += ' correct-reveal';
-                      if (isWrongSelected) cls += ' wrong-reveal';
-                      if (isEliminated) cls += ' eliminated';
-
-                      return (
-                        <div key={choice.id} className={cls} onClick={() => handleSelectChoice(q.id, choice.label)}>
-                          <div className="choice-label">{choice.label}</div>
-                          <div className="choice-text" style={{ flexGrow: 1, lineHeight: 1.55, fontSize: fs.choice }}>
-                            {choice.text}
-                          </div>
-                          
-                          {/* Strike-through / Elimination Button */}
-                          {!isRevealed && (
-                            <button
-                              type="button"
-                              className="choice-eliminate-btn"
-                              onClick={(e) => toggleEliminateChoice(q.id, choice.label, e)}
-                              title={isEliminated ? 'ยกเลิกการตัดช้อยส์' : 'ตัดช้อยส์ข้อนี้ทิ้ง'}
-                            >
-                              <Strikethrough size={13} />
-                              {isEliminated ? 'ยกเลิกตัด' : 'ตัดช้อยส์'}
-                            </button>
-                          )}
-
-                          {selected && !isRevealed && <CircleCheck size={19} color="var(--primary-light)" />}
-                          {isCorrect && <CircleCheck size={19} color="var(--success)" />}
-                          {isWrongSelected && <XCircle size={19} color="var(--danger)" />}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Confidence Level Selector */}
-                  <div className="confidence-selector">
-                    <span className="confidence-label">ระดับความมั่นใจ:</span>
-                    <button
-                      type="button"
-                      className={`confidence-btn green ${confidence[q.id] === 'confident' ? 'active' : ''}`}
-                      onClick={() => toggleConfidence(q.id, 'confident')}
-                      title="ทำแล้วมั่นใจ"
-                    >
-                      <CircleCheck size={15} /> มั่นใจ
-                    </button>
-                    <button
-                      type="button"
-                      className={`confidence-btn yellow ${confidence[q.id] === 'unsure' ? 'active' : ''}`}
-                      onClick={() => toggleConfidence(q.id, 'unsure')}
-                      title="ทำแล้วไม่มั่นใจ"
-                    >
-                      <HelpCircle size={15} /> ไม่มั่นใจ
-                    </button>
-                    <button
-                      type="button"
-                      className={`confidence-btn red ${confidence[q.id] === 'hard' ? 'active' : ''}`}
-                      onClick={() => toggleConfidence(q.id, 'hard')}
-                      title="ทำแล้วทำไม่ได้แต่ตอบ / เดา"
-                    >
-                      <AlertTriangle size={15} /> ทำไม่ได้ / เดา
-                    </button>
-                  </div>
-
-                  {/* Practice: reveal button + explanation */}
-                  {mode === 'practice' && (
-                    <div style={{ marginTop: '1.5rem' }}>
-                      <button
-                        className="btn btn-accent"
-                        onClick={() => toggleReveal(q)}
-                        disabled={expl && expl.loading}
-                        style={{ minWidth: '180px' }}
-                      >
-                        {expl && expl.loading ? (
-                          <><Loader2 size={17} className="spin" /> กำลังโหลด...</>
-                        ) : isRevealed ? (
-                          <>ซ่อนเฉลย</>
-                        ) : (
-                          <><Sparkles size={17} /> ดูเฉลยข้อ {q.globalIndex + 1} (AI)</>
-                        )}
-                      </button>
-
-                      {expl && expl.error && (
-                        <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(244,63,94,0.1)', borderRadius: '10px', border: '1px solid rgba(244,63,94,0.2)', color: '#fb7185', fontSize: '0.9rem' }}>
-                          <strong>ไม่สามารถโหลดเฉลยได้:</strong> {expl.error}
-                        </div>
-                      )}
-
-                      {isRevealed && expl && expl.explanation && (
-                        <ExplanationBox 
-                          explanation={expl.explanation} 
-                          correctAnswer={expl.correct_answer} 
-                          isCached={expl.cached} 
-                        />
-                      )}
-                    </div>
-                  )}
-
-                </div>
-              );
-            })}
-          </div>
         </div>
 
         {/* ── Question Dots ─────────────────────────── */}
