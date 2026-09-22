@@ -7,6 +7,7 @@ import AIHub from './components/AIHub';
 import LawStudyHub from './components/LawStudyHub';
 import AuthModal from './components/AuthModal';
 import ExamScheduleModal from './components/ExamScheduleModal';
+import ScheduledExamModal from './components/ScheduledExamModal';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { XCircle, User as UserIcon, LogOut, Sun, Moon, Scale, Clock } from 'lucide-react';
 import { API_BASE } from './config';
@@ -71,6 +72,7 @@ function AppContent() {
   const [years, setYears] = useState([]);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [scheduledModalData, setScheduledModalData] = useState(null);
   const [isLoadingExam, setIsLoadingExam] = useState(false);
 
   // Compute countdown for sticky header badge (Law 3/2569)
@@ -99,6 +101,61 @@ function AppContent() {
       setIsAuthModalOpen(true);
       return;
     }
+
+    const isExam = (config.mode === 'exam' || config.examType === 'exam');
+    const isMock70 = (config.year === '2570' || config.year === 2570 || config.targetExamId === 'mock-law-2570');
+
+    // Check if exam is a future scheduled round before opening time
+    if (isExam && !config.bypassSchedule) {
+      if (config.targetDate) {
+        const timeLeft = calculateTimeRemaining(config.targetDate);
+        if (!timeLeft.isExpired) {
+          setScheduledModalData({
+            examTitle: config.examTitle || 'การสอบประเมินความรู้ฯ (NL)',
+            dateText: config.examDateText || 'ตามกำหนดการจริง',
+            timeText: config.examTimeText || '',
+            timeLeft,
+            pendingConfig: config
+          });
+          return;
+        }
+      } else if (isMock70) {
+        const mock70TargetDate = '2026-09-26T13:00:00+07:00';
+        const timeLeft = calculateTimeRemaining(mock70TargetDate);
+        if (!timeLeft.isExpired) {
+          setScheduledModalData({
+            examTitle: 'ศ.ป.ท. Mock Exam 2570: กฎหมายและจรรยาบรรณวิชาชีพ',
+            dateText: 'วันเสาร์ที่ 26 กันยายน 2569',
+            timeText: '13:00 – 14:00 น. (60 นาที)',
+            timeLeft,
+            pendingConfig: config
+          });
+          return;
+        }
+      }
+    }
+
+    // If attempting to take clinical parts for year 2570 (which only has Mock 70 Law)
+    if (isMock70 && config.part && config.part !== 'law') {
+      const timeLeft = calculateTimeRemaining('2026-09-26T13:00:00+07:00');
+      setScheduledModalData({
+        examTitle: 'ศ.ป.ท. Mock Exam 2570: กฎหมายและจรรยาบรรณวิชาชีพ (Mock 70)',
+        dateText: 'วันเสาร์ที่ 26 กันยายน 2569',
+        timeText: '13:00 – 14:00 น. (60 นาที)',
+        timeLeft,
+        pendingConfig: {
+          category: 'กฎหมายและจรรยาบรรณ',
+          task: '',
+          count: 30,
+          year: '2570',
+          mode: 'practice',
+          ordered: true,
+          part: 'law'
+        }
+      });
+      return;
+    }
+
     setExamConfig(config);
     setExamMode(config.examType || config.mode || 'exam');
     setUserAnswers({});
@@ -108,7 +165,6 @@ function AppContent() {
     setIsLoadingExam(true);
     try {
       let timeLimit = null;
-      const isExam = (config.mode === 'exam' || config.examType === 'exam');
 
       if (isExam) {
         if (config.part && ['1', '2', '3', '4'].includes(String(config.part))) {
@@ -143,6 +199,23 @@ function AppContent() {
         const data = await res.json();
         
         if (!data || !Array.isArray(data) || data.length === 0) {
+          if (config.year === '2570' || config.year === 2570) {
+            setScheduledModalData({
+              examTitle: 'ศ.ป.ท. Mock Exam 2570: กฎหมายและจรรยาบรรณวิชาชีพ',
+              dateText: 'วันเสาร์ที่ 26 กันยายน 2569',
+              timeText: '13:00 – 14:00 น. (60 นาที)',
+              timeLeft: calculateTimeRemaining('2026-09-26T13:00:00+07:00'),
+              pendingConfig: {
+                category: 'กฎหมายและจรรยาบรรณ',
+                task: '',
+                count: 30,
+                year: '2570',
+                ordered: true,
+                part: 'law'
+              }
+            });
+            return;
+          }
           let msg = 'ไม่พบข้อสอบที่ตรงตามเงื่อนไขที่เลือก';
           if (config.category && config.year) {
             msg += `\n(สำหรับปี พ.ศ. ${config.year} อาจไม่มีข้อสอบในหมวด "${config.category}")`;
@@ -351,6 +424,11 @@ function AppContent() {
         onClose={() => setIsScheduleModalOpen(false)}
         onStartExam={startExam}
         onOpenLawHub={() => setCurrentView('law_hub')}
+      />
+      <ScheduledExamModal
+        data={scheduledModalData}
+        onClose={() => setScheduledModalData(null)}
+        onStartExam={startExam}
       />
 
       {/* ── Main Content ───────────────────────────── */}

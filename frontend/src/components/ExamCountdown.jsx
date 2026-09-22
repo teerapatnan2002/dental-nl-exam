@@ -33,7 +33,12 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
         year: '2570',
         mode: mode,
         ordered: true,
-        part: 'law'
+        part: 'law',
+        targetExamId: 'mock-law-2570',
+        targetDate: currentExam.targetDate,
+        examTitle: currentExam.title,
+        examTimeText: currentExam.examTimeText,
+        examDateText: currentExam.examDateText
       });
     } else if (currentExam.type === 'law') {
       onStartExam({
@@ -41,7 +46,12 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
         task: '',
         count: 30,
         mode: mode,
-        part: 'law'
+        part: 'law',
+        targetExamId: currentExam.id,
+        targetDate: currentExam.targetDate,
+        examTitle: currentExam.title,
+        examTimeText: currentExam.examTimeText,
+        examDateText: currentExam.examDateText
       });
     } else {
       onStartExam({
@@ -50,7 +60,12 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
         count: 150,
         mode: mode,
         part: 'day1',
-        ordered: true
+        ordered: true,
+        targetExamId: currentExam.id,
+        targetDate: currentExam.targetDate,
+        examTitle: currentExam.title,
+        examTimeText: currentExam.examTimeText,
+        examDateText: currentExam.examDateText
       });
     }
   };
