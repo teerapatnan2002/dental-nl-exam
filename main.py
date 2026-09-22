@@ -407,15 +407,36 @@ def generate_random_exam(
         query = query.filter(models.Question.task == task)
     if year:
         try:
-            y_be = int(year)
-            y_ce = y_be - 543
+            y_raw = str(year).strip()
+            y_val = int(y_raw)
+            # Support 2-digit Thai BE (e.g. 63 -> 2563, 65 -> 2565, 66 -> 2566)
+            if 50 <= y_val <= 99:
+                y_be = 2500 + y_val
+                y_ce = y_be - 543
+            # Support 2-digit CE (e.g. 20 -> 2020, 22 -> 2022)
+            elif 0 <= y_val < 50:
+                y_ce = 2000 + y_val
+                y_be = y_ce + 543
+            # Support 4-digit CE (e.g. 2020 to 2030)
+            elif 1900 <= y_val <= 2100:
+                y_ce = y_val
+                y_be = y_val + 543
+            # Support 4-digit BE (e.g. 2560 to 2575)
+            elif y_val >= 2400:
+                y_be = y_val
+                y_ce = y_val - 543
+            else:
+                y_be = y_val
+                y_ce = y_val - 543
+
             query = query.filter(
                 or_(
                     models.Question.source_exam.like(f"%{y_be}%"),
                     models.Question.source_exam.like(f"%{y_ce}%"),
+                    models.Question.source_exam.like(f"%{y_val}%"),
                 )
             )
-        except ValueError:
+        except (ValueError, TypeError):
             query = query.filter(models.Question.source_exam.like(f"%{year}%"))
 
     if part:

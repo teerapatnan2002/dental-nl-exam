@@ -71,6 +71,7 @@ function AppContent() {
   const [years, setYears] = useState([]);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [isLoadingExam, setIsLoadingExam] = useState(false);
 
   // Compute countdown for sticky header badge (Law 3/2569)
   const nextExam = EXAM_SCHEDULES[0];
@@ -104,6 +105,7 @@ function AppContent() {
     setAnalysisData(null);
     setStartTime(Date.now());
 
+    setIsLoadingExam(true);
     try {
       let timeLimit = null;
       const isExam = (config.mode === 'exam' || config.examType === 'exam');
@@ -124,6 +126,8 @@ function AppContent() {
 
       if (config.questions) {
         setQuestions(config.questions);
+        setExamConfig({ ...config, timeLimit });
+        setCurrentView('exam');
       } else {
         let url = `${API_BASE}/api/exam/random?n=` + config.count;
         if (config.category) url += '&category=' + encodeURIComponent(config.category);
@@ -136,13 +140,27 @@ function AppContent() {
         url += (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
         const res  = await fetch(url, { headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache', 'Expires': '0' } });
         const data = await res.json();
+        
+        if (!data || !Array.isArray(data) || data.length === 0) {
+          let msg = 'ไม่พบข้อสอบที่ตรงตามเงื่อนไขที่เลือก';
+          if (config.category && config.year) {
+            msg += `\n(สำหรับปี พ.ศ. ${config.year} อาจไม่มีข้อสอบในหมวด "${config.category}")`;
+          } else if (config.year) {
+            msg += `\n(สำหรับปี พ.ศ. ${config.year})`;
+          }
+          alert(msg);
+          return;
+        }
+
         setQuestions(data);
+        setExamConfig({ ...config, timeLimit });
+        setCurrentView('exam');
       }
-      setExamConfig({ ...config, timeLimit });
-      setCurrentView('exam');
     } catch (err) {
       console.error('Failed to fetch questions:', err);
       alert('Failed to start exam. Make sure backend is running.');
+    } finally {
+      setIsLoadingExam(false);
     }
   };
 
@@ -384,12 +402,40 @@ function AppContent() {
 
         {currentView === 'exam' && questions.length === 0 && (
           <div className="glass-panel animate-fade-in" style={{ padding: '3rem', textAlign: 'center', marginTop: '2rem' }}>
-            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
-            <h2 style={{ marginBottom: '0.5rem' }}>Loading questions...</h2>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>⚠️</div>
+            <h2 style={{ marginBottom: '0.5rem' }}>ไม่พบข้อสอบตามเงื่อนไขที่เลือก</h2>
             <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
-              If this takes too long, there might not be enough questions matching your criteria.
+              ไม่พบข้อสอบที่ตรงกับตัวกรองที่คุณเลือก (หรือปีที่เลือกอาจไม่มีข้อสอบในหมวดนี้ เช่น ปี 2565 มีเฉพาะข้อสอบคลินิก 4 Parts)
             </p>
-            <button className="btn btn-secondary" onClick={goHome}>Go Back</button>
+            <button className="btn btn-primary" onClick={goHome}>กลับสู่หน้าหลัก (Go Back)</button>
+          </div>
+        )}
+
+        {isLoadingExam && (
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(10, 15, 29, 0.82)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+          }}>
+            <div style={{
+              width: '46px',
+              height: '46px',
+              marginBottom: '1.25rem',
+              border: '3px solid rgba(255,255,255,0.15)',
+              borderTopColor: 'var(--primary-light)',
+              borderRadius: '50%',
+              animation: 'spin 0.8s linear infinite'
+            }} />
+            <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#fff' }}>กำลังจัดเตรียมชุดข้อสอบ...</h3>
+            <p style={{ margin: '0.5rem 0 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+              ดึงคำถามและตัวหลังจากคลังข้อสอบ กรุณารอสักครู่
+            </p>
           </div>
         )}
 

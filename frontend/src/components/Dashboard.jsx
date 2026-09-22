@@ -437,9 +437,9 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                         <div>
                           <div className="part-sim-name">🩺 Part 1</div>
                           <div className="part-sim-meta">
-                            <span>{selectedYearData.parts?.['1']?.count || 75} ข้อย่อ</span>
+                            <span>{selectedYearData.parts?.['1']?.count ?? 0} ข้อย่อ</span>
                             <span>•</span>
-                            <span>{selectedYearData.parts?.['1']?.stems || 25} STEM</span>
+                            <span>{selectedYearData.parts?.['1']?.stems ?? 0} STEM</span>
                           </div>
                         </div>
                         <div className="part-sim-time">
@@ -447,18 +447,26 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                         </div>
                       </div>
                       <div className="part-sim-actions">
-                        <button
-                          className="btn btn-primary btn-sm"
-                          onClick={() => handleStart('', '', 100, 'exam', true, false, '1')}
-                        >
-                          <PlayCircle size={14} /> เริ่มสอบ Part 1
-                        </button>
-                        <button
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => handleStart('', '', 100, 'practice', true, false, '1')}
-                        >
-                          <BookOpen size={14} /> ฝึกซ้อม
-                        </button>
+                        {(selectedYearData.parts?.['1']?.count || 0) > 0 ? (
+                          <>
+                            <button
+                              className="btn btn-primary btn-sm"
+                              onClick={() => handleStart('', '', 100, 'exam', true, false, '1')}
+                            >
+                              <PlayCircle size={14} /> เริ่มสอบ Part 1
+                            </button>
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => handleStart('', '', 100, 'practice', true, false, '1')}
+                            >
+                              <BookOpen size={14} /> ฝึกซ้อม
+                            </button>
+                          </>
+                        ) : (
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center', width: '100%', padding: '0.4rem 0' }}>
+                            (ไม่มีข้อสอบ Part 1 ในปีนี้)
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -468,9 +476,9 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                         <div>
                           <div className="part-sim-name">🩺 Part 2</div>
                           <div className="part-sim-meta">
-                            <span>{selectedYearData.parts?.['2']?.count || 75} ข้อย่อ</span>
+                            <span>{selectedYearData.parts?.['2']?.count ?? 0} ข้อย่อ</span>
                             <span>•</span>
-                            <span>{selectedYearData.parts?.['2']?.stems || 25} STEM</span>
+                            <span>{selectedYearData.parts?.['2']?.stems ?? 0} STEM</span>
                           </div>
                         </div>
                         <div className="part-sim-time">
@@ -478,18 +486,26 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                         </div>
                       </div>
                       <div className="part-sim-actions">
-                        <button
-                          className="btn btn-primary btn-sm"
-                          onClick={() => handleStart('', '', 100, 'exam', true, false, '2')}
-                        >
-                          <PlayCircle size={14} /> เริ่มสอบ Part 2
-                        </button>
-                        <button
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => handleStart('', '', 100, 'practice', true, false, '2')}
-                        >
-                          <BookOpen size={14} /> ฝึกซ้อม
-                        </button>
+                        {(selectedYearData.parts?.['2']?.count || 0) > 0 ? (
+                          <>
+                            <button
+                              className="btn btn-primary btn-sm"
+                              onClick={() => handleStart('', '', 100, 'exam', true, false, '2')}
+                            >
+                              <PlayCircle size={14} /> เริ่มสอบ Part 2
+                            </button>
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => handleStart('', '', 100, 'practice', true, false, '2')}
+                            >
+                              <BookOpen size={14} /> ฝึกซ้อม
+                            </button>
+                          </>
+                        ) : (
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center', width: '100%', padding: '0.4rem 0' }}>
+                            (ไม่มีข้อสอบ Part 2 ในปีนี้)
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -523,9 +539,9 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                         <div>
                           <div className="part-sim-name">🩺 Part 3</div>
                           <div className="part-sim-meta">
-                            <span>{selectedYearData.parts?.['3']?.count || 75} ข้อย่อ</span>
+                            <span>{selectedYearData.parts?.['3']?.count ?? 0} ข้อย่อ</span>
                             <span>•</span>
-                            <span>{selectedYearData.parts?.['3']?.stems || 25} STEM</span>
+                            <span>{selectedYearData.parts?.['3']?.stems ?? 0} STEM</span>
                           </div>
                         </div>
                         <div className="part-sim-time">
@@ -533,18 +549,26 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                         </div>
                       </div>
                       <div className="part-sim-actions">
-                        <button
-                          className="btn btn-accent btn-sm"
-                          onClick={() => handleStart('', '', 100, 'exam', true, false, '3')}
-                        >
-                          <PlayCircle size={14} /> เริ่มสอบ Part 3
-                        </button>
-                        <button
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => handleStart('', '', 100, 'practice', true, false, '3')}
-                        >
-                          <BookOpen size={14} /> ฝึกซ้อม
-                        </button>
+                        {(selectedYearData.parts?.['3']?.count || 0) > 0 ? (
+                          <>
+                            <button
+                              className="btn btn-accent btn-sm"
+                              onClick={() => handleStart('', '', 100, 'exam', true, false, '3')}
+                            >
+                              <PlayCircle size={14} /> เริ่มสอบ Part 3
+                            </button>
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => handleStart('', '', 100, 'practice', true, false, '3')}
+                            >
+                              <BookOpen size={14} /> ฝึกซ้อม
+                            </button>
+                          </>
+                        ) : (
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center', width: '100%', padding: '0.4rem 0' }}>
+                            (ไม่มีข้อสอบ Part 3 ในปีนี้)
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -554,9 +578,9 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                         <div>
                           <div className="part-sim-name">🩺 Part 4</div>
                           <div className="part-sim-meta">
-                            <span>{selectedYearData.parts?.['4']?.count || 75} ข้อย่อ</span>
+                            <span>{selectedYearData.parts?.['4']?.count ?? 0} ข้อย่อ</span>
                             <span>•</span>
-                            <span>{selectedYearData.parts?.['4']?.stems || 25} STEM</span>
+                            <span>{selectedYearData.parts?.['4']?.stems ?? 0} STEM</span>
                           </div>
                         </div>
                         <div className="part-sim-time">
@@ -564,18 +588,26 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                         </div>
                       </div>
                       <div className="part-sim-actions">
-                        <button
-                          className="btn btn-accent btn-sm"
-                          onClick={() => handleStart('', '', 100, 'exam', true, false, '4')}
-                        >
-                          <PlayCircle size={14} /> เริ่มสอบ Part 4
-                        </button>
-                        <button
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => handleStart('', '', 100, 'practice', true, false, '4')}
-                        >
-                          <BookOpen size={14} /> ฝึกซ้อม
-                        </button>
+                        {(selectedYearData.parts?.['4']?.count || 0) > 0 ? (
+                          <>
+                            <button
+                              className="btn btn-accent btn-sm"
+                              onClick={() => handleStart('', '', 100, 'exam', true, false, '4')}
+                            >
+                              <PlayCircle size={14} /> เริ่มสอบ Part 4
+                            </button>
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => handleStart('', '', 100, 'practice', true, false, '4')}
+                            >
+                              <BookOpen size={14} /> ฝึกซ้อม
+                            </button>
+                          </>
+                        ) : (
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center', width: '100%', padding: '0.4rem 0' }}>
+                            (ไม่มีข้อสอบ Part 4 ในปีนี้)
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -590,7 +622,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       <div>
                         <div className="part-sim-name" style={{ color: 'var(--danger)' }}>⚖️ กฎหมายและจรรยาบรรณ</div>
                         <div className="part-sim-meta">
-                          <span>{selectedYearData.law_count || 30} ข้อ</span>
+                          <span>{selectedYearData.law_count > 0 ? `${selectedYearData.law_count} ข้อ` : 'ไม่มีข้อสอบกฎหมายในปีนี้'}</span>
                           <span>•</span>
                           <span>พ.ร.บ. & วิชาชีพ</span>
                         </div>
@@ -600,20 +632,39 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       </div>
                     </div>
                     <div className="part-sim-actions" style={{ marginTop: '1rem' }}>
-                      <button
-                        className="btn btn-sm"
-                        style={{ background: 'rgba(244,63,94,0.2)', color: '#fb7185', border: '1px solid rgba(244,63,94,0.4)', flex: 1 }}
-                        onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 100, 'exam', true, false, 'law')}
-                      >
-                        <ShieldAlert size={14} /> สอบกฎหมาย
-                      </button>
-                      <button
-                        className="btn btn-secondary btn-sm"
-                        style={{ flex: 1 }}
-                        onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 100, 'practice', true, false, 'law')}
-                      >
-                        <BookOpen size={14} /> ฝึกซ้อม
-                      </button>
+                      {selectedYearData.law_count > 0 ? (
+                        <>
+                          <button
+                            className="btn btn-sm"
+                            style={{ background: 'rgba(244,63,94,0.2)', color: '#fb7185', border: '1px solid rgba(244,63,94,0.4)', flex: 1 }}
+                            onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 100, 'exam', true, false, 'law')}
+                          >
+                            <ShieldAlert size={14} /> สอบกฎหมาย
+                          </button>
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            style={{ flex: 1 }}
+                            onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 100, 'practice', true, false, 'law')}
+                          >
+                            <BookOpen size={14} /> ฝึกซ้อม
+                          </button>
+                        </>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
+                          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textAlign: 'center' }}>
+                            (ปี พ.ศ. {selectedYearData.year} มีเฉพาะข้อสอบทฤษฎีคลินิก 4 Parts)
+                          </div>
+                          {onOpenLawHub && (
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              style={{ width: '100%', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}
+                              onClick={onOpenLawHub}
+                            >
+                              🎴 ไปฝึกข้อสอบกฎหมายรวมทุกปี (Law Hub)
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
