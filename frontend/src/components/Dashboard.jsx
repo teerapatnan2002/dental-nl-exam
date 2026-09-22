@@ -420,27 +420,31 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                 borderRadius: '20px',
                 border: '1px solid rgba(236, 72, 153, 0.35)',
                 background: 'linear-gradient(135deg, rgba(20, 15, 35, 0.95) 0%, rgba(35, 15, 40, 0.9) 100%)',
-                boxShadow: '0 12px 36px rgba(236, 72, 153, 0.12)'
+                boxShadow: '0 12px 36px rgba(236, 72, 153, 0.12)',
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
+                overflow: 'hidden'
               }}>
                 {/* ── Mock 70 Header ── */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
-                  <div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.3rem 0.8rem', borderRadius: '20px', background: mock70TimeLeft.isExpired ? 'rgba(236, 72, 153, 0.15)' : 'rgba(244, 63, 94, 0.18)', border: '1px solid ' + (mock70TimeLeft.isExpired ? 'rgba(236, 72, 153, 0.4)' : 'rgba(244, 63, 94, 0.5)'), color: mock70TimeLeft.isExpired ? '#f472b6' : '#fb7185', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.6rem' }}>
                       {mock70TimeLeft.isExpired ? <Flame size={14} /> : <Lock size={14} />} {mock70TimeLeft.isExpired ? 'เปิดห้องสอบแล้ว' : '🔒 ล็อคระบบ • รอเปิดสอบพร้อมกันวันเสาร์นี้ 13:00 น.'}
                     </div>
-                    <h2 style={{ fontSize: '1.6rem', fontWeight: 800, margin: '0 0 0.4rem 0', color: '#fff', letterSpacing: '-0.02em' }}>
+                    <h2 style={{ fontSize: '1.6rem', fontWeight: 800, margin: '0 0 0.4rem 0', color: '#fff', letterSpacing: '-0.02em', wordBreak: 'break-word' }}>
                       🎯 ศ.ป.ท. Mock Exam 2570: กฎหมายและจรรยาบรรณวิชาชีพ
                     </h2>
-                    <div style={{ color: 'var(--text-sub)', fontSize: '0.95rem', maxWidth: '680px', lineHeight: 1.5 }}>
+                    <div style={{ color: 'var(--text-sub)', fontSize: '0.95rem', maxWidth: '680px', lineHeight: 1.5, wordBreak: 'break-word' }}>
                       ชุดข้อสอบจำลองเสมือนจริง <strong>30 ข้อ (10 STEM สถานการณ์คลินิก × 3 ข้อย่อย)</strong> ระบบตั้งล็อคไว้เพื่อเปิดสอบพร้อมกันในวันเสาร์ที่ 26 ก.ย. 69 เวลา 13:00 – 14:00 น. โดยไม่มีการเปิดสอบหรือฝึกทำล่วงหน้า
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-                    <div className="badge badge-accent" style={{ fontSize: '0.85rem', padding: '0.4rem 0.85rem', background: mock70TimeLeft.isExpired ? 'linear-gradient(135deg, #ec4899, #be185d)' : 'rgba(244, 63, 94, 0.25)', border: '1px solid rgba(244, 63, 94, 0.4)', color: '#fff' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem', flexShrink: 0 }}>
+                    <div className="badge badge-accent" style={{ fontSize: '0.85rem', padding: '0.4rem 0.85rem', background: mock70TimeLeft.isExpired ? 'linear-gradient(135deg, #ec4899, #be185d)' : 'rgba(244, 63, 94, 0.25)', border: '1px solid rgba(244, 63, 94, 0.4)', color: '#fff', whiteSpace: 'nowrap' }}>
                       {mock70TimeLeft.isExpired ? '30 ข้อ • 60 นาที' : '🔒 ล็อค 30 ข้อ'}
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                       เกณฑ์ผ่าน: 60% (18/30 ข้อ)
                     </div>
                   </div>
@@ -449,30 +453,32 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                 {/* ── Schedule & Live Countdown Banner ── */}
                 <div style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
                   gap: '1.25rem',
                   marginBottom: '1.75rem',
                   background: 'rgba(15, 23, 42, 0.65)',
                   padding: '1.25rem 1.5rem',
                   borderRadius: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.08)'
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  width: '100%',
+                  boxSizing: 'border-box'
                 }}>
                   {/* Schedule Info */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', justifyContent: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#f472b6', fontWeight: 700, fontSize: '0.95rem' }}>
-                      <Calendar size={16} /> กำหนดการเปิดสอบรอบเสมือนจริง (ตามตารางจริง ศ.ป.ท.)
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', justifyContent: 'center', minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#f472b6', fontWeight: 700, fontSize: '0.95rem', flexWrap: 'wrap' }}>
+                      <Calendar size={16} style={{ flexShrink: 0 }} /> กำหนดการเปิดสอบรอบเสมือนจริง (ตามตารางจริง ศ.ป.ท.)
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.88rem', color: 'var(--text)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ color: 'var(--text-muted)', width: '90px' }}>🗓️ วันที่สอบ:</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <span style={{ color: 'var(--text-muted)', width: '90px', flexShrink: 0 }}>🗓️ วันที่สอบ:</span>
                         <strong>วันเสาร์ที่ 26 กันยายน 2569</strong>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ color: 'var(--text-muted)', width: '90px' }}>⏰ เวลาสอบ:</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <span style={{ color: 'var(--text-muted)', width: '90px', flexShrink: 0 }}>⏰ เวลาสอบ:</span>
                         <strong style={{ color: '#ec4899' }}>13:00 – 14:00 น.</strong>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ color: 'var(--text-muted)', width: '90px' }}>⏳ ระยะเวลา:</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <span style={{ color: 'var(--text-muted)', width: '90px', flexShrink: 0 }}>⏳ ระยะเวลา:</span>
                         <span><strong>60 นาที</strong> (1 ชั่วโมงเต็มตามเวลาสอบจริง)</span>
                       </div>
                     </div>
@@ -488,12 +494,14 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                     borderRadius: '12px',
                     background: 'rgba(236, 72, 153, 0.08)',
                     border: '1px solid rgba(236, 72, 153, 0.25)',
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    minWidth: 0,
+                    boxSizing: 'border-box'
                   }}>
-                    <div style={{ fontSize: '0.78rem', color: '#f472b6', fontWeight: 600, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <div style={{ fontSize: '0.78rem', color: '#f472b6', fontWeight: 600, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
                       {mock70TimeLeft.isExpired ? <Clock size={13} /> : <Lock size={13} />} {mock70TimeLeft.isExpired ? '🔥 ระบบเปิดให้สอบรอบจริงแล้ว' : '🔒 ห้องสอบล็อคอยู่ • นับถอยหลังสู่เวลาเปิดสอบวันเสาร์นี้ (13:00 น.)'}
                     </div>
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', margin: '0.2rem 0' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', margin: '0.2rem 0', flexWrap: 'wrap', justifyContent: 'center' }}>
                       <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.4rem 0.6rem', borderRadius: '8px', minWidth: '46px' }}>
                         <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.days).padStart(2, '0')}</div>
                         <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>วัน</div>
@@ -520,21 +528,23 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                   </div>
                 </div>
 
-                {/* ── Main Action Buttons Grid ── */}
+                {/* ── Main Action Buttons Grid (3 Clean Responsive Cards) ── */}
                 <div style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
                   gap: '1rem',
-                  marginBottom: '2rem'
+                  marginBottom: '2rem',
+                  width: '100%',
+                  boxSizing: 'border-box'
                 }}>
                   {/* 1. Real Exam Simulation Mode */}
                   <button
+                    type="button"
                     onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 30, 'exam', true, false, 'law', '2570')}
-                    className="btn"
                     style={{
                       background: mock70TimeLeft.isExpired
                         ? 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)'
-                        : 'linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(190, 24, 93, 0.2) 100%)',
+                        : 'linear-gradient(135deg, rgba(236, 72, 153, 0.22) 0%, rgba(190, 24, 93, 0.18) 100%)',
                       color: '#ffffff',
                       border: '1px solid ' + (mock70TimeLeft.isExpired ? 'transparent' : 'rgba(236, 72, 153, 0.4)'),
                       padding: '1.25rem',
@@ -543,29 +553,34 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       flexDirection: 'column',
                       alignItems: 'flex-start',
                       textAlign: 'left',
-                      gap: '0.4rem',
+                      gap: '0.45rem',
                       boxShadow: mock70TimeLeft.isExpired ? '0 6px 20px rgba(236, 72, 153, 0.35)' : 'none',
                       cursor: 'pointer',
-                      transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+                      transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                      width: '100%',
+                      minWidth: 0,
+                      boxSizing: 'border-box',
+                      whiteSpace: 'normal'
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.05rem', color: mock70TimeLeft.isExpired ? '#fff' : '#f472b6' }}>
-                        {mock70TimeLeft.isExpired ? <PlayCircle size={20} /> : <Lock size={19} />} {mock70TimeLeft.isExpired ? 'เข้าสอบจำลองเสมือนจริง (Exam Mode)' : 'เข้าห้องสอบ Mock Test 70'}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 800, fontSize: '1.02rem', color: mock70TimeLeft.isExpired ? '#fff' : '#f472b6', minWidth: 0, wordBreak: 'break-word' }}>
+                        {mock70TimeLeft.isExpired ? <PlayCircle size={19} style={{ flexShrink: 0 }} /> : <Lock size={18} style={{ flexShrink: 0 }} />}
+                        <span>{mock70TimeLeft.isExpired ? 'เข้าสอบจำลองเสมือนจริง (Exam Mode)' : 'เข้าห้องสอบ Mock Test 70'}</span>
                       </div>
-                      <span style={{ background: mock70TimeLeft.isExpired ? 'rgba(255,255,255,0.2)' : 'rgba(236, 72, 153, 0.3)', color: mock70TimeLeft.isExpired ? '#fff' : '#fbcfe8', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 700 }}>
+                      <span style={{ background: mock70TimeLeft.isExpired ? 'rgba(255,255,255,0.2)' : 'rgba(236, 72, 153, 0.3)', color: mock70TimeLeft.isExpired ? '#fff' : '#fbcfe8', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 700, flexShrink: 0, whiteSpace: 'nowrap' }}>
                         {mock70TimeLeft.isExpired ? '60 นาที' : '🔒 รอเปิดเสาร์นี้'}
                       </span>
                     </div>
-                    <div style={{ fontSize: '0.82rem', color: mock70TimeLeft.isExpired ? 'rgba(255,255,255,0.9)' : 'var(--text-sub)', lineHeight: 1.4 }}>
+                    <div style={{ fontSize: '0.82rem', color: mock70TimeLeft.isExpired ? 'rgba(255,255,255,0.9)' : 'var(--text-sub)', lineHeight: 1.45, whiteSpace: 'normal', wordBreak: 'break-word' }}>
                       {mock70TimeLeft.isExpired ? 'จับเวลาถอยหลัง 60 นาที ไม่แสดงเฉลยระหว่างทำ ประมวลผลและตัดเกรดเสมือนห้องสอบจริง' : 'ระบบจะปลดล็อคให้เข้าสอบพร้อมกันในวันเสาร์ที่ 26 ก.ย. เวลา 13:00 น. (จับเวลา 60 นาที)'}
                     </div>
                   </button>
 
                   {/* 2. Practice Mode */}
                   <button
+                    type="button"
                     onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 30, 'practice', true, false, 'law', '2570')}
-                    className="btn"
                     style={{
                       background: 'rgba(255, 255, 255, 0.03)',
                       color: 'var(--text-muted)',
@@ -576,26 +591,33 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       flexDirection: 'column',
                       alignItems: 'flex-start',
                       textAlign: 'left',
-                      gap: '0.4rem',
+                      gap: '0.45rem',
                       cursor: 'pointer',
-                      transition: 'all 0.15s ease'
+                      transition: 'all 0.15s ease',
+                      width: '100%',
+                      minWidth: 0,
+                      boxSizing: 'border-box',
+                      whiteSpace: 'normal'
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-sub)' }}>
-                        <Lock size={18} /> โหมดฝึกซ้อม (เปิดพร้อมวันเสาร์)
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 800, fontSize: '1.02rem', color: 'var(--text-sub)', minWidth: 0, wordBreak: 'break-word' }}>
+                        <Lock size={18} style={{ flexShrink: 0 }} />
+                        <span>โหมดฝึกซ้อม (เปิดพร้อมวันเสาร์)</span>
                       </div>
-                      <span style={{ background: 'rgba(255, 255, 255, 0.08)', color: 'var(--text-muted)', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>🔒 ล็อค</span>
+                      <span style={{ background: 'rgba(255, 255, 255, 0.08)', color: 'var(--text-muted)', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                        🔒 ล็อค
+                      </span>
                     </div>
-                    <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.45, whiteSpace: 'normal', wordBreak: 'break-word' }}>
                       ไม่มีการสอบหรือฝึกทำล่วงหน้า ข้อสอบจะเปิดให้ทำพร้อมกันวันเสาร์ที่ 26 ก.ย. เวลา 13:00 น.
                     </div>
                   </button>
 
                   {/* 3. Law Hub / Flashcards */}
                   <button
+                    type="button"
                     onClick={() => onOpenLawHub && onOpenLawHub()}
-                    className="btn"
                     style={{
                       background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.18) 0%, rgba(236, 72, 153, 0.18) 100%)',
                       color: '#fb7185',
@@ -606,49 +628,26 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       flexDirection: 'column',
                       alignItems: 'flex-start',
                       textAlign: 'left',
-                      gap: '0.4rem',
+                      gap: '0.45rem',
                       cursor: 'pointer',
-                      transition: 'all 0.15s ease'
+                      transition: 'all 0.15s ease',
+                      width: '100%',
+                      minWidth: 0,
+                      boxSizing: 'border-box',
+                      whiteSpace: 'normal'
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.05rem', color: '#fff' }}>
-                        <Sparkles size={20} color="#ec4899" /> ทบทวนสรุปมาตรา & Flashcards
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 800, fontSize: '1.02rem', color: '#fff', minWidth: 0, wordBreak: 'break-word' }}>
+                        <Sparkles size={19} color="#ec4899" style={{ flexShrink: 0 }} />
+                        <span>ทบทวนสรุปมาตรา & Flashcards</span>
                       </div>
-                      <span style={{ background: 'rgba(236, 72, 153, 0.25)', color: '#f472b6', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 700 }}>อ่านได้ทันที</span>
+                      <span style={{ background: 'rgba(236, 72, 153, 0.25)', color: '#f472b6', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 700, flexShrink: 0, whiteSpace: 'nowrap' }}>
+                        อ่านได้ทันที
+                      </span>
                     </div>
-                    <div style={{ fontSize: '0.82rem', color: 'var(--text-sub)', lineHeight: 1.4 }}>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-sub)', lineHeight: 1.45, whiteSpace: 'normal', wordBreak: 'break-word' }}>
                       อ่านสรุปหัวใจสำคัญ พ.ร.บ. วิชาชีพ, พ.ร.บ. สถานพยาบาล, ทันตนิติเวช และ Flashcards ระหว่างรอวันเสาร์
-                    </div>
-                  </button>
-
-                  {/* 3. Law Hub / Flashcards */}
-                  <button
-                    onClick={() => onOpenLawHub && onOpenLawHub()}
-                    className="btn"
-                    style={{
-                      background: 'rgba(244, 63, 94, 0.08)',
-                      color: '#fb7185',
-                      border: '1px solid rgba(244, 63, 94, 0.25)',
-                      padding: '1.25rem',
-                      borderRadius: '16px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-start',
-                      textAlign: 'left',
-                      gap: '0.4rem',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.05rem' }}>
-                        <Sparkles size={20} /> สรุปมาตรา & Flashcards กฎหมาย
-                      </div>
-                      <span style={{ background: 'rgba(244, 63, 94, 0.2)', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>ติวเข้ม</span>
-                    </div>
-                    <div style={{ fontSize: '0.82rem', color: 'var(--text-sub)', lineHeight: 1.4 }}>
-                      สรุปหัวใจสำคัญของ พ.ร.บ. วิชาชีพ, พ.ร.บ. สถานพยาบาล, ทันตนิติเวช และแนววินิจฉัยคดี
                     </div>
                   </button>
                 </div>
