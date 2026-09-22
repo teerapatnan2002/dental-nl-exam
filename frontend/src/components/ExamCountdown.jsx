@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Calendar, AlertTriangle, ArrowRight, BookOpen, PlayCircle, Info, Sparkles, ChevronRight } from 'lucide-react';
+import { Clock, Calendar, AlertTriangle, ArrowRight, BookOpen, PlayCircle, Info, Sparkles, ChevronRight, Lock } from 'lucide-react';
 import { EXAM_SCHEDULES, calculateTimeRemaining } from '../data/examSchedule';
 
 export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenScheduleModal }) {
@@ -218,52 +218,122 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
 
           {/* Quick Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginTop: '1.1rem', flexWrap: 'wrap' }}>
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={() => handleStartExamQuick('exam')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                borderRadius: '8px',
-                padding: '0.45rem 0.9rem',
-                fontSize: '0.82rem'
-              }}
-            >
-              <PlayCircle size={15} /> {currentExam.quickAction.label}
-            </button>
+            {currentExam.id === 'mock-law-2570' && !timeLeft.isExpired ? (
+              <>
+                <button
+                  className="btn btn-sm"
+                  onClick={() => handleStartExamQuick('exam')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    borderRadius: '8px',
+                    padding: '0.45rem 0.9rem',
+                    fontSize: '0.82rem',
+                    background: 'linear-gradient(135deg, rgba(244, 63, 94, 0.2) 0%, rgba(225, 29, 72, 0.25) 100%)',
+                    border: '1px solid rgba(244, 63, 94, 0.45)',
+                    color: '#fb7185',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                  title="คลิกเพื่อดูกำหนดการเปิดห้องสอบ"
+                >
+                  <Lock size={15} /> {currentExam.quickAction.label}
+                </button>
 
-            <button
-              className="btn btn-secondary btn-sm"
-              onClick={() => handleStartExamQuick('practice')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                borderRadius: '8px',
-                padding: '0.45rem 0.85rem',
-                fontSize: '0.82rem'
-              }}
-              title="ฝึกซ้อมพร้อมดูเฉลยละเอียดทีละข้อ"
-            >
-              <BookOpen size={14} /> ฝึกซ้อม (เฉลยทันที)
-            </button>
+                <button
+                  className="btn btn-sm"
+                  onClick={() => handleStartExamQuick('practice')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    borderRadius: '8px',
+                    padding: '0.45rem 0.85rem',
+                    fontSize: '0.82rem',
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: 'var(--text-muted)',
+                    cursor: 'pointer'
+                  }}
+                  title="ข้อสอบถูกล็อค เปิดให้ทำพร้อมกันวันเสาร์ 13:00 น. ไม่มีเปิดก่อน"
+                >
+                  <Lock size={14} /> 🔒 โหมดฝึกซ้อม (เปิดพร้อมวันเสาร์)
+                </button>
 
-            {currentExam.type === 'law' && onOpenLawHub && (
-              <button
-                className="btn btn-secondary btn-sm"
-                onClick={onOpenLawHub}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  borderRadius: '8px',
-                  padding: '0.45rem 0.85rem',
-                  fontSize: '0.82rem'
-                }}
-              >
-                <BookOpen size={14} /> สรุปกฎหมาย & Flashcards
-              </button>
+                {onOpenLawHub && (
+                  <button
+                    className="btn btn-sm"
+                    onClick={onOpenLawHub}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      borderRadius: '8px',
+                      padding: '0.45rem 0.85rem',
+                      fontSize: '0.82rem',
+                      background: 'linear-gradient(135deg, #7c3aed 0%, #ec4899 100%)',
+                      color: '#ffffff',
+                      border: 'none',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(236, 72, 153, 0.25)'
+                    }}
+                  >
+                    <Sparkles size={14} /> 🎴 ทบทวนสรุปมาตรา & Flashcards
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={() => handleStartExamQuick('exam')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    borderRadius: '8px',
+                    padding: '0.45rem 0.9rem',
+                    fontSize: '0.82rem'
+                  }}
+                >
+                  <PlayCircle size={15} /> {currentExam.quickAction.label}
+                </button>
+
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => handleStartExamQuick('practice')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    borderRadius: '8px',
+                    padding: '0.45rem 0.85rem',
+                    fontSize: '0.82rem'
+                  }}
+                  title="ฝึกซ้อมพร้อมดูเฉลยละเอียดทีละข้อ"
+                >
+                  <BookOpen size={14} /> ฝึกซ้อม (เฉลยทันที)
+                </button>
+
+                {currentExam.type === 'law' && onOpenLawHub && (
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    onClick={onOpenLawHub}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      borderRadius: '8px',
+                      padding: '0.45rem 0.85rem',
+                      fontSize: '0.82rem'
+                    }}
+                  >
+                    <BookOpen size={14} /> สรุปกฎหมาย & Flashcards
+                  </button>
+                )}
+              </>
             )}
 
             <button

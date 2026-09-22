@@ -3,7 +3,15 @@ import re
 import json
 import random
 import logging
+from datetime import datetime, timezone, timedelta
 from typing import List, Optional
+
+TZ_BKK = timezone(timedelta(hours=7))
+MOCK_70_OPEN_TIME = datetime(2026, 9, 26, 13, 0, 0, tzinfo=TZ_BKK)
+
+def is_mock_70_locked() -> bool:
+    return datetime.now(TZ_BKK) < MOCK_70_OPEN_TIME
+
 
 from fastapi import FastAPI, Depends, HTTPException, Query, Request
 from fastapi.responses import FileResponse
@@ -333,6 +341,9 @@ def get_questions(
     if task:
         query = query.filter(models.Question.task == task)
 
+    if is_mock_70_locked():
+        query = query.filter(~models.Question.source_exam.like("%2570%"))
+
     questions = query.offset(skip).limit(limit).all()
     return [_serialize_question(q) for q in questions]
 
@@ -366,6 +377,9 @@ def search_questions(
         question_ids = [r[0] for r in rows]
 
     query = db.query(models.Question).options(selectinload(models.Question.choices))
+    if is_mock_70_locked():
+        query = query.filter(~models.Question.source_exam.like("%2570%"))
+
     if question_ids:
         query = query.filter(models.Question.id.in_(question_ids))
     elif not use_fts:
@@ -429,6 +443,12 @@ def generate_random_exam(
                 y_be = y_val
                 y_ce = y_val - 543
 
+            if is_mock_70_locked() and (y_be == 2570 or y_val == 70 or y_ce == 2027):
+                raise HTTPException(
+                    status_code=403,
+                    detail="ห้องสอบ Mock 70 ถูกล็อคตามกำหนดการ ระบบจะเปิดสอบพร้อมกันในวันเสาร์ที่ 26 กันยายน 2569 เวลา 13:00 น. ไม่มีการเปิดสอบหรือฝึกทำล่วงหน้า"
+                )
+
             query = query.filter(
                 or_(
                     models.Question.source_exam.like(f"%{y_be}%"),
@@ -436,8 +456,19 @@ def generate_random_exam(
                     models.Question.source_exam.like(f"%{y_val}%"),
                 )
             )
+        except HTTPException:
+            raise
         except (ValueError, TypeError):
+            if is_mock_70_locked() and "2570" in str(year):
+                raise HTTPException(
+                    status_code=403,
+                    detail="ห้องสอบ Mock 70 ถูกล็อคตามกำหนดการ ระบบจะเปิดสอบพร้อมกันในวันเสาร์ที่ 26 กันยายน 2569 เวลา 13:00 น. ไม่มีการเปิดสอบหรือฝึกทำล่วงหน้า"
+                )
             query = query.filter(models.Question.source_exam.like(f"%{year}%"))
+    else:
+        # Exclude locked Mock 70 questions from general randomized queries before opening
+        if is_mock_70_locked():
+            query = query.filter(~models.Question.source_exam.like("%2570%"))
 
     if part:
         p_str = str(part).strip().lower()

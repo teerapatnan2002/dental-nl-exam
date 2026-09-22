@@ -105,33 +105,33 @@ function AppContent() {
     const isExam = (config.mode === 'exam' || config.examType === 'exam');
     const isMock70 = (config.year === '2570' || config.year === 2570 || config.targetExamId === 'mock-law-2570');
 
-    // Check if exam is a future scheduled round before opening time
-    if (isExam && !config.bypassSchedule) {
-      if (config.targetDate) {
-        const timeLeft = calculateTimeRemaining(config.targetDate);
-        if (!timeLeft.isExpired) {
-          setScheduledModalData({
-            examTitle: config.examTitle || 'การสอบประเมินความรู้ฯ (NL)',
-            dateText: config.examDateText || 'ตามกำหนดการจริง',
-            timeText: config.examTimeText || '',
-            timeLeft,
-            pendingConfig: config
-          });
-          return;
-        }
-      } else if (isMock70) {
-        const mock70TargetDate = '2026-09-26T13:00:00+07:00';
-        const timeLeft = calculateTimeRemaining(mock70TargetDate);
-        if (!timeLeft.isExpired) {
-          setScheduledModalData({
-            examTitle: 'ศ.ป.ท. Mock Exam 2570: กฎหมายและจรรยาบรรณวิชาชีพ',
-            dateText: 'วันเสาร์ที่ 26 กันยายน 2569',
-            timeText: '13:00 – 14:00 น. (60 นาที)',
-            timeLeft,
-            pendingConfig: config
-          });
-          return;
-        }
+    // Strict lock: Mock 70 does not allow taking exam or practice before Saturday 13:00
+    if (isMock70) {
+      const mock70TargetDate = '2026-09-26T13:00:00+07:00';
+      const timeLeft = calculateTimeRemaining(mock70TargetDate);
+      if (!timeLeft.isExpired) {
+        setScheduledModalData({
+          examTitle: 'ศ.ป.ท. Mock Exam 2570: กฎหมายและจรรยาบรรณวิชาชีพ',
+          dateText: 'วันเสาร์ที่ 26 กันยายน 2569',
+          timeText: '13:00 – 14:00 น. (60 นาที)',
+          timeLeft,
+          pendingConfig: config
+        });
+        return;
+      }
+    }
+
+    if (config.targetDate) {
+      const timeLeft = calculateTimeRemaining(config.targetDate);
+      if (!timeLeft.isExpired) {
+        setScheduledModalData({
+          examTitle: config.examTitle || 'การสอบประเมินความรู้ฯ (NL)',
+          dateText: config.examDateText || 'ตามกำหนดการจริง',
+          timeText: config.examTimeText || '',
+          timeLeft,
+          pendingConfig: config
+        });
+        return;
       }
     }
 
@@ -196,23 +196,32 @@ function AppContent() {
 
         url += (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
         const res  = await fetch(url, { headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache', 'Expires': '0' } });
-        const data = await res.json();
-        
-        if (!data || !Array.isArray(data) || data.length === 0) {
-          if (config.year === '2570' || config.year === 2570) {
+        if (res.status === 403 || !res.ok) {
+          if (config.year === '2570' || config.year === 2570 || config.targetExamId === 'mock-law-2570') {
             setScheduledModalData({
               examTitle: 'ศ.ป.ท. Mock Exam 2570: กฎหมายและจรรยาบรรณวิชาชีพ',
               dateText: 'วันเสาร์ที่ 26 กันยายน 2569',
               timeText: '13:00 – 14:00 น. (60 นาที)',
               timeLeft: calculateTimeRemaining('2026-09-26T13:00:00+07:00'),
-              pendingConfig: {
-                category: 'กฎหมายและจรรยาบรรณ',
-                task: '',
-                count: 30,
-                year: '2570',
-                ordered: true,
-                part: 'law'
-              }
+              pendingConfig: null
+            });
+            return;
+          }
+          const errData = await res.json().catch(() => ({}));
+          alert(errData.detail || 'เกิดข้อผิดพลาดในการโหลดข้อสอบ');
+          return;
+        }
+
+        const data = await res.json();
+        
+        if (!data || !Array.isArray(data) || data.length === 0) {
+          if (config.year === '2570' || config.year === 2570 || config.targetExamId === 'mock-law-2570') {
+            setScheduledModalData({
+              examTitle: 'ศ.ป.ท. Mock Exam 2570: กฎหมายและจรรยาบรรณวิชาชีพ',
+              dateText: 'วันเสาร์ที่ 26 กันยายน 2569',
+              timeText: '13:00 – 14:00 น. (60 นาที)',
+              timeLeft: calculateTimeRemaining('2026-09-26T13:00:00+07:00'),
+              pendingConfig: null
             });
             return;
           }
@@ -428,7 +437,7 @@ function AppContent() {
       <ScheduledExamModal
         data={scheduledModalData}
         onClose={() => setScheduledModalData(null)}
-        onStartExam={startExam}
+        onOpenLawHub={() => setCurrentView('law_hub')}
       />
 
       {/* ── Main Content ───────────────────────────── */}

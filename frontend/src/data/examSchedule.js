@@ -31,7 +31,7 @@ export const EXAM_SCHEDULES = [
       { name: 'ทันตนิติเวชศาสตร์ & สิทธิผู้ป่วย', items: 'Gustafson root transparency, Dental+DNA ไฟไหม้, Child abuse' },
     ],
     quickAction: {
-      label: 'เข้าสอบ Mock Test 70 (60 นาที)',
+      label: '🔒 เปิดห้องสอบวันเสาร์ 13:00 น.',
       actionType: 'exam_law_70',
       category: 'กฎหมายและจรรยาบรรณ',
       year: '2570',

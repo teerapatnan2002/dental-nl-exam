@@ -3,7 +3,7 @@ import {
   BookOpen, PlayCircle, ShieldAlert, Brain,
   Stethoscope, ChevronDown, ChevronUp, Sparkles, Settings2,
   Target, GraduationCap, Wrench, Clock, AlertTriangle, User as UserIcon, Activity, Trophy,
-  Search, BookmarkCheck, ShieldCheck, MoreHorizontal, ChevronRight, Calendar, Flame
+  Search, BookmarkCheck, ShieldCheck, MoreHorizontal, ChevronRight, Calendar, Flame, Lock
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { API_BASE } from '../config';
@@ -425,20 +425,20 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                 {/* ── Mock 70 Header ── */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
                   <div>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.3rem 0.8rem', borderRadius: '20px', background: 'rgba(236, 72, 153, 0.15)', border: '1px solid rgba(236, 72, 153, 0.4)', color: '#f472b6', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.6rem' }}>
-                      <Flame size={14} /> ข้อสอบเก็งเสมือนจริง พิมพ์เขียว ศ.ป.ท. พ.ศ. 2570
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.3rem 0.8rem', borderRadius: '20px', background: mock70TimeLeft.isExpired ? 'rgba(236, 72, 153, 0.15)' : 'rgba(244, 63, 94, 0.18)', border: '1px solid ' + (mock70TimeLeft.isExpired ? 'rgba(236, 72, 153, 0.4)' : 'rgba(244, 63, 94, 0.5)'), color: mock70TimeLeft.isExpired ? '#f472b6' : '#fb7185', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.6rem' }}>
+                      {mock70TimeLeft.isExpired ? <Flame size={14} /> : <Lock size={14} />} {mock70TimeLeft.isExpired ? 'เปิดห้องสอบแล้ว' : '🔒 ล็อคระบบ • รอเปิดสอบพร้อมกันวันเสาร์นี้ 13:00 น.'}
                     </div>
                     <h2 style={{ fontSize: '1.6rem', fontWeight: 800, margin: '0 0 0.4rem 0', color: '#fff', letterSpacing: '-0.02em' }}>
                       🎯 ศ.ป.ท. Mock Exam 2570: กฎหมายและจรรยาบรรณวิชาชีพ
                     </h2>
                     <div style={{ color: 'var(--text-sub)', fontSize: '0.95rem', maxWidth: '680px', lineHeight: 1.5 }}>
-                      ชุดข้อสอบจำลองเสมือนจริง <strong>30 ข้อ (10 STEM สถานการณ์คลินิก × 3 ข้อย่อย)</strong> คัดสรรครอบคลุมประเด็นข้อสอบจริง พ.ร.บ. วิชาชีพทันตกรรม, พ.ร.บ. สถานพยาบาล, สิทธิผู้ป่วย, PDPA และทันตนิติเวชศาสตร์
+                      ชุดข้อสอบจำลองเสมือนจริง <strong>30 ข้อ (10 STEM สถานการณ์คลินิก × 3 ข้อย่อย)</strong> ระบบตั้งล็อคไว้เพื่อเปิดสอบพร้อมกันในวันเสาร์ที่ 26 ก.ย. 69 เวลา 13:00 – 14:00 น. โดยไม่มีการเปิดสอบหรือฝึกทำล่วงหน้า
                     </div>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-                    <div className="badge badge-accent" style={{ fontSize: '0.85rem', padding: '0.4rem 0.85rem', background: 'linear-gradient(135deg, #ec4899, #be185d)', border: 'none', color: '#fff' }}>
-                      30 ข้อ • 60 นาที
+                    <div className="badge badge-accent" style={{ fontSize: '0.85rem', padding: '0.4rem 0.85rem', background: mock70TimeLeft.isExpired ? 'linear-gradient(135deg, #ec4899, #be185d)' : 'rgba(244, 63, 94, 0.25)', border: '1px solid rgba(244, 63, 94, 0.4)', color: '#fff' }}>
+                      {mock70TimeLeft.isExpired ? '30 ข้อ • 60 นาที' : '🔒 ล็อค 30 ข้อ'}
                     </div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                       เกณฑ์ผ่าน: 60% (18/30 ข้อ)
@@ -460,7 +460,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                   {/* Schedule Info */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', justifyContent: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#f472b6', fontWeight: 700, fontSize: '0.95rem' }}>
-                      <Calendar size={16} /> กำหนดการสอบรอบเสมือนจริง (ตามตารางจริง ศ.ป.ท.)
+                      <Calendar size={16} /> กำหนดการเปิดสอบรอบเสมือนจริง (ตามตารางจริง ศ.ป.ท.)
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.88rem', color: 'var(--text)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -491,7 +491,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                     textAlign: 'center'
                   }}>
                     <div style={{ fontSize: '0.78rem', color: '#f472b6', fontWeight: 600, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                      <Clock size={13} /> {mock70TimeLeft.isExpired ? '🔥 ระบบเปิดให้สอบรอบจริงแล้ว' : 'นับถอยหลังสู่เวลาสอบวันเสาร์นี้ (13:00 น.)'}
+                      {mock70TimeLeft.isExpired ? <Clock size={13} /> : <Lock size={13} />} {mock70TimeLeft.isExpired ? '🔥 ระบบเปิดให้สอบรอบจริงแล้ว' : '🔒 ห้องสอบล็อคอยู่ • นับถอยหลังสู่เวลาเปิดสอบวันเสาร์นี้ (13:00 น.)'}
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', margin: '0.2rem 0' }}>
                       <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.4rem 0.6rem', borderRadius: '8px', minWidth: '46px' }}>
@@ -515,7 +515,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       </div>
                     </div>
                     <div style={{ fontSize: '0.72rem', color: 'var(--text-sub)', marginTop: '0.4rem' }}>
-                      *ระบบเปิดให้ผู้สอบเข้าฝึกซ้อมและทำข้อสอบล่วงหน้าได้ตลอด 24 ชม.*
+                      *ระบบจะเปิดห้องสอบพร้อมกันในวันเสาร์ที่ 26 ก.ย. เวลา 13:00 น. ไม่มีเปิดสอบก่อนเวลา*
                     </div>
                   </div>
                 </div>
@@ -532,9 +532,11 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                     onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 30, 'exam', true, false, 'law', '2570')}
                     className="btn"
                     style={{
-                      background: 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)',
+                      background: mock70TimeLeft.isExpired
+                        ? 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)'
+                        : 'linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(190, 24, 93, 0.2) 100%)',
                       color: '#ffffff',
-                      border: 'none',
+                      border: '1px solid ' + (mock70TimeLeft.isExpired ? 'transparent' : 'rgba(236, 72, 153, 0.4)'),
                       padding: '1.25rem',
                       borderRadius: '16px',
                       display: 'flex',
@@ -542,19 +544,21 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       alignItems: 'flex-start',
                       textAlign: 'left',
                       gap: '0.4rem',
-                      boxShadow: '0 6px 20px rgba(236, 72, 153, 0.35)',
+                      boxShadow: mock70TimeLeft.isExpired ? '0 6px 20px rgba(236, 72, 153, 0.35)' : 'none',
                       cursor: 'pointer',
                       transition: 'transform 0.15s ease, box-shadow 0.15s ease'
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.05rem' }}>
-                        <PlayCircle size={20} /> เข้าสอบจำลองเสมือนจริง (Exam Mode)
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.05rem', color: mock70TimeLeft.isExpired ? '#fff' : '#f472b6' }}>
+                        {mock70TimeLeft.isExpired ? <PlayCircle size={20} /> : <Lock size={19} />} {mock70TimeLeft.isExpired ? 'เข้าสอบจำลองเสมือนจริง (Exam Mode)' : 'เข้าห้องสอบ Mock Test 70'}
                       </div>
-                      <span style={{ background: 'rgba(255,255,255,0.2)', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>60 นาที</span>
+                      <span style={{ background: mock70TimeLeft.isExpired ? 'rgba(255,255,255,0.2)' : 'rgba(236, 72, 153, 0.3)', color: mock70TimeLeft.isExpired ? '#fff' : '#fbcfe8', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 700 }}>
+                        {mock70TimeLeft.isExpired ? '60 นาที' : '🔒 รอเปิดเสาร์นี้'}
+                      </span>
                     </div>
-                    <div style={{ fontSize: '0.82rem', opacity: 0.9, lineHeight: 1.4 }}>
-                      จับเวลาถอยหลัง 60 นาที ไม่แสดงเฉลยระหว่างทำ ประมวลผลและตัดเกรดเสมือนห้องสอบจริง
+                    <div style={{ fontSize: '0.82rem', color: mock70TimeLeft.isExpired ? 'rgba(255,255,255,0.9)' : 'var(--text-sub)', lineHeight: 1.4 }}>
+                      {mock70TimeLeft.isExpired ? 'จับเวลาถอยหลัง 60 นาที ไม่แสดงเฉลยระหว่างทำ ประมวลผลและตัดเกรดเสมือนห้องสอบจริง' : 'ระบบจะปลดล็อคให้เข้าสอบพร้อมกันในวันเสาร์ที่ 26 ก.ย. เวลา 13:00 น. (จับเวลา 60 นาที)'}
                     </div>
                   </button>
 
@@ -563,9 +567,9 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                     onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 30, 'practice', true, false, 'law', '2570')}
                     className="btn"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      color: 'var(--text)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      background: 'rgba(255, 255, 255, 0.03)',
+                      color: 'var(--text-muted)',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
                       padding: '1.25rem',
                       borderRadius: '16px',
                       display: 'flex',
@@ -578,13 +582,43 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.05rem', color: 'var(--primary-light)' }}>
-                        <BookOpen size={20} /> ซ้อมทำทีละข้อ (Practice Mode)
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-sub)' }}>
+                        <Lock size={18} /> โหมดฝึกซ้อม (เปิดพร้อมวันเสาร์)
                       </div>
-                      <span style={{ background: 'rgba(124, 58, 237, 0.2)', color: 'var(--primary-light)', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>เฉลยทันที</span>
+                      <span style={{ background: 'rgba(255, 255, 255, 0.08)', color: 'var(--text-muted)', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>🔒 ล็อค</span>
+                    </div>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                      ไม่มีการสอบหรือฝึกทำล่วงหน้า ข้อสอบจะเปิดให้ทำพร้อมกันวันเสาร์ที่ 26 ก.ย. เวลา 13:00 น.
+                    </div>
+                  </button>
+
+                  {/* 3. Law Hub / Flashcards */}
+                  <button
+                    onClick={() => onOpenLawHub && onOpenLawHub()}
+                    className="btn"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.18) 0%, rgba(236, 72, 153, 0.18) 100%)',
+                      color: '#fb7185',
+                      border: '1px solid rgba(236, 72, 153, 0.35)',
+                      padding: '1.25rem',
+                      borderRadius: '16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      textAlign: 'left',
+                      gap: '0.4rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.05rem', color: '#fff' }}>
+                        <Sparkles size={20} color="#ec4899" /> ทบทวนสรุปมาตรา & Flashcards
+                      </div>
+                      <span style={{ background: 'rgba(236, 72, 153, 0.25)', color: '#f472b6', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 700 }}>อ่านได้ทันที</span>
                     </div>
                     <div style={{ fontSize: '0.82rem', color: 'var(--text-sub)', lineHeight: 1.4 }}>
-                      ทำทีละข้อ ดูเฉลยละเอียดและวิเคราะห์กับดักข้อสอบทันทีที่ตอบ ไม่จำกัดเวลา
+                      อ่านสรุปหัวใจสำคัญ พ.ร.บ. วิชาชีพ, พ.ร.บ. สถานพยาบาล, ทันตนิติเวช และ Flashcards ระหว่างรอวันเสาร์
                     </div>
                   </button>
 
