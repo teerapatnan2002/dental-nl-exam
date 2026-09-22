@@ -174,8 +174,8 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
       {/* ── Main Section: Exam Info & Countdown Digital Clock ── */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
-        gap: '1.5rem',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+        gap: '1.25rem',
         alignItems: 'center',
         position: 'relative',
         zIndex: 1

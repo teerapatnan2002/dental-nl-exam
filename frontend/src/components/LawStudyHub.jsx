@@ -1153,7 +1153,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.25rem' }}>
             {CONCEPT_MAPPINGS.map(cat => {
               const IconComp = cat.icon;
               return (
@@ -1278,7 +1278,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
 
             <div style={{ 
               display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', 
               gap: '0.85rem' 
             }}>
               {NUMBERS_CHEAT_SHEET.map((item, idx) => (
@@ -1393,7 +1393,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
               หัวข้อกฎหมายใหม่และแนวปฏิบัติตามสถานการณ์ปัจจุบันที่ยังไม่เคยออกในข้อสอบเก่า แต่มีโอกาสออกสูงมาก
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1rem' }}>
               
               <div style={{ background: 'var(--bg-panel)', padding: '1.1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: 'var(--primary-light)', marginBottom: '0.4rem' }}>
@@ -1452,7 +1452,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
           </div>
 
           {/* Quick Launch Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
             
             <div className="glass-panel" style={{ borderRadius: 'var(--radius)', padding: '1.25rem', borderLeft: '4px solid #7c3aed' }}>
               <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--primary-light)', textTransform: 'uppercase', marginBottom: '0.3rem' }}>

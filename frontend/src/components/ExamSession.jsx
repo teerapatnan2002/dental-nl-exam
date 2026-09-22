@@ -755,7 +755,7 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
 
       {/* ── Sticky Top Bar ──────────────────────────── */}
       <div className="exam-sticky-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+        <div className="exam-sticky-inner">
           {/* Exam Title / Part Badge */}
           {(config.year || config.part) && (
             <span className="badge badge-primary" style={{ fontSize: '0.78rem', padding: '0.25rem 0.65rem', flexShrink: 0 }}>

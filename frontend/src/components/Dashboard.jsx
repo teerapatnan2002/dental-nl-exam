@@ -416,7 +416,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
           {selectedYearData ? (
             selectedYearData.year === '2570' ? (
               <div className="glass-panel animate-fade-in" style={{
-                padding: '2rem',
+                padding: 'clamp(1rem, 3vw, 2rem)',
                 borderRadius: '20px',
                 border: '1px solid rgba(236, 72, 153, 0.35)',
                 background: 'linear-gradient(135deg, rgba(20, 15, 35, 0.95) 0%, rgba(35, 15, 40, 0.9) 100%)',
@@ -432,10 +432,10 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.3rem 0.8rem', borderRadius: '20px', background: mock70TimeLeft.isExpired ? 'rgba(236, 72, 153, 0.15)' : 'rgba(244, 63, 94, 0.18)', border: '1px solid ' + (mock70TimeLeft.isExpired ? 'rgba(236, 72, 153, 0.4)' : 'rgba(244, 63, 94, 0.5)'), color: mock70TimeLeft.isExpired ? '#f472b6' : '#fb7185', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.6rem' }}>
                       {mock70TimeLeft.isExpired ? <Flame size={14} /> : <Lock size={14} />} {mock70TimeLeft.isExpired ? 'เปิดห้องสอบแล้ว' : '🔒 ล็อคระบบ • รอเปิดสอบพร้อมกันวันเสาร์นี้ 13:00 น.'}
                     </div>
-                    <h2 style={{ fontSize: '1.6rem', fontWeight: 800, margin: '0 0 0.4rem 0', color: '#fff', letterSpacing: '-0.02em', wordBreak: 'break-word' }}>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 0.4rem 0', color: '#fff', letterSpacing: '-0.02em', wordBreak: 'break-word' }}>
                       🎯 ศ.ป.ท. Mock Exam 2570: กฎหมายและจรรยาบรรณวิชาชีพ
                     </h2>
-                    <div style={{ color: 'var(--text-sub)', fontSize: '0.95rem', maxWidth: '680px', lineHeight: 1.5, wordBreak: 'break-word' }}>
+                    <div style={{ color: 'var(--text-sub)', fontSize: '0.92rem', maxWidth: '680px', lineHeight: 1.5, wordBreak: 'break-word' }}>
                       ชุดข้อสอบจำลองเสมือนจริง <strong>30 ข้อ (10 STEM สถานการณ์คลินิก × 3 ข้อย่อย)</strong> ระบบตั้งล็อคไว้เพื่อเปิดสอบพร้อมกันในวันเสาร์ที่ 26 ก.ย. 69 เวลา 13:00 – 14:00 น. โดยไม่มีการเปิดสอบหรือฝึกทำล่วงหน้า
                     </div>
                   </div>
@@ -457,7 +457,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                   gap: '1.25rem',
                   marginBottom: '1.75rem',
                   background: 'rgba(15, 23, 42, 0.65)',
-                  padding: '1.25rem 1.5rem',
+                  padding: 'clamp(0.85rem, 2.5vw, 1.25rem)',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.08)',
                   width: '100%',
@@ -490,7 +490,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: '1rem',
+                    padding: '0.85rem',
                     borderRadius: '12px',
                     background: 'rgba(236, 72, 153, 0.08)',
                     border: '1px solid rgba(236, 72, 153, 0.25)',
@@ -501,25 +501,25 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                     <div style={{ fontSize: '0.78rem', color: '#f472b6', fontWeight: 600, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
                       {mock70TimeLeft.isExpired ? <Clock size={13} /> : <Lock size={13} />} {mock70TimeLeft.isExpired ? '🔥 ระบบเปิดให้สอบรอบจริงแล้ว' : '🔒 ห้องสอบล็อคอยู่ • นับถอยหลังสู่เวลาเปิดสอบวันเสาร์นี้ (13:00 น.)'}
                     </div>
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', margin: '0.2rem 0', flexWrap: 'wrap', justifyContent: 'center' }}>
-                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.4rem 0.6rem', borderRadius: '8px', minWidth: '46px' }}>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.days).padStart(2, '0')}</div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>วัน</div>
+                    <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', margin: '0.2rem 0', flexWrap: 'wrap', justifyContent: 'center' }}>
+                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.35rem 0.45rem', borderRadius: '8px', minWidth: '38px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.days).padStart(2, '0')}</div>
+                        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>วัน</div>
                       </div>
                       <span style={{ fontWeight: 700, color: '#ec4899' }}>:</span>
-                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.4rem 0.6rem', borderRadius: '8px', minWidth: '46px' }}>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.hours).padStart(2, '0')}</div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>ชม.</div>
+                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.35rem 0.45rem', borderRadius: '8px', minWidth: '38px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.hours).padStart(2, '0')}</div>
+                        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>ชม.</div>
                       </div>
                       <span style={{ fontWeight: 700, color: '#ec4899' }}>:</span>
-                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.4rem 0.6rem', borderRadius: '8px', minWidth: '46px' }}>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.minutes).padStart(2, '0')}</div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>นาที</div>
+                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.35rem 0.45rem', borderRadius: '8px', minWidth: '38px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.minutes).padStart(2, '0')}</div>
+                        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>นาที</div>
                       </div>
                       <span style={{ fontWeight: 700, color: '#ec4899' }}>:</span>
-                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.4rem 0.6rem', borderRadius: '8px', minWidth: '46px' }}>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f472b6', fontFamily: 'monospace' }}>{String(mock70TimeLeft.seconds).padStart(2, '0')}</div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>วินาที</div>
+                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.35rem 0.45rem', borderRadius: '8px', minWidth: '38px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f472b6', fontFamily: 'monospace' }}>{String(mock70TimeLeft.seconds).padStart(2, '0')}</div>
+                        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>วินาที</div>
                       </div>
                     </div>
                     <div style={{ fontSize: '0.72rem', color: 'var(--text-sub)', marginTop: '0.4rem' }}>
@@ -547,7 +547,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                         : 'linear-gradient(135deg, rgba(236, 72, 153, 0.22) 0%, rgba(190, 24, 93, 0.18) 100%)',
                       color: '#ffffff',
                       border: '1px solid ' + (mock70TimeLeft.isExpired ? 'transparent' : 'rgba(236, 72, 153, 0.4)'),
-                      padding: '1.25rem',
+                      padding: 'clamp(0.9rem, 2.5vw, 1.25rem)',
                       borderRadius: '16px',
                       display: 'flex',
                       flexDirection: 'column',
@@ -564,7 +564,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 800, fontSize: '1.02rem', color: mock70TimeLeft.isExpired ? '#fff' : '#f472b6', minWidth: 0, wordBreak: 'break-word' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 800, fontSize: '1rem', color: mock70TimeLeft.isExpired ? '#fff' : '#f472b6', minWidth: 0, wordBreak: 'break-word' }}>
                         {mock70TimeLeft.isExpired ? <PlayCircle size={19} style={{ flexShrink: 0 }} /> : <Lock size={18} style={{ flexShrink: 0 }} />}
                         <span>{mock70TimeLeft.isExpired ? 'เข้าสอบจำลองเสมือนจริง (Exam Mode)' : 'เข้าห้องสอบ Mock Test 70'}</span>
                       </div>
@@ -585,7 +585,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       background: 'rgba(255, 255, 255, 0.03)',
                       color: 'var(--text-muted)',
                       border: '1px solid rgba(255, 255, 255, 0.08)',
-                      padding: '1.25rem',
+                      padding: 'clamp(0.9rem, 2.5vw, 1.25rem)',
                       borderRadius: '16px',
                       display: 'flex',
                       flexDirection: 'column',
@@ -601,7 +601,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 800, fontSize: '1.02rem', color: 'var(--text-sub)', minWidth: 0, wordBreak: 'break-word' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 800, fontSize: '1rem', color: 'var(--text-sub)', minWidth: 0, wordBreak: 'break-word' }}>
                         <Lock size={18} style={{ flexShrink: 0 }} />
                         <span>โหมดฝึกซ้อม (เปิดพร้อมวันเสาร์)</span>
                       </div>
@@ -622,7 +622,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.18) 0%, rgba(236, 72, 153, 0.18) 100%)',
                       color: '#fb7185',
                       border: '1px solid rgba(236, 72, 153, 0.35)',
-                      padding: '1.25rem',
+                      padding: 'clamp(0.9rem, 2.5vw, 1.25rem)',
                       borderRadius: '16px',
                       display: 'flex',
                       flexDirection: 'column',
@@ -638,7 +638,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 800, fontSize: '1.02rem', color: '#fff', minWidth: 0, wordBreak: 'break-word' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 800, fontSize: '1rem', color: '#fff', minWidth: 0, wordBreak: 'break-word' }}>
                         <Sparkles size={19} color="#ec4899" style={{ flexShrink: 0 }} />
                         <span>ทบทวนสรุปมาตรา & Flashcards</span>
                       </div>
@@ -666,7 +666,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
 
                   <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
                     gap: '0.85rem'
                   }}>
                     {[
@@ -932,7 +932,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                 </div>
 
                 {/* Law & Ethics & All Parts Options */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.25rem' }}>
                   
                   {/* Law Card */}
                   <div className="day-sim-section law" style={{ margin: 0 }}>
@@ -1032,7 +1032,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                   <Stethoscope size={18} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '8px' }} />
                   สถิติ: คลินิก (Clinical)
                 </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.25rem' }}>
                   {/* Clinical Categories */}
                   <div className="insight-card">
                     <div className="insight-card-title">
@@ -1078,7 +1078,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                   <ShieldAlert size={18} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '8px' }} />
                   สถิติ: กฎหมายและจรรยาบรรณ (Law)
                 </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.25rem' }}>
                   {/* Law Tasks */}
                   <div className="insight-card" style={{ borderTop: '2px solid rgba(244,63,94,0.3)' }}>
                     <div className="insight-card-title" style={{ color: 'var(--danger)' }}>
@@ -1497,7 +1497,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                 </div>
 
                 <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--primary-light)' }}>สถิติแยกตามรายวิชา</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '1rem' }}>
                   {userStats.category_stats.map((cat, idx) => (
                     <div key={idx} className="glass-panel" style={{ padding: '1rem', borderLeft: `3px solid ${cat.accuracy >= 60 ? 'var(--success)' : 'var(--danger)'}` }}>
                       <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'white', marginBottom: '0.5rem' }}>{cat.category}</div>

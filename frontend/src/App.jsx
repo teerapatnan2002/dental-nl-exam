@@ -339,7 +339,7 @@ function AppContent() {
           <span>NL Dental</span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div className="app-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
           {currentView !== 'dashboard' && currentView !== 'aihub' && currentView !== 'law_hub' && (
             <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', display: 'none' }}></span>
           )}
@@ -352,7 +352,7 @@ function AppContent() {
           {/* Official Exam Schedule & Countdown Pill */}
           <button
             onClick={() => setIsScheduleModalOpen(true)}
-            className="theme-toggle-btn"
+            className="theme-toggle-btn header-schedule-btn"
             style={{
               background: 'rgba(244, 63, 94, 0.12)',
               color: '#f43f5e',
@@ -370,7 +370,7 @@ function AppContent() {
           {/* Law Study Hub Quick Access Button */}
           <button
             onClick={() => setCurrentView('law_hub')}
-            className="theme-toggle-btn"
+            className="theme-toggle-btn header-law-btn"
             style={{
               background: currentView === 'law_hub' ? 'var(--primary)' : 'rgba(124, 58, 237, 0.12)',
               color: currentView === 'law_hub' ? '#fff' : 'var(--primary-light)',
@@ -404,12 +404,12 @@ function AppContent() {
           </button>
           
           {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: '0.5rem', paddingLeft: '0.75rem', borderLeft: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginLeft: '0.25rem', paddingLeft: '0.5rem', borderLeft: '1px solid var(--border)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.9rem', color: 'var(--text-sub)' }}>
                 <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 600 }}>
                   {user.username.charAt(0).toUpperCase()}
                 </div>
-                <span>{user.username}</span>
+                <span className="header-user-name">{user.username}</span>
               </div>
               <button 
                 onClick={logout}
@@ -420,8 +420,9 @@ function AppContent() {
               </button>
             </div>
           ) : (
-            <button className="btn btn-primary btn-sm" onClick={() => setIsAuthModalOpen(true)} style={{ marginLeft: '0.5rem' }}>
-              <UserIcon size={14} /> เข้าสู่ระบบ
+            <button className="btn btn-primary btn-sm header-auth-btn" onClick={() => setIsAuthModalOpen(true)} style={{ marginLeft: '0.25rem' }}>
+              <UserIcon size={14} />
+              <span className="header-auth-label">เข้าสู่ระบบ</span>
             </button>
           )}
         </div>

@@ -32,7 +32,7 @@ export default function ScheduledExamModal({ data, onClose, onOpenLawHub }) {
         border: '1px solid rgba(244, 63, 94, 0.45)',
         background: 'linear-gradient(145deg, rgba(25, 12, 28, 0.98) 0%, rgba(38, 12, 25, 0.95) 100%)',
         boxShadow: '0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(244, 63, 94, 0.25)',
-        padding: '2.25rem 2rem',
+        padding: 'clamp(1.25rem, 4vw, 2.25rem) clamp(1rem, 3.5vw, 2rem)',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -130,24 +130,24 @@ export default function ScheduledExamModal({ data, onClose, onOpenLawHub }) {
               <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>
                 ⏳ นับถอยหลังสู่เวลาเปิดห้องสอบ:
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                <div style={{ background: 'rgba(0,0,0,0.65)', padding: '0.4rem 0.6rem', borderRadius: '8px', textAlign: 'center', minWidth: '46px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(timeLeft.days).padStart(2, '0')}</div>
+              <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ background: 'rgba(0,0,0,0.65)', padding: '0.35rem 0.45rem', borderRadius: '8px', textAlign: 'center', minWidth: '40px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(timeLeft.days).padStart(2, '0')}</div>
                   <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>วัน</div>
                 </div>
                 <span style={{ fontWeight: 700, color: '#fb7185' }}>:</span>
-                <div style={{ background: 'rgba(0,0,0,0.65)', padding: '0.4rem 0.6rem', borderRadius: '8px', textAlign: 'center', minWidth: '46px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(timeLeft.hours).padStart(2, '0')}</div>
+                <div style={{ background: 'rgba(0,0,0,0.65)', padding: '0.35rem 0.45rem', borderRadius: '8px', textAlign: 'center', minWidth: '40px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(timeLeft.hours).padStart(2, '0')}</div>
                   <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>ชม.</div>
                 </div>
                 <span style={{ fontWeight: 700, color: '#fb7185' }}>:</span>
-                <div style={{ background: 'rgba(0,0,0,0.65)', padding: '0.4rem 0.6rem', borderRadius: '8px', textAlign: 'center', minWidth: '46px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(timeLeft.minutes).padStart(2, '0')}</div>
+                <div style={{ background: 'rgba(0,0,0,0.65)', padding: '0.35rem 0.45rem', borderRadius: '8px', textAlign: 'center', minWidth: '40px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(timeLeft.minutes).padStart(2, '0')}</div>
                   <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>นาที</div>
                 </div>
                 <span style={{ fontWeight: 700, color: '#fb7185' }}>:</span>
-                <div style={{ background: 'rgba(0,0,0,0.65)', padding: '0.4rem 0.6rem', borderRadius: '8px', textAlign: 'center', minWidth: '46px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fb7185', fontFamily: 'monospace' }}>{String(timeLeft.seconds).padStart(2, '0')}</div>
+                <div style={{ background: 'rgba(0,0,0,0.65)', padding: '0.35rem 0.45rem', borderRadius: '8px', textAlign: 'center', minWidth: '40px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fb7185', fontFamily: 'monospace' }}>{String(timeLeft.seconds).padStart(2, '0')}</div>
                   <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>วินาที</div>
                 </div>
               </div>
