@@ -622,9 +622,11 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       <div>
                         <div className="part-sim-name" style={{ color: 'var(--danger)' }}>⚖️ กฎหมายและจรรยาบรรณ</div>
                         <div className="part-sim-meta">
-                          <span>{selectedYearData.law_count > 0 ? `${selectedYearData.law_count} ข้อ` : 'ไม่มีข้อสอบกฎหมายในปีนี้'}</span>
-                          <span>•</span>
-                          <span>พ.ร.บ. & วิชาชีพ</span>
+                          {selectedYearData.law_count > 0 ? (
+                            <span>{selectedYearData.law_count} ข้อ • ข้อสอบตรงปี พ.ศ. {selectedYearData.year}</span>
+                          ) : (
+                            <span>30 ข้อ (สุ่มจากคลังรวม) • พ.ร.บ. & วิชาชีพ</span>
+                          )}
                         </div>
                       </div>
                       <div className="part-sim-time" style={{ color: 'var(--danger)' }}>
@@ -639,7 +641,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                             style={{ background: 'rgba(244,63,94,0.2)', color: '#fb7185', border: '1px solid rgba(244,63,94,0.4)', flex: 1 }}
                             onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 100, 'exam', true, false, 'law')}
                           >
-                            <ShieldAlert size={14} /> สอบกฎหมาย
+                            <ShieldAlert size={14} /> สอบกฎหมาย ({selectedYearData.law_count} ข้อ)
                           </button>
                           <button
                             className="btn btn-secondary btn-sm"
@@ -650,19 +652,27 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                           </button>
                         </>
                       ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
-                          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-                            (ปี พ.ศ. {selectedYearData.year} มีเฉพาะข้อสอบทฤษฎีคลินิก 4 Parts)
-                          </div>
-                          {onOpenLawHub && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%' }}>
+                          <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
+                            <button
+                              className="btn btn-sm"
+                              style={{ background: 'rgba(244,63,94,0.2)', color: '#fb7185', border: '1px solid rgba(244,63,94,0.4)', flex: 1 }}
+                              onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 30, 'exam', false, false, 'law', '')}
+                              title="สุ่มข้อสอบกฎหมาย 30 ข้อจากคลังรวม เพื่อให้จำลองสอบครบทุกวิชา"
+                            >
+                              <ShieldAlert size={14} /> สอบกฎหมาย (สุ่มคลัง 30 ข้อ)
+                            </button>
                             <button
                               className="btn btn-secondary btn-sm"
-                              style={{ width: '100%', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}
-                              onClick={onOpenLawHub}
+                              style={{ flex: 1 }}
+                              onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 30, 'practice', false, false, 'law', '')}
                             >
-                              🎴 ไปฝึกข้อสอบกฎหมายรวมทุกปี (Law Hub)
+                              <BookOpen size={14} /> ฝึกซ้อม (30 ข้อ)
                             </button>
-                          )}
+                          </div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>
+                            *(ปี พ.ศ. {selectedYearData.year} ไม่มีข้อสอบกฎหมายแยก ระบบจึงสุ่ม 30 ข้อจากคลังรวมให้ฝึกทำครบหมวด)*
+                          </div>
                         </div>
                       )}
                     </div>
