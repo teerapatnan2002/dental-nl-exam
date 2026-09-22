@@ -116,8 +116,8 @@ function AppContent() {
         } else if (config.part === 'day1' || config.part === 'day2') {
           timeLimit = 210 * 60 * 1000; // 3 hr 30 min = 210 minutes (150 questions)
         } else if (config.part === 'law' || config.category === 'กฎหมายและจรรยาบรรณ') {
-          // Real exam duration: 45 minutes for 30 questions (17:35 – 18:20 น.), 60 min for 40+ questions
-          timeLimit = (config.count && config.count <= 35) ? (45 * 60 * 1000) : (60 * 60 * 1000);
+          // Real exam duration: 60 minutes (1 hour) for 30 questions (13:00 – 14:00 น.)
+          timeLimit = 60 * 60 * 1000;
         } else if (config.clinical_only) {
           timeLimit = 420 * 60 * 1000; // 7 hr (300 questions full exam)
         } else if (config.count) {

@@ -197,7 +197,7 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
 
           <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5, maxWidth: '440px' }}>
             {currentExam.type === 'law' 
-              ? `สอบวิชากฎหมายทันตกรรม 30 ข้อ 45 นาที (เฉลี่ย 1.5 นาที/ข้อ) แนะนำให้ฝึกทำข้อสอบจับเวลาจริงและทบทวนบัตรคำช่วยจำ` 
+              ? `สอบวิชากฎหมายทันตกรรม ${currentExam.questionsCount || 30} ข้อ (เวลา ${currentExam.examTimeText}) แนะนำให้ฝึกทำข้อสอบจับเวลาจริงและทบทวนบัตรคำช่วยจำ` 
               : `การสอบประเมินความรู้ภาคที่ 1 และ ภาคที่ 2 พร้อมวิชากฎหมาย แนะนำเริ่มเก็บข้อสอบแยกตามสาขาวิชาและจำลองสอบ Day 1`}
           </p>
 

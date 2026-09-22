@@ -32,12 +32,12 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Live countdown to Saturday Mock 70 Exam (26 Sep 2026, 17:35)
-  const [mock70TimeLeft, setMock70TimeLeft] = useState(() => calculateTimeRemaining('2026-09-26T17:35:00+07:00'));
+  // Live countdown to Saturday Mock 70 Exam (26 Sep 2026, 13:00)
+  const [mock70TimeLeft, setMock70TimeLeft] = useState(() => calculateTimeRemaining('2026-09-26T13:00:00+07:00'));
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setMock70TimeLeft(calculateTimeRemaining('2026-09-26T17:35:00+07:00'));
+      setMock70TimeLeft(calculateTimeRemaining('2026-09-26T13:00:00+07:00'));
     }, 1000);
     return () => clearInterval(timer);
   }, []);
@@ -438,7 +438,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
 
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
                     <div className="badge badge-accent" style={{ fontSize: '0.85rem', padding: '0.4rem 0.85rem', background: 'linear-gradient(135deg, #ec4899, #be185d)', border: 'none', color: '#fff' }}>
-                      30 ข้อ • 45 นาที
+                      30 ข้อ • 60 นาที
                     </div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                       เกณฑ์ผ่าน: 60% (18/30 ข้อ)
@@ -469,11 +469,11 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <span style={{ color: 'var(--text-muted)', width: '90px' }}>⏰ เวลาสอบ:</span>
-                        <strong style={{ color: '#ec4899' }}>17:35 – 18:20 น.</strong>
+                        <strong style={{ color: '#ec4899' }}>13:00 – 14:00 น.</strong>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <span style={{ color: 'var(--text-muted)', width: '90px' }}>⏳ ระยะเวลา:</span>
-                        <span><strong>45 นาที</strong> (ข้อละ 1.5 นาที เป๊ะตามเวลาสอบจริง)</span>
+                        <span><strong>60 นาที</strong> (1 ชั่วโมงเต็มตามเวลาสอบจริง)</span>
                       </div>
                     </div>
                   </div>
@@ -491,7 +491,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                     textAlign: 'center'
                   }}>
                     <div style={{ fontSize: '0.78rem', color: '#f472b6', fontWeight: 600, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                      <Clock size={13} /> {mock70TimeLeft.isExpired ? '🔥 ระบบเปิดให้สอบรอบจริงแล้ว' : 'นับถอยหลังสู่เวลาสอบวันเสาร์นี้ (17:35 น.)'}
+                      <Clock size={13} /> {mock70TimeLeft.isExpired ? '🔥 ระบบเปิดให้สอบรอบจริงแล้ว' : 'นับถอยหลังสู่เวลาสอบวันเสาร์นี้ (13:00 น.)'}
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', margin: '0.2rem 0' }}>
                       <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.4rem 0.6rem', borderRadius: '8px', minWidth: '46px' }}>
@@ -551,10 +551,10 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.05rem' }}>
                         <PlayCircle size={20} /> เข้าสอบจำลองเสมือนจริง (Exam Mode)
                       </div>
-                      <span style={{ background: 'rgba(255,255,255,0.2)', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>45 นาที</span>
+                      <span style={{ background: 'rgba(255,255,255,0.2)', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem' }}>60 นาที</span>
                     </div>
                     <div style={{ fontSize: '0.82rem', opacity: 0.9, lineHeight: 1.4 }}>
-                      จับเวลาถอยหลัง 45 นาที ไม่แสดงเฉลยระหว่างทำ ประมวลผลและตัดเกรดเสมือนห้องสอบจริง
+                      จับเวลาถอยหลัง 60 นาที ไม่แสดงเฉลยระหว่างทำ ประมวลผลและตัดเกรดเสมือนห้องสอบจริง
                     </div>
                   </button>
 
