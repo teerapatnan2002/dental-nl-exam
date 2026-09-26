@@ -105,6 +105,13 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
   }, [token]);
 
   const handleStart = (category = '', task = '', count = 10, mode = 'exam', ordered = false, clinical_only = false, part = '', year = undefined) => {
+    if (typeof category === 'object' && category !== null) {
+      onStart({
+        year: selectedYear,
+        ...category
+      });
+      return;
+    }
     onStart({ category, task, count, mode, year: year !== undefined ? year : selectedYear, ordered, clinical_only, part });
   };
 
