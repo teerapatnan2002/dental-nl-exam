@@ -53,6 +53,7 @@ except Exception as e:
 app = FastAPI(title="Dental Exam API")
 
 @app.get("/api/health")
+@app.get("/health")
 def health_check(db: Session = Depends(get_db)):
     try:
         db.execute(text("SELECT 1"))
@@ -115,6 +116,7 @@ except Exception as e:
 
 # ── Health endpoint ──
 @app.get("/api/health")
+@app.get("/health")
 def health_check():
     return {"status": "ok", "service": "Dental Exam API"}
 
