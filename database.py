@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "")
 
 # Automatic transition: if pointing to old Tokyo project or unset on Vercel, use new Singapore project
-SINGAPORE_SUPABASE_URL = "postgresql://postgres.fgexylhuyaaedmtnplra:HuBAfgLaZ5IGeqpm@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require"
+SINGAPORE_SUPABASE_URL = "postgresql+psycopg://postgres.fgexylhuyaaedmtnplra:HuBAfgLaZ5IGeqpm@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require"
 
 if not SQLALCHEMY_DATABASE_URL:
     if os.getenv("VERCEL"):
@@ -23,9 +23,11 @@ elif "cbaytqufljdiwsetsgry" in SQLALCHEMY_DATABASE_URL:
     # Auto-redirect legacy Tokyo Supabase URL to new Singapore Supabase
     SQLALCHEMY_DATABASE_URL = SINGAPORE_SUPABASE_URL
 
-# Normalize postgres:// to postgresql:// for SQLAlchemy compatibility
+# Normalize generic postgres URIs to postgresql+psycopg:// for psycopg3
 if SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
-    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql+psycopg://", 1)
+elif SQLALCHEMY_DATABASE_URL.startswith("postgresql://"):
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
 
 connect_args = {}
 engine_kwargs = {}
