@@ -37,14 +37,12 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
     );
   }
 
-  const {
-    key_takeaway,
-    legal_citation,
-    core_principle,
-    choice_explanations,
-    common_pitfall,
-    future_prediction,
-  } = parsed;
+  const key_takeaway = parsed.key_takeaway || parsed.why_correct;
+  const legal_citation = parsed.legal_citation || parsed.reference;
+  const core_principle = parsed.core_principle;
+  const choice_explanations = parsed.choice_explanations;
+  const common_pitfall = parsed.common_pitfall;
+  const future_prediction = parsed.future_prediction || parsed.clinical_pearl;
 
   const actualCorrect = parsed.correct_answer || correctAnswer;
 
@@ -78,7 +76,7 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
           marginBottom: '1rem',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent)', fontWeight: 700, fontSize: '0.88rem', marginBottom: '0.3rem' }}>
-            <span>📌</span> Key Takeaway (สรุปหัวใจสำคัญ)
+            <span>📌</span> {parsed.why_correct && !parsed.key_takeaway ? 'เหตุผลที่ตอบข้อนี้ (Why Correct)' : 'Key Takeaway (สรุปหัวใจสำคัญ)'}
           </div>
           <div style={{ color: 'var(--text)', fontSize: '0.92rem', fontWeight: 600, lineHeight: 1.6 }}>
             {key_takeaway}
@@ -158,7 +156,7 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
           border: '1px solid rgba(124, 58, 237, 0.2)',
         }}>
           <h4 style={{ color: 'var(--primary-light)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.88rem' }}>
-            <Sparkles size={15} /> Professor's Wisdom / แนวโน้มข้อสอบ
+            <Sparkles size={15} /> {parsed.clinical_pearl && !parsed.future_prediction ? 'Clinical Pearl / จุดเน้นข้อสอบ' : "Professor's Wisdom / แนวโน้มข้อสอบ"}
           </h4>
           <div style={{ color: 'var(--text-sub)', fontSize: '0.88rem', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
             {future_prediction}
