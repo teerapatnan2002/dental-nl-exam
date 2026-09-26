@@ -908,7 +908,7 @@ if os.path.exists(frontend_path):
     async def serve_spa(full_path: str):
         # Do not intercept /api routes (let them 404 properly if unmatched)
         if full_path.startswith("api"):
-            raise HTTPException(status_code=404, detail="Not Found")
+            return {"error": "Not Found fallback", "full_path": full_path}
 
         # Serve static file if it directly exists in frontend/dist (e.g. favicon.svg)
         target_file = os.path.join(frontend_path, full_path)
