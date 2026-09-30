@@ -410,6 +410,7 @@ def generate_random_exam(
     task: Optional[str] = None,
     year: Optional[str] = None,
     part: Optional[str] = None,
+    source_exam: Optional[str] = None,
     ordered: bool = False,
     clinical_only: bool = False,
     db: Session = Depends(get_db),
@@ -421,6 +422,8 @@ def generate_random_exam(
         query = query.filter(models.Question.category != "กฎหมายและจรรยาบรรณ")
     if task:
         query = query.filter(models.Question.task == task)
+    if source_exam:
+        query = query.filter(models.Question.source_exam.ilike(f"%{source_exam}%"))
     if year:
         try:
             y_raw = str(year).strip()
@@ -515,25 +518,24 @@ def generate_random_exam(
                 )
             )
 
+    def get_sort_key(q):
+        exam_name = q.source_exam or ""
+        # Extract part number, default to 99 if not found
+        m = re.search(r'part[_\s]*(\d)', exam_name.lower())
+        part_num = int(m.group(1)) if m else 99
+        
+        # Extract question number from question_text if available (e.g., "1.", "25.")
+        q_num_match = re.search(r'^\s*(\d{1,3})\.', q.question_text or "")
+        q_num = int(q_num_match.group(1)) if q_num_match else q.id
+        
+        # Extract year to keep years grouped if multiple years are queried
+        year_match = re.search(r'(20\d{2}|25\d{2})', exam_name)
+        year_num = int(year_match.group(1)) if year_match else 9999
+        return (year_num, part_num, q_num, q.id)
+
     if ordered:
         # Pull all matching questions to sort in true exam order
         all_qs = query.all()
-        
-        def get_sort_key(q):
-            exam_name = q.source_exam or ""
-            # Extract part number, default to 99 if not found
-            m = re.search(r'part[_\s]*(\d)', exam_name.lower())
-            part_num = int(m.group(1)) if m else 99
-            
-            # Extract question number from question_text if available (e.g., "1.", "25.")
-            q_num_match = re.search(r'^\s*(\d{1,3})\.', q.question_text or "")
-            q_num = int(q_num_match.group(1)) if q_num_match else q.id
-            
-            # Extract year to keep years grouped if multiple years are queried
-            year_match = re.search(r'(20\d{2}|25\d{2})', exam_name)
-            year_num = int(year_match.group(1)) if year_match else 9999
-            return (year_num, part_num, q_num, q.id)
-            
         all_qs.sort(key=get_sort_key)
         base_questions = all_qs[:n]
     else:
@@ -571,6 +573,8 @@ def generate_random_exam(
     group_list = list(groups.values())
     if not ordered:
         random.shuffle(group_list)
+    else:
+        group_list.sort(key=lambda g: get_sort_key(g[0]))
 
     questions = []
     for g in group_list:

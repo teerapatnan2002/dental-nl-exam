@@ -30,6 +30,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
   const [expandedCategories, setExpandedCategories] = useState({});
   const [activeCategoryModal, setActiveCategoryModal] = useState(null);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [expandedDsatSet, setExpandedDsatSet] = useState(null);
   const dropdownRef = useRef(null);
 
   // Live countdown to Saturday Mock 70 Exam (26 Sep 2026, 13:00)
@@ -410,10 +411,15 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       background: selectedYear === '2570' ? 'linear-gradient(135deg, #7c3aed, #ec4899)' : 'rgba(236, 72, 153, 0.15)',
                       color: selectedYear === '2570' ? '#fff' : '#f472b6',
                       fontWeight: 700
+                    } : yData.year === '2569' ? {
+                      border: '1px solid #06b6d4',
+                      background: selectedYear === '2569' ? 'linear-gradient(135deg, #0284c7, #06b6d4)' : 'rgba(6, 182, 212, 0.15)',
+                      color: selectedYear === '2569' ? '#fff' : '#38bdf8',
+                      fontWeight: 700
                     } : {})
                   }}
                 >
-                  {yData.year === '2570' ? '🎯 พ.ศ. 2570 (Mock 70)' : `พ.ศ. ${yData.year}`}
+                  {yData.year === '2570' ? '🎯 พ.ศ. 2570 (Mock 70)' : yData.year === '2569' ? '⚖️ พ.ศ. 2569 (DSAT 3 ชุด)' : `พ.ศ. ${yData.year}`}
                 </button>
               ))}
             </div>
@@ -720,6 +726,389 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                 </div>
               </div>
             ) : (
+              <div>
+                {selectedYearData.year === '2569' && (
+                  <div className="glass-panel animate-fade-in" style={{
+                    marginBottom: '1.5rem',
+                    padding: 'clamp(1rem, 3vw, 2rem)',
+                borderRadius: '20px',
+                border: '1px solid rgba(6, 182, 212, 0.35)',
+                background: 'linear-gradient(135deg, rgba(10, 25, 45, 0.95) 0%, rgba(15, 30, 55, 0.9) 100%)',
+                boxShadow: '0 12px 36px rgba(6, 182, 212, 0.12)',
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
+                overflow: 'hidden'
+              }}>
+                {/* ── DSAT Mock Header ── */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.3rem 0.8rem', borderRadius: '20px', background: 'rgba(6, 182, 212, 0.15)', border: '1px solid rgba(6, 182, 212, 0.4)', color: '#38bdf8', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.6rem' }}>
+                      <Sparkles size={14} /> ข้อสอบจำลองมาตรฐาน สโมสรนิสิตนักศึกษาทันตแพทย์แห่งประเทศไทย (สนทท.)
+                    </div>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 0.4rem 0', color: '#fff', letterSpacing: '-0.02em', wordBreak: 'break-word' }}>
+                      ⚖️ DSAT Mock Exam นิติทันตวิทยาและกฎหมาย (พ.ศ. 2569)
+                    </h2>
+                    <div style={{ color: 'var(--text-sub)', fontSize: '0.92rem', maxWidth: '720px', lineHeight: 1.5, wordBreak: 'break-word' }}>
+                      ชุดข้อสอบจำลองเสมือนจริง <strong>3 ฉบับเต็ม รวม 90 ข้อ (30 STEM สถานการณ์คลินิก)</strong> อิงโครงสร้าง Table of Specifications (TOS) กฎหมายวิชาชีพ 24 ข้อ และนิติทันตวิทยา 6 ข้อต่อชุด พร้อมเฉลยละเอียดทุกตัวเลือกและการวิเคราะห์ Cognitive Domain
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem', flexShrink: 0 }}>
+                    <div className="badge badge-accent" style={{ fontSize: '0.85rem', padding: '0.4rem 0.85rem', background: 'linear-gradient(135deg, #0284c7, #06b6d4)', border: '1px solid rgba(6, 182, 212, 0.5)', color: '#fff', whiteSpace: 'nowrap' }}>
+                      3 ฉบับ • 90 ข้อเต็ม
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                      เกณฑ์ผ่าน ศ.ป.ท.: 60% (18/30 ข้อ)
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── Key Highlights Banner ── */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
+                  gap: '0.85rem',
+                  marginBottom: '1.75rem'
+                }}>
+                  <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '0.85rem 1rem' }}>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>📋 โครงสร้างข้อสอบ (TOS)</div>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: '#38bdf8' }}>10 STEMs / ฉบับ</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)' }}>กฎหมาย 24 ข้อ + ทันตนิติเวช 6 ข้อ</div>
+                  </div>
+                  <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '0.85rem 1rem' }}>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>🧠 ระดับการเรียนรู้ (Cognitive)</div>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: '#a78bfa' }}>Recall 50% • App 40%</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)' }}>Problem Solving 10% ครบทุกมิติ</div>
+                  </div>
+                  <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '0.85rem 1rem' }}>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>⏱️ เวลาทำข้อสอบ</div>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: '#34d399' }}>60 นาที / ฉบับ</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)' }}>หรือ 180 นาทีสำหรับรอบมาราธอน</div>
+                  </div>
+                  <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '0.85rem 1rem' }}>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>💡 โหมดการทำข้อสอบ</div>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: '#fbbf24' }}>Exam & Practice</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)' }}>จับเวลาจริง หรือ ตรวจคำตอบทันที</div>
+                  </div>
+                </div>
+
+                {/* ── Marathon & Practice All Bar ── */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '0.85rem',
+                  padding: '1rem 1.25rem',
+                  borderRadius: '16px',
+                  background: 'linear-gradient(135deg, rgba(2, 132, 199, 0.18) 0%, rgba(6, 182, 212, 0.12) 100%)',
+                  border: '1px solid rgba(6, 182, 212, 0.3)',
+                  marginBottom: '1.75rem'
+                }}>
+                  <div>
+                    <div style={{ fontWeight: 700, color: '#fff', fontSize: '1rem' }}>
+                      🔥 สอบรวม 3 ฉบับรวด (DSAT Marathon 90 ข้อ)
+                    </div>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-sub)' }}>
+                      ทดสอบความอึดและความแม่นยำทางกฎหมายทันตกรรมต่อเนื่อง 90 ข้อเต็ม (180 นาที)
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      onClick={() => handleStart({ category: 'กฎหมายและจรรยาบรรณ', count: 90, mode: 'exam', ordered: true, part: 'law', year: '2569' })}
+                      style={{ background: 'linear-gradient(135deg, #0284c7, #06b6d4)', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 700 }}
+                    >
+                      <PlayCircle size={15} /> เริ่มสอบมาราธอน 90 ข้อ
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => handleStart({ category: 'กฎหมายและจรรยาบรรณ', count: 90, mode: 'practice', ordered: true, part: 'law', year: '2569' })}
+                      style={{ borderRadius: '10px' }}
+                    >
+                      <BookOpen size={15} /> โหมดฝึกซ้อม 90 ข้อ
+                    </button>
+                  </div>
+                </div>
+
+                {/* ── 3 Sets Dedicated Cards Grid ── */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 310px), 1fr))',
+                  gap: '1.25rem',
+                  marginBottom: '2rem'
+                }}>
+                  {[
+                    {
+                      setNum: 1,
+                      title: "DSAT Mock Law ชุดที่ 1",
+                      subtitle: "มาตรฐานสภา & ทันตกรรมทั่วไป",
+                      desc: "การนับอายุใบอนุญาต 5 ปี, CDEC 80 หน่วยที่ 4 ปี, ปริญญาบัตรยังไม่มีใบอนุญาต, ผู้ดำเนินการคลินิก, ภาวะแทรกซ้อนถอนฟัน, DVI 4 ขั้นตอน, ประเมินอายุแรงงาน",
+                      badgeColor: "#0284c7",
+                      qRange: "ข้อ 1 - 30 (IDs 2400-2429)",
+                      sourceExam: "DSAT Mock Law ชุดที่ 1",
+                      stems: [
+                        { stem: 1, q: "1-3", title: "การนับอายุใบอนุญาต 5 ปี และการเตือน CDEC 80 หน่วยที่ 4 ปี" },
+                        { stem: 2, q: "4-6", title: "การสะสม CDEC ของทันตแพทย์ รพช. (คลินิก, วิทยากร, วารสาร)" },
+                        { stem: 3, q: "7-9", title: "ผู้จบ ท.บ. ยังไม่มีใบอนุญาตกับการทำหน้าที่ผู้ช่วยทันตแพทย์" },
+                        { stem: 4, q: "10-12", title: "ผู้รับอนุญาตสถานพยาบาลที่ไม่ใช่ทันตแพทย์ & ความรับผิดชอบร่วม" },
+                        { stem: 5, q: "13-15", title: "วุฒิบัตรทันตกรรมประดิษฐ์ & การโฆษณาในสถานพยาบาล" },
+                        { stem: 6, q: "16-18", title: "ถอนฟันกรามบนรากหักเข้า Maxillary Sinus & Informed Consent" },
+                        { stem: 7, q: "19-21", title: "ขอบเขตงานทันตาภิบาลใน รพช. ตามระเบียบกระทรวงสาธารณสุข" },
+                        { stem: 8, q: "22-24", title: "จรรยาบรรณความสัมพันธ์ & การวิจารณ์งานรักษาของเพื่อนร่วมวิชาชีพ" },
+                        { stem: 9, q: "25-27", title: "ทันตนิติเวชเหตุเพลิงไหม้รถโดยสาร & กระบวนการ DVI INTERPOL 4 ขั้นตอน" },
+                        { stem: 10, q: "28-30", title: "การตรวจประเมินอายุแรงงานต่างด้าว (Panoramic, Demirjian, Clavicle)" },
+                      ]
+                    },
+                    {
+                      setNum: 2,
+                      title: "DSAT Mock Law ชุดที่ 2",
+                      subtitle: "สถานพยาบาลเอกชน & การส่งต่อ",
+                      desc: "การนับเวลา 5 ปีบริบูรณ์, ช่างทันตกรรมทำฟันปลอมเถื่อน, ผู้ดำเนินการสถานพยาบาล, วุฒิบัตร vs ป.โทห้ามอ้างผู้เชี่ยวชาญ, ถ่ายโอน รพ.สต. ไป อบจ., ทันตนิติเวชศพเน่าสลาย",
+                      badgeColor: "#0d9488",
+                      qRange: "ข้อ 1 - 30 (IDs 2430-2459)",
+                      sourceExam: "DSAT Mock Law ชุดที่ 2",
+                      stems: [
+                        { stem: 1, q: "1-3", title: "การนับระยะเวลาใบอนุญาต 5 ปีบริบูรณ์ (สิ้นสุดในวันก่อนหน้าวันตรงกัน)" },
+                        { stem: 2, q: "4-6", title: "การสะสมหน่วย CDEC ในคลินิกเอกชน & เกณฑ์ขั้นต่ำในการต่ออายุ" },
+                        { stem: 3, q: "7-9", title: "ช่างทันตกรรมทำฟันปลอมเถื่อน & การปราบปรามตาม พ.ร.บ.วิชาชีพ" },
+                        { stem: 4, q: "10-12", title: "ผู้รับอนุญาต & ผู้ดำเนินการสถานพยาบาล (หน้าที่ทางกฎหมายและมาตรฐาน)" },
+                        { stem: 5, q: "13-15", title: "จบ ป.โท จัดฟันแต่ยังไม่มีวุฒิบัตร/อนุมัติบัตร (ห้ามอ้างผู้เชี่ยวชาญ)" },
+                        { stem: 6, q: "16-18", title: "การวางแผนการรักษาผู้ป่วยสูงอายุ & ทางเลือกรากเทียม vs ฟันปลอมถอดได้" },
+                        { stem: 7, q: "19-21", title: "การถ่ายโอน รพ.สต. ไปยัง อบจ. & ขอบเขตงานทันตสาธารณสุข" },
+                        { stem: 8, q: "22-24", title: "จรรยาบรรณในการให้ความเห็นต่องานรักษาของทันตแพทย์ท่านอื่น" },
+                        { stem: 9, q: "25-27", title: "ทันตนิติเวชศพเน่าสลายในป่า (Ante-mortem vs Post-mortem Dental Records)" },
+                        { stem: 10, q: "28-30", title: "การประมาณอายุผู้ใหญ่จากโครงกระดูก (Gustafson & Root Transparency)" },
+                      ]
+                    },
+                    {
+                      setNum: 3,
+                      title: "DSAT Mock Law ชุดที่ 3",
+                      subtitle: "จรรยาบรรณ สิทธิผู้ป่วย & นิติทันตวิทยา",
+                      desc: "การถอนคำร้องจรรยาบรรณ, ใบอนุญาตสถานพยาบาลสิ้นปีที่สอง, ผู้ป่วย HIV ห้ามปฏิเสธ, นักวิชาการสาธารณสุข, รอยกัด ABFO No.2, สงสัย Child Abuse, DVI เครื่องบินตก",
+                      badgeColor: "#7c3aed",
+                      qRange: "ข้อ 1 - 30 (IDs 2460-2489)",
+                      sourceExam: "DSAT Mock Law ชุดที่ 3",
+                      stems: [
+                        { stem: 1, q: "1-3", title: "การร้องเรียนจรรยาบรรณต่อทันตแพทยสภา & การถอนคำร้องไม่ระงับคดี" },
+                        { stem: 2, q: "4-6", title: "ทันตแพทย์ทำงานหลายแห่ง & ข้อกำหนดการเป็นผู้ดำเนินการสถานพยาบาล" },
+                        { stem: 3, q: "7-9", title: "นิติบุคคลเป็นผู้รับอนุญาตสถานพยาบาล & การแจ้งเปลี่ยนผู้ดำเนินการ" },
+                        { stem: 4, q: "10-12", title: "อายุใบอนุญาตให้ประกอบกิจการสถานพยาบาล (สิ้นปีปฏิทินของปีที่สอง)" },
+                        { stem: 5, q: "13-15", title: "วุฒิบัตรศัลยศาสตร์ช่องปาก & ขอบเขตการให้ข้อมูลความรู้ทางสื่อออนไลน์" },
+                        { stem: 6, q: "16-18", title: "สิทธิผู้ป่วยติดเชื้อ HIV & การห้ามเลือกปฏิบัติหรือปฏิเสธการรักษา" },
+                        { stem: 7, q: "19-21", title: "นักวิชาการสาธารณสุข (ทันตสาธารณสุข) ใน รพ.สต. & งานที่ทำได้" },
+                        { stem: 8, q: "22-24", title: "ความสัมพันธ์ระหว่างทันตแพทย์ & การดึงผู้ป่วยข้ามคลินิก" },
+                        { stem: 9, q: "25-27", title: "การตรวจชันสูตรรอยกัด (Bite Marks), ABFO No.2 & สงสัย Child Abuse" },
+                        { stem: 10, q: "28-30", title: "ภัยพิบัติเครื่องบินตก 180 ราย & DVI Primary Identifiers (ฟัน, นิ้วมือ, DNA)" },
+                      ]
+                    }
+                  ].map((set) => {
+                    const isExpanded = expandedDsatSet === set.setNum;
+                    return (
+                      <div
+                        key={set.setNum}
+                        style={{
+                          background: 'rgba(15, 23, 42, 0.75)',
+                          border: `1px solid rgba(255, 255, 255, 0.1)`,
+                          borderRadius: '18px',
+                          padding: '1.25rem',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                          boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
+                          position: 'relative',
+                          overflow: 'hidden'
+                        }}
+                      >
+                        <div>
+                          {/* Card Top Header */}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                            <span style={{
+                              background: set.badgeColor,
+                              color: '#fff',
+                              padding: '0.2rem 0.6rem',
+                              borderRadius: '12px',
+                              fontSize: '0.72rem',
+                              fontWeight: 700
+                            }}>
+                              ฉบับที่ {set.setNum}
+                            </span>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                              {set.qRange}
+                            </span>
+                          </div>
+
+                          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 0.2rem 0', color: '#fff' }}>
+                            {set.title}
+                          </h3>
+                          <div style={{ fontSize: '0.82rem', color: '#38bdf8', fontWeight: 600, marginBottom: '0.6rem' }}>
+                            {set.subtitle}
+                          </div>
+                          <p style={{ fontSize: '0.8rem', color: 'var(--text-sub)', lineHeight: 1.45, margin: '0 0 1rem 0' }}>
+                            {set.desc}
+                          </p>
+
+                          {/* Quick Badges */}
+                          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '1.2rem' }}>
+                            <span style={{ background: 'rgba(255,255,255,0.06)', padding: '0.15rem 0.45rem', borderRadius: '6px', fontSize: '0.72rem', color: 'var(--text)' }}>
+                              🎯 30 ข้อ (10 STEMs)
+                            </span>
+                            <span style={{ background: 'rgba(255,255,255,0.06)', padding: '0.15rem 0.45rem', borderRadius: '6px', fontSize: '0.72rem', color: 'var(--text)' }}>
+                              ⏱️ 60 นาที
+                            </span>
+                            <span style={{ background: 'rgba(255,255,255,0.06)', padding: '0.15rem 0.45rem', borderRadius: '6px', fontSize: '0.72rem', color: '#a78bfa' }}>
+                              🧠 TOS ครบ 3 ระดับ
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.6rem' }}>
+                            <button
+                              type="button"
+                              className="btn btn-primary btn-sm"
+                              onClick={() => handleStart({
+                                category: 'กฎหมายและจรรยาบรรณ',
+                                count: 30,
+                                mode: 'exam',
+                                ordered: true,
+                                part: 'law',
+                                year: '2569',
+                                source_exam: set.sourceExam
+                              })}
+                              style={{
+                                borderRadius: '10px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.35rem',
+                                fontWeight: 700,
+                                fontSize: '0.82rem'
+                              }}
+                            >
+                              <PlayCircle size={15} /> เข้าสอบจริง
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => handleStart({
+                                category: 'กฎหมายและจรรยาบรรณ',
+                                count: 30,
+                                mode: 'practice',
+                                ordered: true,
+                                part: 'law',
+                                year: '2569',
+                                source_exam: set.sourceExam
+                              })}
+                              style={{
+                                borderRadius: '10px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.35rem',
+                                fontSize: '0.82rem'
+                              }}
+                            >
+                              <BookOpen size={15} /> ฝึกซ้อม
+                            </button>
+                          </div>
+
+                          {/* Toggle STEMs list */}
+                          <button
+                            type="button"
+                            onClick={() => setExpandedDsatSet(isExpanded ? null : set.setNum)}
+                            style={{
+                              width: '100%',
+                              background: 'transparent',
+                              border: '1px dashed rgba(255,255,255,0.15)',
+                              borderRadius: '8px',
+                              padding: '0.35rem 0.5rem',
+                              color: 'var(--text-muted)',
+                              fontSize: '0.75rem',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '0.3rem',
+                              transition: 'all 0.15s ease'
+                            }}
+                          >
+                            {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                            {isExpanded ? 'ซ่อนโครงสร้าง 10 STEMs' : 'ดูโครงสร้าง 10 STEMs ในชุดนี้'}
+                          </button>
+
+                          {/* Expanded 10 STEMs */}
+                          {isExpanded && (
+                            <div className="animate-fade-in" style={{
+                              marginTop: '0.75rem',
+                              padding: '0.6rem',
+                              background: 'rgba(0,0,0,0.3)',
+                              borderRadius: '10px',
+                              maxHeight: '260px',
+                              overflowY: 'auto',
+                              fontSize: '0.75rem',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '0.4rem'
+                            }}>
+                              {set.stems.map(s => (
+                                <div key={s.stem} style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.35rem' }}>
+                                  <div style={{ color: '#38bdf8', fontWeight: 600 }}>
+                                    STEM {s.stem} (ข้อ {s.q})
+                                  </div>
+                                  <div style={{ color: 'var(--text-sub)' }}>
+                                    {s.title}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* ── Blueprint & Table of Specifications Details ── */}
+                <div style={{
+                  padding: '1.25rem',
+                  borderRadius: '16px',
+                  background: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', color: '#fff', fontWeight: 700 }}>
+                    <ShieldCheck size={18} color="#38bdf8" /> การกระจายข้อสอบตามกรอบมาตรฐาน ศ.ป.ท. (TOS Blueprint)
+                  </div>
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: '1rem',
+                    fontSize: '0.82rem'
+                  }}>
+                    <div>
+                      <div style={{ fontWeight: 600, color: '#38bdf8', marginBottom: '0.25rem' }}>1. กฎหมายวิชาชีพ (40%)</div>
+                      <div style={{ color: 'var(--text-sub)', lineHeight: 1.45 }}>พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537 และ ฉบับที่ 2 พ.ศ. 2559 (อายุใบอนุญาต, CDEC, การควบคุมการประกอบวิชาชีพ)</div>
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 600, color: '#a78bfa', marginBottom: '0.25rem' }}>2. จรรยาบรรณวิชาชีพ (20%)</div>
+                      <div style={{ color: 'var(--text-sub)', lineHeight: 1.45 }}>ข้อบังคับทันตแพทยสภาว่าด้วยจรรยาบรรณ พ.ศ. 2538 (โฆษณา, การส่งต่อ, สิทธิผู้ป่วย, ความสัมพันธ์ระหว่างวิชาชีพ)</div>
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 600, color: '#34d399', marginBottom: '0.25rem' }}>3. กฎหมายสถานพยาบาล (20%)</div>
+                      <div style={{ color: 'var(--text-sub)', lineHeight: 1.45 }}>พ.ร.บ. สถานพยาบาล พ.ศ. 2541 และ ฉบับที่ 4 พ.ศ. 2559 (ผู้รับอนุญาต, ผู้ดำเนินการ, การต่ออายุใบอนุญาต)</div>
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 600, color: '#fb923c', marginBottom: '0.25rem' }}>4. นิติทันตวิทยา & อื่นๆ (20%)</div>
+                      <div style={{ color: 'var(--text-sub)', lineHeight: 1.45 }}>การพิสูจน์เอกลักษณ์บุคคล DVI, การประมาณอายุ, รอยกัด (Bite Marks), สิทธิผู้ป่วย และคดีละเมิด</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="glass-panel animate-fade-in" style={{ padding: '2rem' }}>
               <div style={{ marginBottom: '1.5rem' }}>
                 <h2 style={{ fontSize: '1.4rem', margin: '0 0 0.3rem 0', color: 'var(--primary-light)' }}>
@@ -1107,6 +1496,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                   </div>
                 </div>
               </div>
+            </div>
             </div>
           )
         ) : (

@@ -44,19 +44,60 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
   const common_pitfall = parsed.common_pitfall;
   const future_prediction = parsed.future_prediction || parsed.clinical_pearl;
 
+  const cognitive_level = parsed.cognitive_level;
+  const tos_code = parsed.tos_code;
+
   const actualCorrect = parsed.correct_answer || correctAnswer;
 
   return (
     <div className="explanation-box" style={{ marginTop: '1.25rem' }}>
       
-      {/* ── Header: Correct Answer + Citations ── */}
+      {/* ── Header: Correct Answer + Citations + Level + TOS ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
           <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>เฉลยที่ถูกต้อง:</span>
           <span style={{ color: 'var(--success)', fontWeight: 800, fontSize: '1.35rem' }}>
             {actualCorrect}
           </span>
           {isCached && <span className="badge badge-primary" style={{ fontSize: '0.72rem', padding: '0.15rem 0.5rem' }}>คลังข้อสอบ</span>}
+          {cognitive_level && (
+            <span style={{
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              padding: '0.15rem 0.55rem',
+              borderRadius: '12px',
+              background: cognitive_level.toLowerCase().includes('problem')
+                ? 'rgba(239, 68, 68, 0.15)'
+                : cognitive_level.toLowerCase().includes('application')
+                ? 'rgba(59, 130, 246, 0.15)'
+                : 'rgba(16, 185, 129, 0.15)',
+              color: cognitive_level.toLowerCase().includes('problem')
+                ? '#f87171'
+                : cognitive_level.toLowerCase().includes('application')
+                ? '#60a5fa'
+                : '#34d399',
+              border: '1px solid ' + (cognitive_level.toLowerCase().includes('problem')
+                ? 'rgba(239, 68, 68, 0.3)'
+                : cognitive_level.toLowerCase().includes('application')
+                ? 'rgba(59, 130, 246, 0.3)'
+                : 'rgba(16, 185, 129, 0.3)')
+            }}>
+              🎯 ระดับ {cognitive_level}
+            </span>
+          )}
+          {tos_code && (
+            <span style={{
+              fontSize: '0.72rem',
+              fontWeight: 600,
+              padding: '0.15rem 0.55rem',
+              borderRadius: '12px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              color: 'var(--text-sub)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              📋 {tos_code}
+            </span>
+          )}
         </div>
 
         {legal_citation && (

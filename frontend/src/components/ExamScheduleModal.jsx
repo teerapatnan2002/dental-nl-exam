@@ -221,7 +221,20 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
                   className="btn btn-primary btn-sm"
                   onClick={() => {
                     onClose();
-                    if (currentExam.type === 'law') {
+                    if (currentExam.quickAction?.source_exam) {
+                      onStartExam({
+                        category: 'กฎหมายและจรรยาบรรณ',
+                        task: '',
+                        count: currentExam.questionsCount || 30,
+                        mode: 'exam',
+                        ordered: true,
+                        part: 'law',
+                        year: currentExam.quickAction.year || '2569',
+                        source_exam: currentExam.quickAction.source_exam,
+                        targetExamId: currentExam.id,
+                        examTitle: currentExam.title
+                      });
+                    } else if (currentExam.type === 'law') {
                       onStartExam({ category: 'กฎหมายและจรรยาบรรณ', task: '', count: 30, mode: 'exam' });
                     } else {
                       onStartExam({ category: '', task: '', count: 150, mode: 'exam', part: 'day1', ordered: true });

@@ -40,6 +40,22 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
         examTimeText: currentExam.examTimeText,
         examDateText: currentExam.examDateText
       });
+    } else if (currentExam.quickAction?.source_exam || currentExam.source_exam) {
+      onStartExam({
+        category: 'กฎหมายและจรรยาบรรณ',
+        task: '',
+        count: currentExam.questionsCount || 30,
+        mode: mode,
+        ordered: true,
+        part: 'law',
+        year: currentExam.quickAction?.year || '2569',
+        source_exam: currentExam.quickAction?.source_exam || currentExam.source_exam,
+        targetExamId: currentExam.id,
+        targetDate: currentExam.targetDate,
+        examTitle: currentExam.title,
+        examTimeText: currentExam.examTimeText,
+        examDateText: currentExam.examDateText
+      });
     } else if (currentExam.type === 'law') {
       onStartExam({
         category: 'กฎหมายและจรรยาบรรณ',
