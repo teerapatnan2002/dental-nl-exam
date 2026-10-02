@@ -419,7 +419,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                     } : {})
                   }}
                 >
-                  {yData.year === '2570' ? '🎯 พ.ศ. 2570 (Mock 70)' : yData.year === '2569' ? '⚖️ พ.ศ. 2569 (DSAT 3 ชุด)' : `พ.ศ. ${yData.year}`}
+                  {yData.year === '2570' ? '🎯 พ.ศ. 2570 (Mock 70)' : yData.year === '2569' ? '⚖️ ข้อสอบจำลอง DSAT (4 ชุด)' : `พ.ศ. ${yData.year}`}
                 </button>
               ))}
             </div>
@@ -747,16 +747,16 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       <Sparkles size={14} /> ข้อสอบจำลองมาตรฐาน สโมสรนิสิตนักศึกษาทันตแพทย์แห่งประเทศไทย (สนทท.)
                     </div>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 0.4rem 0', color: '#fff', letterSpacing: '-0.02em', wordBreak: 'break-word' }}>
-                      ⚖️ DSAT Mock Exam นิติทันตวิทยาและกฎหมาย (พ.ศ. 2569)
+                      ⚖️ DSAT Mock Exam นิติทันตวิทยาและกฎหมาย (ฉบับจำลอง 4 ชุด)
                     </h2>
                     <div style={{ color: 'var(--text-sub)', fontSize: '0.92rem', maxWidth: '720px', lineHeight: 1.5, wordBreak: 'break-word' }}>
-                      ชุดข้อสอบจำลองเสมือนจริง <strong>3 ฉบับเต็ม รวม 90 ข้อ (30 STEM สถานการณ์คลินิก)</strong> อิงโครงสร้าง Table of Specifications (TOS) กฎหมายวิชาชีพ 24 ข้อ และนิติทันตวิทยา 6 ข้อต่อชุด พร้อมเฉลยละเอียดทุกตัวเลือกและการวิเคราะห์ Cognitive Domain
+                      ชุดข้อสอบจำลองเสมือนจริง <strong>4 ฉบับเต็ม รวม 120 ข้อ (40 STEM สถานการณ์คลินิก)</strong> อิงโครงสร้าง Table of Specifications (TOS) กฎหมายวิชาชีพ 24 ข้อ และนิติทันตวิทยา 6 ข้อต่อชุด พร้อมเฉลยละเอียดทุกตัวเลือกและการวิเคราะห์ Cognitive Domain
                     </div>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem', flexShrink: 0 }}>
                     <div className="badge badge-accent" style={{ fontSize: '0.85rem', padding: '0.4rem 0.85rem', background: 'linear-gradient(135deg, #0284c7, #06b6d4)', border: '1px solid rgba(6, 182, 212, 0.5)', color: '#fff', whiteSpace: 'nowrap' }}>
-                      3 ฉบับ • 90 ข้อเต็ม
+                      4 ฉบับ • 120 ข้อเต็ม
                     </div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                       เกณฑ์ผ่าน ศ.ป.ท.: 60% (18/30 ข้อ)
@@ -784,7 +784,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                   <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '0.85rem 1rem' }}>
                     <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>⏱️ เวลาทำข้อสอบ</div>
                     <div style={{ fontSize: '1rem', fontWeight: 700, color: '#34d399' }}>60 นาที / ฉบับ</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)' }}>หรือ 180 นาทีสำหรับรอบมาราธอน</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)' }}>หรือ 240 นาทีสำหรับรอบมาราธอน 4 ฉบับ</div>
                   </div>
                   <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '0.85rem 1rem' }}>
                     <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>💡 โหมดการทำข้อสอบ</div>
@@ -808,28 +808,28 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                 }}>
                   <div>
                     <div style={{ fontWeight: 700, color: '#fff', fontSize: '1rem' }}>
-                      🔥 สอบรวม 3 ฉบับรวด (DSAT Marathon 90 ข้อ)
+                      🔥 สอบรวม 4 ฉบับรวด (DSAT Grand Marathon 120 ข้อ)
                     </div>
                     <div style={{ fontSize: '0.82rem', color: 'var(--text-sub)' }}>
-                      ทดสอบความอึดและความแม่นยำทางกฎหมายทันตกรรมต่อเนื่อง 90 ข้อเต็ม (180 นาที)
+                      ทดสอบความอึดและความแม่นยำทางกฎหมายทันตกรรมต่อเนื่อง 120 ข้อเต็ม (240 นาที) หรือฝึกซ้อม 4 ฉบับรวด
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
                     <button
                       type="button"
                       className="btn btn-sm"
-                      onClick={() => handleStart({ category: 'กฎหมายและจรรยาบรรณ', count: 90, mode: 'exam', ordered: true, part: 'law', year: '2569' })}
+                      onClick={() => handleStart({ category: 'กฎหมายและจรรยาบรรณ', count: 120, mode: 'exam', ordered: true, part: 'law', source_exam: 'DSAT Mock Law' })}
                       style={{ background: 'linear-gradient(135deg, #0284c7, #06b6d4)', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 700 }}
                     >
-                      <PlayCircle size={15} /> เริ่มสอบมาราธอน 90 ข้อ
+                      <PlayCircle size={15} /> เริ่มสอบมาราธอน 120 ข้อ
                     </button>
                     <button
                       type="button"
                       className="btn btn-secondary btn-sm"
-                      onClick={() => handleStart({ category: 'กฎหมายและจรรยาบรรณ', count: 90, mode: 'practice', ordered: true, part: 'law', year: '2569' })}
+                      onClick={() => handleStart({ category: 'กฎหมายและจรรยาบรรณ', count: 120, mode: 'practice', ordered: true, part: 'law', source_exam: 'DSAT Mock Law' })}
                       style={{ borderRadius: '10px' }}
                     >
-                      <BookOpen size={15} /> โหมดฝึกซ้อม 90 ข้อ
+                      <BookOpen size={15} /> โหมดฝึกซ้อม 120 ข้อ
                     </button>
                   </div>
                 </div>
@@ -904,6 +904,28 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                         { stem: 9, q: "25-27", title: "การตรวจชันสูตรรอยกัด (Bite Marks), ABFO No.2 & สงสัย Child Abuse" },
                         { stem: 10, q: "28-30", title: "ภัยพิบัติเครื่องบินตก 180 ราย & DVI Primary Identifiers (ฟัน, นิ้วมือ, DNA)" },
                       ]
+                    },
+                    {
+                      setNum: 4,
+                      title: "DSAT Mock Law ชุดที่ 4",
+                      subtitle: "สถานพยาบาล CDEC เวชระเบียน & DVI",
+                      desc: "ใบอนุญาตสถานพยาบาล 10 ปี/2 ปี, โฆษณากิจการ, CDEC 100 หน่วย, ขอบเขตทันตาภิบาล, ความรับผิดละเมิด & Consent, ทันตแพทยสภา 5 สถาน, สิทธิผู้ป่วย HIV, PDPA, DVI INTERPOL และอายุวัยรุ่น Clavicle",
+                      badgeColor: "#ea580c",
+                      qRange: "ข้อ 1 - 30 (IDs 2490-2519)",
+                      sourceExam: "DSAT Mock Law ชุดที่ 4",
+                      year: "2570",
+                      stems: [
+                        { stem: 1, q: "1-3", title: "พ.ร.บ. สถานพยาบาล พ.ศ. 2541 (ใบอนุญาต 10 ปี / 2 ปี, ผู้ดำเนินการแห่งเดียว, การปฏิบัติหน้าที่แทน)" },
+                        { stem: 2, q: "4-6", title: "การโฆษณาสถานพยาบาล & จรรยาบรรณ (Before & After, อ้างผู้เชี่ยวชาญ, รับรองผล 100% / ลดราคาจูงใจ)" },
+                        { stem: 3, q: "7-9", title: "การศึกษาต่อเนื่อง CDEC & อายุใบอนุญาต (เกณฑ์ 100 หน่วยใน 5 ปี, กฎหมาย/จริยธรรม 10 หน่วย, การรักษาเมื่อใบอนุญาตสิ้นอายุ)" },
+                        { stem: 4, q: "10-12", title: "ขอบเขตงานทันตาภิบาล & ผู้ช่วยทันตแพทย์ (ข้อห้ามใน รพ.รัฐ, ห้ามทำหัตถการในคลินิกเอกชน, ความรับผิดร่วม)" },
+                        { stem: 5, q: "13-15", title: "ภาวะแทรกซ้อน & Informed Consent (ความสมบูรณ์ของความยินยอม, Standard of Care ม.420, อายุความละเมิด 1 ปี)" },
+                        { stem: 6, q: "16-18", title: "กระบวนการจริยธรรมทันตแพทยสภา (อายุความยื่นคำกล่าวหา 1 ปี/3 ปี, การถอนคำร้องไม่ระงับคดี ม.43, อำนาจลงโทษ 5 สถานตาม ม.39)" },
+                        { stem: 7, q: "19-21", title: "สิทธิผู้ป่วย & กฎหมายสุขภาพ (ห้ามปฏิเสธผู้ป่วย HIV/ฉุกเฉิน, Living Will ม.12, ข้อยกเว้นฉุกเฉินเพื่อช่วยชีวิต)" },
+                        { stem: 8, q: "22-24", title: "เวชระเบียน & PDPA (Sensitive Data ม.26, การขอข้อมูลโดยบุคคลภายนอก/หมายศาล, เกณฑ์เก็บรักษาอย่างน้อย 5 ปี)" },
+                        { stem: 9, q: "25-27", title: "ทันตนิติเวช & DVI INTERPOL (Primary Identifiers 3 ด้าน, 4 ขั้นตอน Scene-PM-AM-Reconciliation, คุณสมบัติฟันในศพไฟไหม้)" },
+                        { stem: 10, q: "28-30", title: "การประเมินอายุ & รอยกัด Bite Mark (ประเมินอายุวัยรุ่น ซี่ 8 + Clavicle, Gustafson Root transparency, การเก็บหลักฐานรอยกัด ABFO No. 2)" },
+                      ]
                     }
                   ].map((set) => {
                     const isExpanded = expandedDsatSet === set.setNum;
@@ -977,7 +999,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                                 mode: 'exam',
                                 ordered: true,
                                 part: 'law',
-                                year: '2569',
+                                year: set.year || '2569',
                                 source_exam: set.sourceExam
                               })}
                               style={{
@@ -1001,7 +1023,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                                 mode: 'practice',
                                 ordered: true,
                                 part: 'law',
-                                year: '2569',
+                                year: set.year || '2569',
                                 source_exam: set.sourceExam
                               })}
                               style={{

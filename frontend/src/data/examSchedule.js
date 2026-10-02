@@ -129,6 +129,36 @@ export const EXAM_SCHEDULES = [
     }
   },
   {
+    id: 'dsat-mock-4',
+    title: 'DSAT Mock Exam นิติทันตวิทยาและกฎหมาย ชุดที่ 4 (2570)',
+    series: 'DSAT ชุดที่ 4',
+    type: 'law',
+    icon: '📝',
+    badge: '✨ สโมสรนิสิตฯ สนทท. (2570)',
+    targetDate: '2026-10-02T00:00:00+07:00',
+    examDateText: 'เปิดสอบทันที (On-Demand)',
+    examTimeText: '13:00 – 14:00 น. (60 นาที)',
+    questionsCount: 30,
+    regPeriodText: 'เปิดให้ทำข้อสอบฟรี',
+    regStatus: 'open',
+    regStatusText: 'พร้อมเข้าสอบได้ทันที',
+    announcementDateText: 'เฉลยและวิเคราะห์ Cognitive Level ทันทีหลังส่ง',
+    fee: 'ฟรีสำหรับสมาชิก',
+    description: 'ข้อสอบมาตรฐาน สนทท. ชุดที่ 4 (30 ข้อ 10 STEMs) เจาะลึกสถานพยาบาล กฎหมาย CDEC สิทธิผู้ป่วย เวชระเบียน & PDPA ทันตนิติเวช DVI และการประเมินอายุ',
+    subjects: [
+      { name: 'พ.ร.บ. วิชาชีพทันตกรรม สถานพยาบาล & จรรยาบรรณ (STEM 1–8)', items: '24 ข้อ (ใบอนุญาต 10 ปี/2 ปี, โฆษณา, CDEC 100 หน่วย, สิทธิผู้ป่วย, PDPA)' },
+      { name: 'นิติทันตวิทยา Forensic Odontology (STEM 9–10)', items: '6 ข้อ (DVI INTERPOL Primary Identifiers, การประเมินอายุ & ABFO Bite Marks)' },
+    ],
+    quickAction: {
+      label: 'เริ่มสอบ DSAT ชุดที่ 4 (30 ข้อ)',
+      actionType: 'exam_dsat_4',
+      category: 'กฎหมายและจรรยาบรรณ',
+      source_exam: 'DSAT Mock Law ชุดที่ 4',
+      year: '2570',
+      count: 30
+    }
+  },
+  {
     id: 'law-3-2569',
     title: 'สอบวิชากฎหมายที่เกี่ยวข้องกับวิชาชีพทันตกรรม',
     series: 'ครั้งที่ 3/2569',
