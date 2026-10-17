@@ -142,6 +142,8 @@ class QuestionResponse(BaseModel):
     explanation: Optional[str] = None
     source_exam: Optional[str] = None
     image_path: Optional[str] = None
+    cognitive_level: Optional[str] = None
+    must_know_topic: Optional[str] = None
     choices: List[dict] = []
 
     class Config:
@@ -163,6 +165,8 @@ def _serialize_question(q: models.Question) -> dict:
         "explanation": q.explanation,
         "source_exam": q.source_exam,
         "image_path": q.image_path,
+        "cognitive_level": q.cognitive_level,
+        "must_know_topic": q.must_know_topic,
         "choices": choices,
     }
 
@@ -226,6 +230,160 @@ def get_stats(db: Session = Depends(get_db)):
         "categories": [{"category": c, "count": count} for c, count in cat_stats],
         "tasks": [{"task": t, "count": count} for t, count in task_stats],
         "category_tasks": category_tasks,
+    }
+
+
+@app.get("/api/analytics/tos")
+def get_tos_analytics(db: Session = Depends(get_db)):
+    tos_categories = [
+        {"category": "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก", "target_count": 35, "target_pct": 11.67},
+        {"category": "ทันตกรรมบดเคี้ยวและอาการปวดบริเวณช่องปากและใบหน้า", "target_count": 15, "target_pct": 5.00},
+        {"category": "ศัลยศาสตร์ช่องปาก", "target_count": 42, "target_pct": 14.00},
+        {"category": "ปริทันตวิทยา", "target_count": 35, "target_pct": 11.67},
+        {"category": "ทันตกรรมบูรณะ/หัตถการ", "target_count": 35, "target_pct": 11.67},
+        {"category": "วิทยาเอ็นโดดอนต์", "target_count": 23, "target_pct": 7.67},
+        {"category": "ทันตกรรมประดิษฐ์", "target_count": 38, "target_pct": 12.67},
+        {"category": "ทันตกรรมจัดฟัน", "target_count": 17, "target_pct": 5.67},
+        {"category": "ทันตกรรมสำหรับเด็ก", "target_count": 35, "target_pct": 11.67},
+        {"category": "ทันตกรรมชุมชน", "target_count": 25, "target_pct": 8.33},
+        {"category": "กฎหมายและจรรยาบรรณ", "target_count": 30, "target_pct": 9.09},
+    ]
+
+    tos_tasks = [
+        {"task": "การสร้างเสริมสุขภาพและการป้องกัน", "target_count": 30, "target_pct": 10.00},
+        {"task": "การเกิดและการดำเนินโรค", "target_count": 50, "target_pct": 16.67},
+        {"task": "การวินิจฉัยโรค", "target_count": 88, "target_pct": 29.33},
+        {"task": "การจัดการและการรักษาผู้ป่วย", "target_count": 92, "target_pct": 30.67},
+        {"task": "ขั้นตอนและวิธีการรักษา", "target_count": 40, "target_pct": 13.33},
+    ]
+
+    tos_cognitive = [
+        {"level": "R", "name": "ความจำและความเข้าใจ (Recall)", "target_count": 52, "target_pct": 17.33},
+        {"level": "A", "name": "การประยุกต์ใช้ (Application)", "target_count": 89, "target_pct": 29.67},
+        {"level": "P", "name": "การวิเคราะห์และแก้ปัญหา (Problem Solving)", "target_count": 159, "target_pct": 53.00},
+    ]
+
+    all_q = db.query(
+        models.Question.id,
+        models.Question.category,
+        models.Question.task,
+        models.Question.cognitive_level,
+        models.Question.must_know_topic
+    ).all()
+    total_q = len(all_q)
+    clinical_q = [q for q in all_q if q.category != "กฎหมายและจรรยาบรรณ"]
+    clinical_total = len(clinical_q)
+
+    cat_counts = {}
+    for q in all_q:
+        cat_counts[q.category] = cat_counts.get(q.category, 0) + 1
+
+    categories_res = []
+    for tc in tos_categories:
+        cat_name = tc["category"]
+        actual_cnt = cat_counts.get(cat_name, 0)
+        base_tot = clinical_total if cat_name != "กฎหมายและจรรยาบรรณ" else total_q
+        actual_pct = round((actual_cnt / base_tot * 100), 1) if base_tot else 0
+        diff = round(actual_pct - tc["target_pct"], 1)
+        categories_res.append({
+            "category": cat_name,
+            "target_count": tc["target_count"],
+            "target_pct": tc["target_pct"],
+            "actual_count": actual_cnt,
+            "actual_pct": actual_pct,
+            "diff_pct": diff,
+            "status": "High" if diff > 2.0 else ("Low" if diff < -2.0 else "Balanced")
+        })
+
+    task_counts = {}
+    for q in clinical_q:
+        task_counts[q.task] = task_counts.get(q.task, 0) + 1
+
+    tasks_res = []
+    for tt in tos_tasks:
+        t_name = tt["task"]
+        actual_cnt = task_counts.get(t_name, 0)
+        actual_pct = round((actual_cnt / clinical_total * 100), 1) if clinical_total else 0
+        diff = round(actual_pct - tt["target_pct"], 1)
+        tasks_res.append({
+            "task": t_name,
+            "target_count": tt["target_count"],
+            "target_pct": tt["target_pct"],
+            "actual_count": actual_cnt,
+            "actual_pct": actual_pct,
+            "diff_pct": diff,
+            "status": "High" if diff > 3.0 else ("Low" if diff < -3.0 else "Balanced")
+        })
+
+    cog_counts = {}
+    for q in all_q:
+        cog = q.cognitive_level or "A"
+        cog_counts[cog] = cog_counts.get(cog, 0) + 1
+
+    cognitive_res = []
+    for cog_item in tos_cognitive:
+        lvl = cog_item["level"]
+        actual_cnt = cog_counts.get(lvl, 0)
+        actual_pct = round((actual_cnt / total_q * 100), 1) if total_q else 0
+        diff = round(actual_pct - cog_item["target_pct"], 1)
+        cognitive_res.append({
+            "level": lvl,
+            "name": cog_item["name"],
+            "target_count": cog_item["target_count"],
+            "target_pct": cog_item["target_pct"],
+            "actual_count": actual_cnt,
+            "actual_pct": actual_pct,
+            "diff_pct": diff,
+        })
+
+    matrix_cat_task = {}
+    matrix_cat_cog = {}
+    for q in all_q:
+        cat = q.category or "Unknown"
+        task = q.task or "Unknown"
+        cog = q.cognitive_level or "A"
+        if cat not in matrix_cat_task:
+            matrix_cat_task[cat] = {}
+        matrix_cat_task[cat][task] = matrix_cat_task[cat].get(task, 0) + 1
+        
+        if cat not in matrix_cat_cog:
+            matrix_cat_cog[cat] = {}
+        matrix_cat_cog[cat][cog] = matrix_cat_cog[cat].get(cog, 0) + 1
+
+    topic_counts = {}
+    topics_by_cat = {}
+    for q in all_q:
+        t = q.must_know_topic
+        if not t:
+            continue
+        topic_counts[t] = topic_counts.get(t, 0) + 1
+        cat = q.category
+        if cat not in topics_by_cat:
+            topics_by_cat[cat] = {}
+        topics_by_cat[cat][t] = topics_by_cat[cat].get(t, 0) + 1
+
+    top_topics = [
+        {"topic": t, "count": cnt}
+        for t, cnt in sorted(topic_counts.items(), key=lambda x: -x[1])[:20]
+    ]
+
+    return {
+        "summary": {
+            "total_questions": total_q,
+            "clinical_questions": clinical_total,
+            "law_questions": len(all_q) - clinical_total,
+            "total_must_know_topics": len(topic_counts),
+        },
+        "categories": categories_res,
+        "tasks": tasks_res,
+        "cognitive": cognitive_res,
+        "heatmap_matrix": matrix_cat_task,
+        "cognitive_matrix": matrix_cat_cog,
+        "top_topics": top_topics,
+        "topics_by_category": {
+            cat: [{"topic": t, "count": c} for t, c in sorted(t_dict.items(), key=lambda x: -x[1])]
+            for cat, t_dict in topics_by_cat.items()
+        }
     }
 
 

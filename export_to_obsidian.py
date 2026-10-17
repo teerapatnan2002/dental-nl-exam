@@ -62,13 +62,30 @@ def export_to_obsidian():
         explanation_text = ""
         if q.explanation:
             try:
-                # Try to parse as JSON first (from our new AI structure)
+                # Parse JSON enriched structure
                 exp_data = json.loads(q.explanation)
                 explanation_text += f"\n## คำอธิบาย (Explanation)\n\n"
-                explanation_text += f"**Core Principle:**\n{exp_data.get('core_principle', '')}\n\n"
-                explanation_text += f"**Choice Breakdown:**\n"
-                for label, exp in exp_data.get('choice_explanations', {}).items():
-                    explanation_text += f"- **{label}**: {exp}\n"
+                
+                if exp_data.get("key_takeaway"):
+                    explanation_text += f"> [!TIP] Key Takeaway\n> {exp_data['key_takeaway']}\n\n"
+                    
+                if exp_data.get("core_principle"):
+                    explanation_text += f"**Core Principle:**\n{exp_data['core_principle']}\n\n"
+                    
+                if exp_data.get("choice_explanations"):
+                    explanation_text += f"### Choice Breakdown\n"
+                    for label, exp in exp_data["choice_explanations"].items():
+                        explanation_text += f"- **{label}**: {exp}\n"
+                    explanation_text += "\n"
+                    
+                if exp_data.get("common_pitfall"):
+                    explanation_text += f"> [!WARNING] Common Pitfall\n> {exp_data['common_pitfall']}\n\n"
+                    
+                if exp_data.get("clinical_pearl"):
+                    explanation_text += f"> [!NOTE] Clinical Pearl\n> {exp_data['clinical_pearl']}\n\n"
+                    
+                if exp_data.get("reference"):
+                    explanation_text += f"**Reference:**\n{exp_data['reference']}\n"
             except json.JSONDecodeError:
                 # Fallback to plain text
                 explanation_text = f"\n## คำอธิบาย (Explanation)\n\n{q.explanation}"

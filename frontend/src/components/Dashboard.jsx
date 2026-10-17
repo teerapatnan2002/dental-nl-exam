@@ -14,6 +14,7 @@ import AdminPanel from './AdminPanel';
 import MyReports from './MyReports';
 import CategoryDetailModal from './CategoryDetailModal';
 import ExamCountdown from './ExamCountdown';
+import TOSAnalytics from './TOSAnalytics';
 import { calculateTimeRemaining } from '../data/examSchedule';
 
 const lawCategoryName = 'กฎหมายและจรรยาบรรณ';
@@ -25,6 +26,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
   const [selectedTask, setSelectedTask] = useState('');
   const [questionCount, setQuestionCount] = useState(10);
   const [selectedYear, setSelectedYear] = useState('');
+  const [customYear, setCustomYear] = useState('');
   const [userStats, setUserStats] = useState(null);
   const [reviewData, setReviewData] = useState(null);
   const [expandedCategories, setExpandedCategories] = useState({});
@@ -149,11 +151,13 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
     { id: 'fullExam', label: 'สอบจัดเต็ม', emoji: '🎯' },
     { id: 'practice', label: 'ฝึกซ้อมรายวิชา', emoji: '📚' },
     { id: 'custom', label: 'สร้างข้อสอบเอง', emoji: '⚙️' },
+    { id: 'tos_analytics', label: 'TOS Analytics', emoji: '📊' },
     { id: 'law_hub', label: 'สรุปกฎหมาย & บัตรคำ', emoji: '⚖️' },
     { id: 'aihub', label: 'AI Hub', emoji: '🧠' },
   ];
 
   const toolsGroup = [
+    { id: 'tos_analytics', label: 'TOS Analytics & Benchmark', desc: 'เปรียบเทียบข้อสอบจริงกับเกณฑ์ ศ.ป.ท. 2563 & Coverage Matrix', emoji: '📊' },
     { id: 'law_hub_tool', label: 'สรุปกฎหมาย & Flashcards', desc: 'ผังมโนทัศน์ 5 เสาหลัก & บัตรคำช่วยจำ', emoji: '⚖️' },
     { id: 'search', label: 'ค้นหาข้อสอบ', desc: 'ค้นหาโจทย์ตามคำค้นหา', emoji: '🔍' },
     { id: 'leaderboard', label: 'Leaderboard', desc: 'อันดับคะแนนและผู้ทำโจทย์', emoji: '🏆' },
@@ -339,6 +343,15 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
           )}
         </div>
       </div>
+
+      {/* ════════════════════════════════════════════════
+         TAB: TOS Analytics & Blueprint Benchmark
+      ════════════════════════════════════════════════ */}
+      {activeTab === 'tos_analytics' && (
+        <div className="animate-fade-in">
+          <TOSAnalytics onStartPractice={handleStartPracticeQuestions} />
+        </div>
+      )}
 
       {/* ════════════════════════════════════════════════
          TAB: ค้นหาข้อสอบ (Full-text Search)
@@ -1842,8 +1855,8 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                 <label className="input-label">📅 ปีข้อสอบ (พ.ศ.)</label>
                 <select
                   className="input-select"
-                  value={selectedYear}
-                  onChange={e => setSelectedYear(e.target.value)}
+                  value={customYear}
+                  onChange={e => setCustomYear(e.target.value)}
                 >
                   <option value="">ทุกปี (ทั้งหมด)</option>
                   {years && years.map(yData => (
@@ -1870,13 +1883,13 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <button
                 className="btn btn-primary"
-                onClick={() => handleStart(selectedCategory, selectedTask, questionCount, 'exam')}
+                onClick={() => handleStart(selectedCategory, selectedTask, questionCount, 'exam', false, false, '', customYear)}
               >
                 <PlayCircle size={17} /> เริ่มสอบ (Exam Mode)
               </button>
               <button
                 className="btn btn-accent"
-                onClick={() => handleStart(selectedCategory, selectedTask, questionCount, 'practice')}
+                onClick={() => handleStart(selectedCategory, selectedTask, questionCount, 'practice', false, false, '', customYear)}
               >
                 <BookOpen size={17} /> ฝึกซ้อม (Practice Mode)
               </button>

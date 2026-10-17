@@ -148,7 +148,7 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
       {core_principle && (
         <div style={{ marginBottom: '1.25rem' }}>
           <h4 style={{ color: 'var(--primary-light)', marginBottom: '0.45rem', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.92rem' }}>
-            <Lightbulb size={16} /> หลักการและเหตุผลทางกฎหมาย
+            <Lightbulb size={16} /> {parsed.legal_citation && !parsed.reference ? 'หลักการและเหตุผลทางกฎหมาย' : 'หลักการและกลไกทางคลินิก (Core Mechanism & Principle)'}
           </h4>
           <div style={{ lineHeight: 1.7, whiteSpace: 'pre-wrap', color: 'var(--text-sub)', fontSize: '0.92rem' }}>
             {core_principle}

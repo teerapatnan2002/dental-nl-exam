@@ -16,6 +16,8 @@ class Question(Base):
     explanation = Column(Text, nullable=True)
     source_exam = Column(String, nullable=True)
     image_path = Column(String, nullable=True)
+    cognitive_level = Column(String, index=True, nullable=True)
+    must_know_topic = Column(String, index=True, nullable=True)
 
     choices = relationship("Choice", back_populates="question", cascade="all, delete-orphan")
 

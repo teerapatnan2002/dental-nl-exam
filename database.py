@@ -38,6 +38,7 @@ else:
     # Recommended pool settings for PostgreSQL (Supabase / Serverless)
     engine_kwargs["pool_pre_ping"] = True
     engine_kwargs["pool_recycle"] = 300
+    connect_args["prepare_threshold"] = None
     if "sslmode" not in SQLALCHEMY_DATABASE_URL:
         connect_args["sslmode"] = "require"
 
