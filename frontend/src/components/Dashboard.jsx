@@ -15,6 +15,7 @@ import MyReports from './MyReports';
 import CategoryDetailModal from './CategoryDetailModal';
 import ExamCountdown from './ExamCountdown';
 import TOSAnalytics from './TOSAnalytics';
+import ClinicalStudyHub from './ClinicalStudyHub';
 import { calculateTimeRemaining } from '../data/examSchedule';
 
 const lawCategoryName = 'กฎหมายและจรรยาบรรณ';
@@ -150,6 +151,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
   const mainTabs = [
     { id: 'fullExam', label: 'สอบจัดเต็ม', emoji: '🎯' },
     { id: 'practice', label: 'ฝึกซ้อมรายวิชา', emoji: '📚' },
+    { id: 'study_hub', label: 'เลกเชอร์เจาะลึก', emoji: '📖' },
     { id: 'custom', label: 'สร้างข้อสอบเอง', emoji: '⚙️' },
     { id: 'tos_analytics', label: 'TOS Analytics', emoji: '📊' },
     { id: 'law_hub', label: 'สรุปกฎหมาย & บัตรคำ', emoji: '⚖️' },
@@ -157,6 +159,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
   ];
 
   const toolsGroup = [
+    { id: 'study_hub', label: 'คลังบทเรียนและเลกเชอร์เจาะลึก', desc: 'เจาะลึกกลไกและ Decision Matrix 10 สาขา + กฎหมาย', emoji: '📖' },
     { id: 'tos_analytics', label: 'TOS Analytics & Benchmark', desc: 'เปรียบเทียบข้อสอบจริงกับเกณฑ์ ศ.ป.ท. 2563 & Coverage Matrix', emoji: '📊' },
     { id: 'law_hub_tool', label: 'สรุปกฎหมาย & Flashcards', desc: 'ผังมโนทัศน์ 5 เสาหลัก & บัตรคำช่วยจำ', emoji: '⚖️' },
     { id: 'search', label: 'ค้นหาข้อสอบ', desc: 'ค้นหาโจทย์ตามคำค้นหา', emoji: '🔍' },
@@ -343,6 +346,15 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
           )}
         </div>
       </div>
+
+      {/* ════════════════════════════════════════════════
+         TAB: Clinical Masterclass & Study Hub (คลังบทเรียนเจาะลึก)
+      ════════════════════════════════════════════════ */}
+      {activeTab === 'study_hub' && (
+        <div className="animate-fade-in">
+          <ClinicalStudyHub onStartExam={handleStart} />
+        </div>
+      )}
 
       {/* ════════════════════════════════════════════════
          TAB: TOS Analytics & Blueprint Benchmark

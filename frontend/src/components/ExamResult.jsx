@@ -516,6 +516,7 @@ export default function ExamResult({ questions, userAnswers, startTime, analysis
                         explanation={explanation} 
                         correctAnswer={correctAnswer} 
                         isCached={true} 
+                        question={q}
                       />
                     )}
 

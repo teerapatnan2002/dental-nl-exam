@@ -741,6 +741,7 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
                 explanation={expl.explanation} 
                 correctAnswer={expl.correct_answer} 
                 isCached={expl.cached} 
+                question={q}
               />
             )}
           </div>

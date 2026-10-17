@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Lightbulb, AlertTriangle, BookOpen, Sparkles } from 'lucide-react';
+import { findGuideForQuestion } from '../data/clinicalStudyGuides';
+import ClinicalStudyHub from './ClinicalStudyHub';
 
-export default function ExplanationBox({ explanation, correctAnswer, isCached = false }) {
+export default function ExplanationBox({ explanation, correctAnswer, isCached = false, question = null }) {
+  const [studyModalGuideId, setStudyModalGuideId] = useState(null);
+
   if (!explanation) return null;
 
   let parsed = null;
@@ -15,11 +19,14 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
     }
   }
 
+  // Find matching clinical masterclass study guide
+  const matchingGuide = findGuideForQuestion(question || parsed);
+
   // Plain text fallback
   if (!parsed || typeof parsed !== 'object' || (!parsed.core_principle && !parsed.key_takeaway)) {
     return (
       <div className="explanation-box" style={{ marginTop: '1.25rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Lightbulb size={16} color="var(--primary-light)" />
             <strong style={{ fontSize: '0.9rem', color: 'var(--primary-light)' }}>เฉลยและคำอธิบาย</strong>
@@ -29,10 +36,39 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
               คำตอบที่ถูกต้อง: {correctAnswer}
             </span>
           )}
+          {matchingGuide && (
+            <button
+              type="button"
+              onClick={() => setStudyModalGuideId(matchingGuide.id)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(139, 92, 246, 0.15))',
+                border: '1px solid rgba(236, 72, 153, 0.4)',
+                color: '#f43f5e',
+                borderRadius: '20px',
+                padding: '0.25rem 0.75rem',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}
+            >
+              <BookOpen size={13} /> 📖 อ่านเลกเชอร์เจาะลึก
+            </button>
+          )}
         </div>
         <div style={{ color: 'var(--text-sub)', fontSize: '0.92rem', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
           {explanation}
         </div>
+
+        {studyModalGuideId && (
+          <ClinicalStudyHub
+            isModal={true}
+            initialTopicId={studyModalGuideId}
+            onClose={() => setStudyModalGuideId(null)}
+          />
+        )}
       </div>
     );
   }
@@ -52,7 +88,7 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
   return (
     <div className="explanation-box" style={{ marginTop: '1.25rem' }}>
       
-      {/* ── Header: Correct Answer + Citations + Level + TOS ── */}
+      {/* ── Header: Correct Answer + Citations + Level + TOS + Deep Study Link ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
           <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>เฉลยที่ถูกต้อง:</span>
@@ -100,11 +136,39 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
           )}
         </div>
 
-        {legal_citation && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(124, 58, 237, 0.12)', border: '1px solid rgba(124, 58, 237, 0.3)', borderRadius: '20px', padding: '0.25rem 0.75rem', fontSize: '0.8rem', color: 'var(--primary-light)', fontWeight: 600 }}>
-            <BookOpen size={13} /> {legal_citation}
-          </div>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+          {/* Deep Clinical Study Guide Button */}
+          {matchingGuide && (
+            <button
+              type="button"
+              onClick={() => setStudyModalGuideId(matchingGuide.id)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.18), rgba(139, 92, 246, 0.18))',
+                border: '1px solid rgba(236, 72, 153, 0.45)',
+                color: '#f43f5e',
+                borderRadius: '20px',
+                padding: '0.3rem 0.85rem',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                boxShadow: '0 2px 8px rgba(236, 72, 153, 0.2)'
+              }}
+              title="คลิกเพื่อเปิดอ่านเลกเชอร์เจาะลึกหัวข้อนี้ (Clinical Masterclass)"
+            >
+              <BookOpen size={13} /> 📖 เลกเชอร์เจาะลึกหัวข้อนี้
+            </button>
+          )}
+
+          {legal_citation && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(124, 58, 237, 0.12)', border: '1px solid rgba(124, 58, 237, 0.3)', borderRadius: '20px', padding: '0.25rem 0.75rem', fontSize: '0.8rem', color: 'var(--primary-light)', fontWeight: 600 }}>
+              <BookOpen size={13} /> {legal_citation}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── 1. Key Takeaway (สรุป 1 บรรทัดจำไปสอบ) ── */}
@@ -203,6 +267,15 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
             {future_prediction}
           </div>
         </div>
+      )}
+
+      {/* ── 6. Standalone Deep Study Modal ── */}
+      {studyModalGuideId && (
+        <ClinicalStudyHub
+          isModal={true}
+          initialTopicId={studyModalGuideId}
+          onClose={() => setStudyModalGuideId(null)}
+        />
       )}
 
     </div>

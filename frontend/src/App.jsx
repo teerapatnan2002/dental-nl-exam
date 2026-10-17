@@ -5,11 +5,12 @@ import ExamSession from './components/ExamSession';
 import ExamResult from './components/ExamResult';
 import AIHub from './components/AIHub';
 import LawStudyHub from './components/LawStudyHub';
+import ClinicalStudyHub from './components/ClinicalStudyHub';
 import AuthModal from './components/AuthModal';
 import ExamScheduleModal from './components/ExamScheduleModal';
 import ScheduledExamModal from './components/ScheduledExamModal';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { XCircle, User as UserIcon, LogOut, Sun, Moon, Scale, Clock } from 'lucide-react';
+import { XCircle, User as UserIcon, LogOut, Sun, Moon, Scale, Clock, BookOpen } from 'lucide-react';
 import { API_BASE } from './config';
 import { EXAM_SCHEDULES, calculateTimeRemaining } from './data/examSchedule';
 import { Analytics } from '@vercel/analytics/react';
@@ -368,6 +369,22 @@ function AppContent() {
             </span>
           </button>
 
+          {/* Clinical Study Hub Quick Access Button */}
+          <button
+            onClick={() => setCurrentView('study_hub')}
+            className="theme-toggle-btn header-study-btn"
+            style={{
+              background: currentView === 'study_hub' ? 'var(--primary)' : 'rgba(236, 72, 153, 0.12)',
+              color: currentView === 'study_hub' ? '#fff' : '#ec4899',
+              border: '1px solid rgba(236, 72, 153, 0.3)',
+              cursor: 'pointer'
+            }}
+            title="คลังบทเรียนและเลกเชอร์เจาะลึก 10 สาขา + กฎหมาย (Clinical Masterclass)"
+          >
+            <BookOpen size={15} color={currentView === 'study_hub' ? '#fff' : '#ec4899'} />
+            <span className="theme-toggle-label" style={{ fontWeight: 600 }}>เลกเชอร์เจาะลึก</span>
+          </button>
+
           {/* Law Study Hub Quick Access Button */}
           <button
             onClick={() => setCurrentView('law_hub')}
@@ -461,6 +478,13 @@ function AppContent() {
               }
               setCurrentView('aihub');
             }}
+          />
+        )}
+
+        {currentView === 'study_hub' && (
+          <ClinicalStudyHub
+            onBack={goHome}
+            onStartExam={startExam}
           />
         )}
 
