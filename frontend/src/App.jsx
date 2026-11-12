@@ -190,6 +190,7 @@ function AppContent() {
         let url = `${API_BASE}/api/exam/random?n=` + config.count;
         if (config.category) url += '&category=' + encodeURIComponent(config.category);
         if (config.task)     url += '&task='     + encodeURIComponent(config.task);
+        if (config.must_know_topic) url += '&must_know_topic=' + encodeURIComponent(config.must_know_topic);
         if (config.year)     url += '&year='     + encodeURIComponent(config.year);
         if (config.part)     url += '&part='     + encodeURIComponent(config.part);
         if (config.source_exam) url += '&source_exam=' + encodeURIComponent(config.source_exam);

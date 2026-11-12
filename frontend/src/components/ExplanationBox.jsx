@@ -19,8 +19,9 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
     }
   }
 
-  // Find matching clinical masterclass study guide
+  // Find matching clinical masterclass study guide or exact DB must_know_topic
   const matchingGuide = findGuideForQuestion(question || parsed);
+  const targetTopicId = question?.must_know_topic || parsed?.must_know_topic || matchingGuide?.id;
 
   // Plain text fallback
   if (!parsed || typeof parsed !== 'object' || (!parsed.core_principle && !parsed.key_takeaway)) {
@@ -36,10 +37,10 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
               คำตอบที่ถูกต้อง: {correctAnswer}
             </span>
           )}
-          {matchingGuide && (
+          {targetTopicId && (
             <button
               type="button"
-              onClick={() => setStudyModalGuideId(matchingGuide.id)}
+              onClick={() => setStudyModalGuideId(targetTopicId)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -54,7 +55,7 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
                 cursor: 'pointer'
               }}
             >
-              <BookOpen size={13} /> 📖 อ่านเลกเชอร์เจาะลึก
+              <BookOpen size={13} /> 📖 เรียนหัวข้อนี้จาก Textbook & Evidence
             </button>
           )}
         </div>
@@ -138,10 +139,10 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
 
         <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
           {/* Deep Clinical Study Guide Button */}
-          {matchingGuide && (
+          {targetTopicId && (
             <button
               type="button"
-              onClick={() => setStudyModalGuideId(matchingGuide.id)}
+              onClick={() => setStudyModalGuideId(targetTopicId)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -157,9 +158,9 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
                 transition: 'all 0.15s ease',
                 boxShadow: '0 2px 8px rgba(236, 72, 153, 0.2)'
               }}
-              title="คลิกเพื่อเปิดอ่านเลกเชอร์เจาะลึกหัวข้อนี้ (Clinical Masterclass)"
+              title="คลิกเพื่อเปิดห้องเรียน Textbook & Evidence เจาะลึกหัวข้อนี้"
             >
-              <BookOpen size={13} /> 📖 เลกเชอร์เจาะลึกหัวข้อนี้
+              <BookOpen size={13} /> 📖 เรียนหัวข้อนี้จาก Textbook & Evidence
             </button>
           )}
 

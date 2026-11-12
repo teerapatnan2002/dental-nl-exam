@@ -67,12 +67,14 @@ from tracking import router as tracking_router
 from tutor import router as tutor_router
 from reports import router as reports_router
 from bookmarks import router as bookmarks_router
+from learning import router as learning_router
 
 app.include_router(auth_router)
 app.include_router(tracking_router)
 app.include_router(tutor_router)
 app.include_router(reports_router)
 app.include_router(bookmarks_router)
+app.include_router(learning_router)
 
 # ── CORS: read allowed origins from env, default to localhost only ──
 _allowed_origins_env = os.environ.get("ALLOWED_ORIGINS", "")
@@ -566,6 +568,7 @@ def generate_random_exam(
     n: int = Query(10, gt=0, le=1000),
     category: Optional[str] = None,
     task: Optional[str] = None,
+    must_know_topic: Optional[str] = None,
     year: Optional[str] = None,
     part: Optional[str] = None,
     source_exam: Optional[str] = None,
@@ -576,6 +579,8 @@ def generate_random_exam(
     query = db.query(models.Question).options(selectinload(models.Question.choices))
     if category:
         query = query.filter(models.Question.category == category)
+    if must_know_topic:
+        query = query.filter(models.Question.must_know_topic == must_know_topic)
     if clinical_only:
         query = query.filter(models.Question.category != "กฎหมายและจรรยาบรรณ")
     if task:
