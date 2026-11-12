@@ -370,134 +370,289 @@ TOPIC_METADATA: Dict[str, Dict[str, str]] = {
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 2. CANONICAL GOLD-STANDARD TEXTBOOKS & EVIDENCE REGISTRY
+# 2. CANONICAL GOLD-STANDARD TEXTBOOKS & THAI ASSOCIATION EVIDENCE REGISTRY
 # ─────────────────────────────────────────────────────────────────────────────
 CANONICAL_TEXTBOOKS = [
     {
         "id": "cohen-endodontics",
-        "title": "Cohen's Pathways of the Pulp (12th ed.) & AAE Consensus",
+        "title": "Cohen's Pathways of the Pulp (12th ed.) & สมาคมวิทยาเอ็นโดดอนต์ไทย (TAE)",
         "specialty": "วิทยาเอ็นโดดอนต์",
         "icon": "🦷",
         "color": "#ec4899",
-        "patterns": ["cohen", "pathways of the pulp", "hargreaves", "berman", "aae", "american association of endodontists", "ingle", "torabinejad"],
-        "description": "ตำรามาตรฐานทองคำระดับโลกด้านวิทยาเอ็นโดดอนต์ ครอบคลุมการวินิจฉัยพัลพ์และปลายรากตามเกณฑ์ AAE, ชีววิทยาความเจ็บปวด, การบำบัดพัลพ์มีชีวิต (VPT), สารล้างคลองราก และการอุดคลองรากฟัน"
+        "patterns": ["cohen", "pathways of the pulp", "hargreaves", "berman", "aae", "american association of endodontists", "ingle", "torabinejad", "สมาคมวิทยาเอ็นโดดอนต์ไทย"],
+        "description": "ตำรามาตรฐานระดับโลกด้านวิทยาเอ็นโดดอนต์ ร่วมกับแนวทางเวชปฏิบัติของสมาคมวิทยาเอ็นโดดอนต์ไทย (TAE) และราชวิทยาลัยทันตแพทย์แห่งประเทศไทย ครอบคลุมการวินิจฉัยพัลพ์และปลายรากตามเกณฑ์ AAE, VPT, สารล้างคลองราก และการอุดคลองรากฟัน",
+        "thai_association": "สมาคมวิทยาเอ็นโดดอนต์ไทย (Thai Association of Endodontists — TAE) & ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย",
+        "thai_references": [
+            "แนวทางเวชปฏิบัติทางวิทยาเอ็นโดดอนต์ สมาคมวิทยาเอ็นโดดอนต์ไทย (TAE) และทันตแพทยสภา",
+            "ตำราวิทยาเอ็นโดดอนต์ คณะทันตแพทยศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย / มหาวิทยาลัยมหิดล / มหาวิทยาลัยเชียงใหม่",
+            "เกณฑ์การวินิจฉัยโรคของเนื้อเยื่อในและเนื้อเยื่อรอบปลายรากฟัน (AAE Consensus ที่โรงเรียนทันตแพทย์ไทยใช้เป็นมาตรฐานข้อสอบ ศ.ท.ส.)"
+        ],
+        "thai_protocol_highlights": [
+            "ข้อสอบ ศ.ท.ส. ใช้คำศัพท์การวินิจฉัยตาม AAE Consensus 2009/2013 เป็นมาตรฐานเดียวทั้ง 18 สถาบัน (เช่น Symptomatic/Asymptomatic Irreversible Pulpitis, Symptomatic/Asymptomatic Apical Periodontitis)",
+            "การทำ Vital Pulp Therapy (Direct Pulp Capping / Partial Pulpotomy) ในแนวทางไทยปัจจุบันเน้นการใส่ Rubber dam, เช็ดหยุดเลือดด้วย NaOCl ภายใน 5–10 นาที และปิดทับด้วย Calcium Silicate Cement (MTA หรือ Biodentine) แทน Ca(OH)2 ดั้งเดิมในเคส Carious exposure",
+            "ตามเกณฑ์การใช้ยาอย่างสมเหตุผลในงานทันตกรรม (RDU Thailand) ห้ามจ่ายยาปฏิชีวนะในเคส Reversible/Irreversible Pulpitis หรือ Localized Acute Apical Abscess ที่ระบายหนองได้แล้วและไม่มีไข้/Cellulitis"
+        ]
     },
     {
         "id": "hupp-omfs",
-        "title": "Hupp, Ellis & Tucker: Contemporary Oral and Maxillofacial Surgery (7th ed.)",
+        "title": "Hupp's Contemporary OMFS (7th ed.) & สมาคมศัลยศาสตร์ช่องปากฯ (TAOMS)",
         "specialty": "ศัลยศาสตร์ช่องปาก",
         "icon": "🔪",
         "color": "#f59e0b",
-        "patterns": ["hupp", "ellis", "tucker", "contemporary oral and maxillofacial", "peterson", "fonseca", "aaoms"],
-        "description": "ตำราหลักด้านศัลยศาสตร์ช่องปากและแม็กซิลโลเฟเชียล ครอบคลุมชีวกลศาสตร์การถอนฟัน, การผ่าตัดฟันคุด, การติดเชื้อ Fascial spaces & Ludwig's angina, รูทะลุไซนัส (OAC), MRONJ และกระดูกใบหน้าหัก"
+        "patterns": ["hupp", "ellis", "tucker", "contemporary oral and maxillofacial", "peterson", "fonseca", "aaoms", "สมาคมศัลยศาสตร์ช่องปาก"],
+        "description": "ตำราหลักด้านศัลยศาสตร์ช่องปากและแม็กซิลโลเฟเชียล ร่วมกับแนวทางเวชปฏิบัติราชวิทยาลัยทันตแพทย์ฯ และสมาคมศัลยศาสตร์ช่องปากและแม็กซิลโลเฟเชียลแห่งประเทศไทย ในพระบรมราชูปถัมภ์ (TAOMS)",
+        "thai_association": "สมาคมศัลยศาสตร์ช่องปากและแม็กซิลโลเฟเชียลแห่งประเทศไทย ในพระบรมราชูปถัมภ์ (TAOMS) & ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย",
+        "thai_references": [
+            "แนวทางเวชปฏิบัติทางศัลยศาสตร์ช่องปากและแม็กซิลโลเฟเชียล ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย และ TAOMS",
+            "แนวทางการจัดการผู้ป่วยที่ได้รับยาต้านการแข็งตัวของเลือดและยาต้านเกล็ดเลือดในงานทันตกรรม (ทันตแพทยสภา & สมาคมโลหิตวิทยาแห่งประเทศไทย)",
+            "ตำราศัลยศาสตร์ช่องปากและแม็กซิลโลเฟเชียล คณะทันตแพทยศาสตร์ จุฬาฯ / มหิดล / ขอนแก่น / สงขลานครินทร์"
+        ],
+        "thai_protocol_highlights": [
+            "โปรโตคอลถอนฟันผู้ป่วยรับประทาน Warfarin ในโรงพยาบาลไทย: เจาะตรวจ INR ภายใน 24–72 ชม. หาก INR ≤ 3.0–3.5 สามารถถอนฟันไม่ซับซ้อน (1–3 ซี่) ได้โดยไม่ต้องหยุดยา Warfarin ร่วมกับการห้ามเลือดเฉพาะที่: ใส่ Gelfoam/Surgicel + เย็บแผล Figure-of-eight + อมบ้วนปากด้วย 5% Tranexamic acid mouthwash ครั้งละ 10 mL นาน 2 นาที วันละ 4 ครั้ง นาน 2–5 วัน",
+            "ผู้ป่วยที่ได้รับ Dual Antiplatelet Therapy (Aspirin + Clopidogrel) หลังใส่ขดลวดหัวใจ (Coronary Stent): ห้ามหยุดยาเองเด็ดขาด และควรชะลอหัตถการศัลยกรรมที่ไม่ฉุกเฉินในช่วง 6–12 เดือนแรกหลังใส่ Drug-eluting stent",
+            "การจำแนกฟันคุดและการส่งต่อผู้ป่วยติดเชื้อ Ludwig's angina / Deep neck infection ในระบบบริการสุขภาพไทย เน้นการประเมินทางเดินหายใจ (Airway patency: Stridor, Dysphagia, Trismus, ยกลิ้นตึง) เป็นอันดับแรกก่อนส่งห้องฉุกเฉิน รพ.ศูนย์/รพ.ทั่วไป"
+        ]
     },
     {
         "id": "malamed-anesthesia-emergencies",
-        "title": "Malamed's Handbook of Local Anesthesia & Medical Emergencies",
+        "title": "Malamed's Local Anesthesia & แนวทางช่วยชีวิตฉุกเฉินในคลินิกทันตกรรมไทย",
         "specialty": "ศัลยศาสตร์ช่องปาก",
         "icon": "💉",
         "color": "#f97316",
-        "patterns": ["malamed", "handbook of local anesthesia", "medical emergencies in the dental office"],
-        "description": "คัมภีร์เภสัชวิทยาของยาชาเฉพาะที่ (pKa, Lipid solubility, การคำนวณ MRD), เทคนิคการฉีดสกัดกั้นเส้นประสาท และการจัดการภาวะฉุกเฉินช่วยชีวิตในคลินิกทันตกรรม"
+        "patterns": ["malamed", "handbook of local anesthesia", "medical emergencies in the dental office", "ยาชาเฉพาะที่"],
+        "description": "คัมภีร์เภสัชวิทยาของยาชาเฉพาะที่และการจัดการภาวะฉุกเฉินในคลินิกทันตกรรม อ้างอิงขนาดหลอดยาชามาตรฐานในประเทศไทย (1.8 mL) และแนวทางช่วยชีวิตขั้นพื้นฐานของสมาคมแพทย์โรคหัวใจแห่งประเทศไทยฯ",
+        "thai_association": "ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย & คณะกรรมการช่วยชีวิต สมาคมแพทย์โรคหัวใจแห่งประเทศไทย ในพระบรมราชูปถัมภ์",
+        "thai_references": [
+            "ตำรายาชาเฉพาะที่ทางทันตกรรม คณะทันตแพทยศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย / มหาวิทยาลัยมหิดล",
+            "แนวปฏิบัติการช่วยชีวิตขั้นพื้นฐานและภาวะฉุกเฉินในคลินิกทันตกรรม (ทันตแพทยสภา & สมาคมแพทย์โรคหัวใจแห่งประเทศไทยฯ)",
+            "Malamed's Handbook of Local Anesthesia (7th ed.) & Medical Emergencies in the Dental Office (8th ed.)"
+        ],
+        "thai_protocol_highlights": [
+            "มาตรฐานการคำนวณยาชาในข้อสอบใบประกอบวิชาชีพไทย (ศ.ท.ส.): หากโจทย์ไม่ระบุปริมาตรหลอดยาชา ให้ใช้ปริมาตรมาตรฐานในประเทศไทยคือ 1.8 mL/หลอด (Cartridge) เสมอ (2% Lidocaine = 36 mg/หลอด, Epinephrine 1:100,000 = 0.018 mg/หลอด; ยกเว้นโจทย์ระบุ 1.7 mL)",
+            "เกณฑ์ขนาดยาชาสูงสุด (MRD) ที่ใช้เป็นมาตรฐานในข้อสอบไทย: 2% Lidocaine = 4.4 mg/kg (สูงสุดไม่เกิน 300 mg ตามเกณฑ์ Malamed หรือ 7.0 mg/kg ไม่เกิน 500 mg ตาม FDA — ในข้อสอบไทยเน้นตัวเลข 4.4 mg/kg ของ Malamed ในการคำนวณความปลอดภัยโดยเฉพาะในเด็ก), 3% Mepivacaine = 4.4 mg/kg (สูงสุด 300 mg), 4% Articaine = 7.0 mg/kg",
+            "การจัดการ Anaphylaxis เฉียบพลันในคลินิกทันตกรรมไทย: ฉีด Epinephrine 1:1,000 (1 mg/mL) เข้ากล้ามเนื้อต้นขาด้านนอก (IM Vastus lateralis) ขนาดผู้ใหญ่ 0.3–0.5 mg (เด็ก 0.01 mg/kg สูงสุดไม่เกิน 0.3 mg) ซ้ำได้ทุก 5–15 นาที ร่วมกับโทรแจ้งสายด่วนการแพทย์ฉุกเฉิน 1669"
+        ]
     },
     {
         "id": "carranza-lindhe-perio",
-        "title": "Newman & Carranza's Clinical Periodontology (13th ed.) & AAP/EFP 2017",
+        "title": "Newman & Carranza's Periodontology, AAP/EFP 2017 & สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP)",
         "specialty": "ปริทันตวิทยา",
         "icon": "🌿",
         "color": "#10b981",
-        "patterns": ["carranza", "newman", "takei", "klokkevold", "lindhe", "lang", "caton", "2017 world workshop", "tonetti", "papapanou", "mcguire", "gargiulo"],
-        "description": "ตำราอ้างอิงหลักและฉันทามติโลก AAP/EFP 2017 ครอบคลุม Staging & Grading ของโรคปริทันต์อักเสบ, จุลชีววิทยา Red Complex, ระยะชีวภาพ (Biologic width), การเกลารากฟัน และศัลยกรรมปริทันต์"
+        "patterns": ["carranza", "newman", "takei", "klokkevold", "lindhe", "lang", "caton", "2017 world workshop", "tonetti", "papapanou", "mcguire", "gargiulo", "สมาคมปริทันตวิทยา"],
+        "description": "ตำราอ้างอิงหลักและฉันทามติโลก AAP/EFP 2017 ร่วมกับแนวทางเวชปฏิบัติของสมาคมปริทันตวิทยาแห่งประเทศไทย (TAP) ครอบคลุม Staging & Grading, Red Complex, Supracrestal Tissue Attachment และศัลยกรรมปริทันต์",
+        "thai_association": "สมาคมปริทันตวิทยาแห่งประเทศไทย (Thai Association of Periodontology — TAP) & ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย",
+        "thai_references": [
+            "แนวทางการวินิจฉัยและจำแนกโรคปริทันต์ตามเกณฑ์ AAP/EFP 2017 สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP)",
+            "ตำราปริทันตวิทยา คณะทันตแพทยศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย / มหาวิทยาลัยมหิดล / มหาวิทยาลัยเชียงใหม่",
+            "Newman and Carranza's Clinical Periodontology (13th ed.) & Lindhe's Clinical Periodontology and Implant Dentistry"
+        ],
+        "thai_protocol_highlights": [
+            "สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP) และข้อสอบ ศ.ท.ส. ใช้ระบบจำแนกโรคปริทันต์ AAP/EFP 2017 (Stage I–IV, Grade A–C) แทนคำว่า Chronic/Aggressive Periodontitis เดิม โดยมีเกณฑ์ Gingivitis เมื่อมี BOP ≥ 10% และแยก Gingivitis on an intact periodontium ออกจาก Gingivitis on a reduced periodontium",
+            "เกณฑ์มาตรฐานคลินิกปริทันต์ในโรงเรียนทันตแพทย์ไทย: นัดประเมินผลซ้ำ (Re-evaluation) หลังเสร็จสิ้นการขูดหินน้ำลายและเกลารากฟัน (SRP) ที่ระยะเวลา 4–6 สัปดาห์ และก่อนเข้าสู่ระยะศัลยกรรมปริทันต์ ผู้ป่วยควรมีค่า O'Leary Plaque Score ≤ 10–20%",
+            "คำศัพท์ Supracrestal Tissue Attachment (ประมาณ 2 mm: Junctional Epithelium ~0.97 mm + Connective Tissue Attachment ~1.07 mm) มาแทนคำว่า Biologic Width เดิมตาม AAP/EFP 2017 โดยในการทำ Crown Lengthening ต้องกรอกระดูกให้ห่างจากขอบครอบฟันอย่างน้อย 3 mm"
+        ]
     },
     {
         "id": "sturdevant-operative",
-        "title": "Sturdevant's Art and Science of Operative Dentistry & Phillips' Materials",
+        "title": "Sturdevant's Operative, Phillips' Materials & สมาคมทันตกรรมหัตถการแห่งประเทศไทย (TODS)",
         "specialty": "ทันตกรรมบูรณะ/หัตถการ",
         "icon": "✨",
         "color": "#6366f1",
-        "patterns": ["sturdevant", "ritter", "boushell", "summitt", "phillips", "anusavice", "shen", "rawls", "fejerskov", "kidd", "brännström"],
-        "description": "ตำรามาตรฐานด้านทันตกรรมหัตถการและชีววัสดุทันตกรรม ครอบคลุมวิทยาโรคฟันผุ, ระบบสารยึดติด 10-MDP, เรซินคอมโพสิตและ C-Factor, การปกป้องพัลพ์ตามค่า RDT, GIC และอมัลกัม"
+        "patterns": ["sturdevant", "ritter", "boushell", "summitt", "phillips", "anusavice", "shen", "rawls", "fejerskov", "kidd", "brännström", "สมาคมทันตกรรมหัตถการ"],
+        "description": "ตำรามาตรฐานด้านทันตกรรมหัตถการและวัสดุทันตกรรม ร่วมกับแนวทางสมาคมทันตกรรมหัตถการแห่งประเทศไทย (TODS) และแนวทางลดการใช้อมัลกัมตามอนุสัญญามินามาตะของกรมอนามัย",
+        "thai_association": "สมาคมทันตกรรมหัตถการแห่งประเทศไทย (Thai Operative Dentistry Society — TODS) & กรมอนามัย กระทรวงสาธารณสุข",
+        "thai_references": [
+            "แนวทางเวชปฏิบัติทางทันตกรรมหัตถการและการจัดการโรคฟันผุเชิงอนุรักษ์ สมาคมทันตกรรมหัตถการแห่งประเทศไทย (TODS)",
+            "แนวทางการลดการใช้วัสดุอมัลกัมทางทันตกรรมตามอนุสัญญามินามาตะว่าด้วยปรอท สำนักทันตสาธารณสุข กรมอนามัย และทันตแพทยสภา",
+            "ตำราทันตกรรมหัตถการและทันตวัสดุศาสตร์ คณะทันตแพทยศาสตร์ จุฬาฯ / มหิดล / เชียงใหม่ / ขอนแก่น"
+        ],
+        "thai_protocol_highlights": [
+            "แนวทาง Minimal Intervention Dentistry (MID) ของสมาคมทันตกรรมหัตถการแห่งประเทศไทย: ในฟันที่มีรอยผุลึกใกล้โพรงประสาทฟันและพัลพ์ปกติ/Reversible pulpitis แนะนำ Selective Caries Removal to Soft/Firm Dentin บริเวณผนังใกล้พัลพ์ (Pulpal/Axial wall) แต่ต้องกำจัดรอยผุให้ถึง Sound enamel/Hard dentin บริเวณขอบรอบนอก (Peripheral seal zone 1.5–2 mm)",
+            "เกณฑ์การปกป้องโพรงประสาทฟันตาม Remaining Dentin Thickness (RDT): หาก RDT ≥ 2.0 mm ไม่จำเป็นต้องใส่ Liner/Base ใต้เรซินคอมโพสิต; หาก RDT < 0.5 mm และใกล้ทะลุพัลพ์ ให้แต้มเฉพาะจุดด้วย Calcium Hydroxide หรือ Calcium Silicate Cement แล้วทับด้วย RMGIC liner",
+            "แนวทางอนุสัญญามินามาตะในประเทศไทย (กรมอนามัย & ทันตแพทยสภา): ให้หลีกเลี่ยงการใช้วัสดุอมัลกัมในการบูรณะฟันน้ำนม, เด็กอายุต่ำกว่า 15 ปี, หญิงตั้งครรภ์ และหญิงให้นมบุตร ยกเว้นมีข้อบ่งชี้ทางคลินิกที่จำเป็น"
+        ]
     },
     {
         "id": "prostho-zarb-mccracken-rosenstiel",
-        "title": "Rosenstiel (Fixed), McCracken (RPD) & Zarb (Complete Dentures)",
+        "title": "Rosenstiel, McCracken, Zarb & สมาคมทันตกรรมประดิษฐ์ไทย (TPA)",
         "specialty": "ทันตกรรมประดิษฐ์",
         "icon": "👑",
         "color": "#38bdf8",
-        "patterns": ["rosenstiel", "shillingburg", "mccracken", "carr", "zarb", "hobkirk", "boucher", "misch", "prosthodontic"],
-        "description": "3 ตำราเสาหลักแห่งทันตกรรมประดิษฐ์: ฟันเทียมติดแน่น (Rosenstiel/Shillingburg: TOC, Ferrule), ฟันเทียมบางส่วนถอดได้ (McCracken: Kennedy, RPI) และฟันเทียมทั้งปาก (Zarb: Stress-bearing areas, VDO)"
+        "patterns": ["rosenstiel", "shillingburg", "mccracken", "carr", "zarb", "hobkirk", "boucher", "misch", "prosthodontic", "สมาคมทันตกรรมประดิษฐ์"],
+        "description": "3 ตำราเสาหลักแห่งทันตกรรมประดิษฐ์ ร่วมกับมาตรฐานการออกแบบของสมาคมทันตกรรมประดิษฐ์ไทย (TPA) และเกณฑ์โครงการฟันเทียมและรากฟันเทียมพระราชทานของกระทรวงสาธารณสุข",
+        "thai_association": "สมาคมทันตกรรมประดิษฐ์ไทย (Thai Prosthodontic Association — TPA) & ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย",
+        "thai_references": [
+            "แนวทางเวชปฏิบัติทางทันตกรรมประดิษฐ์ สมาคมทันตกรรมประดิษฐ์ไทย (TPA) และราชวิทยาลัยทันตแพทย์แห่งประเทศไทย",
+            "คู่มือการให้บริการฟันเทียมและรากฟันเทียมพระราชทาน สำนักทันตสาธารณสุข กรมอนามัย และ สปสช.",
+            "ตำราฟันเทียมติดแน่น ฟันเทียมบางส่วนถอดได้ และฟันเทียมทั้งปาก คณะทันตแพทยศาสตร์ จุฬาฯ / มหิดล / เชียงใหม่"
+        ],
+        "thai_protocol_highlights": [
+            "เกณฑ์ความจำเป็นในการใส่ฟันเทียมของผู้สูงอายุไทย (กรมอนามัย / สปสช.): ประเมินจากสภาวะการสูญเสียฟันและการมีคู่สบฟันหลัง (Posterior Occluding Pairs) หากผู้สูงอายุมีฟันแท้เหลือน้อยกว่า 20 ซี่ หรือมีคู่สบฟันหลังน้อยกว่า 4 คู่สบ จะส่งผลต่อสมรรถภาพการบดเคี้ยวและเป็นข้อบ่งชี้ในการใส่ฟันเทียม",
+            "มาตรฐานการออกแบบ RPD ในโรงเรียนทันตแพทย์ไทย (Kennedy Class I & II Distal Extension): เน้นแนวคิด Stress-releasing clasp เช่น RPI system (Mesial rest + Distal guide plane + I-bar เหนือหรือที่จุดป่องสุดส่วนกลาง/ใกล้กลาง) เพื่อเปลี่ยนคานงัด Class I lever ให้กลายเป็น Class II lever ลดแรงงัดต่อฟันหลัก",
+            "การบูรณะฟันที่รักษาคลองรากฟันแล้วด้วยเดือยฟันและแกนฟัน (Post & Core): ต้องมีเนื้อฟันธรรมชาติโดยรอบเหนือขอบครอบฟันอย่างน้อยสูง 1.5–2.0 mm และหนา ≥ 1.0 mm (360-degree Ferrule Effect) เพื่อป้องกันรากฟันแตกแนวดิ่ง (Vertical root fracture)"
+        ]
     },
     {
         "id": "pedo-mcdonald-nowak-aapd",
-        "title": "McDonald & Avery's, Nowak's Pediatric Dentistry & AAPD Reference Manual",
+        "title": "McDonald & Avery, AAPD & สมาคมทันตกรรมสำหรับเด็กแห่งประเทศไทย (TSPD)",
         "specialty": "ทันตกรรมสำหรับเด็ก",
         "icon": "🧸",
         "color": "#8b5cf6",
-        "patterns": ["mcdonald", "avery", "dean", "nowak", "pinkham", "casamassimo", "aapd", "american academy of pediatric dentistry"],
-        "description": "ตำราและแนวทางเวชปฏิบัติ AAPD สำหรับทันตกรรมเด็ก ครอบคลุมการรักษาโพรงประสาทฟันน้ำนม, การจัดการพฤติกรรมเด็ก, เภสัชวิทยาและพิษฟลูออไรด์ (PTD 5 mg/kg), และเครื่องมือกันที่ฟัน"
+        "patterns": ["mcdonald", "avery", "dean", "nowak", "pinkham", "casamassimo", "aapd", "american academy of pediatric dentistry", "สมาคมทันตกรรมสำหรับเด็ก", "ชมรมทันตกรรมสำหรับเด็ก"],
+        "description": "ตำราและแนวทางเวชปฏิบัติ AAPD ร่วมกับแนวทางการใช้ฟลูออไรด์และการดูแลสุขภาพช่องปากเด็กของสมาคมทันตกรรมสำหรับเด็กแห่งประเทศไทย (TSPD) ทันตแพทยสภา และกรมอนามัย",
+        "thai_association": "สมาคมทันตกรรมสำหรับเด็กแห่งประเทศไทย (TSPD / ชมรมทันตกรรมสำหรับเด็กแห่งประเทศไทย) & สำนักทันตสาธารณสุข กรมอนามัย",
+        "thai_references": [
+            "แนวทางการใช้ฟลูออไรด์สำหรับเด็ก ชมรม/สมาคมทันตกรรมสำหรับเด็กแห่งประเทศไทย และทันตแพทยสภา (ฉบับปรับปรุง พ.ศ. 2560 / พ.ศ. 2566)",
+            "แนวทางการประเมินความเสี่ยงต่อโรคฟันผุและการจัดการโรคฟันผุในเด็กปฐมวัย สมาคมทันตกรรมสำหรับเด็กแห่งประเทศไทย & กรมอนามัย",
+            "McDonald and Avery's Dentistry for the Child and Adolescent (11th ed.) & AAPD Reference Manual"
+        ],
+        "thai_protocol_highlights": [
+            "🇹🇭 เกณฑ์การใช้ยาสีฟันผสมฟลูออไรด์ในประเทศไทย (TSPD & ทันตแพทยสภา): แนะนำยาสีฟันฟลูออไรด์ความเข้มข้น 1,000 ppm (หรือ 1,000–1,500 ppm) ตั้งแต่ฟันน้ำนมซี่แรกขึ้น! โดยแบ่งปริมาณตามอายุ: (1) อายุ < 3 ปี: แตะพอเปียกแปรง / เท่าเมล็ดข้าวสาร (~0.1 g) ผู้ปกครองแปรงให้และเช็ดฟองออก, (2) อายุ 3 ถึง < 6 ปี: เท่าเมล็ดถั่วเขียว / ความกว้างแปรง (~0.25 g), (3) อายุ ≥ 6 ปี: ตามความยาวแปรง (1–2 cm หรือ ~0.5–1 g)",
+            "🇹🇭 ตารางฟลูออไรด์เสริมชนิดรับประทาน (Systemic Fluoride Supplement) ของประเทศไทย: พิจารณาจ่ายเฉพาะเด็กที่มีความเสี่ยงต่อฟันผุสูง (High caries risk) ตั้งแต่อายุ 6 เดือน – 16 ปี เท่านั้น โดยอ้างอิงปริมาณฟลูออไรด์ในน้ำดื่มของไทย 3 ช่วง คือ < 0.3 ppm, 0.3–0.6 ppm, และ > 0.6 ppm (หากอายุ < 6 เดือน หรือน้ำดื่มมีฟลูออไรด์ > 0.6 ppm งดจ่ายฟลูออไรด์เสริมทุกกรณี!)",
+            "🇹🇭 การใช้ฟลูออไรด์โดยทันตบุคลากรในไทย: เด็กอายุ < 6 ปีที่มีความเสี่ยงฟันผุสูง ให้ใช้ 5% NaF Varnish (22,600 ppm F) ทุก 3–6 เดือน; ส่วน 1.23% APF Gel (12,300 ppm F) ใช้เฉพาะในเด็กอายุ ≥ 6 ปีที่ควบคุมการกลืนได้แล้วเท่านั้นเพื่อป้องกันพิษเฉียบพลัน (PTD = 5 mg F/kg)"
+        ]
     },
     {
         "id": "iadt-traumatology",
-        "title": "IADT Guidelines for the Management of Traumatic Dental Injuries (2020)",
+        "title": "IADT Guidelines (2020) & แนวทางจัดการฟันได้รับอุบัติเหตุในคลินิกทันตกรรมไทย",
         "specialty": "ทันตกรรมสำหรับเด็ก",
         "icon": "🚑",
         "color": "#c084fc",
         "patterns": ["iadt", "international association of dental traumatology", "traumatic dental injuries", "andreasen", "bourguignon", "day pf"],
-        "description": "แนวทางมาตรฐานสากล IADT 2020 สำหรับการจัดการอุบัติเหตุทางทันตกรรมทั้งในฟันน้ำนมและฟันแท้ (Avulsion, Intrusion, Luxation, Root Fracture & Flexible Splinting)"
+        "description": "แนวทางมาตรฐานสากล IADT 2020 ร่วมกับแนวปฏิบัติของสมาคมทันตกรรมสำหรับเด็กแห่งประเทศไทย และสมาคมวิทยาเอ็นโดดอนต์ไทย สำหรับการจัดการอุบัติเหตุในฟันน้ำนมและฟันแท้",
+        "thai_association": "สมาคมทันตกรรมสำหรับเด็กแห่งประเทศไทย (TSPD) & สมาคมวิทยาเอ็นโดดอนต์ไทย (TAE)",
+        "thai_references": [
+            "IADT Guidelines for the Management of Traumatic Dental Injuries (2020 Revision)",
+            "คู่มือการจัดการอุบัติเหตุทางทันตกรรม สมาคมทันตกรรมสำหรับเด็กแห่งประเทศไทย และสมาคมวิทยาเอ็นโดดอนต์ไทย"
+        ],
+        "thai_protocol_highlights": [
+            "กฎเหล็กฟันน้ำนมหลุดออกจากเบ้า (Primary Tooth Avulsion): ห้ามใส่กลับเข้าเบ้าฟัน (Do NOT replant) เด็ดขาด เพื่อป้องกันอันตรายต่อหน่อฟันแท้ข้างใต้ (Succedaneous tooth germ)",
+            "ฟันแท้หลุดออกจากเบ้า (Permanent Tooth Avulsion — IADT 2020): สื่อแช่ฟันที่ดีที่สุดในบริบทคลินิกและโรงเรียนในไทยหากใส่กลับทันทีไม่ได้ คือ นมจืดพาสเจอร์ไรส์แช่เย็น (Cold Milk) หรือ HBSS หรือน้ำเกลือปราศจากเชื้อ (NSS) ห้ามแช่น้ำเปล่า! หลังใส่กลับให้ยึดด้วย Flexible splint นาน 2 สัปดาห์ (หรือ 4 สัปดาห์หากมีกระดูกเบ้าฟันหักร่วมด้วย)",
+            "ในฟันแท้รากปิดที่เกิด Avulsion: ต้องเริ่มเปิดคลองรากฟัน (Initiate RCT) ภายใน 7–10 วันหลัง Replantation (ก่อนถอด Splint) และใส่ Calcium Hydroxide นานสูงสุด 1 เดือนเพื่อป้องกัน External inflammatory root resorption"
+        ]
     },
     {
         "id": "neville-oral-pathology-radiology",
-        "title": "Neville's Oral and Maxillofacial Pathology (5th ed.) & White & Pharoah Radiology",
+        "title": "Neville's Oral Pathology, White & Pharoah Radiology & แนวทางคัดกรองมะเร็งช่องปากไทย",
         "specialty": "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
         "icon": "🔬",
         "color": "#a855f7",
-        "patterns": ["neville", "damm", "allen", "oral and maxillofacial pathology", "white", "pharoah", "mallya", "oral radiology", "regezi", "woo"],
-        "description": "ตำราหลักด้านพยาธิวิทยาช่องปากและรังสีวิทยา ครอบคลุมรอยโรคก่อนมะเร็ง (OPMDs), มะเร็งช่องปาก (OSCC), ถุงน้ำและเนื้องอก (OKC, Ameloblastoma), โรคเยื่อบุช่องปาก และฟิสิกส์รังสี"
+        "patterns": ["neville", "damm", "allen", "oral and maxillofacial pathology", "white", "pharoah", "mallya", "oral radiology", "regezi", "woo", "สมาคมพยาธิวิทยาช่องปาก", "สมาคมรังสีวิทยาช่องปาก"],
+        "description": "ตำราหลักด้านพยาธิวิทยาและรังสีวิทยาช่องปาก ร่วมกับแนวทางการตรวจคัดกรองรอยโรคก่อนมะเร็งช่องปาก (OPMDs) ของกรมอนามัย สถาบันมะเร็งแห่งชาติ และสมาคมพยาธิวิทยาช่องปากแห่งประเทศไทย",
+        "thai_association": "สมาคมพยาธิวิทยาช่องปากและแม็กซิลโลเฟเชียลแห่งประเทศไทย, สมาคมรังสีวิทยาช่องปากฯ & สถาบันมะเร็งแห่งชาติ กรมการแพทย์",
+        "thai_references": [
+            "แนวทางการตรวจคัดกรองและส่งต่อรอยโรคก่อนมะเร็งช่องปาก (OPMDs) สำนักทันตสาธารณสุข กรมอนามัย และสถาบันมะเร็งแห่งชาติ",
+            "มาตรฐานความปลอดภัยทางรังสีในคลินิกทันตกรรม สมาคมรังสีวิทยาช่องปากและแม็กซิลโลเฟเชียลแห่งประเทศไทย & กรมวิทยาศาสตร์การแพทย์",
+            "Neville's Oral and Maxillofacial Pathology (5th ed.) & White and Pharoah's Oral Radiology (8th ed.)"
+        ],
+        "thai_protocol_highlights": [
+            "🇹🇭 บริบทระบาดวิทยามะเร็งช่องปากในประเทศไทย: ปัจจัยเสี่ยงสำคัญในผู้สูงอายุไทย (โดยเฉพาะภาคตะวันออกเฉียงเหนือและภาคเหนือ) คือ 'การเคี้ยวหมากพลูร่วมกับยาเส้น/ยาฉุน' (Betel quid & smokeless tobacco) ทำให้พบรอยโรคที่กระพุ้งแก้ม (Buccal mucosa) และริมฝีปากล่างในสัดส่วนที่สูงกว่าชาวตะวันตก ทั้งในรูป Oral Submucous Fibrosis (OSMF — มี Fibrous bands อ้าปากจำกัด), Erythroplakia, Leukoplakia และ Verrucous Carcinoma",
+            "เกณฑ์การเลือกทำ Biopsy ในแนวทางคัดกรองมะเร็งช่องปากของไทย: รอยโรคขาว/แดงที่ไม่หายไปภายใน 2 สัปดาห์หลังจากกำจัดสาเหตุระคายเคืองเฉพาะที่แล้ว ต้องทำ Incisional biopsy (หากรอยโรคขนาดใหญ่ > 1–2 cm หรือสงสัยมะเร็ง ให้ตัดบริเวณขอบรอยโรคที่ติดกับเนื้อเยื่อปกติ ไม่ตัดตรงกลางเนื้อตาย Necrotic center)",
+            "มาตรฐานการป้องกันอันตรายจากรังสีในคลินิกทันตกรรมไทย (กรมวิทยาศาสตร์การแพทย์): ยึดหลัก ALARA (As Low As Reasonably Achievable), ใช้ Rectangular collimation ร่วมกับฟิล์มความไวสูง (E/F-speed) หรือ Digital receptor และให้ผู้ป่วยสวมเสื้อตะกั่วพร้อมปลอกคอป้องกันต่อมไทรอยด์ (Thyroid collar)"
+        ]
     },
     {
         "id": "little-falace-burket-aha",
-        "title": "Little & Falace's Medically Compromised Patient, Burket's Oral Med & AHA 2021",
+        "title": "Little & Falace, AHA 2021 & คู่มือการใช้ยาอย่างสมเหตุผลในงานทันตกรรมไทย (RDU & NLEM)",
         "specialty": "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
         "icon": "❤️‍🩹",
         "color": "#d946ef",
-        "patterns": ["little", "falace", "medically compromised", "burket", "glick", "greenberg", "wilson", "american heart association", "aha", "infective endocarditis"],
-        "description": "ตำรามาตรฐานการจัดการผู้ป่วยโรคทางระบบในงานทันตกรรม (โรคหัวใจ, ความดันโลหิตสูง, เบาหวาน, ไตวาย, ยาต้านการแข็งตัวของเลือด Warfarin INR <= 3.5) และเกณฑ์ AHA 2021 (ยกเลิก Clindamycin)"
+        "patterns": ["little", "falace", "medically compromised", "burket", "glick", "greenberg", "wilson", "american heart association", "aha", "infective endocarditis", "rdu", "บัญชียาหลักแห่งชาติ"],
+        "description": "ตำรามาตรฐานการจัดการผู้ป่วยโรคทางระบบในงานทันตกรรม ร่วมกับคู่มือการใช้ยาอย่างสมเหตุผลในงานทันตกรรมของประเทศไทย (RDU Thailand), บัญชียาหลักแห่งชาติ (NLEM) และเกณฑ์ AHA 2021",
+        "thai_association": "ชมรมเวชศาสตร์ช่องปากแห่งประเทศไทย, คณะอนุกรรมการส่งเสริมการใช้ยาอย่างสมเหตุผล (RDU Thailand) & ทันตแพทยสภา",
+        "thai_references": [
+            "คู่มือการใช้ยาอย่างสมเหตุผลในงานทันตกรรม (Rational Drug Use in Dentistry) กระทรวงสาธารณสุข และทันตแพทยสภา",
+            "บัญชียาหลักแห่งชาติ (National List of Essential Medicines — NLEM) สำหรับงานทันตกรรม",
+            "Little and Falace's Dental Management of the Medically Compromised Patient (10th ed.) & AHA 2021 IE Prophylaxis Guidelines"
+        ],
+        "thai_protocol_highlights": [
+            "🇹🇭 แนวทางการใช้ยาปฏิชีวนะอย่างสมเหตุผลในประเทศไทย (RDU in Dentistry): ยาปฏิชีวนะทางเลือกแรก (First-line) สำหรับการติดเชื้อเฉียบพลันจากฟันที่มีอาการลุกลามคือ Amoxicillin 500 mg รับประทานครั้งละ 1 แคปซูล วันละ 3 ครั้ง หลังอาหารและก่อนนอน (หรือ 875–1,000 mg วันละ 2–3 ครั้ง) นาน 3–5 วันแล้วนัดประเมินซ้ำ หากอาการรุนแรงหรือไม่ตอบสนองใน 48 ชม. ให้เพิ่ม Metronidazole 400 mg วันละ 3 ครั้ง หรือเปลี่ยนเป็น Amoxicillin/Clavulanate",
+            "🇹🇭 การปรับเปลี่ยนเกณฑ์ป้องกันเยื่อบุหัวใจอักเสบติดเชื้อ (IE Prophylaxis — AHA 2021 ที่ใช้สอบในไทยปัจจุบัน): ผู้ป่วยที่แพ้ Penicillin 'ห้ามจ่าย Clindamycin' อีกต่อไป (เนื่องจากความเสี่ยง C. difficile colitis) ให้เปลี่ยนเป็น Azithromycin 500 mg หรือ Clarithromycin 500 mg หรือ Cephalexin 2 g (กรณีไม่ใช่แพ้รุนแรงแบบ Anaphylaxis/Angioedema/Urticaria) หรือ Doxycycline 100 mg รับประทาน 30–60 นาทีก่อนทำหัตถการ",
+            "🇹🇭 เกณฑ์ความดันโลหิตและน้ำตาลในเลือดก่อนทำหัตถการในคลินิกทันตกรรมไทย: หาก BP ≥ 180/110 mmHg ให้ชะลอการรักษาทางทันตกรรมที่ไม่ฉุกเฉิน (Elective dental care) และส่งพบแพทย์; ผู้ป่วยเบาหวานควรมี Fasting Blood Sugar (FBS) < 180–200 mg/dL หรือ Random BS < 200 mg/dL ก่อนทำศัลยกรรมช่องปาก และนัดทำฟันช่วงเช้าหลังรับประทานอาหารเช้าและยาตามปกติ"
+        ]
     },
     {
         "id": "okeson-dc-tmd",
-        "title": "Okeson's Management of TMD and Occlusion (8th ed.) & DC/TMD Criteria",
+        "title": "Okeson's TMD & Occlusion (8th ed.), DC/TMD & ชมรมทันตกรรมบดเคี้ยวแห่งประเทศไทย",
         "specialty": "ทันตกรรมบดเคี้ยวและอาการปวดบริเวณช่องปากและใบหน้า",
         "icon": "⚡",
         "color": "#06b6d4",
-        "patterns": ["okeson", "temporomandibular", "dc/tmd", "schiffman", "dawson", "posselt", "orofacial pain"],
-        "description": "ตำราหลักด้านระบบบดเคี้ยวและอาการปวดใบหน้า ครอบคลุมกายวิภาคกล้ามเนื้อบดเคี้ยว, จลนศาสตร์ Posselt, เกณฑ์วินิจฉัย DC/TMD (Myalgia, DDwR, Closed Lock, DJD) และเฝือกสบฟัน"
+        "patterns": ["okeson", "temporomandibular", "dc/tmd", "schiffman", "dawson", "posselt", "orofacial pain", "ชมรมทันตกรรมบดเคี้ยว"],
+        "description": "ตำราหลักด้านระบบบดเคี้ยวและอาการปวดใบหน้า ร่วมกับแนวทางเวชปฏิบัติของชมรมทันตกรรมบดเคี้ยวและความเจ็บปวดช่องปากใบหน้าแห่งประเทศไทย และเกณฑ์ DC/TMD ฉบับภาษาไทย",
+        "thai_association": "ชมรมทันตกรรมบดเคี้ยวและความเจ็บปวดช่องปากใบหน้าแห่งประเทศไทย & ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย",
+        "thai_references": [
+            "เกณฑ์การวินิจฉัยความผิดปกติของข้อต่อขากรรไกรและกล้ามเนื้อบดเคี้ยว (DC/TMD ฉบับภาษาไทย) ชมรมทันตกรรมบดเคี้ยวฯ",
+            "แนวทางเวชปฏิบัติการดูแลผู้ป่วยความผิดปกติของระบบบดเคี้ยว (TMD) ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย",
+            "Okeson's Management of Temporomandibular Disorders and Occlusion (8th ed.)"
+        ],
+        "thai_protocol_highlights": [
+            "แนวทางเวชปฏิบัติไทยเน้น Conservative & Reversible Therapy เป็นลำดับแรกเสมอในผู้ป่วย TMD (การให้ความรู้ผู้ป่วย, การพักขากรรไกร, อาหารอ่อน, ประคบอุ่นคลายกล้ามเนื้อ, กายภาพบำบัดบริหารขากรรไกร และ Stabilization Splint ชนิดอะคริลิกแข็งคลุมเต็มขากรรไกร) ห้ามกรอปรับสบฟันถาวร (Occlusal equilibration) เป็นการรักษาเริ่มต้น",
+            "เกณฑ์ DC/TMD ที่ใช้ในโรงเรียนทันตแพทย์ไทย: แยก Myalgia (ปวดเฉพาะจุดที่กด), Myofascial pain with spreading (ปวดร้าวแต่ยังอยู่ในขอบเขตกล้ามเนื้อมัดนั้น) และ Myofascial pain with referral (ปวดร้าวข้ามออกนอกขอบเขตกล้ามเนื้อมัดที่กด เช่น กด Masseter แล้วปวดร้าวไปที่ฟันกราม) โดยต้องกดค้างนาน 5 วินาทีเพื่อตรวจอาการปวดร้าว",
+            "การแยกอาการปวดฟันจากเส้นประสาท Trigeminal Neuralgia (ปวดแปลบเหมือนไฟช็อต นานเป็นวินาที มี Trigger zone ยาทางเลือกแรกคือ Carbamazepine ซึ่งในคนไทยควรระวังการแพ้ยารุนแรง SJS/TEN ที่สัมพันธ์กับยีน HLA-B*15:02!)"
+        ]
     },
     {
         "id": "proffit-orthodontics",
-        "title": "Proffit's Contemporary Orthodontics (6th ed.)",
+        "title": "Proffit's Contemporary Orthodontics (6th ed.) & สมาคมทันตแพทย์จัดฟันแห่งประเทศไทย (TAO)",
         "specialty": "ทันตกรรมจัดฟัน",
         "icon": "📐",
         "color": "#f472b6",
-        "patterns": ["proffit", "fields", "sarver", "contemporary orthodontics", "graber", "cephalometric", "scammon", "moyers"],
-        "description": "ตำรามาตรฐานโลกด้านทันตกรรมจัดฟัน ครอบคลุมการเจริญเติบโตของใบหน้าและกราฟ Scammon, การวิเคราะห์ภาพรังสี Cephalometrics, ชีวกลศาสตร์การเคลื่อนฟัน (Cres, M/F ratio) และเครื่องมือจัดฟัน"
+        "patterns": ["proffit", "fields", "sarver", "contemporary orthodontics", "graber", "cephalometric", "scammon", "moyers", "สมาคมทันตแพทย์จัดฟัน"],
+        "description": "ตำรามาตรฐานโลกด้านทันตกรรมจัดฟัน ร่วมกับค่ามาตรฐานกะโหลกศีรษะใบหน้าของคนไทย (Thai Cephalometric Norms) และแนวทางสมาคมทันตแพทย์จัดฟันแห่งประเทศไทย (TAO)",
+        "thai_association": "สมาคมทันตแพทย์จัดฟันแห่งประเทศไทย (Thai Association of Orthodontists — TAO) & ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย",
+        "thai_references": [
+            "ค่ามาตรฐานภาพรังสีกะโหลกศีรษะด้านข้างในคนไทย (Thai Cephalometric Norms) คณะทันตแพทยศาสตร์ จุฬาฯ / มหิดล / เชียงใหม่",
+            "แนวทางการคัดกรองและส่งต่อผู้ป่วยทันตกรรมจัดฟัน สมาคมทันตแพทย์จัดฟันแห่งประเทศไทย (TAO)",
+            "Proffit's Contemporary Orthodontics (6th ed.)"
+        ],
+        "thai_protocol_highlights": [
+            "🇹🇭 จุดเน้นสำคัญในข้อสอบไทย — ค่าปกติ Cephalometric Norms ของคนไทย เทียบกับ Caucasian (Steiner): คนไทยมีลักษณะโครงสร้างใบหน้าและฟันหน้าที่ยื่นกว่าชาวตะวันตกตามธรรมชาติ (Normal Bimaxillary Protrusion tendency) โดยค่าเฉลี่ยคนไทยคือ SNA ≈ 84°–85° (Caucasian 82°), SNB ≈ 81° (Caucasian 80°), ANB ≈ 3°–4° (Caucasian 2°), มุมฟันหน้าล่าง L1-MP ≈ 96°–98° (Caucasian 90°), และมุม Interincisal angle แคบกว่า (≈ 120°–125° เทียบกับ Caucasian 131°)",
+            "ดังนั้นในการอ่านผล Cephalometrics ในข้อสอบไทย ต้องดูค่า Norm ที่โจทย์กำหนดมาให้ในวงเล็บเสมอเพื่อตัดสินว่าผู้ป่วยไทยรายนั้นมีความผิดปกติแบบ Skeletal Class I, II หรือ III",
+            "แนวทางทันตแพทยสภาและ สคบ. สำหรับการจัดฟันในประเทศไทย: ห้ามให้บริการจัดฟันแฟชั่น และการจัดฟันด้วยเครื่องมือใส (Clear aligner) ต้องอยู่ภายใต้การตรวจวินิจฉัยและวางแผนการรักษาโดยทันตแพทย์ที่มีใบอนุญาตเท่านั้น ไม่สามารถขายตรงให้ผู้ป่วยพิมพ์ปากเองที่บ้านโดยไม่มีทันตแพทย์ตรวจรักษา"
+        ]
     },
     {
         "id": "community-burt-who-cdc",
-        "title": "Burt & Eklund's Community Dentistry, WHO Oral Health Surveys & CDC",
+        "title": "Burt & Eklund, WHO & สำนักทันตสาธารณสุข กรมอนามัย กระทรวงสาธารณสุข (Thailand)",
         "specialty": "ทันตกรรมชุมชน",
         "icon": "🌍",
         "color": "#059669",
-        "patterns": ["burt", "eklund", "community", "world health organization", "who", "ottawa charter", "cdc", "spaulding", "infection control", "gordis", "biostatistics"],
-        "description": "ตำราและมาตรฐานสากลด้านทันตสาธารณสุข ครอบคลุมชีวสถิติการแพทย์ (Sensitivity, Specificity, PPV), ดัชนีระบาดวิทยา (DMFT, CPI), กฎบัตรออตตาวา และการควบคุมการติดเชื้อตามเกณฑ์ CDC/Spaulding"
+        "patterns": ["burt", "eklund", "community", "world health organization", "who", "ottawa charter", "cdc", "spaulding", "infection control", "gordis", "biostatistics", "กรมอนามัย", "สปสช", "สำรวจสภาวะสุขภาพช่องปาก"],
+        "description": "ตำราและมาตรฐานสากลด้านทันตสาธารณสุข ร่วมกับรายงานการสำรวจสภาวะสุขภาพช่องปากแห่งชาติ กรมอนามัย กระทรวงสาธารณสุข, สิทธิประโยชน์ 3 กองทุนสุขภาพไทย (บัตรทอง/ประกันสังคม/ข้าราชการ) และเกณฑ์ควบคุมการติดเชื้อของทันตแพทยสภา",
+        "thai_association": "สำนักทันตสาธารณสุข กรมอนามัย กระทรวงสาธารณสุข, สำนักงานหลักประกันสุขภาพแห่งชาติ (สปสช.) & ชมรมทันตสาธารณสุขแห่งประเทศไทย",
+        "thai_references": [
+            "รายงานผลการสำรวจสภาวะสุขภาพช่องปากแห่งชาติ ครั้งที่ 8 (พ.ศ. 2560) และ ครั้งที่ 9 (พ.ศ. 2566) สำนักทันตสาธารณสุข กรมอนามัย กระทรวงสาธารณสุข",
+            "คู่มือสิทธิประโยชน์ด้านทันตกรรมในระบบหลักประกันสุขภาพแห่งชาติ (สปสช. บัตรทอง), ประกันสังคม และสวัสดิการข้าราชการ",
+            "แนวทางการควบคุมและป้องกันการติดเชื้อในคลินิกทันตกรรม ทันตแพทยสภา และกรมอนามัย",
+            "Burt and Eklund's Dentistry, Dental Practice, and the Community & WHO Oral Health Surveys Basic Methods (5th ed.)"
+        ],
+        "thai_protocol_highlights": [
+            "🇹🇭 การสำรวจสภาวะสุขภาพช่องปากแห่งชาติของไทย (กรมอนามัย): กลุ่มอายุดัชนีมาตรฐานที่ใช้สำรวจในไทย ได้แก่ อายุ 3 ปี, 5 ปี (ฟันน้ำนม), 12 ปี (ตัวแทนฟันแท้เด็กและการเปรียบเทียบระหว่างประเทศ), 15 ปี (เริ่มประเมินร่องลึกปริทันต์), 35–44 ปี (วัยทำงาน), 60–74 ปี (ผู้สูงอายุ เป้าหมายมีฟันแท้ใช้งานได้อย่างน้อย 20 ซี่ และมีคู่สบฟันหลัง ≥ 4 คู่) และ 80–85 ปี",
+            "🇹🇭 ระบบประกันสุขภาพ 3 กองทุนหลักของประเทศไทยที่ออกสอบบ่อย: (1) สิทธิหลักประกันสุขภาพแห่งชาติ (บัตรทอง UCS — สปสช.) ครอบคลุมประชากรไทยที่ไม่มีสิทธิอื่น ใช้จ่ายงบเหมาจ่ายรายหัว (Capitation) ร่วมกับจ่ายตามรายการบริการ (Fee schedule) ในงานส่งเสริมป้องกันและฟันเทียม, (2) สิทธิประกันสังคม (SSS ม.33/ม.39) เบิกงานทันตกรรมพื้นฐาน (ขูด อุด ถอน ผ่าฟันคุด) ได้ตามจริงไม่เกินวงเงินที่กำหนดต่อปี (900 บาท/ปี) โดยไม่ต้องสำรองจ่ายในสถานพยาบาลที่ทำความตกลง, (3) สิทธิสวัสดิการรักษาพยาบาลข้าราชการ (CSMBS กรมบัญชีกลาง) เบิกจ่ายแบบ Fee-for-service ตามอัตราที่กรมบัญชีกลางกำหนด",
+            "🇹🇭 มาตรฐานฟลูออไรด์ในน้ำบริโภคของประเทศไทย (ประกาศกระทรวงสาธารณสุข): น้ำบริโภคและน้ำประปามาตรฐานต้องมีฟลูออไรด์ไม่เกิน 0.7 mg/L (ppm) โดยพื้นที่เสี่ยงฟลูออไรด์ในน้ำใต้ดินสูงตามธรรมชาติในไทย (Endemic dental fluorosis) พบมากในภาคเหนือ (แอ่งเชียงใหม่–ลำพูน) และบางพื้นที่ภาคกลาง/ตะวันตก; ส่วนการรณรงค์แปรงฟันของกรมอนามัยใช้หลัก 'แปรงฟันสูตร 2-2-2' (วันละ 2 ครั้ง เช้า-ก่อนนอน ด้วยยาสีฟันฟลูออไรด์, นานครั้งละ ≥ 2 นาที, งดอาหารหลังแปรงฟัน 2 ชั่วโมง)"
+        ]
     },
     {
         "id": "thai-dental-laws-interpol",
-        "title": "พ.ร.บ. วิชาชีพทันตกรรม, พ.ร.บ. สถานพยาบาล, จรรยาบรรณวิชาชีพ & INTERPOL DVI",
+        "title": "พ.ร.บ. วิชาชีพทันตกรรม, พ.ร.บ. สถานพยาบาล, จรรยาบรรณทันตแพทยสภา & INTERPOL DVI",
         "specialty": "กฎหมายและจรรยาบรรณ",
         "icon": "⚖️",
         "color": "#f43f5e",
-        "patterns": ["พ.ร.บ.", "พระราชบัญญัติ", "ข้อบังคับทันตแพทยสภา", "ระเบียบกระทรวงสาธารณสุข", "จรรยาบรรณ", "interpol", "dvi", "forensic", "gustafson", "demirjian", "ประมวลกฎหมาย"],
-        "description": "ประมวลกฎหมายทันตกรรมไทยและมาตรฐานนิติทันตวิทยาสากล ครอบคลุม พ.ร.บ.วิชาชีพทันตกรรม 2537/2559, พ.ร.บ.สถานพยาบาล 2541/2559, ขอบเขตทันตาภิบาล, จรรยาบรรณ และการพิสูจน์เอกลักษณ์บุคคล DVI"
+        "patterns": ["พ.ร.บ.", "พระราชบัญญัติ", "ข้อบังคับทันตแพทยสภา", "ระเบียบกระทรวงสาธารณสุข", "จรรยาบรรณ", "interpol", "dvi", "forensic", "gustafson", "demirjian", "ประมวลกฎหมาย", "ทันตแพทยสภา"],
+        "description": "ประมวลกฎหมายทันตกรรมไทยฉบับสมบูรณ์ที่ใช้สอบ ศ.ท.ส. ครอบคลุม พ.ร.บ.วิชาชีพทันตกรรม 2537/2559, พ.ร.บ.สถานพยาบาล 2541/2559, ระเบียบทันตาภิบาล, จรรยาบรรณทันตแพทยสภา, PDPA และการพิสูจน์อัตลักษณ์บุคคล DVI",
+        "thai_association": "ทันตแพทยสภา (Dental Council of Thailand), กรมสนับสนุนบริการสุขภาพ (สบส. กระทรวงสาธารณสุข) & ชมรมนิติทันตวิทยาแห่งประเทศไทย",
+        "thai_references": [
+            "พระราชบัญญัติวิชาชีพทันตกรรม พ.ศ. 2537 และที่แก้ไขเพิ่มเติม (ฉบับที่ 2) พ.ศ. 2559",
+            "พระราชบัญญัติสถานพยาบาล พ.ศ. 2541 และที่แก้ไขเพิ่มเติม (ฉบับที่ 4) พ.ศ. 2559",
+            "ข้อบังคับทันตแพทยสภา ว่าด้วยจรรยาบรรณแห่งวิชาชีพทันตกรรม พ.ศ. 2560 และระเบียบกระทรวงสาธารณสุขว่าด้วยเจ้าพนักงานทันตสาธารณสุข (ทันตาภิบาล)",
+            "พระราชบัญญัติสุขภาพแห่งชาติ พ.ศ. 2550 (มาตรา 12), พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA) และมาตรฐาน INTERPOL DVI / TTVI"
+        ],
+        "thai_protocol_highlights": [
+            "🇹🇭 พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537: มาตรา 28 ห้ามมิให้ผู้ใดประกอบวิชาชีพทันตกรรมโดยไม่ได้ขึ้นทะเบียนและรับใบอนุญาต (ฝ่าฝืนมีโทษจำคุกไม่เกิน 3 ปี หรือปรับไม่เกิน 30,000 บาท หรือทั้งจำทั้งปรับ); มาตรา 43 ผู้ประกอบวิชาชีพที่ถูกสั่งพักใช้ใบอนุญาตแต่ยังแอบทำฟัน มีโทษจำคุกไม่เกิน 2 ปี หรือปรับไม่เกิน 20,000 บาท หรือทั้งจำทั้งปรับ; อายุความกล่าวหา/กล่าวโทษจรรยาบรรณต้องยื่นภายใน 1 ปีนับแต่วันที่รู้เรื่องและรู้ตัวผู้ประพฤติผิด",
+            "🇹🇭 พ.ร.บ. สถานพยาบาล พ.ศ. 2541 (แก้ไข 2559): ใบอนุญาตให้ประกอบกิจการสถานพยาบาลมีอายุ 10 ปี (นับแต่วันที่ออกใบอนุญาต); ใบอนุญาตให้ดำเนินการสถานพยาบาลมีอายุ 2 ปี (สิ้นสุดวันที่ 31 ธันวาคมของปีที่สอง); การโฆษณาสถานพยาบาลต้องได้รับอนุมัติข้อความ/ภาพ/เสียงจากผู้อนุญาต (สบส./สสจ.) ก่อนเผยแพร่ และห้ามโฆษณาโอ้อวดเกินจริงหรือลดแลกแจกแถมชักจูงใจ",
+            "🇹🇭 ระเบียบกระทรวงสาธารณสุขว่าด้วยทันตาภิบาล: ทันตาภิบาลสามารถถอนฟันน้ำนม, ขูดหินน้ำลาย, อุดฟันถาวร Class I และ Class V ที่ไม่ซับซ้อน ภายใต้การควบคุมของทันตแพทย์ แต่ 'ห้ามถอนฟันคุด ห้ามผ่าตัด ห้ามรักษาคลองรากฟัน และห้ามทำฟันเทียมติดแน่น'"
+        ]
     },
 ]
 
@@ -661,6 +816,9 @@ def get_learning_overview(db: Session = Depends(get_db)):
             "icon": tb_data["icon"],
             "color": tb_data["color"],
             "description": tb_data["description"],
+            "thai_association": tb_data.get("thai_association", ""),
+            "thai_references": tb_data.get("thai_references", []),
+            "thai_protocol_highlights": tb_data.get("thai_protocol_highlights", []),
             "question_count": tb_data["question_count"],
             "topic_count": len(topic_items),
             "topics": topic_items,
@@ -887,6 +1045,21 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
 
     sorted_citations = sorted(citations_counter.values(), key=lambda x: -x["count"])
 
+    # Match Thai Specialty Associations, Thai Textbooks & Thailand-specific Protocols
+    matched_thai_protocols = []
+    for tb in CANONICAL_TEXTBOOKS:
+        if tb["id"] == module_id or tb["specialty"] == category:
+            matched_thai_protocols.append({
+                "id": tb["id"],
+                "title": tb["title"],
+                "specialty": tb["specialty"],
+                "icon": tb["icon"],
+                "color": tb["color"],
+                "thai_association": tb.get("thai_association", ""),
+                "thai_references": tb.get("thai_references", []),
+                "thai_protocol_highlights": tb.get("thai_protocol_highlights", []),
+            })
+
     return {
         "module_info": {
             "id": module_id,
@@ -897,6 +1070,7 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
             "synthesized_lessons_count": sum(m["lesson_count"] for m in task_modules_sorted),
             "cognitive_counts": cog_counts,
         },
+        "thai_protocols": matched_thai_protocols,
         "textbook_references": sorted_citations[:15],
         "task_modules": task_modules_sorted,
         "differential_comparisons": differential_items,

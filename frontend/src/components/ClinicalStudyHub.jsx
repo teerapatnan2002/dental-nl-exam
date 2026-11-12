@@ -358,7 +358,7 @@ export default function ClinicalStudyHub({
                 border: hubMode === 'textbooks' ? '1px solid #10b981' : '1px solid var(--border)',
               }}
             >
-              <span>📚</span> เรียนตามตำราอ้างอิง ({overviewData?.summary?.total_textbooks || 14} Textbooks)
+              <span>📚</span> ตำราสากล & เกณฑ์สมาคมทันตแพทย์ไทย ({overviewData?.summary?.total_textbooks || 14} ชุด)
             </button>
 
             <button
@@ -640,6 +640,17 @@ export default function ClinicalStudyHub({
                       <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.4, marginBottom: '0.3rem' }}>
                         {tb.title}
                       </div>
+                      {tb.thai_association && (
+                        <div style={{
+                          fontSize: '0.73rem',
+                          color: '#34d399',
+                          fontWeight: 600,
+                          marginBottom: '0.3rem',
+                          lineHeight: 1.35
+                        }}>
+                          🇹🇭 {tb.thai_association}
+                        </div>
+                      )}
                       <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
                         ครอบคลุม {tb.topic_count} หัวข้อ Must-Know
                       </div>
@@ -775,7 +786,8 @@ export default function ClinicalStudyHub({
                         background: 'rgba(15, 23, 42, 0.55)',
                         borderRadius: '10px',
                         padding: '0.85rem 1rem',
-                        border: '1px solid rgba(255,255,255,0.08)'
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        marginBottom: moduleData.thai_protocols?.length > 0 ? '0.85rem' : 0
                       }}>
                         <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--accent)', marginBottom: '0.45rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                           <BookMarked size={15} /> ตำรามาตรฐานและหลักฐานทางวิชาการ (Textbooks & Evidence) ที่ใช้ออกข้อสอบหัวข้อนี้:
@@ -797,6 +809,82 @@ export default function ClinicalStudyHub({
                               }}>
                                 อ้างอิง {refItem.count} ข้อ
                               </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 🇹🇭 Thai Dental Council, Specialty Associations & MOPH Protocol Shelf */}
+                    {moduleData.thai_protocols && moduleData.thai_protocols.length > 0 && (
+                      <div style={{
+                        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.10), rgba(6, 182, 212, 0.08))',
+                        borderRadius: '12px',
+                        padding: '1rem 1.15rem',
+                        border: '1px solid rgba(16, 185, 129, 0.35)',
+                      }}>
+                        <div style={{
+                          fontSize: '0.85rem',
+                          fontWeight: 800,
+                          color: '#34d399',
+                          marginBottom: '0.6rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          flexWrap: 'wrap'
+                        }}>
+                          <span>🇹🇭 เกณฑ์อ้างอิงประเทศไทย: ทันตแพทยสภา • ราชวิทยาลัยฯ • สมาคมทันตแพทย์เฉพาะทาง • กรมอนามัย</span>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                          {moduleData.thai_protocols.map((tp, tpIdx) => (
+                            <div key={tp.id || tpIdx} style={{
+                              background: 'rgba(15, 23, 42, 0.55)',
+                              borderRadius: '10px',
+                              padding: '0.85rem 1rem',
+                              border: '1px solid rgba(255,255,255,0.07)'
+                            }}>
+                              {tp.thai_association && (
+                                <div style={{ fontSize: '0.83rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.45rem' }}>
+                                  🏛️ องค์กรวิชาชีพอ้างอิงของไทย: <span style={{ color: '#38bdf8' }}>{tp.thai_association}</span>
+                                </div>
+                              )}
+
+                              {tp.thai_references && tp.thai_references.length > 0 && (
+                                <div style={{ marginBottom: '0.55rem' }}>
+                                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
+                                    📘 ตำราภาษาไทยและแนวทางเวชปฏิบัติ (Thai CPG & Textbooks):
+                                  </div>
+                                  <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.79rem', color: 'var(--text-sub)', lineHeight: 1.55 }}>
+                                    {tp.thai_references.map((r, rIdx) => (
+                                      <li key={rIdx}>{r}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+
+                              {tp.thai_protocol_highlights && tp.thai_protocol_highlights.length > 0 && (
+                                <div>
+                                  <div style={{ fontSize: '0.76rem', fontWeight: 700, color: '#fbbf24', marginBottom: '0.3rem' }}>
+                                    ⚡ โปรโตคอลและเกณฑ์ตัวเลขเฉพาะประเทศไทยที่ใช้ตัดสินในข้อสอบ ศ.ท.ส.:
+                                  </div>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                                    {tp.thai_protocol_highlights.map((hl, hlIdx) => (
+                                      <div key={hlIdx} style={{
+                                        fontSize: '0.8rem',
+                                        color: 'var(--text)',
+                                        lineHeight: 1.6,
+                                        background: 'rgba(255,255,255,0.03)',
+                                        padding: '0.45rem 0.7rem',
+                                        borderRadius: '8px',
+                                        borderLeft: '3px solid #10b981'
+                                      }}>
+                                        {hl}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>

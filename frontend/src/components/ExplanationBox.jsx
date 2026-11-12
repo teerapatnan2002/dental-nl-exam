@@ -3,6 +3,53 @@ import { Lightbulb, AlertTriangle, BookOpen, Sparkles } from 'lucide-react';
 import { findGuideForQuestion } from '../data/clinicalStudyGuides';
 import ClinicalStudyHub from './ClinicalStudyHub';
 
+const THAI_ASSOCIATION_BY_CATEGORY = {
+  'วิทยาเอ็นโดดอนต์': {
+    org: 'สมาคมวิทยาเอ็นโดดอนต์ไทย (TAE) & ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย',
+    protocol: 'ใช้เกณฑ์การวินิจฉัย AAE Consensus มาตรฐานโรงเรียนทันตแพทย์ไทย 18 สถาบัน, การทำ VPT ด้วย Calcium Silicate Cement (MTA/Biodentine) และงดจ่ายยาปฏิชีวนะใน Pulpitis ตามเกณฑ์ RDU Thailand'
+  },
+  'ศัลยศาสตร์ช่องปาก': {
+    org: 'สมาคมศัลยศาสตร์ช่องปากและแม็กซิลโลเฟเชียลแห่งประเทศไทยฯ (TAOMS) & ราชวิทยาลัยทันตแพทย์ฯ',
+    protocol: 'มาตรฐานหลอดยาชาในไทยใช้ 1.8 mL/หลอด (2% Lidocaine = 36 mg/หลอด, MRD 4.4 mg/kg); ผู้ป่วยรับประทาน Warfarin ถอนฟันได้โดยไม่หยุดยาเมื่อ INR ≤ 3.0–3.5 ร่วมกับ Gelfoam + เย็บแผล + 5% Tranexamic acid mouthwash'
+  },
+  'ปริทันตวิทยา': {
+    org: 'สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP) & ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย',
+    protocol: 'อ้างอิงเกณฑ์จำแนกโรคปริทันต์ AAP/EFP 2017 (Stage I–IV, Grade A–C; Gingivitis BOP ≥ 10%), นัด Re-evaluation หลัง SRP ที่ 4–6 สัปดาห์ และควบคุม O\'Leary Plaque Index ≤ 10–20% ก่อนผ่าตัดปริทันต์'
+  },
+  'ทันตกรรมบูรณะ/หัตถการ': {
+    org: 'สมาคมทันตกรรมหัตถการแห่งประเทศไทย (TODS) & แนวทางอนุสัญญามินามาตะ กรมอนามัย',
+    protocol: 'เน้น Selective Caries Removal ในฟันผุลึกเพื่อรักษาความมีชีวิตของพัลพ์ (ปกป้องพัลพ์เมื่อ RDT < 0.5 mm) และหลีกเลี่ยงการใช้อมัลกัมในเด็ก < 15 ปี หญิงตั้งครรภ์ และหญิงให้นมบุตรตามแนวทางกรมอนามัย'
+  },
+  'ทันตกรรมประดิษฐ์': {
+    org: 'สมาคมทันตกรรมประดิษฐ์ไทย (TPA) & โครงการฟันเทียมพระราชทาน กรมอนามัย-สปสช.',
+    protocol: 'มาตรฐานการออกแบบ RPD (RPI Stress-releasing system), กฎ Ferrule Effect สูงอย่างน้อย 1.5–2.0 mm และเกณฑ์ใส่ฟันเทียมผู้สูงอายุไทยเมื่อมีฟันแท้ < 20 ซี่ หรือมีคู่สบฟันหลัง < 4 คู่สบ'
+  },
+  'ทันตกรรมสำหรับเด็ก': {
+    org: 'สมาคมทันตกรรมสำหรับเด็กแห่งประเทศไทย (TSPD) • ทันตแพทยสภา • กรมอนามัย (ฉบับปรับปรุง 2560/2566)',
+    protocol: 'ยาสีฟันฟลูออไรด์ในไทยใช้ 1,000 ppm ตั้งแต่ฟันซี่แรกขึ้น (< 3 ปี = แตะพอเปียก/เมล็ดข้าวสาร, 3–<6 ปี = เมล็ดถั่วเขียว, ≥ 6 ปี = ยาวเต็มแปรง); ฟลูออไรด์เสริมชนิดกินจ่ายเฉพาะเด็กเสี่ยงผุสูงอายุ 6 เดือน–16 ปี เมื่อน้ำดื่มมี F < 0.6 ppm เท่านั้น'
+  },
+  'วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก': {
+    org: 'ชมรมเวชศาสตร์ช่องปากฯ • สมาคมพยาธิวิทยาช่องปากฯ • สมาคมรังสีวิทยาช่องปากฯ • RDU Thailand',
+    protocol: 'อ้างอิงคู่มือการใช้ยาอย่างสมเหตุผลในงานทันตกรรม (RDU) & บัญชียาหลักแห่งชาติ (NLEM), เกณฑ์ AHA 2021 (แพ้ Penicillin งดใช้ Clindamycin ให้ใช้ Azithromycin 500 mg แทน) และการคัดกรอง OPMDs จากการเคี้ยวหมากในผู้สูงอายุไทย'
+  },
+  'ทันตกรรมบดเคี้ยวและอาการปวดบริเวณช่องปากและใบหน้า': {
+    org: 'ชมรมทันตกรรมบดเคี้ยวและความเจ็บปวดช่องปากใบหน้าแห่งประเทศไทย & ราชวิทยาลัยทันตแพทย์ฯ',
+    protocol: 'อ้างอิงเกณฑ์วินิจฉัย DC/TMD ฉบับภาษาไทย และการรักษาเริ่มต้นแบบ Conservative & Reversible Therapy (Self-care + กายภาพบำบัด + Hard Acrylic Stabilization Splint) โดยห้ามกรอปรับสบฟันถาวรเป็นอันดับแรก'
+  },
+  'ทันตกรรมจัดฟัน': {
+    org: 'สมาคมทันตแพทย์จัดฟันแห่งประเทศไทย (TAO) & ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย',
+    protocol: 'ระวังค่ามาตรฐาน Cephalometric Norms ของคนไทยมีลักษณะ Bimaxillary Protrusion มากกว่า Caucasian (คนไทย SNA ~84–85°, SNB ~81°, ANB ~3–4°, L1-MP ~96–98° จึงต้องเทียบกับค่า Norm ของไทยที่โจทย์กำหนด)'
+  },
+  'ทันตกรรมชุมชน': {
+    org: 'สำนักทันตสาธารณสุข กรมอนามัย กระทรวงสาธารณสุข & สำนักงานหลักประกันสุขภาพแห่งชาติ (สปสช.)',
+    protocol: 'อ้างอิงผลสำรวจสภาวะสุขภาพช่องปากแห่งชาติ กรมอนามัย (กลุ่มอายุ 3, 5, 12, 15, 35–44, 60–74, 80–85 ปี), สิทธิทันตกรรม 3 กองทุน (บัตรทอง UCS / ประกันสังคม 900 บ./ปี / ข้าราชการ), เกณฑ์ F น้ำบริโภคไทย ≤ 0.7 ppm และสูตรแปรงฟัน 2-2-2'
+  },
+  'กฎหมายและจรรยาบรรณ': {
+    org: 'ทันตแพทยสภา (Dental Council of Thailand) & กรมสนับสนุนบริการสุขภาพ (สบส. กระทรวงสาธารณสุข)',
+    protocol: 'อ้างอิง พ.ร.บ.วิชาชีพทันตกรรม พ.ศ. 2537 (แก้ไข 2559), พ.ร.บ.สถานพยาบาล พ.ศ. 2541 (แก้ไข 2559), ข้อบังคับจรรยาบรรณวิชาชีพ พ.ศ. 2560, ระเบียบกระทรวงสาธารณสุขว่าด้วยทันตาภิบาล และ พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล (PDPA)'
+  }
+};
+
 export default function ExplanationBox({ explanation, correctAnswer, isCached = false, question = null }) {
   const [studyModalGuideId, setStudyModalGuideId] = useState(null);
 
@@ -85,6 +132,8 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
   const tos_code = parsed.tos_code;
 
   const actualCorrect = parsed.correct_answer || correctAnswer;
+  const qCategory = question?.category || parsed?.category || matchingGuide?.category || '';
+  const thaiRefInfo = THAI_ASSOCIATION_BY_CATEGORY[qCategory] || null;
 
   return (
     <div className="explanation-box" style={{ marginTop: '1.25rem' }}>
@@ -270,7 +319,26 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
         </div>
       )}
 
-      {/* ── 6. Standalone Deep Study Modal ── */}
+      {/* ── 6. 🇹🇭 Thai Dental Council / Specialty Society Protocol Reference ── */}
+      {thaiRefInfo && (
+        <div style={{
+          marginTop: '0.85rem',
+          padding: '0.8rem 1rem',
+          borderRadius: '8px',
+          background: 'rgba(16, 185, 129, 0.06)',
+          border: '1px solid rgba(16, 185, 129, 0.25)',
+          borderLeft: '4px solid #10b981'
+        }}>
+          <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#34d399', marginBottom: '0.25rem' }}>
+            🇹🇭 อ้างอิงเกณฑ์ประเทศไทย: {thaiRefInfo.org}
+          </div>
+          <div style={{ fontSize: '0.83rem', color: 'var(--text-sub)', lineHeight: 1.55 }}>
+            {thaiRefInfo.protocol}
+          </div>
+        </div>
+      )}
+
+      {/* ── 7. Standalone Deep Study Modal ── */}
       {studyModalGuideId && (
         <ClinicalStudyHub
           isModal={true}
