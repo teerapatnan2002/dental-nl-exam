@@ -512,6 +512,7 @@ function AppContent() {
             config={examConfig}
             startTime={startTime}
             onFinish={finishExam}
+            onPracticeTopic={startExam}
           />
         )}
 
@@ -561,6 +562,7 @@ function AppContent() {
             startTime={startTime}
             analysisData={analysisData}
             onHome={goHome}
+            onPracticeTopic={startExam}
           />
         )}
       </main>

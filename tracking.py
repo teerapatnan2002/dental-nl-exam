@@ -167,6 +167,12 @@ def get_questions_due_for_review(current_user: models.User = Depends(get_current
             "proposition": q.proposition,
             "category": q.category,
             "task": q.task,
+            "correct_answer": q.correct_answer,
+            "explanation": q.explanation,
+            "source_exam": q.source_exam,
+            "image_path": q.image_path,
+            "cognitive_level": q.cognitive_level,
+            "must_know_topic": q.must_know_topic,
             "choices": choices
         })
         

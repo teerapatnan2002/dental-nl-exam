@@ -5,10 +5,10 @@ import { API_BASE } from '../config';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-export default function TutorChat({ questionId }) {
+export default function TutorChat({ questionId, userAnswer = null, correctAnswer = null }) {
   const { token, user } = useAuth();
   const [messages, setMessages] = useState([
-    { role: 'assistant', text: 'สวัสดีครับอาจารย์ มีอะไรให้ช่วยอธิบายเพิ่มเติมเกี่ยวกับข้อนี้ไหมครับ?' }
+    { role: 'assistant', text: 'สวัสดีครับ มีจุดไหนในข้อนี้ที่อยากให้อาจารย์ช่วยขยายความ หรือสอนทริคจำเข้าห้องสอบเพิ่มเติม กดเลือกคำถามลัดด้านล่างหรือพิมพ์ถามได้เลยครับ' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,11 +18,10 @@ export default function TutorChat({ questionId }) {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || loading) return;
+  const sendMessageText = async (rawText) => {
+    if (!rawText.trim() || loading) return;
 
-    const userMessage = input.trim();
+    const userMessage = rawText.trim();
     setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
     setInput('');
     setLoading(true);
@@ -46,6 +45,20 @@ export default function TutorChat({ questionId }) {
       setLoading(false);
     }
   };
+
+  const handleSend = async (e) => {
+    e.preventDefault();
+    await sendMessageText(input);
+  };
+
+  const quickPrompts = [
+    ...(userAnswer && correctAnswer && String(userAnswer) !== String(correctAnswer)
+      ? [{ label: `⚖️ เทียบข้อ ${userAnswer} (ที่ฉันตอบ) vs ${correctAnswer}`, prompt: `ฉันเลือกตอบตัวเลือก ${userAnswer} แต่เฉลยคือ ${correctAnswer} ช่วยเปรียบเทียบจุดตัดสำคัญว่าทำไมฉันถึงพลาดและมีวิธีแยกสองตัวเลือกนี้อย่างไรไม่ให้สับสนอีก` }]
+      : []),
+    { label: '🧠 ขอสูตรจำ / Mnemonic', prompt: 'ช่วยสรุปเทคนิคการจำหรือ Mnemonic สั้นๆ สำหรับหลักการข้อนี้เพื่อนำไปใช้ในห้องสอบหน่อยครับ' },
+    { label: '🪜 สรุปวิธีคิด 3 ขั้นตอน', prompt: 'ช่วยสรุปวิธีคิดและลำดับการตัดตัวเลือกในข้อนี้เป็น 3 ขั้นตอนสั้นๆ หน่อยครับ' },
+    { label: '🔄 ถ้าโจทย์พลิกแพลงจะตอบอะไร?', prompt: 'หากกรรมการออกสอบพลิกแพลงเงื่อนไขของเคสนี้ (เช่น เปลี่ยนอายุ อาการ หรือค่าผลตรวจ) คำตอบจะเปลี่ยนเป็นตัวเลือกใดบ้าง?' },
+  ];
 
   if (!user) {
     return (
@@ -99,6 +112,38 @@ export default function TutorChat({ questionId }) {
           </div>
         )}
         <div ref={endRef} />
+      </div>
+
+      {/* Quick Pedagogical Prompt Chips */}
+      <div style={{
+        padding: '0.5rem 0.75rem',
+        borderTop: '1px solid var(--border)',
+        background: 'rgba(15, 23, 42, 0.5)',
+        display: 'flex',
+        gap: '0.4rem',
+        flexWrap: 'wrap'
+      }}>
+        {quickPrompts.map((qp, idx) => (
+          <button
+            key={idx}
+            type="button"
+            disabled={loading}
+            onClick={() => sendMessageText(qp.prompt)}
+            style={{
+              fontSize: '0.74rem',
+              fontWeight: 600,
+              padding: '0.25rem 0.65rem',
+              borderRadius: '14px',
+              background: 'rgba(124, 58, 237, 0.14)',
+              border: '1px solid rgba(124, 58, 237, 0.35)',
+              color: 'var(--primary-light)',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            {qp.label}
+          </button>
+        ))}
       </div>
 
       {/* Input */}

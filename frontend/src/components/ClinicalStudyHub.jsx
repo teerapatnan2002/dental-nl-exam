@@ -3,9 +3,11 @@ import {
   BookOpen, Search, Sparkles, AlertTriangle, ArrowLeft, 
   CheckCircle2, XCircle, Compass, Award, Bookmark, 
   Layers, ChevronRight, ChevronLeft, Play, BookMarked, Share2, 
-  Lightbulb, X, GraduationCap, Brain, FileText, Eye, Check, Filter
+  Lightbulb, X, GraduationCap, Brain, FileText, Eye, Check, Filter,
+  RotateCcw, Zap, Stethoscope, Shuffle, Target
 } from 'lucide-react';
 import { API_BASE } from '../config';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   SPECIALTY_CATEGORIES, 
   CLINICAL_STUDY_GUIDES, 
@@ -26,6 +28,49 @@ const SPECIALTY_COLOR_MAP = {
   'กฎหมายและจรรยาบรรณ': '#f43f5e',
 };
 
+const MASTERY_META = {
+  red: { emoji: '🔴', label: 'ยังสับสน', bg: 'rgba(239, 68, 68, 0.16)', color: '#f87171', border: 'rgba(239, 68, 68, 0.4)' },
+  yellow: { emoji: '🟡', label: 'พอจำได้', bg: 'rgba(245, 158, 11, 0.16)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.4)' },
+  green: { emoji: '🟢', label: 'พร้อมสอบ!', bg: 'rgba(16, 185, 129, 0.16)', color: '#34d399', border: 'rgba(16, 185, 129, 0.4)' },
+};
+
+const CLUE_REGEX = /(มาตรา\s*\d+(?:\/\d+)?|\d+(?:\.\d+)?\s*(?:–|-|ถึง)?\s*(?:\d+(?:\.\d+)?)?\s*(?:%|มม\.|mm|ซม\.|cm|วัน|สัปดาห์|เดือน|ปี|ขวบ|ซี่|คู่สบ|นาที|ชั่วโมง|ชม\.|mg|มก\.|mL|มล\.|IU|unit|องศา|°)|spontaneous pain|percussion|palpation|thermal test|cold test|EPT|electric pulp test|mobility|sinus tract|fistula|trismus|paresthesia|avulsion|intrusion|extrusion|luxation|irreversible|reversible|necrosis|vitality|ปวดกลางคืน|ปวดเอง|หนอง|บวม|ไข้|เคาะเจ็บ|คลำเจ็บ|โยก|ทะลุโพรงประสาท|ฟันหลุด|ประวัติแพ้|ตั้งครรภ์|ความดันโลหิต)/gi;
+
+function highlightClinicalClues(text, enabled) {
+  if (!text || !enabled) return text;
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+  CLUE_REGEX.lastIndex = 0;
+  let keyIdx = 0;
+  while ((match = CLUE_REGEX.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    parts.push(
+      <mark
+        key={`clue-${keyIdx++}`}
+        style={{
+          background: 'rgba(245, 158, 11, 0.24)',
+          color: 'var(--text)',
+          padding: '0 4px',
+          borderRadius: '4px',
+          borderBottom: '2px solid rgba(245, 158, 11, 0.85)',
+          fontWeight: 700,
+        }}
+      >
+        {match[0]}
+      </mark>
+    );
+    lastIndex = match.index + match[0].length;
+    if (match[0].length === 0) break;
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts.length > 0 ? parts : text;
+}
+
 export default function ClinicalStudyHub({ 
   onBack, 
   onStartExam, 
@@ -33,7 +78,10 @@ export default function ClinicalStudyHub({
   isModal = false,
   onClose = null 
 }) {
-  // Primary Mode: 'exam_topics' (83 DB Topics), 'textbooks' (14 Gold Standard Textbooks), 'masterclass' (25 Curated Guides)
+  const auth = useAuth() || {};
+  const { token, authFetch } = auth;
+
+  // Primary Mode: 'exam_topics' (83 DB Topics), 'textbooks' (14 Gold Standard Textbooks), 'masterclass' (25 Curated Guides), 'mistake_clinic'
   const [hubMode, setHubMode] = useState('exam_topics');
   const [selectedSpecialty, setSelectedSpecialty] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -55,17 +103,100 @@ export default function ClinicalStudyHub({
   const [moduleData, setModuleData] = useState(null);
   const [loadingModule, setLoadingModule] = useState(false);
 
-  // Classroom Sub-Tabs: 'synthesized' | 'guided_teacher' | 'differential' | 'pearls_traps'
+  // Classroom Sub-Tabs: 'synthesized' | 'guided_teacher' | 'flashcards' | 'cheat_sheet' | 'differential' | 'pearls_traps'
   const [classroomTab, setClassroomTab] = useState('synthesized');
   const [selectedTaskFilter, setSelectedTaskFilter] = useState('all');
   const [selectedCogFilter, setSelectedCogFilter] = useState('all');
 
   // 4-Step Guided Case Teacher State
   const [activeCaseIndex, setActiveCaseIndex] = useState(0);
-  const [guidedStep, setGuidedStep] = useState(1); // 1: Read Textbook Theory, 2: Solve Case, 3: Full Evidence Resolution
+  const [guidedStep, setGuidedStep] = useState(1); // 1: First step, 2: Case/Reveal, 3: Full Evidence Resolution
+  const [guidedStyle, setGuidedStyle] = useState('challenge_first'); // 'challenge_first' | 'teach_first'
+  const [clueRadarEnabled, setClueRadarEnabled] = useState(true);
   const [showAllGuidedSteps, setShowAllGuidedSteps] = useState(false);
   const [selectedChoice, setSelectedChoice] = useState(null);
   const [copiedNotification, setCopiedNotification] = useState(false);
+
+  // Flashcards Active Recall Deck State (persisted to localStorage)
+  const [cardIndex, setCardIndex] = useState(0);
+  const [cardFlipped, setCardFlipped] = useState(false);
+  const [flashcardOrder, setFlashcardOrder] = useState(null);
+  const [onlyUnmasteredCards, setOnlyUnmasteredCards] = useState(false);
+  const [cardMastery, setCardMastery] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('nl_flashcard_mastery_v1') || '{}');
+    } catch {
+      return {};
+    }
+  });
+
+  // Topic Mastery Tracker State (persisted to localStorage)
+  const [topicMastery, setTopicMastery] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('nl_topic_mastery_v1') || '{}');
+    } catch {
+      return {};
+    }
+  });
+
+  const updateTopicMastery = useCallback((topicId, level) => {
+    if (!topicId) return;
+    setTopicMastery(prev => {
+      const next = { ...prev };
+      if (next[topicId] === level) {
+        delete next[topicId];
+      } else {
+        next[topicId] = level;
+      }
+      try {
+        localStorage.setItem('nl_topic_mastery_v1', JSON.stringify(next));
+      } catch {
+        // Ignore storage quota errors
+      }
+      return next;
+    });
+  }, []);
+
+  const updateCardMastery = useCallback((cardId, status) => {
+    if (!cardId) return;
+    setCardMastery(prev => {
+      const next = { ...prev, [cardId]: status };
+      try {
+        localStorage.setItem('nl_flashcard_mastery_v1', JSON.stringify(next));
+      } catch {
+        // Ignore storage quota errors
+      }
+      return next;
+    });
+  }, []);
+
+  // Mistake Clinic State (Authenticated endpoint)
+  const [mistakeClinicData, setMistakeClinicData] = useState(null);
+  const [loadingClinic, setLoadingClinic] = useState(false);
+  const [selectedClinicTopicId, setSelectedClinicTopicId] = useState('all');
+
+  const fetchMistakeClinic = useCallback(() => {
+    if (!token || !authFetch) {
+      setMistakeClinicData(null);
+      return;
+    }
+    setLoadingClinic(true);
+    authFetch(`${API_BASE}/api/learning/mistake-clinic`)
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => {
+        if (data) setMistakeClinicData(data);
+      })
+      .catch(err => console.error('Failed to load mistake clinic:', err))
+      .finally(() => setLoadingClinic(false));
+  }, [token, authFetch]);
+
+  useEffect(() => {
+    if (token) {
+      fetchMistakeClinic();
+    } else {
+      setMistakeClinicData(null);
+    }
+  }, [token, fetchMistakeClinic]);
 
   // Load overview on mount
   useEffect(() => {
@@ -111,6 +242,9 @@ export default function ClinicalStudyHub({
         setActiveCaseIndex(0);
         setGuidedStep(1);
         setSelectedChoice(null);
+        setCardIndex(0);
+        setCardFlipped(false);
+        setFlashcardOrder(null);
       })
       .catch(err => {
         console.error('Error loading pedagogical module:', err);
@@ -199,6 +333,71 @@ export default function ClinicalStudyHub({
     }
     return null;
   }, [hubMode, selectedMasterclassId, selectedTopicId]);
+
+  // Active Flashcards Deck for Sub-Tab 3
+  const rawFlashcards = moduleData?.flashcards || [];
+  const activeFlashcards = useMemo(() => {
+    let cards = rawFlashcards;
+    if (flashcardOrder && flashcardOrder.length === rawFlashcards.length) {
+      cards = flashcardOrder.map(i => rawFlashcards[i]).filter(Boolean);
+    }
+    if (onlyUnmasteredCards) {
+      cards = cards.filter(c => cardMastery[c.id] !== 'mastered');
+    }
+    return cards;
+  }, [rawFlashcards, flashcardOrder, onlyUnmasteredCards, cardMastery]);
+
+  const currentFlashcard = activeFlashcards[cardIndex] || activeFlashcards[0] || null;
+  const masteredCardsCount = useMemo(() => {
+    return rawFlashcards.filter(c => cardMastery[c.id] === 'mastered').length;
+  }, [rawFlashcards, cardMastery]);
+
+  const handleShuffleFlashcards = () => {
+    const idxs = rawFlashcards.map((_, i) => i);
+    for (let i = idxs.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [idxs[i], idxs[j]] = [idxs[j], idxs[i]];
+    }
+    setFlashcardOrder(idxs);
+    setCardIndex(0);
+    setCardFlipped(false);
+  };
+
+  // Filtered Mistake Clinic cases
+  const filteredClinicCases = useMemo(() => {
+    const cases = mistakeClinicData?.wrong_cases || [];
+    if (selectedClinicTopicId === 'all') return cases;
+    return cases.filter(c => c.topic_id === selectedClinicTopicId);
+  }, [mistakeClinicData, selectedClinicTopicId]);
+
+  const handleDrillQuestions = (questionsList) => {
+    if (!onStartExam || !questionsList || questionsList.length === 0) return;
+    onStartExam({
+      mode: 'practice',
+      questions: questionsList,
+      count: questionsList.length,
+    });
+    if (isModal && onClose) onClose();
+  };
+
+  const handleStartDueReview = async () => {
+    if (!onStartExam || !token || !authFetch) return;
+    try {
+      const res = await authFetch(`${API_BASE}/api/tracking/review-due`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data?.questions?.length > 0) {
+        onStartExam({
+          mode: 'practice',
+          questions: data.questions,
+          count: data.questions.length,
+        });
+        if (isModal && onClose) onClose();
+      }
+    } catch (err) {
+      console.error('Failed to start SM-2 due review:', err);
+    }
+  };
 
   const handleOpenCaseInTeacher = (questionId) => {
     if (!moduleData?.guided_cases) return;
@@ -380,6 +579,40 @@ export default function ClinicalStudyHub({
               <span>🏆</span> ตารางสรุป Masterclass (25 Guides)
             </button>
 
+            <button
+              onClick={() => {
+                setHubMode('mistake_clinic');
+                if (token) fetchMistakeClinic();
+              }}
+              style={{
+                padding: '0.45rem 0.9rem',
+                borderRadius: '10px',
+                fontSize: '0.82rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: hubMode === 'mistake_clinic' ? '#f43f5e' : 'rgba(244,63,94,0.08)',
+                color: hubMode === 'mistake_clinic' ? '#fff' : '#fda4af',
+                border: hubMode === 'mistake_clinic' ? '1px solid #f43f5e' : '1px solid rgba(244,63,94,0.28)',
+              }}
+            >
+              <Stethoscope size={15} /> คลินิกซ่อมจุดอ่อน
+              {mistakeClinicData?.total_wrong_unique > 0 && (
+                <span style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  padding: '0.05rem 0.45rem',
+                  borderRadius: '10px',
+                  background: hubMode === 'mistake_clinic' ? 'rgba(255,255,255,0.25)' : 'rgba(244,63,94,0.25)',
+                  color: '#fff',
+                }}>
+                  {mistakeClinicData.total_wrong_unique}
+                </span>
+              )}
+            </button>
+
             {copiedNotification && (
               <span style={{ fontSize: '0.78rem', color: 'var(--success)', fontWeight: 600 }}>
                 คัดลอกลิงก์แล้ว!
@@ -513,6 +746,25 @@ export default function ClinicalStudyHub({
                   <span>หัวข้อที่สกัดจากข้อสอบ ({filteredTopics.length} หัวข้อ)</span>
                   <span>จำนวนข้อ</span>
                 </div>
+                {Object.keys(topicMastery).length > 0 && (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '0.35rem 0.55rem',
+                    margin: '0 0.15rem 0.25rem 0.15rem',
+                    borderRadius: '8px',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    fontSize: '0.7rem',
+                    color: 'var(--text-sub)'
+                  }}>
+                    <span>🟢 {Object.values(topicMastery).filter(v => v === 'green').length}</span>
+                    <span>🟡 {Object.values(topicMastery).filter(v => v === 'yellow').length}</span>
+                    <span>🔴 {Object.values(topicMastery).filter(v => v === 'red').length}</span>
+                    <span style={{ color: 'var(--text-muted)', marginLeft: 'auto' }}>ความคล่องตัว</span>
+                  </div>
+                )}
                 {loadingOverview ? (
                   <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
                     กำลังสกัดโครงสร้างบทเรียนจากคลังข้อสอบ...
@@ -590,6 +842,19 @@ export default function ClinicalStudyHub({
                           {hasMasterclass && (
                             <span style={{ fontSize: '0.65rem', padding: '0.05rem 0.4rem', borderRadius: '4px', background: 'rgba(236,72,153,0.15)', color: '#f472b6', fontWeight: 700 }}>
                               ✨ ตาราง Masterclass
+                            </span>
+                          )}
+                          {topicMastery[topic.id] && MASTERY_META[topicMastery[topic.id]] && (
+                            <span style={{
+                              fontSize: '0.65rem',
+                              padding: '0.05rem 0.4rem',
+                              borderRadius: '4px',
+                              background: MASTERY_META[topicMastery[topic.id]].bg,
+                              color: MASTERY_META[topicMastery[topic.id]].color,
+                              fontWeight: 700,
+                              marginLeft: 'auto'
+                            }}>
+                              {MASTERY_META[topicMastery[topic.id]].emoji} {MASTERY_META[topicMastery[topic.id]].label}
                             </span>
                           )}
                         </div>
@@ -692,6 +957,73 @@ export default function ClinicalStudyHub({
                 })}
               </>
             )}
+
+            {/* MODE 4 SIDEBAR: MISTAKE CLINIC FILTER BY WEAKEST TOPIC */}
+            {hubMode === 'mistake_clinic' && (
+              <>
+                <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', padding: '0.25rem 0.5rem' }}>
+                  จุดอ่อนจากประวัติการสอบ ({mistakeClinicData?.weak_topics?.length || 0} หัวข้อ)
+                </div>
+                {!token ? (
+                  <div style={{ padding: '1rem', fontSize: '0.82rem', color: 'var(--text-sub)', lineHeight: 1.6 }}>
+                    เข้าสู่ระบบก่อนเพื่อวิเคราะห์ข้อผิดพลาดจากสถิติของคุณโดยเฉพาะ
+                  </div>
+                ) : loadingClinic ? (
+                  <div style={{ padding: '1.5rem', textAlign: 'center', fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                    กำลังวิเคราะห์จุดอ่อนของคุณ...
+                  </div>
+                ) : (
+                  <>
+                    <div
+                      onClick={() => setSelectedClinicTopicId('all')}
+                      style={{
+                        padding: '0.7rem 0.85rem',
+                        borderRadius: '10px',
+                        cursor: 'pointer',
+                        background: selectedClinicTopicId === 'all' ? 'rgba(244, 63, 94, 0.14)' : 'rgba(255,255,255,0.02)',
+                        border: selectedClinicTopicId === 'all' ? '1px solid #f43f5e' : '1px solid rgba(255,255,255,0.05)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <span style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--text)' }}>📋 รวมทุกข้อที่เคยพลาด</span>
+                      <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#fda4af' }}>
+                        {mistakeClinicData?.wrong_cases?.length || 0} ข้อ
+                      </span>
+                    </div>
+                    {mistakeClinicData?.weak_topics?.map(wt => {
+                      const isSel = selectedClinicTopicId === wt.topic_id;
+                      const badgeColor = SPECIALTY_COLOR_MAP[wt.category] || '#f43f5e';
+                      return (
+                        <div
+                          key={wt.topic_id}
+                          onClick={() => setSelectedClinicTopicId(wt.topic_id)}
+                          style={{
+                            padding: '0.7rem 0.85rem',
+                            borderRadius: '10px',
+                            cursor: 'pointer',
+                            background: isSel ? 'rgba(244, 63, 94, 0.14)' : 'rgba(255,255,255,0.02)',
+                            border: isSel ? '1px solid #f43f5e' : '1px solid rgba(255,255,255,0.05)',
+                            borderLeft: `4px solid ${badgeColor}`,
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                            <span style={{ fontSize: '0.68rem', fontWeight: 700, color: badgeColor }}>{wt.category}</span>
+                            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#fda4af' }}>
+                              ถูก {wt.accuracy_pct}% ({wt.wrong_count} ผิด)
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.35 }}>
+                            {wt.title_th}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
+              </>
+            )}
           </div>
 
           {/* ── RIGHT COLUMN: INTERACTIVE PEDAGOGICAL CLASSROOM ─────────── */}
@@ -753,24 +1085,63 @@ export default function ClinicalStudyHub({
                         </span>
                       </div>
 
-                      {onStartExam && (
-                        <button
-                          onClick={handleStartTopicPractice}
-                          className="btn btn-primary btn-sm"
-                          style={{
-                            display: 'flex',
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+                        {hubMode === 'exam_topics' && selectedTopicId && (
+                          <div style={{
+                            display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '6px',
-                            background: 'linear-gradient(135deg, #10b981, #059669)',
-                            border: 'none',
-                            fontWeight: 700,
-                            padding: '0.4rem 0.9rem',
-                            borderRadius: '10px'
-                          }}
-                        >
-                          <Play size={14} fill="currentColor" /> ฝึกทำข้อสอบหัวข้อนี้ ({Math.min(20, moduleData.module_info.total_questions)} ข้อ)
-                        </button>
-                      )}
+                            gap: '3px',
+                            padding: '0.2rem 0.35rem',
+                            borderRadius: '10px',
+                            background: 'rgba(15, 23, 42, 0.5)',
+                            border: '1px solid rgba(255,255,255,0.08)'
+                          }}>
+                            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', padding: '0 4px' }}>ระดับจำ:</span>
+                            {Object.entries(MASTERY_META).map(([lvl, meta]) => {
+                              const active = topicMastery[selectedTopicId] === lvl;
+                              return (
+                                <button
+                                  key={lvl}
+                                  type="button"
+                                  onClick={() => updateTopicMastery(selectedTopicId, lvl)}
+                                  title={meta.label}
+                                  style={{
+                                    padding: '0.18rem 0.45rem',
+                                    borderRadius: '7px',
+                                    fontSize: '0.72rem',
+                                    fontWeight: active ? 800 : 500,
+                                    cursor: 'pointer',
+                                    background: active ? meta.bg : 'transparent',
+                                    color: active ? meta.color : 'var(--text-sub)',
+                                    border: active ? `1px solid ${meta.border}` : '1px solid transparent',
+                                  }}
+                                >
+                                  {meta.emoji} {active ? meta.label : ''}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {onStartExam && (
+                          <button
+                            onClick={handleStartTopicPractice}
+                            className="btn btn-primary btn-sm"
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              background: 'linear-gradient(135deg, #10b981, #059669)',
+                              border: 'none',
+                              fontWeight: 700,
+                              padding: '0.4rem 0.9rem',
+                              borderRadius: '10px'
+                            }}
+                          >
+                            <Play size={14} fill="currentColor" /> ฝึกทำข้อสอบหัวข้อนี้ ({Math.min(20, moduleData.module_info.total_questions)} ข้อ)
+                          </button>
+                        )}
+                      </div>
                     </div>
 
                     <h1 style={{ fontSize: '1.55rem', fontWeight: 800, color: 'var(--text)', margin: '0 0 0.35rem 0', lineHeight: 1.35 }}>
@@ -892,30 +1263,33 @@ export default function ClinicalStudyHub({
                     )}
                   </div>
 
-                  {/* ── 4 Classroom Pedagogical Sub-Tabs ── */}
+                  {/* ── 6 Classroom Pedagogical Sub-Tabs ── */}
                   <div style={{
                     display: 'flex',
-                    gap: '0.5rem',
+                    gap: '0.45rem',
                     marginBottom: '1.5rem',
                     borderBottom: '1px solid var(--border)',
                     paddingBottom: '0.75rem',
                     flexWrap: 'wrap'
                   }}>
                     {[
-                      { id: 'synthesized', label: `📖 บทเรียนทฤษฎีจาก Textbook (${moduleData.module_info.synthesized_lessons_count})`, desc: 'เรียนเนื้อหาที่สกัดจากข้อสอบแยกตามขั้นตอนคลินิก' },
-                      { id: 'guided_teacher', label: `🧑‍🏫 อาจารย์สอนทีละก้าวจากโจทย์ (${moduleData.guided_cases?.length || 0} เคส)`, desc: 'เรียนทฤษฎีก่อน → วิเคราะห์เคส → เฉลยรายตัวเลือก' },
-                      { id: 'differential', label: `⚖️ เปรียบเทียบแยกแยะตัวเลือก (${moduleData.differential_comparisons?.length || 0})`, desc: 'ศึกษากลไกการแยกโรคจากตัวเลือก ก-จ' },
-                      { id: 'pearls_traps', label: `⚠️ รวม Pearls & กับดักข้อสอบ (${(moduleData.pearls?.length || 0) + (moduleData.pitfalls?.length || 0)})`, desc: 'สรุปจุดเน้นและหลุมพรางที่ออกสอบบ่อย' },
+                      { id: 'synthesized', label: `📖 บทเรียนทฤษฎี (${moduleData.module_info.synthesized_lessons_count})`, desc: 'เรียนเนื้อหาที่สกัดจากข้อสอบแยกตามขั้นตอนคลินิก' },
+                      { id: 'guided_teacher', label: `🧑‍🏫 สอนทีละก้าวจากเคส (${moduleData.guided_cases?.length || 0})`, desc: 'ทำโจทย์หรือเรียนทฤษฎี → จับคีย์เวิร์ด → เฉลยรายตัวเลือก' },
+                      { id: 'flashcards', label: `🃏 Flashcards จำแม่น (${moduleData.flashcards?.length || 0})`, desc: 'ปิดคำสำคัญฝึกดึงความจำ Active Recall' },
+                      { id: 'cheat_sheet', label: `⚡ สรุปใบเดียวจบ (${(moduleData.high_yield_sheet?.must_know_numbers?.length || 0) + (moduleData.high_yield_sheet?.triggers_map?.length || 0)})`, desc: 'รวมตัวเลข Cut-off, มาตรากฎหมาย และตารางคีย์เวิร์ด ➔ คำตอบ' },
+                      { id: 'differential', label: `⚖️ แยกแยะตัวเลือก (${moduleData.differential_comparisons?.length || 0})`, desc: 'ศึกษากลไกการแยกโรคจากตัวเลือก ก-จ' },
+                      { id: 'pearls_traps', label: `⚠️ Pearls & กับดัก (${(moduleData.pearls?.length || 0) + (moduleData.pitfalls?.length || 0)})`, desc: 'สรุปจุดเน้นและหลุมพรางที่ออกสอบบ่อย' },
                     ].map(tab => {
                       const active = classroomTab === tab.id;
                       return (
                         <button
                           key={tab.id}
                           onClick={() => setClassroomTab(tab.id)}
+                          title={tab.desc}
                           style={{
-                            padding: '0.55rem 1rem',
+                            padding: '0.5rem 0.9rem',
                             borderRadius: '10px',
-                            fontSize: '0.84rem',
+                            fontSize: '0.82rem',
                             fontWeight: 700,
                             cursor: 'pointer',
                             background: active ? 'var(--primary)' : 'rgba(255,255,255,0.04)',
@@ -1246,71 +1620,96 @@ export default function ClinicalStudyHub({
                           ))}
                         </div>
 
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--text-sub)', cursor: 'pointer' }}>
-                          <input
-                            type="checkbox"
-                            checked={showAllGuidedSteps}
-                            onChange={(e) => setShowAllGuidedSteps(e.target.checked)}
-                          />
-                          แสดงทุกขั้นตอนพร้อมกัน (ไม่ซ่อนโจทย์)
-                        </label>
-                      </div>
-
-                      {currentGuidedCase ? (
-                        <div>
-                          {/* Case Navigation Bar */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
                           <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            marginBottom: '1rem',
-                            gap: '0.5rem',
-                            flexWrap: 'wrap'
+                            display: 'inline-flex',
+                            padding: '0.2rem',
+                            borderRadius: '10px',
+                            background: 'rgba(15, 23, 42, 0.55)',
+                            border: '1px solid var(--border)',
+                            gap: '3px'
                           }}>
                             <button
-                              disabled={activeCaseIndex <= 0}
+                              type="button"
                               onClick={() => {
-                                setActiveCaseIndex(i => Math.max(0, i - 1));
+                                setGuidedStyle('challenge_first');
                                 setGuidedStep(1);
-                                setSelectedChoice(null);
                               }}
-                              className="btn btn-secondary btn-sm"
-                              style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                              style={{
+                                padding: '0.25rem 0.65rem',
+                                borderRadius: '7px',
+                                fontSize: '0.74rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                border: 'none',
+                                background: guidedStyle === 'challenge_first' ? 'var(--primary)' : 'transparent',
+                                color: guidedStyle === 'challenge_first' ? '#fff' : 'var(--text-sub)',
+                              }}
                             >
-                              <ChevronLeft size={16} /> เคสก่อนหน้า
+                              🧩 ทำโจทย์ก่อน (Active Recall)
                             </button>
-
-                            <div style={{ textAlign: 'center' }}>
-                              <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text)' }}>
-                                บทเรียนเคสที่ {activeCaseIndex + 1} จาก {filteredGuidedCases.length}
-                              </span>
-                              <span style={{
-                                marginLeft: '8px',
-                                fontSize: '0.75rem',
-                                padding: '0.15rem 0.55rem',
-                                borderRadius: '10px',
-                                background: 'rgba(255,255,255,0.06)',
-                                color: 'var(--text-sub)'
-                              }}>
-                                Q#{currentGuidedCase.id} • ระดับ {currentGuidedCase.cognitive_level} • {currentGuidedCase.task}
-                              </span>
-                            </div>
-
                             <button
-                              disabled={activeCaseIndex >= filteredGuidedCases.length - 1}
+                              type="button"
                               onClick={() => {
-                                setActiveCaseIndex(i => Math.min(filteredGuidedCases.length - 1, i + 1));
+                                setGuidedStyle('teach_first');
                                 setGuidedStep(1);
-                                setSelectedChoice(null);
                               }}
-                              className="btn btn-secondary btn-sm"
-                              style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                              style={{
+                                padding: '0.25rem 0.65rem',
+                                borderRadius: '7px',
+                                fontSize: '0.74rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                border: 'none',
+                                background: guidedStyle === 'teach_first' ? '#10b981' : 'transparent',
+                                color: guidedStyle === 'teach_first' ? '#fff' : 'var(--text-sub)',
+                              }}
                             >
-                              เคสถัดไป <ChevronRight size={16} />
+                              📖 เรียนทฤษฎีก่อน
                             </button>
                           </div>
 
-                          {/* ── STEP 1: TEXTBOOK & EVIDENCE FOUNDATION (TEACH FIRST!) ── */}
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.78rem', color: 'var(--text-sub)', cursor: 'pointer' }}>
+                            <input
+                              type="checkbox"
+                              checked={clueRadarEnabled}
+                              onChange={(e) => setClueRadarEnabled(e.target.checked)}
+                            />
+                            🔍 เรดาร์คำใบ้ในโจทย์
+                          </label>
+
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.78rem', color: 'var(--text-sub)', cursor: 'pointer' }}>
+                            <input
+                              type="checkbox"
+                              checked={showAllGuidedSteps}
+                              onChange={(e) => setShowAllGuidedSteps(e.target.checked)}
+                            />
+                            แสดงทุกขั้นตอนพร้อมกัน
+                          </label>
+                        </div>
+                      </div>
+
+                      {currentGuidedCase ? (() => {
+                        const isCaseResolved = showAllGuidedSteps || guidedStep >= 3 || selectedChoice !== null;
+                        const showCaseFirst = guidedStyle === 'challenge_first';
+                        const showTheoryCard = !showCaseFirst || isCaseResolved;
+                        const showCaseCard = showCaseFirst || showAllGuidedSteps || guidedStep >= 2;
+
+                        const correctLabel = String(currentGuidedCase.step3_evidence_resolution.correct_answer || '').trim().toUpperCase();
+                        const pickedUpper = selectedChoice ? String(selectedChoice).trim().toUpperCase() : null;
+                        const isUserWrong = Boolean(pickedUpper && correctLabel && pickedUpper !== correctLabel);
+                        const isUserRight = Boolean(pickedUpper && correctLabel && pickedUpper === correctLabel);
+
+                        const choiceExpls = currentGuidedCase.step3_evidence_resolution.choice_explanations || {};
+                        const wrongReasonText = pickedUpper ? (choiceExpls[pickedUpper] || choiceExpls[selectedChoice] || '') : '';
+                        const correctReasonText = choiceExpls[correctLabel] || '';
+                        const caseTopicId = currentGuidedCase.raw_question?.must_know_topic || selectedTopicId;
+
+                        const theoryStepNum = showCaseFirst ? 3 : 1;
+                        const caseStepNum = showCaseFirst ? 1 : 2;
+                        const resolutionStepNum = showCaseFirst ? 2 : 3;
+
+                        const theoryCard = showTheoryCard ? (
                           <div style={{
                             background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(16, 185, 129, 0.05))',
                             border: '1px solid rgba(99, 102, 241, 0.35)',
@@ -1330,8 +1729,10 @@ export default function ClinicalStudyHub({
                                   alignItems: 'center',
                                   justifyContent: 'center',
                                   fontSize: '0.82rem'
-                                }}>1</span>
-                                ขั้นที่ 1: เรียนทฤษฎีและกลไกจาก Textbook & Evidence (ศึกษาก่อนทำโจทย์)
+                                }}>{theoryStepNum}</span>
+                                {showCaseFirst
+                                  ? `ขั้นที่ ${theoryStepNum}: ทบทวนกลไก & หลักฐานเชิงลึกจาก Textbook`
+                                  : `ขั้นที่ ${theoryStepNum}: เรียนทฤษฎีและกลไกจาก Textbook & Evidence (ศึกษาก่อนทำโจทย์)`}
                               </div>
                               <span style={{
                                 fontSize: '0.78rem',
@@ -1374,7 +1775,7 @@ export default function ClinicalStudyHub({
                               </div>
                             )}
 
-                            {!showAllGuidedSteps && guidedStep === 1 && (
+                            {!showCaseFirst && !showAllGuidedSteps && guidedStep === 1 && (
                               <div style={{ marginTop: '1.25rem', textAlign: 'right' }}>
                                 <button
                                   onClick={() => setGuidedStep(2)}
@@ -1386,17 +1787,18 @@ export default function ClinicalStudyHub({
                               </div>
                             )}
                           </div>
+                        ) : null;
 
-                          {/* ── STEP 2 & 3: CLINICAL CASE DECONSTRUCTION & ACTIVE RECALL ── */}
-                          {(showAllGuidedSteps || guidedStep >= 2) && (
-                            <div style={{
-                              background: 'rgba(255, 255, 255, 0.02)',
-                              border: '1px solid var(--border)',
-                              borderRadius: '14px',
-                              padding: '1.5rem',
-                              marginBottom: '1.25rem'
-                            }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent)', fontWeight: 800, fontSize: '1.02rem', marginBottom: '1rem' }}>
+                        const caseCard = showCaseCard ? (
+                          <div style={{
+                            background: 'rgba(255, 255, 255, 0.02)',
+                            border: '1px solid var(--border)',
+                            borderRadius: '14px',
+                            padding: '1.5rem',
+                            marginBottom: '1.25rem'
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent)', fontWeight: 800, fontSize: '1.02rem' }}>
                                 <span style={{
                                   width: '26px',
                                   height: '26px',
@@ -1407,202 +1809,405 @@ export default function ClinicalStudyHub({
                                   alignItems: 'center',
                                   justifyContent: 'center',
                                   fontSize: '0.82rem'
-                                }}>2</span>
-                                ขั้นที่ 2: ถอดรหัสเคสผู้ป่วยจากข้อสอบจริงและลองเลือกคำตอบ (Active Recall)
+                                }}>{caseStepNum}</span>
+                                ขั้นที่ {caseStepNum}: ถอดรหัสเคสผู้ป่วยจากข้อสอบจริงและลองเลือกคำตอบ (Active Recall)
                               </div>
-
-                              {currentGuidedCase.step2_clinical_case.stem && 
-                               currentGuidedCase.step2_clinical_case.stem !== currentGuidedCase.step2_clinical_case.question_text && (
-                                <div style={{
-                                  padding: '1rem',
-                                  background: 'rgba(255,255,255,0.03)',
-                                  borderRadius: '10px',
-                                  borderLeft: '4px solid var(--primary)',
-                                  marginBottom: '1rem',
-                                  fontSize: '0.92rem',
-                                  lineHeight: 1.7,
-                                  color: 'var(--text-sub)',
-                                  whiteSpace: 'pre-wrap'
-                                }}>
-                                  <strong style={{ color: 'var(--primary-light)', display: 'block', marginBottom: '4px' }}>🩺 ข้อมูลเคสผู้ป่วย (Clinical Vignette / Stem):</strong>
-                                  {currentGuidedCase.step2_clinical_case.stem}
-                                </div>
+                              {clueRadarEnabled && (
+                                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#fbbf24', background: 'rgba(245, 158, 11, 0.12)', padding: '0.2rem 0.6rem', borderRadius: '12px' }}>
+                                  🔍 ไฮไลต์คำใบ้ในโจทย์เปิดอยู่
+                                </span>
                               )}
+                            </div>
 
+                            {currentGuidedCase.step2_clinical_case.stem &&
+                             currentGuidedCase.step2_clinical_case.stem !== currentGuidedCase.step2_clinical_case.question_text && (
                               <div style={{
-                                fontSize: '1rem',
-                                fontWeight: 700,
-                                color: 'var(--text)',
-                                lineHeight: 1.65,
-                                marginBottom: '1.15rem',
+                                padding: '1rem',
+                                background: 'rgba(255,255,255,0.03)',
+                                borderRadius: '10px',
+                                borderLeft: '4px solid var(--primary)',
+                                marginBottom: '1rem',
+                                fontSize: '0.92rem',
+                                lineHeight: 1.7,
+                                color: 'var(--text-sub)',
                                 whiteSpace: 'pre-wrap'
                               }}>
-                                {currentGuidedCase.step2_clinical_case.proposition || currentGuidedCase.step2_clinical_case.question_text}
+                                <strong style={{ color: 'var(--primary-light)', display: 'block', marginBottom: '4px' }}>🩺 ข้อมูลเคสผู้ป่วย (Clinical Vignette / Stem):</strong>
+                                {highlightClinicalClues(currentGuidedCase.step2_clinical_case.stem, clueRadarEnabled)}
                               </div>
+                            )}
 
-                              {currentGuidedCase.image_path && (
-                                <div style={{ marginBottom: '1rem' }}>
-                                  <img
-                                    src={`${API_BASE}/images/${currentGuidedCase.image_path}`}
-                                    alt="Clinical Case Figure"
-                                    style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '10px', border: '1px solid var(--border)' }}
-                                  />
-                                </div>
+                            <div style={{
+                              fontSize: '1rem',
+                              fontWeight: 700,
+                              color: 'var(--text)',
+                              lineHeight: 1.65,
+                              marginBottom: '1.15rem',
+                              whiteSpace: 'pre-wrap'
+                            }}>
+                              {highlightClinicalClues(
+                                currentGuidedCase.step2_clinical_case.proposition || currentGuidedCase.step2_clinical_case.question_text,
+                                clueRadarEnabled
                               )}
+                            </div>
 
-                              {/* Choices */}
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
-                                {currentGuidedCase.step2_clinical_case.choices.map(c => {
-                                  const isPicked = selectedChoice === c.label;
-                                  const isCorrectAns = String(c.label).trim().toUpperCase() === String(currentGuidedCase.step3_evidence_resolution.correct_answer).trim().toUpperCase();
-                                  const isRevealed = showAllGuidedSteps || guidedStep >= 3 || selectedChoice !== null;
+                            {currentGuidedCase.image_path && (
+                              <div style={{ marginBottom: '1rem' }}>
+                                <img
+                                  src={`${API_BASE}/images/${currentGuidedCase.image_path}`}
+                                  alt="Clinical Case Figure"
+                                  style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '10px', border: '1px solid var(--border)' }}
+                                />
+                              </div>
+                            )}
 
-                                  let bg = 'rgba(255,255,255,0.03)';
-                                  let border = '1px solid var(--border)';
-                                  if (isRevealed) {
-                                    if (isCorrectAns) {
-                                      bg = 'rgba(16, 185, 129, 0.14)';
-                                      border = '1.5px solid var(--success)';
-                                    } else if (isPicked && !isCorrectAns) {
-                                      bg = 'rgba(244, 63, 94, 0.14)';
-                                      border = '1.5px solid var(--danger)';
-                                    }
-                                  } else if (isPicked) {
-                                    bg = 'rgba(99, 102, 241, 0.15)';
-                                    border = '1.5px solid var(--primary)';
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+                              {currentGuidedCase.step2_clinical_case.choices.map(c => {
+                                const isPicked = selectedChoice === c.label;
+                                const isCorrectAns = String(c.label).trim().toUpperCase() === correctLabel;
+
+                                let bg = 'rgba(255,255,255,0.03)';
+                                let border = '1px solid var(--border)';
+                                if (isCaseResolved) {
+                                  if (isCorrectAns) {
+                                    bg = 'rgba(16, 185, 129, 0.14)';
+                                    border = '1.5px solid var(--success)';
+                                  } else if (isPicked && !isCorrectAns) {
+                                    bg = 'rgba(244, 63, 94, 0.14)';
+                                    border = '1.5px solid var(--danger)';
                                   }
+                                } else if (isPicked) {
+                                  bg = 'rgba(99, 102, 241, 0.15)';
+                                  border = '1.5px solid var(--primary)';
+                                }
 
+                                return (
+                                  <button
+                                    key={c.label}
+                                    onClick={() => {
+                                      setSelectedChoice(c.label);
+                                      setGuidedStep(3);
+                                    }}
+                                    style={{
+                                      padding: '0.8rem 1rem',
+                                      borderRadius: '10px',
+                                      background: bg,
+                                      border,
+                                      color: 'var(--text)',
+                                      textAlign: 'left',
+                                      cursor: 'pointer',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '0.75rem',
+                                      fontSize: '0.92rem',
+                                      transition: 'all 0.15s ease'
+                                    }}
+                                  >
+                                    <span style={{
+                                      width: '28px',
+                                      height: '28px',
+                                      borderRadius: '50%',
+                                      background: isCaseResolved && isCorrectAns ? 'var(--success)' : 'rgba(255,255,255,0.08)',
+                                      color: isCaseResolved && isCorrectAns ? '#fff' : 'var(--text)',
+                                      fontWeight: 800,
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      flexShrink: 0
+                                    }}>
+                                      {c.label}
+                                    </span>
+                                    <span style={{ flex: 1, lineHeight: 1.5 }}>{c.text}</span>
+                                    {isCaseResolved && isCorrectAns && <CheckCircle2 size={18} color="var(--success)" />}
+                                    {isCaseResolved && isPicked && !isCorrectAns && <XCircle size={18} color="var(--danger)" />}
+                                  </button>
+                                );
+                              })}
+                            </div>
+
+                            {showCaseFirst && !isCaseResolved && (
+                              <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+                                <button
+                                  type="button"
+                                  onClick={() => setGuidedStep(3)}
+                                  className="btn btn-secondary btn-sm"
+                                  style={{ fontSize: '0.8rem', fontWeight: 700 }}
+                                >
+                                  💡 ยังไม่มั่นใจ — เปิดดูเฉลยและบทเรียนจาก Textbook
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ) : null;
+
+                        const resolutionCard = isCaseResolved ? (
+                          <div style={{
+                            background: 'rgba(16, 185, 129, 0.04)',
+                            border: '1px solid rgba(16, 185, 129, 0.3)',
+                            borderRadius: '14px',
+                            padding: '1.5rem',
+                            marginBottom: '1.25rem'
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#34d399', fontWeight: 800, fontSize: '1.02rem' }}>
+                                <span style={{
+                                  width: '26px',
+                                  height: '26px',
+                                  borderRadius: '50%',
+                                  background: '#10b981',
+                                  color: '#fff',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: '0.82rem'
+                                }}>{resolutionStepNum}</span>
+                                ขั้นที่ {resolutionStepNum}: วิเคราะห์เจาะลึกทุกตัวเลือกตามหลักฐานวิชาการ (Differential Choice Analysis)
+                              </div>
+                              <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--success)' }}>
+                                เฉลยที่ถูกต้อง: ตัวเลือก {correctLabel}
+                                {currentGuidedCase.step3_evidence_resolution.correct_choice_text
+                                  ? ` — ${currentGuidedCase.step3_evidence_resolution.correct_choice_text}`
+                                  : ''}
+                              </span>
+                            </div>
+
+                            {isUserWrong && (
+                              <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                                gap: '0.75rem',
+                                marginBottom: '1rem'
+                              }}>
+                                <div style={{
+                                  padding: '0.85rem 1rem',
+                                  borderRadius: '10px',
+                                  background: 'rgba(244, 63, 94, 0.10)',
+                                  border: '1px solid rgba(244, 63, 94, 0.35)',
+                                  fontSize: '0.86rem',
+                                  lineHeight: 1.55
+                                }}>
+                                  <strong style={{ color: '#fb7185', display: 'block', marginBottom: '0.25rem' }}>
+                                    ✗ ทำไมตัวเลือก {pickedUpper} ที่คุณเลือกจึงพลาด:
+                                  </strong>
+                                  <span style={{ color: 'var(--text-sub)' }}>{wrongReasonText || 'ยังไม่ตรงกับเกณฑ์วินิจฉัยหรือข้อบ่งชี้หลักของเคสนี้'}</span>
+                                </div>
+                                <div style={{
+                                  padding: '0.85rem 1rem',
+                                  borderRadius: '10px',
+                                  background: 'rgba(16, 185, 129, 0.10)',
+                                  border: '1px solid rgba(16, 185, 129, 0.35)',
+                                  fontSize: '0.86rem',
+                                  lineHeight: 1.55
+                                }}>
+                                  <strong style={{ color: '#34d399', display: 'block', marginBottom: '0.25rem' }}>
+                                    ✓ ทำไมเฉลย {correctLabel} จึงถูกต้องที่สุด:
+                                  </strong>
+                                  <span style={{ color: 'var(--text-sub)' }}>{correctReasonText || currentGuidedCase.step3_evidence_resolution.key_takeaway}</span>
+                                </div>
+                              </div>
+                            )}
+
+                            {isUserRight && (
+                              <div style={{
+                                padding: '0.7rem 1rem',
+                                borderRadius: '8px',
+                                background: 'rgba(16, 185, 129, 0.14)',
+                                border: '1px solid rgba(16, 185, 129, 0.35)',
+                                color: '#34d399',
+                                fontWeight: 700,
+                                fontSize: '0.88rem',
+                                marginBottom: '1rem'
+                              }}>
+                                🎉 เยี่ยมมาก! คุณเลือกตัวเลือก {pickedUpper} ได้ถูกต้อง ลองเช็กเหตุผลตัดตัวลวงข้ออื่นด้านล่างเพื่อให้แม่น 100%
+                              </div>
+                            )}
+
+                            {currentGuidedCase.step3_evidence_resolution.key_takeaway && (
+                              <div style={{
+                                padding: '0.85rem 1rem',
+                                borderRadius: '8px',
+                                background: 'rgba(16, 185, 129, 0.10)',
+                                borderLeft: '4px solid var(--success)',
+                                marginBottom: '1rem',
+                                fontWeight: 700,
+                                color: 'var(--text)',
+                                fontSize: '0.92rem',
+                                lineHeight: 1.6
+                              }}>
+                                📌 Key Takeaway: {currentGuidedCase.step3_evidence_resolution.key_takeaway}
+                              </div>
+                            )}
+
+                            {currentGuidedCase.step3_evidence_resolution.common_pitfall && (
+                              <div style={{
+                                padding: '0.85rem 1rem',
+                                borderRadius: '8px',
+                                background: 'rgba(245, 158, 11, 0.08)',
+                                borderLeft: '4px solid var(--warning)',
+                                marginBottom: '1rem',
+                                color: 'var(--text-sub)',
+                                fontSize: '0.88rem',
+                                lineHeight: 1.6
+                              }}>
+                                <strong style={{ color: 'var(--warning)' }}>⚠️ กับดักข้อสอบที่ต้องระวัง: </strong>
+                                {currentGuidedCase.step3_evidence_resolution.common_pitfall}
+                              </div>
+                            )}
+
+                            {currentGuidedCase.step3_evidence_resolution.choice_explanations && (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                {Object.entries(currentGuidedCase.step3_evidence_resolution.choice_explanations).map(([lbl, text]) => {
+                                  const isCorr = String(lbl).trim().toUpperCase() === correctLabel;
+                                  const isPick = String(lbl).trim().toUpperCase() === pickedUpper;
+                                  const choiceObj = currentGuidedCase.step2_clinical_case.choices?.find(ch => String(ch.label).trim().toUpperCase() === String(lbl).trim().toUpperCase());
                                   return (
-                                    <button
-                                      key={c.label}
-                                      onClick={() => {
-                                        setSelectedChoice(c.label);
-                                        setGuidedStep(3);
-                                      }}
-                                      style={{
-                                        padding: '0.8rem 1rem',
-                                        borderRadius: '10px',
-                                        background: bg,
-                                        border,
-                                        color: 'var(--text)',
-                                        textAlign: 'left',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.75rem',
-                                        fontSize: '0.92rem',
-                                        transition: 'all 0.15s ease'
-                                      }}
-                                    >
-                                      <span style={{
-                                        width: '28px',
-                                        height: '28px',
-                                        borderRadius: '50%',
-                                        background: isRevealed && isCorrectAns ? 'var(--success)' : 'rgba(255,255,255,0.08)',
-                                        color: isRevealed && isCorrectAns ? '#fff' : 'var(--text)',
-                                        fontWeight: 800,
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        flexShrink: 0
-                                      }}>
-                                        {c.label}
-                                      </span>
-                                      <span style={{ flex: 1, lineHeight: 1.5 }}>{c.text}</span>
-                                      {isRevealed && isCorrectAns && <CheckCircle2 size={18} color="var(--success)" />}
-                                      {isRevealed && isPicked && !isCorrectAns && <XCircle size={18} color="var(--danger)" />}
-                                    </button>
+                                    <div key={lbl} style={{
+                                      padding: '0.75rem 0.95rem',
+                                      borderRadius: '8px',
+                                      background: isCorr ? 'rgba(16, 185, 129, 0.10)' : isPick ? 'rgba(244, 63, 94, 0.08)' : 'rgba(15, 23, 42, 0.5)',
+                                      border: isCorr ? '1px solid rgba(16, 185, 129, 0.35)' : isPick ? '1px solid rgba(244, 63, 94, 0.35)' : '1px solid var(--border)',
+                                      borderLeft: isCorr ? '4px solid var(--success)' : isPick ? '4px solid var(--danger)' : '4px solid rgba(255,255,255,0.15)',
+                                      fontSize: '0.88rem',
+                                      lineHeight: 1.6
+                                    }}>
+                                      <strong style={{ color: isCorr ? 'var(--success)' : isPick ? '#fb7185' : 'var(--text)' }}>
+                                        ตัวเลือก {lbl}{choiceObj?.text ? ` (${choiceObj.text})` : ''}:{' '}
+                                      </strong>
+                                      <span style={{ color: 'var(--text-sub)' }}>{text}</span>
+                                    </div>
                                   );
                                 })}
                               </div>
-                            </div>
-                          )}
+                            )}
 
-                          {/* ── STEP 3: EVIDENCE-BASED CHOICE DECONSTRUCTION ── */}
-                          {(showAllGuidedSteps || guidedStep >= 3 || selectedChoice !== null) && (
+                            {/* Step 4: Quick Self-Mastery Rating & Next Case CTA */}
                             <div style={{
-                              background: 'rgba(16, 185, 129, 0.04)',
-                              border: '1px solid rgba(16, 185, 129, 0.3)',
-                              borderRadius: '14px',
-                              padding: '1.5rem'
+                              marginTop: '1.1rem',
+                              paddingTop: '0.9rem',
+                              borderTop: '1px solid rgba(255,255,255,0.08)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              flexWrap: 'wrap',
+                              gap: '0.75rem'
                             }}>
-                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#34d399', fontWeight: 800, fontSize: '1.02rem' }}>
-                                  <span style={{
-                                    width: '26px',
-                                    height: '26px',
-                                    borderRadius: '50%',
-                                    background: '#10b981',
-                                    color: '#fff',
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '0.82rem'
-                                  }}>3</span>
-                                  ขั้นที่ 3: วิเคราะห์เจาะลึกทุกตัวเลือกตามหลักฐานวิชาการ (Differential Choice Analysis)
-                                </div>
-                                <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--success)' }}>
-                                  เฉลยที่ถูกต้อง: ตัวเลือก {currentGuidedCase.step3_evidence_resolution.correct_answer}
-                                </span>
-                              </div>
-
-                              {currentGuidedCase.step3_evidence_resolution.key_takeaway && (
-                                <div style={{
-                                  padding: '0.85rem 1rem',
-                                  borderRadius: '8px',
-                                  background: 'rgba(16, 185, 129, 0.10)',
-                                  borderLeft: '4px solid var(--success)',
-                                  marginBottom: '1rem',
-                                  fontWeight: 700,
-                                  color: 'var(--text)',
-                                  fontSize: '0.92rem',
-                                  lineHeight: 1.6
-                                }}>
-                                  📌 Key Takeaway: {currentGuidedCase.step3_evidence_resolution.key_takeaway}
-                                </div>
-                              )}
-
-                              {currentGuidedCase.step3_evidence_resolution.common_pitfall && (
-                                <div style={{
-                                  padding: '0.85rem 1rem',
-                                  borderRadius: '8px',
-                                  background: 'rgba(245, 158, 11, 0.08)',
-                                  borderLeft: '4px solid var(--warning)',
-                                  marginBottom: '1rem',
-                                  color: 'var(--text-sub)',
-                                  fontSize: '0.88rem',
-                                  lineHeight: 1.6
-                                }}>
-                                  <strong style={{ color: 'var(--warning)' }}>⚠️ กับดักข้อสอบที่ต้องระวัง: </strong>
-                                  {currentGuidedCase.step3_evidence_resolution.common_pitfall}
-                                </div>
-                              )}
-
-                              {currentGuidedCase.step3_evidence_resolution.choice_explanations && (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                  {Object.entries(currentGuidedCase.step3_evidence_resolution.choice_explanations).map(([lbl, text]) => {
-                                    const isCorr = String(lbl).trim().toUpperCase() === String(currentGuidedCase.step3_evidence_resolution.correct_answer).trim().toUpperCase();
+                              {caseTopicId && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                                  <span style={{ fontSize: '0.78rem', color: 'var(--text-sub)', fontWeight: 700 }}>
+                                    จบเคสนี้แล้ว ประเมินความเข้าใจหัวข้อ:
+                                  </span>
+                                  {Object.entries(MASTERY_META).map(([lvl, meta]) => {
+                                    const active = topicMastery[caseTopicId] === lvl;
                                     return (
-                                      <div key={lbl} style={{
-                                        padding: '0.75rem 0.95rem',
-                                        borderRadius: '8px',
-                                        background: isCorr ? 'rgba(16, 185, 129, 0.10)' : 'rgba(15, 23, 42, 0.5)',
-                                        border: isCorr ? '1px solid rgba(16, 185, 129, 0.35)' : '1px solid var(--border)',
-                                        borderLeft: isCorr ? '4px solid var(--success)' : '4px solid rgba(255,255,255,0.15)',
-                                        fontSize: '0.88rem',
-                                        lineHeight: 1.6
-                                      }}>
-                                        <strong style={{ color: isCorr ? 'var(--success)' : 'var(--text)' }}>ตัวเลือก {lbl}: </strong>
-                                        <span style={{ color: 'var(--text-sub)' }}>{text}</span>
-                                      </div>
+                                      <button
+                                        key={lvl}
+                                        type="button"
+                                        onClick={() => updateTopicMastery(caseTopicId, lvl)}
+                                        style={{
+                                          padding: '0.28rem 0.6rem',
+                                          borderRadius: '8px',
+                                          fontSize: '0.74rem',
+                                          fontWeight: active ? 800 : 600,
+                                          cursor: 'pointer',
+                                          background: active ? meta.bg : 'rgba(255,255,255,0.04)',
+                                          color: active ? meta.color : 'var(--text-sub)',
+                                          border: active ? `1px solid ${meta.border}` : '1px solid var(--border)',
+                                        }}
+                                      >
+                                        {meta.emoji} {meta.label}
+                                      </button>
                                     );
                                   })}
                                 </div>
                               )}
+                              {activeCaseIndex < filteredGuidedCases.length - 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setActiveCaseIndex(i => Math.min(filteredGuidedCases.length - 1, i + 1));
+                                    setGuidedStep(1);
+                                    setSelectedChoice(null);
+                                  }}
+                                  className="btn btn-primary btn-sm"
+                                  style={{ fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                >
+                                  ไปเคสถัดไป ({activeCaseIndex + 2}/{filteredGuidedCases.length}) <ChevronRight size={15} />
+                                </button>
+                              )}
                             </div>
-                          )}
-                        </div>
-                      ) : (
+                          </div>
+                        ) : null;
+
+                        return (
+                          <div>
+                            {/* Case Navigation Bar */}
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              marginBottom: '1rem',
+                              gap: '0.5rem',
+                              flexWrap: 'wrap'
+                            }}>
+                              <button
+                                disabled={activeCaseIndex <= 0}
+                                onClick={() => {
+                                  setActiveCaseIndex(i => Math.max(0, i - 1));
+                                  setGuidedStep(1);
+                                  setSelectedChoice(null);
+                                }}
+                                className="btn btn-secondary btn-sm"
+                                style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                              >
+                                <ChevronLeft size={16} /> เคสก่อนหน้า
+                              </button>
+
+                              <div style={{ textAlign: 'center' }}>
+                                <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text)' }}>
+                                  บทเรียนเคสที่ {activeCaseIndex + 1} จาก {filteredGuidedCases.length}
+                                </span>
+                                <span style={{
+                                  marginLeft: '8px',
+                                  fontSize: '0.75rem',
+                                  padding: '0.15rem 0.55rem',
+                                  borderRadius: '10px',
+                                  background: 'rgba(255,255,255,0.06)',
+                                  color: 'var(--text-sub)'
+                                }}>
+                                  Q#{currentGuidedCase.id} • ระดับ {currentGuidedCase.cognitive_level} • {currentGuidedCase.task}
+                                </span>
+                              </div>
+
+                              <button
+                                disabled={activeCaseIndex >= filteredGuidedCases.length - 1}
+                                onClick={() => {
+                                  setActiveCaseIndex(i => Math.min(filteredGuidedCases.length - 1, i + 1));
+                                  setGuidedStep(1);
+                                  setSelectedChoice(null);
+                                }}
+                                className="btn btn-secondary btn-sm"
+                                style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                              >
+                                เคสถัดไป <ChevronRight size={16} />
+                              </button>
+                            </div>
+
+                            {showCaseFirst ? (
+                              <>
+                                {caseCard}
+                                {resolutionCard}
+                                {theoryCard}
+                              </>
+                            ) : (
+                              <>
+                                {theoryCard}
+                                {caseCard}
+                                {resolutionCard}
+                              </>
+                            )}
+                          </div>
+                        );
+                      })() : (
                         <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
                           ไม่พบเคสตามตัวกรองที่เลือก
                         </div>
@@ -1729,6 +2334,361 @@ export default function ClinicalStudyHub({
                               </div>
                               <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                                 📚 {pit.reference}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ──────────────────────────────────────────────────────
+                      SUB-TAB 5: INTERACTIVE CLOZE FLASHCARDS (ACTIVE RECALL)
+                  ────────────────────────────────────────────────────── */}
+                  {classroomTab === 'flashcards' && (
+                    <div>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: '0.75rem',
+                        marginBottom: '1rem',
+                        padding: '0.85rem 1rem',
+                        borderRadius: '12px',
+                        background: 'rgba(255,255,255,0.03)',
+                        border: '1px solid var(--border)'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--text)' }}>
+                            🃏 Active Recall Deck: <span style={{ color: 'var(--success)' }}>{masteredCardsCount}</span> / {rawFlashcards.length} จำแม่นแล้ว
+                          </span>
+                          <div style={{ width: '110px', height: '7px', background: 'rgba(255,255,255,0.08)', borderRadius: '4px', overflow: 'hidden' }}>
+                            <div style={{
+                              height: '100%',
+                              width: `${rawFlashcards.length > 0 ? Math.round((masteredCardsCount / rawFlashcards.length) * 100) : 0}%`,
+                              background: 'linear-gradient(90deg, #10b981, #34d399)',
+                              transition: 'width 0.3s ease'
+                            }} />
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.78rem', color: 'var(--text-sub)', cursor: 'pointer' }}>
+                            <input
+                              type="checkbox"
+                              checked={onlyUnmasteredCards}
+                              onChange={(e) => {
+                                setOnlyUnmasteredCards(e.target.checked);
+                                setCardIndex(0);
+                                setCardFlipped(false);
+                              }}
+                            />
+                            เฉพาะการ์ดที่ยังไม่จำ
+                          </label>
+                          <button
+                            type="button"
+                            onClick={handleShuffleFlashcards}
+                            className="btn btn-secondary btn-sm"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.76rem' }}
+                          >
+                            <Shuffle size={13} /> สุ่มลำดับ
+                          </button>
+                        </div>
+                      </div>
+
+                      {activeFlashcards.length > 0 && currentFlashcard ? (() => {
+                        const safeIdx = Math.min(cardIndex, activeFlashcards.length - 1);
+                        const card = activeFlashcards[safeIdx] || currentFlashcard;
+                        const isMastered = cardMastery[card.id] === 'mastered';
+                        const advanceCard = () => {
+                          setCardFlipped(false);
+                          setCardIndex(i => (activeFlashcards.length > 0 ? (i + 1) % activeFlashcards.length : 0));
+                        };
+                        return (
+                          <div style={{
+                            background: 'linear-gradient(145deg, rgba(99, 102, 241, 0.09), rgba(15, 23, 42, 0.72))',
+                            border: isMastered ? '1.5px solid rgba(16, 185, 129, 0.45)' : '1.5px solid rgba(99, 102, 241, 0.35)',
+                            borderRadius: '16px',
+                            padding: '1.6rem',
+                            maxWidth: '760px',
+                            margin: '0 auto',
+                            boxShadow: '0 10px 28px rgba(0,0,0,0.18)'
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                                <span style={{ fontSize: '0.72rem', fontWeight: 800, padding: '0.18rem 0.55rem', borderRadius: '10px', background: 'rgba(99,102,241,0.2)', color: 'var(--primary-light)' }}>
+                                  การ์ดที่ {safeIdx + 1} / {activeFlashcards.length}
+                                </span>
+                                <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.18rem 0.55rem', borderRadius: '10px', background: card.mode === 'cloze' ? 'rgba(245,158,11,0.16)' : 'rgba(6,182,212,0.16)', color: card.mode === 'cloze' ? '#fbbf24' : '#22d3ee' }}>
+                                  {card.mode === 'cloze' ? '🧠 ปิดคำสำคัญ (Cloze Recall)' : '📝 ทบทวนหลักการ'}
+                                </span>
+                                {card.cognitive_level && (
+                                  <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.18rem 0.5rem', borderRadius: '10px', background: 'rgba(255,255,255,0.06)', color: 'var(--text-sub)' }}>
+                                    {card.cognitive_level}
+                                  </span>
+                                )}
+                                {isMastered && (
+                                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#34d399' }}>✅ จำแม่นแล้ว</span>
+                                )}
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => handleOpenCaseInTeacher(card.question_id)}
+                                className="btn btn-secondary btn-sm"
+                                style={{ fontSize: '0.74rem' }}
+                              >
+                                🧑‍🏫 เปิดเคส Q#{card.question_id}
+                              </button>
+                            </div>
+
+                            {/* Front side */}
+                            <div style={{
+                              padding: '1.35rem',
+                              borderRadius: '12px',
+                              background: 'rgba(15, 23, 42, 0.55)',
+                              border: '1px solid rgba(255,255,255,0.08)',
+                              marginBottom: '1rem'
+                            }}>
+                              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                                คำถามทบทวนความจำ (นึกคำตอบในใจก่อนพลิกดู)
+                              </div>
+                              <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.75 }}>
+                                {card.front}
+                              </div>
+                            </div>
+
+                            {!cardFlipped ? (
+                              <div style={{ textAlign: 'center', margin: '1rem 0' }}>
+                                <button
+                                  type="button"
+                                  onClick={() => setCardFlipped(true)}
+                                  className="btn btn-primary"
+                                  style={{ fontWeight: 800, padding: '0.7rem 1.8rem', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                                >
+                                  <Eye size={17} /> พลิกดูคำตอบและคำสำคัญ
+                                </button>
+                              </div>
+                            ) : (
+                              <div style={{
+                                padding: '1.25rem',
+                                borderRadius: '12px',
+                                background: 'rgba(16, 185, 129, 0.08)',
+                                border: '1px solid rgba(16, 185, 129, 0.35)',
+                                marginBottom: '1rem'
+                              }}>
+                                <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#34d399', marginBottom: '0.45rem' }}>
+                                  💡 คำตอบ & หลักการฉบับเต็ม:
+                                </div>
+                                <div style={{ fontSize: '0.96rem', fontWeight: 600, color: 'var(--text)', lineHeight: 1.7, marginBottom: '0.65rem' }}>
+                                  {card.back}
+                                </div>
+                                {card.hidden_terms?.length > 0 && (
+                                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', alignItems: 'center', marginBottom: '0.55rem' }}>
+                                    <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>คำสำคัญที่ปิดไว้:</span>
+                                    {card.hidden_terms.map((t, idx) => (
+                                      <span key={idx} style={{
+                                        fontSize: '0.78rem',
+                                        fontWeight: 800,
+                                        padding: '0.15rem 0.55rem',
+                                        borderRadius: '6px',
+                                        background: 'rgba(245,158,11,0.18)',
+                                        color: '#fbbf24'
+                                      }}>
+                                        {t}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                                {card.correct_choice_text && (
+                                  <div style={{ fontSize: '0.82rem', color: '#a7f3d0', marginBottom: '0.4rem' }}>
+                                    🎯 คำตอบจากโจทย์: <strong>{card.correct_choice_text}</strong>
+                                  </div>
+                                )}
+                                <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                                  📚 {card.reference}
+                                </div>
+
+                                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap', marginTop: '1rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      updateCardMastery(card.id, 'review');
+                                      advanceCard();
+                                    }}
+                                    className="btn btn-secondary btn-sm"
+                                    style={{ fontWeight: 700, borderColor: 'rgba(245,158,11,0.45)', color: '#fbbf24', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                  >
+                                    <RotateCcw size={14} /> ยังไม่แม่น — เก็บไว้ทวนอีก
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      updateCardMastery(card.id, 'mastered');
+                                      advanceCard();
+                                    }}
+                                    className="btn btn-primary btn-sm"
+                                    style={{ fontWeight: 800, background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                  >
+                                    <Check size={14} /> จำแม่นแล้ว! การ์ดถัดไป
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem' }}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setCardFlipped(false);
+                                  setCardIndex(i => (i - 1 + activeFlashcards.length) % activeFlashcards.length);
+                                }}
+                                className="btn btn-secondary btn-sm"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                              >
+                                <ChevronLeft size={15} /> ก่อนหน้า
+                              </button>
+                              <button
+                                type="button"
+                                onClick={advanceCard}
+                                className="btn btn-secondary btn-sm"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                              >
+                                ถัดไป <ChevronRight size={15} />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })() : (
+                        <div style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                          {onlyUnmasteredCards && rawFlashcards.length > 0
+                            ? '🎉 ยินดีด้วย! คุณจำ Flashcards ในหัวข้อนี้ครบทุกใบแล้ว'
+                            : 'ยังไม่มีข้อมูล Flashcards สำหรับหัวข้อนี้'}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* ──────────────────────────────────────────────────────
+                      SUB-TAB 6: 1-PAGE HIGH-YIELD CHEAT SHEET
+                  ────────────────────────────────────────────────────── */}
+                  {classroomTab === 'cheat_sheet' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                      <div style={{
+                        padding: '1rem 1.25rem',
+                        borderRadius: '12px',
+                        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.10), rgba(99, 102, 241, 0.08))',
+                        border: '1px solid rgba(245, 158, 11, 0.3)',
+                        fontSize: '0.88rem',
+                        lineHeight: 1.65,
+                        color: 'var(--text-sub)'
+                      }}>
+                        <strong style={{ color: '#fbbf24' }}>⚡ สรุปใบเดียวจบก่อนเข้าห้องสอบ (1-Page Rapid Review Sheet): </strong>
+                        สกัดเฉพาะตัวเลข Cut-off, ระยะเวลา, ขนาดยา, มาตรากฎหมาย และคีย์เวิร์ดในโจทย์ที่จับคู่ตรงตัวกับคำตอบจากข้อสอบจริงในหัวข้อนี้
+                      </div>
+
+                      {/* Section 1: Must-Know Numbers & Legal Articles */}
+                      <div>
+                        <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#fbbf24', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Zap size={18} /> ตัวเลข เกณฑ์อายุ มาตรา และ Cut-off ต้องจำ ({moduleData.high_yield_sheet?.must_know_numbers?.length || 0})
+                        </h3>
+                        {moduleData.high_yield_sheet?.must_know_numbers?.length > 0 ? (
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '0.85rem' }}>
+                            {moduleData.high_yield_sheet.must_know_numbers.map((item, idx) => (
+                              <div
+                                key={`${item.question_id}-${idx}`}
+                                onClick={() => handleOpenCaseInTeacher(item.question_id)}
+                                style={{
+                                  background: 'rgba(245, 158, 11, 0.06)',
+                                  border: '1px solid rgba(245, 158, 11, 0.25)',
+                                  borderRadius: '12px',
+                                  padding: '0.95rem 1rem',
+                                  cursor: 'pointer',
+                                  transition: 'transform 0.15s ease'
+                                }}
+                              >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem', gap: '6px' }}>
+                                  <span style={{
+                                    fontSize: '0.92rem',
+                                    fontWeight: 900,
+                                    padding: '0.18rem 0.6rem',
+                                    borderRadius: '8px',
+                                    background: 'rgba(245, 158, 11, 0.2)',
+                                    color: '#fbbf24'
+                                  }}>
+                                    {item.highlight_value}
+                                  </span>
+                                  <span style={{ fontSize: '0.7rem', color: 'var(--primary-light)', fontWeight: 700 }}>
+                                    Q#{item.question_id} ↗
+                                  </span>
+                                </div>
+                                <div style={{ fontSize: '0.84rem', color: 'var(--text)', lineHeight: 1.55, marginBottom: '0.4rem' }}>
+                                  {item.context}
+                                </div>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                                  📚 {item.reference}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div style={{ padding: '1rem', borderRadius: '10px', background: 'rgba(255,255,255,0.02)', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                            หัวข้อนี้เน้นหลักการเชิงวินิจฉัยมากกว่าตัวเลขตายตัว ดูตารางจับคู่คีย์เวิร์ดด้านล่างได้เลย
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Section 2: Exam Trigger -> Answer Quick Map */}
+                      <div>
+                        <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#34d399', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Target size={18} /> ตารางจับคู่คีย์เวิร์ดในโจทย์ ➔ คำตอบเป้าหมาย ({moduleData.high_yield_sheet?.triggers_map?.length || 0})
+                        </h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                          {moduleData.high_yield_sheet?.triggers_map?.map((tm, idx) => (
+                            <div
+                              key={`${tm.question_id}-${idx}`}
+                              style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'minmax(200px, 1.1fr) auto minmax(220px, 1.3fr)',
+                                gap: '0.85rem',
+                                alignItems: 'center',
+                                background: 'rgba(255,255,255,0.025)',
+                                border: '1px solid var(--border)',
+                                borderRadius: '12px',
+                                padding: '0.9rem 1rem',
+                              }}
+                            >
+                              <div>
+                                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--accent)', marginBottom: '0.2rem' }}>
+                                  📌 ถ้าโจทย์ให้ข้อมูล / อาการ:
+                                </div>
+                                <div style={{ fontSize: '0.84rem', color: 'var(--text)', lineHeight: 1.5 }}>
+                                  {tm.trigger_clue}
+                                </div>
+                              </div>
+
+                              <div style={{ color: '#34d399', fontWeight: 900, fontSize: '1.1rem', textAlign: 'center' }}>
+                                ➔
+                              </div>
+
+                              <div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', marginBottom: '0.2rem' }}>
+                                  <span style={{ fontSize: '0.84rem', fontWeight: 800, color: '#34d399' }}>
+                                    🎯 {tm.target_answer}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenCaseInTeacher(tm.question_id)}
+                                    className="btn btn-secondary btn-sm"
+                                    style={{ fontSize: '0.7rem', padding: '0.15rem 0.5rem' }}
+                                  >
+                                    เคส Q#{tm.question_id}
+                                  </button>
+                                </div>
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-sub)', lineHeight: 1.5 }}>
+                                  {tm.rule_summary}
+                                </div>
                               </div>
                             </div>
                           ))}
@@ -1877,6 +2837,261 @@ export default function ClinicalStudyHub({
                     </strong>
                     <div style={{ color: 'var(--text)', fontWeight: 600, lineHeight: 1.65 }}>
                       {matchingMasterclass.pearl}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ══════════════════════════════════════════════════════════════
+                MODE 4: MISTAKE CLINIC (PERSONALIZED DIAGNOSTIC & DRILLS)
+            ══════════════════════════════════════════════════════════════ */}
+            {hubMode === 'mistake_clinic' && (
+              <div style={{ maxWidth: '940px', margin: '0 auto' }}>
+                {!token ? (
+                  <div style={{
+                    padding: '3rem 2rem',
+                    borderRadius: '16px',
+                    textAlign: 'center',
+                    background: 'rgba(244, 63, 94, 0.06)',
+                    border: '1px solid rgba(244, 63, 94, 0.25)',
+                  }}>
+                    <div style={{ fontSize: '2.2rem', marginBottom: '0.75rem' }}>🩺</div>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.5rem' }}>
+                      คลินิกซ่อมจุดอ่อนส่วนบุคคล (Personal Mistake Clinic)
+                    </h3>
+                    <p style={{ color: 'var(--text-sub)', fontSize: '0.92rem', maxWidth: '520px', margin: '0 auto 1.25rem auto', lineHeight: 1.7 }}>
+                      เข้าสู่ระบบเพื่อดูวิเคราะห์ข้อที่ตอบผิด เทียบตัวเลือกที่เลือกผิดกับเฉลยทีละข้อ จัดอันดับหัวข้อ Must-Know ที่แม่นน้อยที่สุด และดึงโจทย์คู่ขนานหัวข้อเดียวกันมาซ่อมจุดอ่อนทันที
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setHubMode('exam_topics')}
+                      className="btn btn-primary"
+                      style={{ fontWeight: 700 }}
+                    >
+                      🎓 กลับไปเรียนตาม 83 หัวข้อข้อสอบ
+                    </button>
+                  </div>
+                ) : loadingClinic ? (
+                  <div style={{ padding: '4rem 1rem', textAlign: 'center', color: 'var(--text-sub)' }}>
+                    <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🩺</div>
+                    <div style={{ fontWeight: 700, fontSize: '1.05rem' }}>กำลังวิเคราะห์ประวัติการทำข้อสอบและจุดอ่อนของคุณ...</div>
+                  </div>
+                ) : !mistakeClinicData?.has_history || (mistakeClinicData?.wrong_cases?.length === 0 && mistakeClinicData?.due_review_count === 0) ? (
+                  <div style={{
+                    padding: '3rem 2rem',
+                    borderRadius: '16px',
+                    textAlign: 'center',
+                    background: 'rgba(16, 185, 129, 0.06)',
+                    border: '1px solid rgba(16, 185, 129, 0.25)',
+                  }}>
+                    <div style={{ fontSize: '2.2rem', marginBottom: '0.75rem' }}>✨</div>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.5rem' }}>
+                      ยังไม่มีประวัติข้อผิดพลาดค้างในคลินิก
+                    </h3>
+                    <p style={{ color: 'var(--text-sub)', fontSize: '0.9rem', maxWidth: '500px', margin: '0 auto 1.25rem auto', lineHeight: 1.7 }}>
+                      {mistakeClinicData?.total_answered > 0
+                        ? `คุณทำไปแล้ว ${mistakeClinicData.total_answered} ข้อ และยังไม่พบข้อผิดพลาดหรือข้อค้างทบทวน SM-2 เยี่ยมมาก!`
+                        : 'ลองทำข้อสอบ Mock Test หรือ Practice Mode จากหน้าหลักก่อน แล้วระบบจะดึงข้อที่พลาดและหัวข้ออ่อนที่สุดมาวางแผนซ่อมจุดอ่อนให้ที่นี่อัตโนมัติ'}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setHubMode('exam_topics')}
+                      className="btn btn-primary"
+                      style={{ fontWeight: 700 }}
+                    >
+                      🎓 เปิดบทเรียนจาก Textbook & ข้อสอบ
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    {/* KPI Summary & Instant Action Banner */}
+                    <div style={{
+                      padding: '1.35rem 1.5rem',
+                      borderRadius: '14px',
+                      background: 'linear-gradient(135deg, rgba(244, 63, 94, 0.10), rgba(99, 102, 241, 0.08))',
+                      border: '1px solid rgba(244, 63, 94, 0.3)'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+                        <div>
+                          <h2 style={{ fontSize: '1.28rem', fontWeight: 800, color: 'var(--text)', margin: '0 0 0.25rem 0' }}>
+                            🩺 คลินิกซ่อมจุดอ่อนเฉพาะตัวคุณ (Personal Mistake Clinic)
+                          </h2>
+                          <div style={{ fontSize: '0.84rem', color: 'var(--text-sub)' }}>
+                            วิเคราะห์จากข้อสอบที่เคยทำ {mistakeClinicData.total_answered} ข้อ • พบข้อผิดสะสม {mistakeClinicData.total_wrong_unique} ข้อ • ถึงรอบทบทวน SM-2 วันนี้ {mistakeClinicData.due_review_count} ข้อ
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          {mistakeClinicData.parallel_drill_questions?.length > 0 && onStartExam && (
+                            <button
+                              type="button"
+                              onClick={() => handleDrillQuestions(mistakeClinicData.parallel_drill_questions)}
+                              className="btn btn-primary btn-sm"
+                              style={{
+                                fontWeight: 800,
+                                background: 'linear-gradient(135deg, #f43f5e, #e11d48)',
+                                border: 'none',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px'
+                              }}
+                            >
+                              <Target size={15} /> ฝึกโจทย์คู่ขนานซ่อมจุดอ่อน ({mistakeClinicData.parallel_drill_questions.length} ข้อ)
+                            </button>
+                          )}
+                          {mistakeClinicData.due_review_count > 0 && onStartExam && (
+                            <button
+                              type="button"
+                              onClick={handleStartDueReview}
+                              className="btn btn-secondary btn-sm"
+                              style={{ fontWeight: 700, borderColor: 'rgba(245,158,11,0.45)', color: '#fbbf24' }}
+                            >
+                              ⏰ ทบทวนถึงรอบ SM-2 ({mistakeClinicData.due_review_count} ข้อ)
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Weakest Topics Ranking Grid */}
+                      {mistakeClinicData.weak_topics?.length > 0 && (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.75rem' }}>
+                          {mistakeClinicData.weak_topics.slice(0, 6).map(wt => (
+                            <div key={wt.topic_id} style={{
+                              background: 'rgba(15, 23, 42, 0.55)',
+                              border: '1px solid rgba(255,255,255,0.08)',
+                              borderRadius: '10px',
+                              padding: '0.8rem 0.9rem'
+                            }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem', gap: '6px' }}>
+                                <span style={{ fontSize: '0.68rem', fontWeight: 700, color: SPECIALTY_COLOR_MAP[wt.category] || '#fda4af' }}>
+                                  {wt.category}
+                                </span>
+                                <span style={{ fontSize: '0.74rem', fontWeight: 800, color: wt.accuracy_pct < 50 ? '#fb7185' : '#fbbf24' }}>
+                                  ถูก {wt.accuracy_pct}% ({wt.wrong_count}/{wt.total_attempts} พลาด)
+                                </span>
+                              </div>
+                              <div style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.45rem', lineHeight: 1.35 }}>
+                                {wt.title_th}
+                              </div>
+                              <div style={{ width: '100%', height: '5px', background: 'rgba(255,255,255,0.08)', borderRadius: '3px', overflow: 'hidden', marginBottom: '0.55rem' }}>
+                                <div style={{
+                                  height: '100%',
+                                  width: `${wt.accuracy_pct}%`,
+                                  background: wt.accuracy_pct < 50 ? '#f43f5e' : '#f59e0b'
+                                }} />
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedTopicId(wt.topic_id);
+                                  setHubMode('exam_topics');
+                                  setClassroomTab('cheat_sheet');
+                                }}
+                                style={{
+                                  fontSize: '0.72rem',
+                                  fontWeight: 700,
+                                  color: 'var(--primary-light)',
+                                  background: 'transparent',
+                                  border: 'none',
+                                  padding: 0,
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                📖 เปิดบทเรียน & Cheat Sheet หัวข้อนี้ ➔
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Head-to-Head Missed Cases Breakdown */}
+                    <div>
+                      <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.85rem' }}>
+                        🔍 วิเคราะห์ข้อที่เคยตอบพลาดทีละข้อ ({filteredClinicCases.length} ข้อ)
+                      </h3>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {filteredClinicCases.map(wc => (
+                          <div key={wc.question_id} style={{
+                            background: 'rgba(255,255,255,0.02)',
+                            border: '1px solid var(--border)',
+                            borderRadius: '12px',
+                            padding: '1.2rem'
+                          }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.55rem' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                                <span className="badge" style={{ fontSize: '0.72rem', fontWeight: 800 }}>Q#{wc.question_id}</span>
+                                <span style={{ fontSize: '0.76rem', fontWeight: 700, color: SPECIALTY_COLOR_MAP[wc.category] || 'var(--primary-light)' }}>
+                                  {wc.topic_title_th}
+                                </span>
+                                {wc.cognitive_level && (
+                                  <span style={{ fontSize: '0.7rem', padding: '0.1rem 0.45rem', borderRadius: '6px', background: 'rgba(255,255,255,0.06)', color: 'var(--text-sub)' }}>
+                                    ระดับ {wc.cognitive_level}
+                                  </span>
+                                )}
+                              </div>
+                              {wc.topic_id && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedTopicId(wc.topic_id);
+                                    setHubMode('exam_topics');
+                                  }}
+                                  className="btn btn-secondary btn-sm"
+                                  style={{ fontSize: '0.72rem' }}
+                                >
+                                  🎓 เรียนหัวข้อนี้
+                                </button>
+                              )}
+                            </div>
+
+                            <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)', lineHeight: 1.55, marginBottom: '0.85rem' }}>
+                              {wc.question_preview}
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                              <div style={{
+                                padding: '0.75rem 0.9rem',
+                                borderRadius: '8px',
+                                background: 'rgba(244, 63, 94, 0.09)',
+                                border: '1px solid rgba(244, 63, 94, 0.3)',
+                                fontSize: '0.83rem',
+                                lineHeight: 1.55
+                              }}>
+                                <strong style={{ color: '#fb7185', display: 'block', marginBottom: '0.2rem' }}>
+                                  ✗ คุณตอบ [{wc.selected_choice}] — เหตุผลที่พลาด:
+                                </strong>
+                                <span style={{ color: 'var(--text-sub)' }}>{wc.selected_choice_reason || 'ดูเหตุผลเต็มในโหมดทบทวนข้อสอบ'}</span>
+                              </div>
+                              <div style={{
+                                padding: '0.75rem 0.9rem',
+                                borderRadius: '8px',
+                                background: 'rgba(16, 185, 129, 0.09)',
+                                border: '1px solid rgba(16, 185, 129, 0.3)',
+                                fontSize: '0.83rem',
+                                lineHeight: 1.55
+                              }}>
+                                <strong style={{ color: '#34d399', display: 'block', marginBottom: '0.2rem' }}>
+                                  ✓ เฉลย [{wc.correct_answer}] — เหตุผลที่ถูก:
+                                </strong>
+                                <span style={{ color: 'var(--text-sub)' }}>{wc.correct_choice_reason || wc.key_takeaway}</span>
+                              </div>
+                            </div>
+
+                            {wc.common_pitfall && (
+                              <div style={{ fontSize: '0.8rem', color: 'var(--warning)', marginBottom: '0.3rem', lineHeight: 1.5 }}>
+                                ⚠️ กับดักที่ต้องระวัง: <span style={{ color: 'var(--text-sub)' }}>{wc.common_pitfall}</span>
+                              </div>
+                            )}
+                            {wc.reference && (
+                              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                                📚 {wc.reference}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}

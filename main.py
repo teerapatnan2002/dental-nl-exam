@@ -975,6 +975,8 @@ def get_exam_analysis(
         if is_correct:
             category_stats[cat]["correct"] += 1
 
+        from learning import get_topic_meta
+        t_meta = get_topic_meta(q.must_know_topic or "", q.category or "") if q.must_know_topic else None
         results.append(
             {
                 "question_id": qid,
@@ -984,6 +986,10 @@ def get_exam_analysis(
                 "has_cached_answer": has_answer,
                 "category": q.category,
                 "task": q.task,
+                "cognitive_level": q.cognitive_level,
+                "must_know_topic": q.must_know_topic,
+                "must_know_topic_th": t_meta["title_th"] if t_meta else None,
+                "source_exam": q.source_exam,
                 "explanation": q.explanation,
             }
         )

@@ -53,7 +53,7 @@ function getStemLabel(stemText, pageIndex) {
   return `STEM ${pageIndex + 1}`;
 }
 
-export default function ExamSession({ questions, mode = 'exam', config = {}, startTime, onFinish }) {
+export default function ExamSession({ questions, mode = 'exam', config = {}, startTime, onFinish, onPracticeTopic = null }) {
   const { token, authFetch, user } = useAuth();
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [focusedQuestionIndex, setFocusedQuestionIndex] = useState(0);
@@ -740,8 +740,10 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
               <ExplanationBox 
                 explanation={expl.explanation} 
                 correctAnswer={expl.correct_answer} 
+                userAnswer={answers[q.id]}
                 isCached={expl.cached} 
                 question={q}
+                onPracticeTopic={onPracticeTopic}
               />
             )}
           </div>

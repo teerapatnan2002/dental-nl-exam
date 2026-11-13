@@ -32,6 +32,8 @@ def _build_async_client() -> AsyncOpenAI:
 
 async def call_openrouter_chat(system_prompt: str, user_prompt: str) -> str:
     """Non-blocking chat call via AsyncOpenAI (does not stall the event loop)."""
+    if not OPENROUTER_API_KEY:
+        return "ระบบติวเตอร์ AI สดต้องตั้งค่า `OPENROUTER_API_KEY` บนเซิร์ฟเวอร์ก่อนครับ แต่คุณยังสามารถศึกษาคำอธิบายเชิงลึกจากคลัง Textbook & Evidence และเปรียบเทียบตัวเลือกด้านบนได้ครบทุกข้อครับ"
     client = _build_async_client()
     try:
         response = await client.chat.completions.create(
@@ -63,8 +65,14 @@ async def chat_with_tutor(
     if not question:
         raise HTTPException(status_code=404, detail="Question not found")
 
-    # Construct context
-    context = f"หมวดหมู่: {question.category}\n"
+    # Construct rich pedagogical context
+    context = f"หมวดวิชา: {question.category}\n"
+    if question.task:
+        context += f"บทบาทหน้าที่ (Task): {question.task}\n"
+    if question.cognitive_level:
+        context += f"ระดับพุทธิพิสัย: {question.cognitive_level}\n"
+    if question.must_know_topic:
+        context += f"หัวข้อ Must-Know: {question.must_know_topic}\n"
     if question.stem:
         context += f"โจทย์หลัก: {question.stem}\n"
     context += f"คำถาม: {question.proposition or question.question_text}\n"
@@ -73,7 +81,7 @@ async def chat_with_tutor(
         context += f"{c.label}. {c.text}\n"
     context += f"เฉลยที่ถูกต้อง: {question.correct_answer}\n"
     if question.explanation:
-        context += f"คำอธิบายเดิม: {question.explanation}\n"
+        context += f"คำอธิบายและหลักฐานทางวิชาการเดิม: {question.explanation}\n"
 
     # Read the Professor Prompt from Obsidian
     prompt_path = os.path.join("Obsidian_NL_Exam", "AI_Tutor_Prompt.md")
@@ -85,11 +93,11 @@ async def chat_with_tutor(
 
     system_prompt = f"""{professor_prompt}
 
-คุณกำลังให้คำปรึกษานักศึกษาเกี่ยวกับข้อสอบข้อนี้:
+คุณกำลังให้คำปรึกษานักศึกษาเกี่ยวกับข้อสอบข้อนี้ (อ้างอิงตามมาตรฐานทันตแพทย์ไทย ทันตแพทยสภา และสมาคมวิชาชีพเฉพาะทางด้วยเมื่อเกี่ยวข้อง):
 ---
 {context}
 ---
-จงตอบคำถามของนักศึกษาอย่างกระชับ ชัดเจน เป็นกันเอง และอ้างอิงตามหลักวิชาการ
+จงตอบคำถามของนักศึกษาอย่างกระชับ ชัดเจน เป็นระบบเข้าใจง่าย แบบอาจารย์สอนศิษย์ พร้อมช่วยเทียบจุดตัดความจำสำหรับเข้าห้องสอบ
 """
 
     reply = await call_openrouter_chat(system_prompt, req.message)

@@ -103,7 +103,7 @@ function CategoryBar({ cat, correct, total, hasAnswer, percentage }) {
   );
 }
 
-export default function ExamResult({ questions, userAnswers, startTime, analysisData, onHome }) {
+export default function ExamResult({ questions, userAnswers, startTime, analysisData, onHome, onPracticeTopic = null }) {
   const [expandedItems, setExpandedItems] = useState({});
   const [showTutorItems, setShowTutorItems] = useState({});
   const [reportingQuestionId, setReportingQuestionId] = useState(null);
@@ -515,8 +515,10 @@ export default function ExamResult({ questions, userAnswers, startTime, analysis
                       <ExplanationBox 
                         explanation={explanation} 
                         correctAnswer={correctAnswer} 
+                        userAnswer={userAnswer}
                         isCached={true} 
-                        question={q}
+                        question={{ ...q, ...(analysisQ || {}) }}
+                        onPracticeTopic={onPracticeTopic}
                       />
                     )}
 
@@ -557,7 +559,7 @@ export default function ExamResult({ questions, userAnswers, startTime, analysis
 
                     {q.id && showTutorItems[q.id] && (
                       <div onClick={e => e.stopPropagation()}>
-                        <TutorChat questionId={q.id} />
+                        <TutorChat questionId={q.id} userAnswer={userAnswer} correctAnswer={correctAnswer} />
                       </div>
                     )}
 

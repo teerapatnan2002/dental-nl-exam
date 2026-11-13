@@ -1,10 +1,12 @@
 import json
 import re
+import time
 from typing import Dict, List, Optional, Any
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session, selectinload
 
 import models
+from auth import get_current_user
 from database import get_db
 
 router = APIRouter(prefix="/api/learning", tags=["learning"])
@@ -703,6 +705,107 @@ def _parse_explanation(exp_raw: Optional[str]) -> Dict[str, Any]:
         return {"core_principle": str(exp_raw)}
 
 
+_NUM_RULE_REGEX = re.compile(
+    r"(?:มาตรา\s*\d+(?:\s*/\s*\d+)?|พ\.ร\.บ\.[^,\.\n]{2,35}พ\.ศ\.\s*\d{4}|"
+    r"[<>≤≥≈]?\s*\d+(?:[.,–\-]\d+)?(?:/\d+)?\s*(?:mg/kg|mg/dL|mg/L|mg|g|mL|mmHg|mm|cm|µm|ppm|%|°|องศา|สัปดาห์|วัน|เดือน|ปี|ขวบ|นาที|ชั่วโมง|ชม\.|บาท|ซี่|คู่สบ|เท่า|INR|RDT|Stage\s*[I|V]+|Grade\s*[A-C]|Class\s*[I|V]+))",
+    re.IGNORECASE,
+)
+
+_EN_TERM_REGEX = re.compile(r"\b([A-Z][A-Za-z0-9\-/]{2,}(?:\s+[A-Z]?[a-z0-9\-/]{2,}){0,2})\b")
+
+
+def _extract_numeric_rules(texts: List[str]) -> List[Dict[str, Any]]:
+    """Extract clinical thresholds, doses, durations, and legal sections with their surrounding rule sentence."""
+    extracted: List[Dict[str, Any]] = []
+    seen_vals = set()
+    for q_id, txt, ref in texts:
+        if not txt:
+            continue
+        # Split into crisp sentences / clauses
+        sentences = [s.strip() for s in re.split(r"(?<=[.\n])\s+|\n+", txt) if len(s.strip()) > 15]
+        for sent in sentences:
+            matches = _NUM_RULE_REGEX.findall(sent)
+            if not matches:
+                continue
+            highlight_val = " | ".join(dict.fromkeys(m.strip() for m in matches[:3]))
+            norm_key = highlight_val.lower() + "::" + re.sub(r"\s+", " ", sent[:50]).lower()
+            if norm_key in seen_vals:
+                continue
+            seen_vals.add(norm_key)
+            extracted.append({
+                "question_id": q_id,
+                "highlight_value": highlight_val,
+                "context": sent[:260] + ("..." if len(sent) > 260 else ""),
+                "reference": ref,
+            })
+            if len(extracted) >= 35:
+                return extracted
+    return extracted
+
+
+def _build_cloze_flashcard(
+    q_id: int,
+    card_type: str,
+    source_text: str,
+    question_prompt: str,
+    correct_choice_text: str,
+    ref_str: str,
+    cog: str,
+    task_name: str,
+) -> Optional[Dict[str, Any]]:
+    """Build an interactive Active Recall Flashcard (Cloze deletion when high-yield terms exist, else Q->Rule)."""
+    clean_text = re.sub(r"\s+", " ", (source_text or "")).strip()
+    if len(clean_text) < 20:
+        return None
+
+    # Take first 1-2 crisp sentences so card is scannable
+    short_text = clean_text if len(clean_text) <= 260 else (clean_text[:257] + "...")
+    masked_front = short_text
+    hidden_answers: List[str] = []
+
+    # 1) Try numeric / legal article cloze first (highest retention value for exams)
+    num_matches = [m.strip() for m in _NUM_RULE_REGEX.findall(short_text)]
+    if num_matches:
+        for nm in num_matches[:2]:
+            if nm in masked_front and len(nm) >= 2:
+                masked_front = masked_front.replace(nm, "【 ____?____ 】", 1)
+                hidden_answers.append(nm)
+
+    # 2) If no numeric rule, try key clinical English terminologies
+    if not hidden_answers:
+        skip_words = {"The", "And", "For", "With", "Type", "Stage", "Class", "Grade", "High", "Low", "Normal", "NL", "NL2"}
+        en_matches = [m.strip() for m in _EN_TERM_REGEX.findall(short_text) if m.strip() not in skip_words and len(m.strip()) >= 4]
+        if en_matches:
+            # Prefer longest technical term
+            en_matches.sort(key=len, reverse=True)
+            for term in en_matches[:2]:
+                if term in masked_front:
+                    masked_front = masked_front.replace(term, "【 ____?____ 】", 1)
+                    hidden_answers.append(term)
+
+    mode = "cloze" if hidden_answers else "q_to_rule"
+    if mode == "q_to_rule":
+        q_clean = re.sub(r"\s+", " ", (question_prompt or "")).strip()
+        if not q_clean or len(q_clean) < 10:
+            return None
+        masked_front = f"❓ โจทย์ถามว่า: \"{q_clean[:180]}{'...' if len(q_clean) > 180 else ''}\"\n\n💡 จงนึกหลักการตัดสินและคำตอบก่อนเปิดดู!"
+        hidden_answers = [correct_choice_text] if correct_choice_text else []
+
+    return {
+        "id": f"fc-{card_type}-{q_id}",
+        "question_id": q_id,
+        "card_type": card_type,
+        "mode": mode,
+        "cognitive_level": cog,
+        "task": task_name,
+        "front": masked_front,
+        "hidden_terms": hidden_answers,
+        "back": short_text,
+        "correct_choice_text": correct_choice_text,
+        "reference": ref_str,
+    }
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # 3. API ENDPOINTS: EXAM-DRIVEN LEARNING & TEXTBOOK PEDAGOGY
 # ─────────────────────────────────────────────────────────────────────────────
@@ -848,10 +951,15 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
     pitfalls_list: List[Dict[str, Any]] = []
     differential_items: List[Dict[str, Any]] = []
     guided_cases: List[Dict[str, Any]] = []
+    flashcards: List[Dict[str, Any]] = []
+    triggers_map: List[Dict[str, Any]] = []
+    number_sources: List[Any] = []
 
     seen_principles = set()
     seen_pearls = set()
     seen_pitfalls = set()
+    seen_flashcards = set()
+    seen_triggers = set()
 
     # Order questions pedagogically: R (Recall/Foundation) -> A (Application) -> P (Problem Solving)
     cog_order = {"R": 1, "A": 2, "P": 3}
@@ -875,6 +983,16 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
         choice_exps = exp.get("choice_explanations") or {}
 
         tb_info = classify_textbook(ref_str, q.category or category)
+        actual_correct = (exp.get("correct_answer") or q.correct_answer or "").strip()
+        choice_text_map = {c.label.strip().upper(): c.text for c in q.choices}
+        correct_choice_text = choice_text_map.get(actual_correct.upper(), "")
+
+        if key_takeaway:
+            number_sources.append((q.id, key_takeaway, ref_str or tb_info["title"]))
+        if clinical_pearl:
+            number_sources.append((q.id, clinical_pearl, ref_str or tb_info["title"]))
+        if core_principle:
+            number_sources.append((q.id, core_principle, ref_str or tb_info["title"]))
 
         # 1. Track textbook & guideline citations
         cite_key = ref_str if ref_str else tb_info["title"]
@@ -915,6 +1033,39 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
                 "question_preview": q_display[:180] + ("..." if len(q_display) > 180 else ""),
             })
 
+        # 2b. Build Active Recall Cloze Flashcards & 1-Line Exam Triggers
+        if len(flashcards) < 40 and key_takeaway:
+            norm_fc = re.sub(r"\s+", " ", key_takeaway[:75]).lower()
+            if norm_fc not in seen_flashcards:
+                seen_flashcards.add(norm_fc)
+                card = _build_cloze_flashcard(
+                    q_id=q.id,
+                    card_type="takeaway",
+                    source_text=key_takeaway,
+                    question_prompt=q_display,
+                    correct_choice_text=correct_choice_text,
+                    ref_str=ref_str or tb_info["title"],
+                    cog=cog,
+                    task_name=task_name,
+                )
+                if card:
+                    flashcards.append(card)
+
+        if len(triggers_map) < 30 and q_display and (correct_choice_text or key_takeaway):
+            norm_tr = re.sub(r"\s+", " ", (key_takeaway or correct_choice_text)[:60]).lower()
+            if norm_tr not in seen_triggers:
+                seen_triggers.add(norm_tr)
+                clue_stem = (q.stem or "").strip()
+                cue = q_display if len(q_display) >= 20 else clue_stem
+                triggers_map.append({
+                    "question_id": q.id,
+                    "cognitive_level": cog,
+                    "trigger_clue": cue[:160] + ("..." if len(cue) > 160 else ""),
+                    "target_answer": correct_choice_text or actual_correct,
+                    "rule_summary": key_takeaway,
+                    "reference": ref_str or tb_info["title"],
+                })
+
         # 3. Collect unique High-Yield Clinical Pearls & Exam Pitfalls
         if clinical_pearl:
             norm_p = re.sub(r"\s+", " ", clinical_pearl[:90]).lower()
@@ -940,10 +1091,9 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
 
         # 4. Build Differential Diagnosis & Choice Comparison items
         choices_serialized = [{"label": c.label, "text": c.text} for c in q.choices]
+        actual_ans = actual_correct.upper()
         if choice_exps and isinstance(choice_exps, dict) and len(differential_items) < 30:
             breakdown = []
-            actual_ans = (exp.get("correct_answer") or q.correct_answer or "").strip().upper()
-            choice_text_map = {c.label.strip().upper(): c.text for c in q.choices}
             for lbl, expl_text in choice_exps.items():
                 lbl_clean = str(lbl).strip().upper()
                 breakdown.append({
@@ -965,15 +1115,17 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
                 })
 
         # 5. Build 4-Step Interactive Case-Based Teaching Lesson
-        actual_correct = (exp.get("correct_answer") or q.correct_answer or "").strip()
+        topic_meta = get_topic_meta(q.must_know_topic or "", q.category or category)
         guided_cases.append({
             "id": q.id,
             "category": q.category,
             "task": task_name,
             "must_know_topic": q.must_know_topic,
+            "topic_title_th": topic_meta["title_th"],
             "cognitive_level": cog,
             "source_exam": q.source_exam,
             "image_path": q.image_path,
+            "correct_choice_text": correct_choice_text,
             # Step 1: Teach from Textbook & Evidence FIRST
             "step1_textbook_lesson": {
                 "textbook_title": tb_info["title"],
@@ -993,6 +1145,7 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
             # Step 4: Evidence-Based Differential Resolution
             "step3_evidence_resolution": {
                 "correct_answer": actual_correct,
+                "correct_choice_text": correct_choice_text,
                 "key_takeaway": key_takeaway,
                 "common_pitfall": common_pitfall,
                 "choice_explanations": choice_exps if isinstance(choice_exps, dict) else {},
@@ -1060,6 +1213,8 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
                 "thai_protocol_highlights": tb.get("thai_protocol_highlights", []),
             })
 
+    must_know_numbers = _extract_numeric_rules(number_sources)
+
     return {
         "module_info": {
             "id": module_id,
@@ -1077,6 +1232,146 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
         "pearls": pearls_list,
         "pitfalls": pitfalls_list,
         "guided_cases": guided_cases,
+        "flashcards": flashcards,
+        "high_yield_sheet": {
+            "must_know_numbers": must_know_numbers,
+            "triggers_map": triggers_map,
+        },
+    }
+
+
+@router.get("/mistake-clinic")
+def get_mistake_clinic(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Analyze the logged-in student's past wrong answers and due spaced-repetition reviews to prescribe targeted lessons and parallel twin drills."""
+    user_answers = (
+        db.query(models.UserAnswer, models.Question)
+        .join(models.ExamSession, models.ExamSession.id == models.UserAnswer.session_id)
+        .join(models.Question, models.Question.id == models.UserAnswer.question_id)
+        .filter(models.ExamSession.user_id == current_user.id)
+        .order_by(models.UserAnswer.id.desc())
+        .all()
+    )
+
+    topic_stats: Dict[str, Dict[str, Any]] = {}
+    wrong_cases: List[Dict[str, Any]] = []
+    seen_wrong_q = set()
+    answered_q_ids = set()
+
+    for ua, q in user_answers:
+        answered_q_ids.add(q.id)
+        tid = q.must_know_topic or "General-Clinical-Concept"
+        meta = get_topic_meta(tid, q.category or "")
+        if tid not in topic_stats:
+            topic_stats[tid] = {
+                "topic_id": tid,
+                "title_th": meta["title_th"],
+                "title_en": meta["title_en"],
+                "category": q.category or "อื่นๆ",
+                "total_attempts": 0,
+                "wrong_count": 0,
+                "correct_count": 0,
+                "wrong_question_ids": [],
+            }
+        ts = topic_stats[tid]
+        ts["total_attempts"] += 1
+        if ua.is_correct == 1:
+            ts["correct_count"] += 1
+        else:
+            ts["wrong_count"] += 1
+            if q.id not in seen_wrong_q:
+                seen_wrong_q.add(q.id)
+                ts["wrong_question_ids"].append(q.id)
+                exp = _parse_explanation(q.explanation)
+                ref_str = (exp.get("reference") or exp.get("legal_citation") or "").strip()
+                tb_info = classify_textbook(ref_str, q.category or "")
+                choice_exps = exp.get("choice_explanations") or {}
+                user_choice = (ua.selected_choice or "").strip()
+                correct_ans = (exp.get("correct_answer") or q.correct_answer or "").strip()
+                wrong_cases.append({
+                    "question_id": q.id,
+                    "topic_id": tid,
+                    "topic_title_th": meta["title_th"],
+                    "category": q.category,
+                    "task": q.task,
+                    "cognitive_level": q.cognitive_level or "A",
+                    "source_exam": q.source_exam,
+                    "question_preview": (q.proposition or q.question_text or q.stem or "")[:180],
+                    "selected_choice": user_choice or "ไม่ตอบ",
+                    "correct_answer": correct_ans,
+                    "key_takeaway": (exp.get("key_takeaway") or exp.get("why_correct") or "").strip(),
+                    "common_pitfall": (exp.get("common_pitfall") or "").strip(),
+                    "selected_choice_reason": (
+                        "ข้ามข้อ / ไม่ได้เลือกคำตอบในรอบนั้น"
+                        if not user_choice
+                        else str(choice_exps.get(user_choice, ""))
+                    ),
+                    "correct_choice_reason": str(choice_exps.get(correct_ans, "")),
+                    "reference": ref_str or tb_info["title"],
+                })
+
+    weak_topics = []
+    for tid, ts in topic_stats.items():
+        if ts["wrong_count"] > 0:
+            acc = round((ts["correct_count"] / ts["total_attempts"]) * 100) if ts["total_attempts"] > 0 else 0
+            weak_topics.append({
+                **ts,
+                "accuracy_pct": acc,
+            })
+
+    weak_topics.sort(key=lambda x: (-x["wrong_count"], x["accuracy_pct"]))
+
+    # Find parallel twin questions in top 3 weak topics that the user hasn't mastered yet
+    parallel_questions = []
+    top_weak_ids = [t["topic_id"] for t in weak_topics[:3]]
+    if top_weak_ids:
+        candidates = (
+            db.query(models.Question)
+            .options(selectinload(models.Question.choices))
+            .filter(models.Question.must_know_topic.in_(top_weak_ids))
+            .limit(40)
+            .all()
+        )
+        # Prefer unseen questions first, then previously missed
+        candidates.sort(key=lambda q: (0 if q.id not in answered_q_ids else (1 if q.id in seen_wrong_q else 2), q.id))
+        for pq in candidates[:12]:
+            parallel_questions.append({
+                "id": pq.id,
+                "question_text": pq.question_text,
+                "stem": pq.stem,
+                "proposition": pq.proposition,
+                "category": pq.category,
+                "task": pq.task,
+                "correct_answer": pq.correct_answer,
+                "explanation": pq.explanation,
+                "source_exam": pq.source_exam,
+                "image_path": pq.image_path,
+                "cognitive_level": pq.cognitive_level,
+                "must_know_topic": pq.must_know_topic,
+                "choices": [{"label": c.label, "text": c.text} for c in pq.choices],
+            })
+
+    # Count Spaced Repetition due questions
+    now_ts = int(time.time())
+    due_count = (
+        db.query(models.UserQuestionStat)
+        .filter(
+            models.UserQuestionStat.user_id == current_user.id,
+            models.UserQuestionStat.next_review_date <= now_ts,
+        )
+        .count()
+    )
+
+    return {
+        "has_history": len(user_answers) > 0,
+        "total_answered": len(user_answers),
+        "total_wrong_unique": len(wrong_cases),
+        "due_review_count": due_count,
+        "weak_topics": weak_topics[:15],
+        "wrong_cases": wrong_cases[:30],
+        "parallel_drill_questions": parallel_questions,
     }
 
 

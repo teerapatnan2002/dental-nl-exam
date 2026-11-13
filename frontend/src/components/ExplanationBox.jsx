@@ -1,7 +1,88 @@
-import React, { useState } from 'react';
-import { Lightbulb, AlertTriangle, BookOpen, Sparkles } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import {
+  Lightbulb, AlertTriangle, BookOpen, Sparkles,
+  CheckCircle2, XCircle, Eye, EyeOff, Bot, Target, Layers
+} from 'lucide-react';
 import { findGuideForQuestion } from '../data/clinicalStudyGuides';
 import ClinicalStudyHub from './ClinicalStudyHub';
+import TutorChat from './TutorChat';
+
+const EXTRACT_NUMBER_REGEX = /(?:มาตรา\s*\d+(?:\s*\/\s*\d+)?|พ\.ร\.บ\.[^,.\n]{2,30}พ\.ศ\.\s*\d{4}|[<>≤≥≈]?\s*\d+(?:[.,–-]\d+)?(?:\/\d+)?\s*(?:mg\/kg|mg\/dL|mg\/L|mg|g|mL|mmHg|mm|cm|µm|ppm|%|°|องศา|สัปดาห์|วัน|เดือน|ปี|ขวบ|นาที|ชั่วโมง|ชม\.|บาท|ซี่|คู่สบ|เท่า|INR|RDT|Stage\s*[IV]+|Grade\s*[A-C]|Class\s*[IV]+))/gi;
+
+function extractHighYieldTokens(texts) {
+  const seen = new Set();
+  const tokens = [];
+  for (const txt of texts) {
+    if (!txt) continue;
+    const matches = txt.match(EXTRACT_NUMBER_REGEX) || [];
+    for (const m of matches) {
+      const clean = m.trim();
+      const key = clean.toLowerCase();
+      if (clean.length >= 2 && !seen.has(key)) {
+        seen.add(key);
+        tokens.push(clean);
+      }
+      if (tokens.length >= 8) return tokens;
+    }
+  }
+  return tokens;
+}
+
+function splitReadableSteps(text) {
+  if (!text) return [];
+  const trimmed = String(text).trim();
+  if (trimmed.length < 220 && !trimmed.includes('\n')) return [trimmed];
+  // Split by newlines or numbered steps or Thai/English sentence breaks when long
+  const byLine = trimmed.split(/\n+/).map(s => s.trim()).filter(Boolean);
+  if (byLine.length >= 2) return byLine;
+  // Split long single paragraph every ~2-3 sentences or on numbered list tokens (1) (2)
+  const numberedSplit = trimmed.split(/(?=(?:\(\d+\)|\b\d\.\s+[ก-ฮA-Z]))/).map(s => s.trim()).filter(Boolean);
+  if (numberedSplit.length >= 2) return numberedSplit;
+  const sentences = trimmed.split(/(?<=\.)\s+(?=[A-Zก-ฮ0-9])/).map(s => s.trim()).filter(Boolean);
+  if (sentences.length <= 2) return [trimmed];
+  const chunks = [];
+  for (let i = 0; i < sentences.length; i += 2) {
+    chunks.push(sentences.slice(i, i + 2).join(' '));
+  }
+  return chunks;
+}
+
+function maskKeyTerms(text) {
+  if (!text) return '';
+  let out = String(text);
+  const nums = out.match(EXTRACT_NUMBER_REGEX) || [];
+  for (const n of nums.slice(0, 3)) {
+    out = out.replace(n.trim(), '【 ____?____ 】');
+  }
+  if (out === text) {
+    // Mask English technical terms >= 5 chars
+    const enTerms = out.match(/\b[A-Z][A-Za-z0-9\-\/]{4,}(?:\s+[A-Za-z0-9\-\/]{3,}){0,2}\b/g) || [];
+    for (const t of enTerms.slice(0, 2)) {
+      out = out.replace(t, '【 ____?____ 】');
+    }
+  }
+  if (out === text) {
+    // Fallback mask trailing conclusion clause
+    const half = Math.floor(out.length * 0.55);
+    return out.slice(0, half) + ' 【 ... คลิก "เฉลยคำสำคัญ" เพื่อดูส่วนที่เหลือ ... 】';
+  }
+  return out;
+}
+
+function normalizeCogBadge(raw) {
+  if (!raw) return null;
+  const val = String(raw).trim().toUpperCase();
+  if (val === 'P' || val.includes('PROBLEM')) {
+    return { code: 'P', label: 'P: วิเคราะห์แก้ปัญหา (Problem Solving)', bg: 'rgba(239, 68, 68, 0.15)', color: '#f87171', border: 'rgba(239, 68, 68, 0.3)' };
+  }
+  if (val === 'A' || val.includes('APP')) {
+    return { code: 'A', label: 'A: ประยุกต์คลินิก (Application)', bg: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', border: 'rgba(59, 130, 246, 0.3)' };
+  }
+  if (val === 'R' || val.includes('RECALL')) {
+    return { code: 'R', label: 'R: ความจำความเข้าใจ (Recall)', bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.3)' };
+  }
+  return { code: raw, label: `ระดับ ${raw}`, bg: 'rgba(99, 102, 241, 0.15)', color: 'var(--primary-light)', border: 'rgba(99, 102, 241, 0.3)' };
+}
 
 const THAI_ASSOCIATION_BY_CATEGORY = {
   'วิทยาเอ็นโดดอนต์': {
@@ -50,8 +131,18 @@ const THAI_ASSOCIATION_BY_CATEGORY = {
   }
 };
 
-export default function ExplanationBox({ explanation, correctAnswer, isCached = false, question = null }) {
+export default function ExplanationBox({
+  explanation,
+  correctAnswer,
+  userAnswer = null,
+  isCached = false,
+  question = null,
+  onPracticeTopic = null,
+}) {
   const [studyModalGuideId, setStudyModalGuideId] = useState(null);
+  const [selfTestMask, setSelfTestMask] = useState(false);
+  const [showInlineTutor, setShowInlineTutor] = useState(false);
+  const [showAllChoices, setShowAllChoices] = useState(true);
 
   if (!explanation) return null;
 
@@ -114,6 +205,7 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
           <ClinicalStudyHub
             isModal={true}
             initialTopicId={studyModalGuideId}
+            onStartExam={onPracticeTopic}
             onClose={() => setStudyModalGuideId(null)}
           />
         )}
@@ -128,47 +220,106 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
   const common_pitfall = parsed.common_pitfall;
   const future_prediction = parsed.future_prediction || parsed.clinical_pearl;
 
-  const cognitive_level = parsed.cognitive_level;
-  const tos_code = parsed.tos_code;
+  const rawCog = question?.cognitive_level || parsed.cognitive_level;
+  const cogBadge = normalizeCogBadge(rawCog);
+  const tos_code = parsed.tos_code || question?.must_know_topic || parsed.must_know_topic;
 
-  const actualCorrect = parsed.correct_answer || correctAnswer;
+  const actualCorrect = String(parsed.correct_answer || correctAnswer || '').trim();
+  const userAnsClean = userAnswer ? String(userAnswer).trim() : null;
+  const isUserCorrect = Boolean(userAnsClean && actualCorrect && userAnsClean.toUpperCase() === actualCorrect.toUpperCase());
+  const hasUserWrong = Boolean(userAnsClean && actualCorrect && !isUserCorrect);
+
   const qCategory = question?.category || parsed?.category || matchingGuide?.category || '';
   const thaiRefInfo = THAI_ASSOCIATION_BY_CATEGORY[qCategory] || null;
+
+  // Map choices label -> choice text for clear contextual breakdown
+  const choiceTextMap = useMemo(() => {
+    const map = {};
+    if (question?.choices && Array.isArray(question.choices)) {
+      for (const c of question.choices) {
+        if (c?.label) {
+          map[String(c.label).trim().toUpperCase()] = c.text || '';
+        }
+      }
+    }
+    return map;
+  }, [question]);
+
+  const highYieldTokens = useMemo(
+    () => extractHighYieldTokens([key_takeaway, core_principle, future_prediction]),
+    [key_takeaway, core_principle, future_prediction]
+  );
+
+  const coreSteps = useMemo(() => splitReadableSteps(core_principle), [core_principle]);
+
+  // Sort choices cleanly following question.choices order if available
+  const orderedChoiceEntries = useMemo(() => {
+    if (!choice_explanations || typeof choice_explanations !== 'object') return [];
+    const entries = Object.entries(choice_explanations);
+    if (question?.choices && question.choices.length > 0) {
+      const orderIdx = {};
+      question.choices.forEach((c, idx) => {
+        orderIdx[String(c.label).trim().toUpperCase()] = idx;
+      });
+      entries.sort(([a], [b]) => {
+        const ia = orderIdx[String(a).trim().toUpperCase()] ?? 99;
+        const ib = orderIdx[String(b).trim().toUpperCase()] ?? 99;
+        return ia - ib;
+      });
+    }
+    return entries;
+  }, [choice_explanations, question]);
+
+  const userWrongExplanation = hasUserWrong && choice_explanations
+    ? (choice_explanations[userAnsClean] || choice_explanations[userAnsClean.toUpperCase()] || choice_explanations[userAnsClean.toLowerCase()] || '')
+    : '';
+  const correctExplanation = actualCorrect && choice_explanations
+    ? (choice_explanations[actualCorrect] || choice_explanations[actualCorrect.toUpperCase()] || choice_explanations[actualCorrect.toLowerCase()] || '')
+    : '';
 
   return (
     <div className="explanation-box" style={{ marginTop: '1.25rem' }}>
       
-      {/* ── Header: Correct Answer + Citations + Level + TOS + Deep Study Link ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>
+      {/* ── Header: Personalized Diagnosis + Badges + Deep Study Link ── */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.6rem', marginBottom: '1rem', paddingBottom: '0.85rem', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
           <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>เฉลยที่ถูกต้อง:</span>
-          <span style={{ color: 'var(--success)', fontWeight: 800, fontSize: '1.35rem' }}>
+          <span style={{ color: 'var(--success)', fontWeight: 800, fontSize: '1.3rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
             {actualCorrect}
+            {choiceTextMap[actualCorrect.toUpperCase()] && (
+              <span style={{ fontSize: '0.86rem', fontWeight: 600, color: 'var(--text)', marginLeft: '4px' }}>
+                ({choiceTextMap[actualCorrect.toUpperCase()].slice(0, 65)}{choiceTextMap[actualCorrect.toUpperCase()].length > 65 ? '...' : ''})
+              </span>
+            )}
           </span>
-          {isCached && <span className="badge badge-primary" style={{ fontSize: '0.72rem', padding: '0.15rem 0.5rem' }}>คลังข้อสอบ</span>}
-          {cognitive_level && (
+          {userAnsClean && (
+            <span style={{
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              padding: '0.18rem 0.6rem',
+              borderRadius: '12px',
+              background: isUserCorrect ? 'rgba(16, 185, 129, 0.16)' : 'rgba(244, 63, 94, 0.16)',
+              color: isUserCorrect ? 'var(--success)' : 'var(--danger)',
+              border: `1px solid ${isUserCorrect ? 'rgba(16, 185, 129, 0.35)' : 'rgba(244, 63, 94, 0.35)'}`,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}>
+              {isUserCorrect ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
+              {isUserCorrect ? 'คุณตอบถูกข้อนี้' : `คุณเลือกข้อ ${userAnsClean} (พลาด)`}
+            </span>
+          )}
+          {cogBadge && (
             <span style={{
               fontSize: '0.72rem',
               fontWeight: 700,
               padding: '0.15rem 0.55rem',
               borderRadius: '12px',
-              background: cognitive_level.toLowerCase().includes('problem')
-                ? 'rgba(239, 68, 68, 0.15)'
-                : cognitive_level.toLowerCase().includes('application')
-                ? 'rgba(59, 130, 246, 0.15)'
-                : 'rgba(16, 185, 129, 0.15)',
-              color: cognitive_level.toLowerCase().includes('problem')
-                ? '#f87171'
-                : cognitive_level.toLowerCase().includes('application')
-                ? '#60a5fa'
-                : '#34d399',
-              border: '1px solid ' + (cognitive_level.toLowerCase().includes('problem')
-                ? 'rgba(239, 68, 68, 0.3)'
-                : cognitive_level.toLowerCase().includes('application')
-                ? 'rgba(59, 130, 246, 0.3)'
-                : 'rgba(16, 185, 129, 0.3)')
+              background: cogBadge.bg,
+              color: cogBadge.color,
+              border: `1px solid ${cogBadge.border}`
             }}>
-              🎯 ระดับ {cognitive_level}
+              🎯 {cogBadge.label}
             </span>
           )}
           {tos_code && (
@@ -184,6 +335,7 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
               📋 {tos_code}
             </span>
           )}
+          {isCached && <span className="badge badge-primary" style={{ fontSize: '0.7rem', padding: '0.15rem 0.5rem' }}>คลังข้อสอบ</span>}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -212,30 +364,111 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
               <BookOpen size={13} /> 📖 เรียนหัวข้อนี้จาก Textbook & Evidence
             </button>
           )}
-
-          {legal_citation && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(124, 58, 237, 0.12)', border: '1px solid rgba(124, 58, 237, 0.3)', borderRadius: '20px', padding: '0.25rem 0.75rem', fontSize: '0.8rem', color: 'var(--primary-light)', fontWeight: 600 }}>
-              <BookOpen size={13} /> {legal_citation}
-            </div>
-          )}
         </div>
       </div>
 
-      {/* ── 1. Key Takeaway (สรุป 1 บรรทัดจำไปสอบ) ── */}
+      {/* ── 0. Head-to-Head Comparison when User Missed the Question ── */}
+      {hasUserWrong && (userWrongExplanation || correctExplanation) && (
+        <div style={{
+          marginBottom: '1rem',
+          padding: '0.9rem 1rem',
+          borderRadius: '10px',
+          background: 'rgba(244, 63, 94, 0.05)',
+          border: '1px solid rgba(244, 63, 94, 0.25)',
+        }}>
+          <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#fb7185', marginBottom: '0.65rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            ⚔️ เทียบชัดๆ ทำไมข้อที่คุณเลือกถึงพลาด & ทำไมเฉลยจึงถูก:
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
+            <div style={{
+              background: 'rgba(244, 63, 94, 0.09)',
+              border: '1px solid rgba(244, 63, 94, 0.28)',
+              borderLeft: '4px solid var(--danger)',
+              borderRadius: '8px',
+              padding: '0.75rem 0.9rem',
+              fontSize: '0.85rem'
+            }}>
+              <div style={{ fontWeight: 800, color: 'var(--danger)', marginBottom: '0.25rem' }}>
+                ✗ ตัวเลือกที่คุณตอบ ({userAnsClean}){choiceTextMap[userAnsClean.toUpperCase()] ? `: ${choiceTextMap[userAnsClean.toUpperCase()]}` : ''}
+              </div>
+              <div style={{ color: 'var(--text-sub)', lineHeight: 1.55 }}>
+                {userWrongExplanation || 'ไม่ตรงกับเกณฑ์วินิจฉัยหรือแนวทางการรักษาหลักของเคสนี้'}
+              </div>
+            </div>
+            <div style={{
+              background: 'rgba(16, 185, 129, 0.09)',
+              border: '1px solid rgba(16, 185, 129, 0.28)',
+              borderLeft: '4px solid var(--success)',
+              borderRadius: '8px',
+              padding: '0.75rem 0.9rem',
+              fontSize: '0.85rem'
+            }}>
+              <div style={{ fontWeight: 800, color: 'var(--success)', marginBottom: '0.25rem' }}>
+                ✓ คำตอบที่ถูกต้อง ({actualCorrect}){choiceTextMap[actualCorrect.toUpperCase()] ? `: ${choiceTextMap[actualCorrect.toUpperCase()]}` : ''}
+              </div>
+              <div style={{ color: 'var(--text)', lineHeight: 1.55 }}>
+                {correctExplanation || key_takeaway}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 1. Key Takeaway (with Active Recall Self-Test Masking) ── */}
       {key_takeaway && (
         <div style={{
           background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.12) 0%, rgba(124, 58, 237, 0.1) 100%)',
           borderLeft: '4px solid var(--accent)',
           borderRadius: '8px',
-          padding: '0.85rem 1rem',
+          padding: '0.9rem 1rem',
           marginBottom: '1rem',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent)', fontWeight: 700, fontSize: '0.88rem', marginBottom: '0.3rem' }}>
-            <span>📌</span> {parsed.why_correct && !parsed.key_takeaway ? 'เหตุผลที่ตอบข้อนี้ (Why Correct)' : 'Key Takeaway (สรุปหัวใจสำคัญ)'}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.4rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent)', fontWeight: 700, fontSize: '0.88rem' }}>
+              <span>📌</span> {parsed.why_correct && !parsed.key_takeaway ? 'เหตุผลที่ตอบข้อนี้ (Why Correct)' : 'Key Takeaway (หัวใจสำคัญจำไปสอบ)'}
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelfTestMask(m => !m)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontSize: '0.74rem',
+                fontWeight: 700,
+                padding: '0.2rem 0.65rem',
+                borderRadius: '14px',
+                background: selfTestMask ? 'var(--primary)' : 'rgba(255,255,255,0.06)',
+                color: selfTestMask ? '#fff' : 'var(--text-sub)',
+                border: '1px solid var(--border)',
+                cursor: 'pointer'
+              }}
+              title="ปิดคำสำคัญไว้ชั่วคราวเพื่อฝึกสมองทวนความจำแบบ Active Recall"
+            >
+              {selfTestMask ? <><Eye size={13} /> เฉลยคำสำคัญ</> : <><EyeOff size={13} /> ปิดคำสำคัญทดสอบจำ</>}
+            </button>
           </div>
-          <div style={{ color: 'var(--text)', fontSize: '0.92rem', fontWeight: 600, lineHeight: 1.6 }}>
-            {key_takeaway}
+          <div style={{ color: 'var(--text)', fontSize: '0.93rem', fontWeight: 600, lineHeight: 1.65 }}>
+            {selfTestMask ? maskKeyTerms(key_takeaway) : key_takeaway}
           </div>
+          {highYieldTokens.length > 0 && !selfTestMask && (
+            <div style={{ marginTop: '0.65rem', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.73rem', fontWeight: 700, color: 'var(--text-muted)' }}>🔢 ตัวเลข/เกณฑ์ต้องจำในข้อนี้:</span>
+              {highYieldTokens.map((tok, i) => (
+                <span key={i} style={{
+                  fontSize: '0.74rem',
+                  fontWeight: 700,
+                  padding: '0.12rem 0.5rem',
+                  borderRadius: '6px',
+                  background: 'rgba(6, 182, 212, 0.14)',
+                  border: '1px solid rgba(6, 182, 212, 0.3)',
+                  color: 'var(--accent)'
+                }}>
+                  {tok}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -258,46 +491,120 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
         </div>
       )}
 
-      {/* ── 3. Core Principle (หลักการและเหตุผล) ── */}
+      {/* ── 3. Core Principle (หลักการและกลไกแบบแบ่งขั้นอ่านง่าย) ── */}
       {core_principle && (
         <div style={{ marginBottom: '1.25rem' }}>
-          <h4 style={{ color: 'var(--primary-light)', marginBottom: '0.45rem', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.92rem' }}>
-            <Lightbulb size={16} /> {parsed.legal_citation && !parsed.reference ? 'หลักการและเหตุผลทางกฎหมาย' : 'หลักการและกลไกทางคลินิก (Core Mechanism & Principle)'}
+          <h4 style={{ color: 'var(--primary-light)', marginBottom: '0.55rem', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.92rem' }}>
+            <Lightbulb size={16} /> {parsed.legal_citation && !parsed.reference ? 'หลักการและเหตุผลทางกฎหมายทีละขั้น' : 'หลักการและกลไกทางคลินิกทีละขั้น (Stepwise Mechanism)'}
           </h4>
-          <div style={{ lineHeight: 1.7, whiteSpace: 'pre-wrap', color: 'var(--text-sub)', fontSize: '0.92rem' }}>
-            {core_principle}
-          </div>
+          {coreSteps.length > 1 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+              {coreSteps.map((stepTxt, sIdx) => (
+                <div key={sIdx} style={{
+                  display: 'flex',
+                  gap: '0.65rem',
+                  alignItems: 'flex-start',
+                  background: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                  borderRadius: '8px',
+                  padding: '0.6rem 0.85rem',
+                  lineHeight: 1.65,
+                  color: 'var(--text-sub)',
+                  fontSize: '0.9rem'
+                }}>
+                  <span style={{
+                    minWidth: '22px',
+                    height: '22px',
+                    borderRadius: '50%',
+                    background: 'rgba(124, 58, 237, 0.2)',
+                    color: 'var(--primary-light)',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginTop: '2px'
+                  }}>
+                    {sIdx + 1}
+                  </span>
+                  <div style={{ flex: 1, whiteSpace: 'pre-wrap' }}>{stepTxt}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ lineHeight: 1.7, whiteSpace: 'pre-wrap', color: 'var(--text-sub)', fontSize: '0.92rem' }}>
+              {core_principle}
+            </div>
+          )}
         </div>
       )}
 
-      {/* ── 4. Choice-by-Choice Breakdown (วิเคราะห์ตัวเลือกรายข้อ) ── */}
-      {choice_explanations && Object.keys(choice_explanations).length > 0 && (
+      {/* ── 4. Choice-by-Choice Breakdown (แสดงข้อความตัวเลือกจริงคู่กับเหตุผล) ── */}
+      {orderedChoiceEntries.length > 0 && (
         <div style={{ marginBottom: '1rem' }}>
-          <h4 style={{ color: 'var(--text)', marginBottom: '0.6rem', fontSize: '0.88rem', fontWeight: 700, letterSpacing: '0.02em' }}>
-            🎯 วิเคราะห์ตัวเลือกรายข้อ
-          </h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {Object.entries(choice_explanations).map(([label, text]) => {
-              const isCorrect = String(label).trim().toUpperCase() === String(actualCorrect).trim().toUpperCase();
-              return (
-                <div key={label} style={{
-                  background: isCorrect ? 'rgba(16, 185, 129, 0.08)' : 'rgba(255, 255, 255, 0.02)',
-                  border: isCorrect ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid var(--border)',
-                  borderLeft: isCorrect ? '4px solid var(--success)' : '4px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '8px',
-                  padding: '0.75rem 0.9rem',
-                  fontSize: '0.9rem',
-                }}>
-                  <strong style={{ color: isCorrect ? 'var(--success)' : 'var(--text-sub)', marginRight: '4px' }}>
-                    ตัวเลือก {label}:
-                  </strong>
-                  <span style={{ color: isCorrect ? 'var(--text)' : 'var(--text-muted)', lineHeight: 1.55 }}>
-                    {text}
-                  </span>
-                </div>
-              );
-            })}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.6rem' }}>
+            <h4 style={{ color: 'var(--text)', margin: 0, fontSize: '0.88rem', fontWeight: 700, letterSpacing: '0.02em' }}>
+              🎯 วิเคราะห์ตัวเลือกรายข้อ (เปรียบเทียบทุกตัวเลือก)
+            </h4>
+            <button
+              type="button"
+              onClick={() => setShowAllChoices(v => !v)}
+              style={{ background: 'none', border: 'none', color: 'var(--primary-light)', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer' }}
+            >
+              {showAllChoices ? 'ย่อลง' : `ดูครบทั้ง ${orderedChoiceEntries.length} ตัวเลือก`}
+            </button>
           </div>
+          {showAllChoices && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {orderedChoiceEntries.map(([label, text]) => {
+                const lblUp = String(label).trim().toUpperCase();
+                const isCorrect = lblUp === actualCorrect.toUpperCase();
+                const isUserPickedWrong = Boolean(userAnsClean && lblUp === userAnsClean.toUpperCase() && !isCorrect);
+                const cText = choiceTextMap[lblUp];
+                return (
+                  <div key={label} style={{
+                    background: isCorrect
+                      ? 'rgba(16, 185, 129, 0.09)'
+                      : isUserPickedWrong
+                      ? 'rgba(244, 63, 94, 0.08)'
+                      : 'rgba(255, 255, 255, 0.02)',
+                    border: isCorrect
+                      ? '1px solid rgba(16, 185, 129, 0.3)'
+                      : isUserPickedWrong
+                      ? '1px solid rgba(244, 63, 94, 0.3)'
+                      : '1px solid var(--border)',
+                    borderLeft: isCorrect
+                      ? '4px solid var(--success)'
+                      : isUserPickedWrong
+                      ? '4px solid var(--danger)'
+                      : '4px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '8px',
+                    padding: '0.75rem 0.9rem',
+                    fontSize: '0.89rem',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '0.2rem' }}>
+                      <strong style={{ color: isCorrect ? 'var(--success)' : isUserPickedWrong ? 'var(--danger)' : 'var(--text)' }}>
+                        ตัวเลือก {label}{cText ? `: ${cText}` : ''}
+                      </strong>
+                      {isCorrect && (
+                        <span style={{ fontSize: '0.68rem', fontWeight: 800, padding: '0.05rem 0.45rem', borderRadius: '6px', background: 'rgba(16,185,129,0.2)', color: 'var(--success)' }}>
+                          คำตอบที่ถูก
+                        </span>
+                      )}
+                      {isUserPickedWrong && (
+                        <span style={{ fontSize: '0.68rem', fontWeight: 800, padding: '0.05rem 0.45rem', borderRadius: '6px', background: 'rgba(244,63,94,0.2)', color: 'var(--danger)' }}>
+                          ข้อที่คุณเลือก
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ color: isCorrect ? 'var(--text)' : 'var(--text-sub)', lineHeight: 1.55 }}>
+                      {text}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
@@ -311,7 +618,7 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
           border: '1px solid rgba(124, 58, 237, 0.2)',
         }}>
           <h4 style={{ color: 'var(--primary-light)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.88rem' }}>
-            <Sparkles size={15} /> {parsed.clinical_pearl && !parsed.future_prediction ? 'Clinical Pearl / จุดเน้นข้อสอบ' : "Professor's Wisdom / แนวโน้มข้อสอบ"}
+            <Sparkles size={15} /> {parsed.clinical_pearl && !parsed.future_prediction ? 'Clinical Pearl / จุดเน้นและแนวทางพลิกแพลงข้อสอบ' : "Professor's Wisdom / แนวโน้มข้อสอบ"}
           </h4>
           <div style={{ color: 'var(--text-sub)', fontSize: '0.88rem', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
             {future_prediction}
@@ -319,10 +626,29 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
         </div>
       )}
 
-      {/* ── 6. 🇹🇭 Thai Dental Council / Specialty Society Protocol Reference ── */}
-      {thaiRefInfo && (
+      {/* ── 6. Textbook Reference + Thai Dental Council / Specialty Society Protocol Reference ── */}
+      {legal_citation && (
         <div style={{
           marginTop: '0.85rem',
+          padding: '0.65rem 1rem',
+          borderRadius: '8px',
+          background: 'rgba(124, 58, 237, 0.08)',
+          border: '1px solid rgba(124, 58, 237, 0.25)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          fontSize: '0.82rem',
+          color: 'var(--primary-light)',
+          fontWeight: 600
+        }}>
+          <BookOpen size={14} style={{ flexShrink: 0 }} />
+          <span>แหล่งอ้างอิงหลักฐานทางวิชาการ (Reference): {legal_citation}</span>
+        </div>
+      )}
+
+      {thaiRefInfo && (
+        <div style={{
+          marginTop: '0.75rem',
           padding: '0.8rem 1rem',
           borderRadius: '8px',
           background: 'rgba(16, 185, 129, 0.06)',
@@ -338,11 +664,97 @@ export default function ExplanationBox({ explanation, correctAnswer, isCached = 
         </div>
       )}
 
-      {/* ── 7. Standalone Deep Study Modal ── */}
+      {/* ── 7. Interactive Mentor Action Bar (Parallel Practice + Study Hub + AI Tutor) ── */}
+      <div style={{
+        marginTop: '1rem',
+        paddingTop: '0.85rem',
+        borderTop: '1px solid var(--border)',
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '0.5rem',
+        alignItems: 'center'
+      }}>
+        {targetTopicId && (
+          <button
+            type="button"
+            onClick={() => setStudyModalGuideId(targetTopicId)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'rgba(236, 72, 153, 0.14)',
+              border: '1px solid rgba(236, 72, 153, 0.35)',
+              color: '#f472b6',
+              borderRadius: '8px',
+              padding: '0.45rem 0.85rem',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
+          >
+            <Layers size={14} /> เปิดบทเรียน & Flashcards หัวข้อนี้
+          </button>
+        )}
+
+        {onPracticeTopic && question?.must_know_topic && (
+          <button
+            type="button"
+            onClick={() => onPracticeTopic({ mode: 'practice', must_know_topic: question.must_know_topic, count: 5 })}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'rgba(16, 185, 129, 0.14)',
+              border: '1px solid rgba(16, 185, 129, 0.35)',
+              color: '#34d399',
+              borderRadius: '8px',
+              padding: '0.45rem 0.85rem',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
+          >
+            <Target size={14} /> ฝึกโจทย์คู่ขนานหัวข้อเดียวกัน (5 ข้อ)
+          </button>
+        )}
+
+        {question?.id && (
+          <button
+            type="button"
+            onClick={() => setShowInlineTutor(v => !v)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: showInlineTutor ? 'var(--primary)' : 'rgba(124, 58, 237, 0.14)',
+              border: '1px solid rgba(124, 58, 237, 0.38)',
+              color: showInlineTutor ? '#fff' : 'var(--primary-light)',
+              borderRadius: '8px',
+              padding: '0.45rem 0.85rem',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
+          >
+            <Bot size={14} /> {showInlineTutor ? 'ซ่อน AI Tutor' : '💬 ถามอาจารย์ AI ข้อนี้ต่อ'}
+          </button>
+        )}
+      </div>
+
+      {showInlineTutor && question?.id && (
+        <TutorChat
+          questionId={question.id}
+          userAnswer={userAnsClean}
+          correctAnswer={actualCorrect}
+        />
+      )}
+
+      {/* ── 8. Standalone Deep Study Modal ── */}
       {studyModalGuideId && (
         <ClinicalStudyHub
           isModal={true}
           initialTopicId={studyModalGuideId}
+          onStartExam={onPracticeTopic}
           onClose={() => setStudyModalGuideId(null)}
         />
       )}
