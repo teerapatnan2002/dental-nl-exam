@@ -4,10 +4,15 @@ import {
   CheckCircle2, XCircle, Compass, Award, Bookmark, 
   Layers, ChevronRight, ChevronLeft, Play, BookMarked, Share2, 
   Lightbulb, X, GraduationCap, Brain, FileText, Eye, Check, Filter,
-  RotateCcw, Zap, Stethoscope, Shuffle, Target
+  RotateCcw, Zap, Stethoscope, Shuffle, Target, GitBranch
 } from 'lucide-react';
 import { API_BASE } from '../config';
 import { useAuth } from '../contexts/AuthContext';
+import ClinicalPathwayDiagram from './ClinicalPathwayDiagram';
+import {
+  buildDynamicPathwayFromText,
+  buildPathwayFromThaiProtocol,
+} from '../utils/pathwayBuilder';
 import { 
   SPECIALTY_CATEGORIES, 
   CLINICAL_STUDY_GUIDES, 
@@ -116,6 +121,12 @@ export default function ClinicalStudyHub({
   const [showAllGuidedSteps, setShowAllGuidedSteps] = useState(false);
   const [selectedChoice, setSelectedChoice] = useState(null);
   const [copiedNotification, setCopiedNotification] = useState(false);
+
+  // Pathway Visualization State
+  const [lessonPathwayIds, setLessonPathwayIds] = useState({});
+  const [guidedTheoryAsPathway, setGuidedTheoryAsPathway] = useState(true);
+  const [masterclassAsPathway, setMasterclassAsPathway] = useState(true);
+  const [selectedPathwayFilter, setSelectedPathwayFilter] = useState('all');
 
   // Flashcards Active Recall Deck State (persisted to localStorage)
   const [cardIndex, setCardIndex] = useState(0);
@@ -333,6 +344,46 @@ export default function ClinicalStudyHub({
     }
     return null;
   }, [hubMode, selectedMasterclassId, selectedTopicId]);
+
+  // Combined Curated + Dynamic + Thai National Protocol Pathways
+  const allModulePathways = useMemo(() => {
+    const curatedAndExtracted = moduleData?.pathways || [];
+    const thaiProtoPaths = (moduleData?.thai_protocols || [])
+      .map(tp => buildPathwayFromThaiProtocol(tp))
+      .filter(Boolean);
+    return [...curatedAndExtracted, ...thaiProtoPaths];
+  }, [moduleData]);
+
+  const filteredModulePathways = useMemo(() => {
+    if (selectedPathwayFilter === 'all') return allModulePathways;
+    return allModulePathways.filter(p => p.pathway_type === selectedPathwayFilter);
+  }, [allModulePathways, selectedPathwayFilter]);
+
+  const masterclassPathway = useMemo(() => {
+    if (!matchingMasterclass?.core_mechanism) return null;
+    return buildDynamicPathwayFromText({
+      title: `แผนผังกลไก & กระบวนการ: ${matchingMasterclass.title}`,
+      corePrinciple: matchingMasterclass.core_mechanism,
+      clinicalPearl: matchingMasterclass.pearl || '',
+      reference: matchingMasterclass.reference || '',
+      category: matchingMasterclass.category || '',
+      isLegal: String(matchingMasterclass.category || '').includes('กฎหมาย'),
+    });
+  }, [matchingMasterclass]);
+
+  const currentGuidedTheoryPathway = useMemo(() => {
+    if (!currentGuidedCase?.step1_textbook_lesson?.core_principle) return null;
+    return buildDynamicPathwayFromText({
+      title: `แผนผังกลไกทฤษฎีจาก Textbook (Q#${currentGuidedCase.id})`,
+      corePrinciple: currentGuidedCase.step1_textbook_lesson.core_principle,
+      keyTakeaway: currentGuidedCase.step3_evidence_resolution?.key_takeaway || '',
+      clinicalPearl: currentGuidedCase.step1_textbook_lesson.clinical_pearl || '',
+      reference: currentGuidedCase.step1_textbook_lesson.reference || '',
+      category: currentGuidedCase.category || '',
+      task: currentGuidedCase.task || '',
+      isLegal: String(currentGuidedCase.category || '').includes('กฎหมาย'),
+    });
+  }, [currentGuidedCase]);
 
   // Active Flashcards Deck for Sub-Tab 3
   const rawFlashcards = moduleData?.flashcards || [];
@@ -1201,10 +1252,30 @@ export default function ClinicalStudyHub({
                           marginBottom: '0.6rem',
                           display: 'flex',
                           alignItems: 'center',
+                          justifyContent: 'space-between',
                           gap: '8px',
                           flexWrap: 'wrap'
                         }}>
                           <span>🇹🇭 เกณฑ์อ้างอิงประเทศไทย: ทันตแพทยสภา • ราชวิทยาลัยฯ • สมาคมทันตแพทย์เฉพาะทาง • กรมอนามัย</span>
+                          <button
+                            type="button"
+                            onClick={() => setClassroomTab('pathways')}
+                            style={{
+                              padding: '0.24rem 0.65rem',
+                              borderRadius: '8px',
+                              fontSize: '0.73rem',
+                              fontWeight: 800,
+                              cursor: 'pointer',
+                              background: 'rgba(16, 185, 129, 0.2)',
+                              border: '1px solid rgba(16, 185, 129, 0.45)',
+                              color: '#34d399',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <GitBranch size={13} /> ดูเป็นแผนผัง Protocol Pathway
+                          </button>
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
@@ -1274,6 +1345,7 @@ export default function ClinicalStudyHub({
                   }}>
                     {[
                       { id: 'synthesized', label: `📖 บทเรียนทฤษฎี (${moduleData.module_info.synthesized_lessons_count})`, desc: 'เรียนเนื้อหาที่สกัดจากข้อสอบแยกตามขั้นตอนคลินิก' },
+                      { id: 'pathways', label: `🔀 แผนผัง Pathway & Protocol (${allModulePathways.length})`, desc: 'แผนผัง Flowchart กลไกการเกิดโรค ขั้นตอนรักษา และโปรโตคอลไทย' },
                       { id: 'guided_teacher', label: `🧑‍🏫 สอนทีละก้าวจากเคส (${moduleData.guided_cases?.length || 0})`, desc: 'ทำโจทย์หรือเรียนทฤษฎี → จับคีย์เวิร์ด → เฉลยรายตัวเลือก' },
                       { id: 'flashcards', label: `🃏 Flashcards จำแม่น (${moduleData.flashcards?.length || 0})`, desc: 'ปิดคำสำคัญฝึกดึงความจำ Active Recall' },
                       { id: 'cheat_sheet', label: `⚡ สรุปใบเดียวจบ (${(moduleData.high_yield_sheet?.must_know_numbers?.length || 0) + (moduleData.high_yield_sheet?.triggers_map?.length || 0)})`, desc: 'รวมตัวเลข Cut-off, มาตรากฎหมาย และตารางคีย์เวิร์ด ➔ คำตอบ' },
@@ -1481,24 +1553,46 @@ export default function ClinicalStudyHub({
                                       )}
                                     </div>
 
-                                    <button
-                                      onClick={() => handleOpenCaseInTeacher(lesson.question_id)}
-                                      style={{
-                                        background: 'rgba(99, 102, 241, 0.14)',
-                                        border: '1px solid rgba(99, 102, 241, 0.35)',
-                                        color: 'var(--primary-light)',
-                                        borderRadius: '8px',
-                                        padding: '0.25rem 0.65rem',
-                                        fontSize: '0.75rem',
-                                        fontWeight: 700,
-                                        cursor: 'pointer',
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '5px'
-                                      }}
-                                    >
-                                      🧑‍🏫 ฝึกวิเคราะห์โจทย์ข้อนี้
-                                    </button>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+                                      <button
+                                        type="button"
+                                        onClick={() => setLessonPathwayIds(prev => ({ ...prev, [lesson.question_id]: !prev[lesson.question_id] }))}
+                                        style={{
+                                          background: lessonPathwayIds[lesson.question_id] ? 'rgba(16, 185, 129, 0.2)' : 'rgba(6, 182, 212, 0.14)',
+                                          border: lessonPathwayIds[lesson.question_id] ? '1px solid #10b981' : '1px solid rgba(6, 182, 212, 0.35)',
+                                          color: lessonPathwayIds[lesson.question_id] ? '#34d399' : '#22d3ee',
+                                          borderRadius: '8px',
+                                          padding: '0.25rem 0.65rem',
+                                          fontSize: '0.75rem',
+                                          fontWeight: 700,
+                                          cursor: 'pointer',
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: '5px'
+                                        }}
+                                      >
+                                        <GitBranch size={13} /> {lessonPathwayIds[lesson.question_id] ? '📄 ดูแบบข้อความ' : '🔀 ดูเป็น Pathway'}
+                                      </button>
+
+                                      <button
+                                        onClick={() => handleOpenCaseInTeacher(lesson.question_id)}
+                                        style={{
+                                          background: 'rgba(99, 102, 241, 0.14)',
+                                          border: '1px solid rgba(99, 102, 241, 0.35)',
+                                          color: 'var(--primary-light)',
+                                          borderRadius: '8px',
+                                          padding: '0.25rem 0.65rem',
+                                          fontSize: '0.75rem',
+                                          fontWeight: 700,
+                                          cursor: 'pointer',
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: '5px'
+                                        }}
+                                      >
+                                        🧑‍🏫 ฝึกวิเคราะห์โจทย์ข้อนี้
+                                      </button>
+                                    </div>
                                   </div>
 
                                   {/* Key Takeaway Callout */}
@@ -1518,16 +1612,37 @@ export default function ClinicalStudyHub({
                                     </div>
                                   )}
 
-                                  {/* Core Textbook Principle & Mechanism */}
-                                  <div style={{
-                                    color: 'var(--text-sub)',
-                                    fontSize: '0.92rem',
-                                    lineHeight: 1.75,
-                                    whiteSpace: 'pre-wrap',
-                                    marginBottom: (lesson.clinical_pearl || lesson.common_pitfall) ? '0.85rem' : 0
-                                  }}>
-                                    {lesson.core_principle}
-                                  </div>
+                                  {/* Core Textbook Principle & Mechanism (Toggle between Prose and Pathway Diagram) */}
+                                  {lessonPathwayIds[lesson.question_id] ? (() => {
+                                    const lp = buildDynamicPathwayFromText({
+                                      title: `แผนผังกระบวนการ & กลไก (Q#${lesson.question_id})`,
+                                      corePrinciple: lesson.core_principle,
+                                      keyTakeaway: lesson.key_takeaway,
+                                      clinicalPearl: lesson.clinical_pearl,
+                                      commonPitfall: lesson.common_pitfall,
+                                      reference: lesson.reference,
+                                      category: moduleData?.module_info?.category || '',
+                                      task: lesson.task || '',
+                                      isLegal: String(moduleData?.module_info?.category || '').includes('กฎหมาย'),
+                                    });
+                                    return lp ? (
+                                      <ClinicalPathwayDiagram pathway={lp} compact={true} />
+                                    ) : (
+                                      <div style={{ color: 'var(--text-sub)', fontSize: '0.92rem', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>
+                                        {lesson.core_principle}
+                                      </div>
+                                    );
+                                  })() : (
+                                    <div style={{
+                                      color: 'var(--text-sub)',
+                                      fontSize: '0.92rem',
+                                      lineHeight: 1.75,
+                                      whiteSpace: 'pre-wrap',
+                                      marginBottom: (lesson.clinical_pearl || lesson.common_pitfall) ? '0.85rem' : 0
+                                    }}>
+                                      {lesson.core_principle}
+                                    </div>
+                                  )}
 
                                   {/* Pearl & Pitfall Footer */}
                                   {(lesson.clinical_pearl || lesson.common_pitfall) && (
@@ -1567,6 +1682,78 @@ export default function ClinicalStudyHub({
                             </div>
                           </div>
                         ))}
+                    </div>
+                  )}
+
+                  {/* ──────────────────────────────────────────────────────
+                      SUB-TAB: CLINICAL PATHWAYS, PATHOGENESIS & PROTOCOLS
+                  ────────────────────────────────────────────────────── */}
+                  {classroomTab === 'pathways' && (
+                    <div>
+                      <div style={{
+                        padding: '1rem 1.25rem',
+                        borderRadius: '12px',
+                        background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.09), rgba(168, 85, 247, 0.07))',
+                        border: '1px solid rgba(6, 182, 212, 0.28)',
+                        marginBottom: '1.15rem',
+                        fontSize: '0.88rem',
+                        lineHeight: 1.65,
+                        color: 'var(--text-sub)'
+                      }}>
+                        <strong style={{ color: '#22d3ee' }}>🔀 แผนผังกลไก การเกิดโรค และโปรโตคอลการตัดสินใจ (Interactive Pathway Studio): </strong>
+                        รวบรวมลำดับขั้นกลไกพยาธิกำเนิด (Pathogenesis), จุดแยกตัดสินใจ (Decision Tree), ขั้นตอนหัตถการ และโปรโตคอลมาตรฐานประเทศไทย (ทันตแพทยสภา • สมาคมวิชาชีพ • กรมอนามัย) พร้อมโหมด <strong>"👣 ไล่ดูทีละขั้น"</strong> สำหรับทบทวนความจำ
+                      </div>
+
+                      {/* Filter pills by Pathway Type */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
+                        {[
+                          { id: 'all', label: `🌟 ทั้งหมด (${allModulePathways.length})` },
+                          { id: 'decision', label: '🔀 แผนผังตัดสินใจ' },
+                          { id: 'protocol', label: '📋 Clinical & Thai Protocols' },
+                          { id: 'pathogenesis', label: '🧬 กลไกการเกิดโรค / กระบวนการ' },
+                          { id: 'procedure', label: '🛠️ ขั้นตอนหัตถการ' },
+                          { id: 'legal', label: '⚖️ ขั้นตอนทางกฎหมาย' },
+                        ].map(pf => {
+                          const cnt = pf.id === 'all' ? allModulePathways.length : allModulePathways.filter(p => p.pathway_type === pf.id).length;
+                          if (pf.id !== 'all' && cnt === 0) return null;
+                          const active = selectedPathwayFilter === pf.id;
+                          return (
+                            <button
+                              key={pf.id}
+                              type="button"
+                              onClick={() => setSelectedPathwayFilter(pf.id)}
+                              style={{
+                                padding: '0.32rem 0.75rem',
+                                borderRadius: '16px',
+                                fontSize: '0.77rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                background: active ? 'var(--primary)' : 'rgba(255,255,255,0.04)',
+                                color: active ? '#fff' : 'var(--text-sub)',
+                                border: active ? '1px solid var(--primary)' : '1px solid var(--border)',
+                              }}
+                            >
+                              {pf.label}{pf.id !== 'all' ? ` (${cnt})` : ''}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {filteredModulePathways.length > 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                          {filteredModulePathways.map((pw, pIdx) => (
+                            <ClinicalPathwayDiagram
+                              key={pw.id || pIdx}
+                              pathway={pw}
+                              compact={false}
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                          ยังไม่มีแผนผัง Pathway ในตัวกรองนี้
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -1734,31 +1921,59 @@ export default function ClinicalStudyHub({
                                   ? `ขั้นที่ ${theoryStepNum}: ทบทวนกลไก & หลักฐานเชิงลึกจาก Textbook`
                                   : `ขั้นที่ ${theoryStepNum}: เรียนทฤษฎีและกลไกจาก Textbook & Evidence (ศึกษาก่อนทำโจทย์)`}
                               </div>
-                              <span style={{
-                                fontSize: '0.78rem',
-                                fontWeight: 700,
-                                padding: '0.2rem 0.7rem',
-                                borderRadius: '20px',
-                                background: 'rgba(15, 23, 42, 0.6)',
-                                color: 'var(--accent)',
-                                border: '1px solid rgba(6, 182, 212, 0.3)'
-                              }}>
-                                📚 {currentGuidedCase.step1_textbook_lesson.reference}
-                              </span>
+                              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.45rem' }}>
+                                {currentGuidedTheoryPathway && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setGuidedTheoryAsPathway(prev => !prev)}
+                                    style={{
+                                      padding: '0.24rem 0.7rem',
+                                      borderRadius: '20px',
+                                      fontSize: '0.76rem',
+                                      fontWeight: 700,
+                                      cursor: 'pointer',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: '0.35rem',
+                                      border: guidedTheoryAsPathway ? '1px solid rgba(56, 189, 248, 0.5)' : '1px solid rgba(255,255,255,0.16)',
+                                      background: guidedTheoryAsPathway ? 'rgba(14, 165, 233, 0.2)' : 'rgba(15, 23, 42, 0.55)',
+                                      color: guidedTheoryAsPathway ? '#38bdf8' : 'var(--text-sub)'
+                                    }}
+                                  >
+                                    <GitBranch size={13} />
+                                    {guidedTheoryAsPathway ? '🔀 แผนผัง Pathway' : '📄 ข้อความ'}
+                                  </button>
+                                )}
+                                <span style={{
+                                  fontSize: '0.78rem',
+                                  fontWeight: 700,
+                                  padding: '0.2rem 0.7rem',
+                                  borderRadius: '20px',
+                                  background: 'rgba(15, 23, 42, 0.6)',
+                                  color: 'var(--accent)',
+                                  border: '1px solid rgba(6, 182, 212, 0.3)'
+                                }}>
+                                  📚 {currentGuidedCase.step1_textbook_lesson.reference}
+                                </span>
+                              </div>
                             </div>
 
-                            <div style={{
-                              color: 'var(--text)',
-                              fontSize: '0.95rem',
-                              lineHeight: 1.8,
-                              whiteSpace: 'pre-wrap',
-                              background: 'rgba(15, 23, 42, 0.45)',
-                              padding: '1.25rem',
-                              borderRadius: '10px',
-                              border: '1px solid rgba(255,255,255,0.06)'
-                            }}>
-                              {currentGuidedCase.step1_textbook_lesson.core_principle}
-                            </div>
+                            {guidedTheoryAsPathway && currentGuidedTheoryPathway ? (
+                              <ClinicalPathwayDiagram pathway={currentGuidedTheoryPathway} compact={true} />
+                            ) : (
+                              <div style={{
+                                color: 'var(--text)',
+                                fontSize: '0.95rem',
+                                lineHeight: 1.8,
+                                whiteSpace: 'pre-wrap',
+                                background: 'rgba(15, 23, 42, 0.45)',
+                                padding: '1.25rem',
+                                borderRadius: '10px',
+                                border: '1px solid rgba(255,255,255,0.06)'
+                              }}>
+                                {currentGuidedCase.step1_textbook_lesson.core_principle}
+                              </div>
+                            )}
 
                             {currentGuidedCase.step1_textbook_lesson.clinical_pearl && (
                               <div style={{
@@ -2753,21 +2968,49 @@ export default function ClinicalStudyHub({
                 </div>
 
                 <div style={{ marginBottom: '2rem' }}>
-                  <h3 style={{ color: 'var(--primary-light)', fontSize: '1.1rem', marginBottom: '0.75rem' }}>
-                    1. กลไกพยาธิสรีรวิทยาและหลักการคิดเชิงลึก (Core Mechanism)
-                  </h3>
-                  <div style={{
-                    color: 'var(--text-sub)',
-                    fontSize: '0.95rem',
-                    lineHeight: 1.8,
-                    whiteSpace: 'pre-wrap',
-                    background: 'rgba(255,255,255,0.02)',
-                    border: '1px solid var(--border)',
-                    borderRadius: '12px',
-                    padding: '1.4rem'
-                  }}>
-                    {matchingMasterclass.core_mechanism}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.6rem', marginBottom: '0.75rem' }}>
+                    <h3 style={{ color: 'var(--primary-light)', fontSize: '1.1rem', margin: 0 }}>
+                      1. กลไกพยาธิสรีรวิทยาและหลักการคิดเชิงลึก (Core Mechanism)
+                    </h3>
+                    {masterclassPathway && (
+                      <button
+                        type="button"
+                        onClick={() => setMasterclassAsPathway(prev => !prev)}
+                        style={{
+                          padding: '0.32rem 0.78rem',
+                          borderRadius: '20px',
+                          fontSize: '0.78rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          border: masterclassAsPathway ? '1px solid rgba(56, 189, 248, 0.5)' : '1px solid rgba(255,255,255,0.16)',
+                          background: masterclassAsPathway ? 'rgba(14, 165, 233, 0.2)' : 'rgba(255,255,255,0.04)',
+                          color: masterclassAsPathway ? '#38bdf8' : 'var(--text-sub)'
+                        }}
+                      >
+                        <GitBranch size={14} />
+                        {masterclassAsPathway ? '🔀 ดูเป็นแผนผัง Pathway' : '📄 อ่านแบบข้อความ'}
+                      </button>
+                    )}
                   </div>
+                  {masterclassAsPathway && masterclassPathway ? (
+                    <ClinicalPathwayDiagram pathway={masterclassPathway} compact={false} />
+                  ) : (
+                    <div style={{
+                      color: 'var(--text-sub)',
+                      fontSize: '0.95rem',
+                      lineHeight: 1.8,
+                      whiteSpace: 'pre-wrap',
+                      background: 'rgba(255,255,255,0.02)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '12px',
+                      padding: '1.4rem'
+                    }}>
+                      {matchingMasterclass.core_mechanism}
+                    </div>
+                  )}
                 </div>
 
                 {matchingMasterclass.matrix_headers && matchingMasterclass.matrix_rows && (

@@ -1,11 +1,16 @@
 import React, { useState, useMemo } from 'react';
 import {
   Lightbulb, AlertTriangle, BookOpen, Sparkles,
-  CheckCircle2, XCircle, Eye, EyeOff, Bot, Target, Layers
+  CheckCircle2, XCircle, Eye, EyeOff, Bot, Target, Layers, GitBranch
 } from 'lucide-react';
+import { API_BASE } from '../config';
 import { findGuideForQuestion } from '../data/clinicalStudyGuides';
+import { buildDynamicPathwayFromText } from '../utils/pathwayBuilder';
+import ClinicalPathwayDiagram from './ClinicalPathwayDiagram';
 import ClinicalStudyHub from './ClinicalStudyHub';
 import TutorChat from './TutorChat';
+
+const topicPathwayCache = new Map();
 
 const EXTRACT_NUMBER_REGEX = /(?:มาตรา\s*\d+(?:\s*\/\s*\d+)?|พ\.ร\.บ\.[^,.\n]{2,30}พ\.ศ\.\s*\d{4}|[<>≤≥≈]?\s*\d+(?:[.,–-]\d+)?(?:\/\d+)?\s*(?:mg\/kg|mg\/dL|mg\/L|mg|g|mL|mmHg|mm|cm|µm|ppm|%|°|องศา|สัปดาห์|วัน|เดือน|ปี|ขวบ|นาที|ชั่วโมง|ชม\.|บาท|ซี่|คู่สบ|เท่า|INR|RDT|Stage\s*[IV]+|Grade\s*[A-C]|Class\s*[IV]+))/gi;
 
@@ -143,17 +148,21 @@ export default function ExplanationBox({
   const [selfTestMask, setSelfTestMask] = useState(false);
   const [showInlineTutor, setShowInlineTutor] = useState(false);
   const [showAllChoices, setShowAllChoices] = useState(true);
-
-  if (!explanation) return null;
+  const [principleViewMode, setPrincipleViewMode] = useState('pathway'); // 'pathway' | 'text'
+  const [showTopicPathway, setShowTopicPathway] = useState(false);
+  const [topicPathways, setTopicPathways] = useState(null);
+  const [loadingTopicPathway, setLoadingTopicPathway] = useState(false);
 
   let parsed = null;
-  if (typeof explanation === 'object' && explanation !== null) {
-    parsed = explanation;
-  } else {
-    try {
-      parsed = JSON.parse(explanation);
-    } catch (e) {
-      // plain text fallback
+  if (explanation) {
+    if (typeof explanation === 'object') {
+      parsed = explanation;
+    } else {
+      try {
+        parsed = JSON.parse(explanation);
+      } catch (e) {
+        // plain text fallback
+      }
     }
   }
 
@@ -161,8 +170,96 @@ export default function ExplanationBox({
   const matchingGuide = findGuideForQuestion(question || parsed);
   const targetTopicId = question?.must_know_topic || parsed?.must_know_topic || matchingGuide?.id;
 
+  const isJsonExplanation = Boolean(parsed && typeof parsed === 'object' && (parsed.core_principle || parsed.key_takeaway));
+  const key_takeaway = parsed?.key_takeaway || parsed?.why_correct || '';
+  const legal_citation = parsed?.legal_citation || parsed?.reference || '';
+  const core_principle = parsed?.core_principle || (!isJsonExplanation && typeof explanation === 'string' ? explanation : '');
+  const choice_explanations = parsed?.choice_explanations;
+  const common_pitfall = parsed?.common_pitfall;
+  const future_prediction = parsed?.future_prediction || parsed?.clinical_pearl;
+  const qCategory = question?.category || parsed?.category || matchingGuide?.category || '';
+
+  // Map choices label -> choice text for clear contextual breakdown
+  const choiceTextMap = useMemo(() => {
+    const map = {};
+    if (question?.choices && Array.isArray(question.choices)) {
+      for (const c of question.choices) {
+        if (c?.label) {
+          map[String(c.label).trim().toUpperCase()] = c.text || '';
+        }
+      }
+    }
+    return map;
+  }, [question]);
+
+  const highYieldTokens = useMemo(
+    () => extractHighYieldTokens([key_takeaway, core_principle, future_prediction]),
+    [key_takeaway, core_principle, future_prediction]
+  );
+
+  const coreSteps = useMemo(() => splitReadableSteps(core_principle), [core_principle]);
+
+  const questionPathway = useMemo(() => {
+    if (!core_principle && !key_takeaway) return null;
+    return buildDynamicPathwayFromText({
+      title: question?.id ? `แผนผังกลไก & แนวทางคิดข้อสอบ (Q#${question.id})` : 'แผนผังกลไกและขั้นตอนการตัดสินใจ',
+      corePrinciple: core_principle,
+      keyTakeaway: key_takeaway,
+      clinicalPearl: future_prediction,
+      commonPitfall: common_pitfall,
+      reference: legal_citation,
+      category: qCategory,
+      task: question?.task || '',
+      isLegal: Boolean(parsed?.legal_citation && !parsed?.reference),
+    });
+  }, [question, core_principle, key_takeaway, future_prediction, common_pitfall, legal_citation, qCategory, parsed]);
+
+  // Sort choices cleanly following question.choices order if available
+  const orderedChoiceEntries = useMemo(() => {
+    if (!choice_explanations || typeof choice_explanations !== 'object') return [];
+    const entries = Object.entries(choice_explanations);
+    if (question?.choices && question.choices.length > 0) {
+      const orderIdx = {};
+      question.choices.forEach((c, idx) => {
+        orderIdx[String(c.label).trim().toUpperCase()] = idx;
+      });
+      entries.sort(([a], [b]) => {
+        const ia = orderIdx[String(a).trim().toUpperCase()] ?? 99;
+        const ib = orderIdx[String(b).trim().toUpperCase()] ?? 99;
+        return ia - ib;
+      });
+    }
+    return entries;
+  }, [choice_explanations, question]);
+
+  const handleToggleTopicPathway = async () => {
+    const nextOpen = !showTopicPathway;
+    setShowTopicPathway(nextOpen);
+    if (!nextOpen || !targetTopicId) return;
+    if (topicPathwayCache.has(targetTopicId)) {
+      setTopicPathways(topicPathwayCache.get(targetTopicId));
+      return;
+    }
+    setLoadingTopicPathway(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/learning/pathway/${encodeURIComponent(targetTopicId)}`);
+      if (res.ok) {
+        const data = await res.json();
+        const pList = data?.pathways || [];
+        topicPathwayCache.set(targetTopicId, pList);
+        setTopicPathways(pList);
+      }
+    } catch (err) {
+      console.error('Failed to fetch topic pathway:', err);
+    } finally {
+      setLoadingTopicPathway(false);
+    }
+  };
+
+  if (!explanation) return null;
+
   // Plain text fallback
-  if (!parsed || typeof parsed !== 'object' || (!parsed.core_principle && !parsed.key_takeaway)) {
+  if (!isJsonExplanation) {
     return (
       <div className="explanation-box" style={{ marginTop: '1.25rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -197,9 +294,13 @@ export default function ExplanationBox({
             </button>
           )}
         </div>
-        <div style={{ color: 'var(--text-sub)', fontSize: '0.92rem', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
-          {explanation}
-        </div>
+        {questionPathway ? (
+          <ClinicalPathwayDiagram pathway={questionPathway} compact={true} />
+        ) : (
+          <div style={{ color: 'var(--text-sub)', fontSize: '0.92rem', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
+            {explanation}
+          </div>
+        )}
 
         {studyModalGuideId && (
           <ClinicalStudyHub
@@ -213,13 +314,6 @@ export default function ExplanationBox({
     );
   }
 
-  const key_takeaway = parsed.key_takeaway || parsed.why_correct;
-  const legal_citation = parsed.legal_citation || parsed.reference;
-  const core_principle = parsed.core_principle;
-  const choice_explanations = parsed.choice_explanations;
-  const common_pitfall = parsed.common_pitfall;
-  const future_prediction = parsed.future_prediction || parsed.clinical_pearl;
-
   const rawCog = question?.cognitive_level || parsed.cognitive_level;
   const cogBadge = normalizeCogBadge(rawCog);
   const tos_code = parsed.tos_code || question?.must_know_topic || parsed.must_know_topic;
@@ -229,46 +323,7 @@ export default function ExplanationBox({
   const isUserCorrect = Boolean(userAnsClean && actualCorrect && userAnsClean.toUpperCase() === actualCorrect.toUpperCase());
   const hasUserWrong = Boolean(userAnsClean && actualCorrect && !isUserCorrect);
 
-  const qCategory = question?.category || parsed?.category || matchingGuide?.category || '';
   const thaiRefInfo = THAI_ASSOCIATION_BY_CATEGORY[qCategory] || null;
-
-  // Map choices label -> choice text for clear contextual breakdown
-  const choiceTextMap = useMemo(() => {
-    const map = {};
-    if (question?.choices && Array.isArray(question.choices)) {
-      for (const c of question.choices) {
-        if (c?.label) {
-          map[String(c.label).trim().toUpperCase()] = c.text || '';
-        }
-      }
-    }
-    return map;
-  }, [question]);
-
-  const highYieldTokens = useMemo(
-    () => extractHighYieldTokens([key_takeaway, core_principle, future_prediction]),
-    [key_takeaway, core_principle, future_prediction]
-  );
-
-  const coreSteps = useMemo(() => splitReadableSteps(core_principle), [core_principle]);
-
-  // Sort choices cleanly following question.choices order if available
-  const orderedChoiceEntries = useMemo(() => {
-    if (!choice_explanations || typeof choice_explanations !== 'object') return [];
-    const entries = Object.entries(choice_explanations);
-    if (question?.choices && question.choices.length > 0) {
-      const orderIdx = {};
-      question.choices.forEach((c, idx) => {
-        orderIdx[String(c.label).trim().toUpperCase()] = idx;
-      });
-      entries.sort(([a], [b]) => {
-        const ia = orderIdx[String(a).trim().toUpperCase()] ?? 99;
-        const ib = orderIdx[String(b).trim().toUpperCase()] ?? 99;
-        return ia - ib;
-      });
-    }
-    return entries;
-  }, [choice_explanations, question]);
 
   const userWrongExplanation = hasUserWrong && choice_explanations
     ? (choice_explanations[userAnsClean] || choice_explanations[userAnsClean.toUpperCase()] || choice_explanations[userAnsClean.toLowerCase()] || '')
@@ -491,13 +546,88 @@ export default function ExplanationBox({
         </div>
       )}
 
-      {/* ── 3. Core Principle (หลักการและกลไกแบบแบ่งขั้นอ่านง่าย) ── */}
+      {/* ── 3. Core Principle: Visual Pathway Flowchart <-> Text Toggle + Topic Master Protocol ── */}
       {core_principle && (
         <div style={{ marginBottom: '1.25rem' }}>
-          <h4 style={{ color: 'var(--primary-light)', marginBottom: '0.55rem', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.92rem' }}>
-            <Lightbulb size={16} /> {parsed.legal_citation && !parsed.reference ? 'หลักการและเหตุผลทางกฎหมายทีละขั้น' : 'หลักการและกลไกทางคลินิกทีละขั้น (Stepwise Mechanism)'}
-          </h4>
-          {coreSteps.length > 1 ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.6rem' }}>
+            <h4 style={{ color: 'var(--primary-light)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.92rem' }}>
+              <Lightbulb size={16} /> {parsed.legal_citation && !parsed.reference ? 'กลไก & กระบวนการทางกฎหมาย (Pathway & Steps)' : 'กลไกการเกิด & แนวทางคลินิก (Pathway & Mechanism)'}
+            </h4>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+              {questionPathway && (
+                <div style={{
+                  display: 'inline-flex',
+                  padding: '2px',
+                  borderRadius: '9px',
+                  background: 'rgba(15, 23, 42, 0.55)',
+                  border: '1px solid var(--border)',
+                }}>
+                  <button
+                    type="button"
+                    onClick={() => setPrincipleViewMode('pathway')}
+                    style={{
+                      padding: '0.2rem 0.6rem',
+                      borderRadius: '7px',
+                      border: 'none',
+                      fontSize: '0.73rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      background: principleViewMode === 'pathway' ? 'var(--primary)' : 'transparent',
+                      color: principleViewMode === 'pathway' ? '#fff' : 'var(--text-sub)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}
+                  >
+                    <GitBranch size={12} /> แผนผัง Pathway
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPrincipleViewMode('text')}
+                    style={{
+                      padding: '0.2rem 0.6rem',
+                      borderRadius: '7px',
+                      border: 'none',
+                      fontSize: '0.73rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      background: principleViewMode === 'text' ? 'var(--accent)' : 'transparent',
+                      color: principleViewMode === 'text' ? '#0f172a' : 'var(--text-sub)',
+                    }}
+                  >
+                    📄 ข้อความ
+                  </button>
+                </div>
+              )}
+
+              {targetTopicId && (
+                <button
+                  type="button"
+                  onClick={handleToggleTopicPathway}
+                  style={{
+                    padding: '0.24rem 0.68rem',
+                    borderRadius: '9px',
+                    fontSize: '0.73rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    background: showTopicPathway ? 'rgba(16, 185, 129, 0.22)' : 'rgba(6, 182, 212, 0.12)',
+                    border: showTopicPathway ? '1px solid #10b981' : '1px solid rgba(6, 182, 212, 0.35)',
+                    color: showTopicPathway ? '#34d399' : '#22d3ee',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                >
+                  <GitBranch size={12} /> {showTopicPathway ? 'ซ่อน Master Protocol หัวข้อนี้' : '🧭 ดู Master Protocol หัวข้อนี้'}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {principleViewMode === 'pathway' && questionPathway ? (
+            <ClinicalPathwayDiagram pathway={questionPathway} compact={true} />
+          ) : coreSteps.length > 1 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
               {coreSteps.map((stepTxt, sIdx) => (
                 <div key={sIdx} style={{
@@ -534,6 +664,26 @@ export default function ExplanationBox({
           ) : (
             <div style={{ lineHeight: 1.7, whiteSpace: 'pre-wrap', color: 'var(--text-sub)', fontSize: '0.92rem' }}>
               {core_principle}
+            </div>
+          )}
+
+          {showTopicPathway && (
+            <div style={{ marginTop: '0.85rem' }}>
+              {loadingTopicPathway ? (
+                <div style={{ padding: '0.9rem', borderRadius: '10px', background: 'rgba(6, 182, 212, 0.08)', color: 'var(--text-sub)', fontSize: '0.84rem', textAlign: 'center' }}>
+                  ⏳ กำลังโหลดแผนผัง Master Protocol & Pathogenesis ประจำหัวข้อนี้...
+                </div>
+              ) : topicPathways && topicPathways.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {topicPathways.slice(0, 2).map(tp => (
+                    <ClinicalPathwayDiagram key={tp.id} pathway={tp} compact={true} />
+                  ))}
+                </div>
+              ) : (
+                <div style={{ padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.03)', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                  ยังไม่พบแผนผัง Master Protocol สำหรับหัวข้อนี้ ลองเปิดในห้องเรียน Textbook & Evidence ด้านล่าง
+                </div>
+              )}
             </div>
           )}
         </div>

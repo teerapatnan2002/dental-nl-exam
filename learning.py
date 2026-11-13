@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session, selectinload
 import models
 from auth import get_current_user
 from database import get_db
+from pathways import CURATED_TOPIC_PATHWAYS, get_topic_pathways
 
 router = APIRouter(prefix="/api/learning", tags=["learning"])
 
@@ -1214,6 +1215,14 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
             })
 
     must_know_numbers = _extract_numeric_rules(number_sources)
+    pathways_list = get_topic_pathways(
+        module_id=module_id,
+        category=category,
+        questions=sorted_questions,
+        title_th=title_th,
+        parse_fn=_parse_explanation,
+        classify_tb_fn=classify_textbook,
+    )
 
     return {
         "module_info": {
@@ -1233,6 +1242,7 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
         "pitfalls": pitfalls_list,
         "guided_cases": guided_cases,
         "flashcards": flashcards,
+        "pathways": pathways_list,
         "high_yield_sheet": {
             "must_know_numbers": must_know_numbers,
             "triggers_map": triggers_map,
@@ -1439,3 +1449,43 @@ def get_textbook_learning_module(
         category=tb_meta["specialty"],
         module_id=textbook_id,
     )
+
+
+@router.get("/pathway/{topic_id}")
+def get_topic_pathway_endpoint(
+    topic_id: str,
+    db: Session = Depends(get_db),
+):
+    """Lightweight endpoint returning curated & auto-extracted Pathways/Protocols for a Must-Know Topic."""
+    if topic_id in CURATED_TOPIC_PATHWAYS:
+        meta = get_topic_meta(topic_id)
+        return {
+            "topic_id": topic_id,
+            "title_th": meta["title_th"],
+            "pathways": CURATED_TOPIC_PATHWAYS[topic_id],
+        }
+
+    questions = (
+        db.query(models.Question)
+        .filter(models.Question.must_know_topic == topic_id)
+        .limit(12)
+        .all()
+    )
+    if not questions:
+        raise HTTPException(status_code=404, detail=f"Pathway for topic '{topic_id}' not found")
+
+    cat = questions[0].category or ""
+    meta = get_topic_meta(topic_id, cat)
+    pathways_list = get_topic_pathways(
+        module_id=topic_id,
+        category=cat,
+        questions=questions,
+        title_th=meta["title_th"],
+        parse_fn=_parse_explanation,
+        classify_tb_fn=classify_textbook,
+    )
+    return {
+        "topic_id": topic_id,
+        "title_th": meta["title_th"],
+        "pathways": pathways_list,
+    }
