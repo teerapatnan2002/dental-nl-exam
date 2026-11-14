@@ -106,6 +106,39 @@ class UserAnswerCreate(BaseModel):
     selected_choice: Optional[str]
     is_correct: bool
     time_spent_seconds: Optional[int] = None  # per-question timing
+    confidence: Optional[str] = None  # 'confident' | 'unsure' | 'hard'
+
+
+class CardReviewSubmit(BaseModel):
+    card_key: str = Field(..., min_length=1, max_length=200)
+    card_type: str = Field(default="flashcard", pattern="^(flashcard|topic|cloze)$")
+    rating: Optional[int] = Field(default=None, ge=1, le=4)
+    mastery_status: Optional[str] = Field(default=None, max_length=32)
+
+
+class CardReviewSyncItem(BaseModel):
+    card_key: str = Field(..., min_length=1, max_length=200)
+    card_type: str = Field(default="flashcard", pattern="^(flashcard|topic|cloze)$")
+    mastery_status: str = Field(..., min_length=1, max_length=32)
+
+
+class CardReviewSyncBatch(BaseModel):
+    items: List[CardReviewSyncItem] = Field(default_factory=list, max_length=1000)
+
+
+class CardReviewOut(BaseModel):
+    card_key: str
+    card_type: str
+    repetitions: int
+    interval: int
+    ease_factor: int
+    last_quality: Optional[int] = None
+    lapse_count: int = 0
+    mastery_status: str
+    next_review_date: int
+    updated_at: int
+    days_until_due: int = 0
+    is_due: bool = False
 
 class ExamSessionCreate(BaseModel):
     start_time: int

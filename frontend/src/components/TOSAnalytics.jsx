@@ -2,21 +2,76 @@ import React, { useState, useEffect } from 'react';
 import {
   BarChart3, CheckCircle2, TrendingUp, Layers, BookOpen,
   Search, Shield, Sparkles, Filter, ChevronRight, HelpCircle,
-  Activity, Award, PieChart, PlayCircle, Info
+  Activity, Award, PieChart, PlayCircle, Info, Target, Zap, AlertTriangle
 } from 'lucide-react';
 import { API_BASE } from '../config';
+import { useAuth } from '../contexts/AuthContext';
 
-export default function TOSAnalytics({ onStartPractice }) {
+const READINESS_STATUS_META = {
+  ready: { label: 'พร้อมสอบ (>=75%)', color: '#10b981', bg: 'rgba(16, 185, 129, 0.14)', border: 'rgba(16, 185, 129, 0.35)' },
+  borderline: { label: 'ก้ำกึ่ง (60-74%)', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.14)', border: 'rgba(245, 158, 11, 0.35)' },
+  critical: { label: 'ต้องเร่งซ่อม (<60%)', color: '#fb7185', bg: 'rgba(244, 63, 94, 0.14)', border: 'rgba(244, 63, 94, 0.35)' },
+  unpracticed: { label: 'ยังไม่เคยฝึก', color: '#94a3b8', bg: 'rgba(148, 163, 184, 0.12)', border: 'rgba(148, 163, 184, 0.25)' },
+};
+
+export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
+  const { user, token, authFetch } = useAuth() || {};
   const [data, setData] = useState(null);
+  const [readiness, setReadiness] = useState(null);
+  const [loadingReadiness, setLoadingReadiness] = useState(false);
+  const [launchingIds, setLaunchingIds] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeSubTab, setActiveSubTab] = useState('benchmark'); // 'benchmark' | 'heatmap' | 'topics'
+  const [activeSubTab, setActiveSubTab] = useState('benchmark'); // 'benchmark' | 'readiness' | 'heatmap' | 'topics'
   const [searchTopic, setSearchTopic] = useState('');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('ALL');
 
   useEffect(() => {
     fetchTOSData();
   }, []);
+
+  useEffect(() => {
+    if (!token || !authFetch) {
+      setReadiness(null);
+      return;
+    }
+    let cancelled = false;
+    const loadReadiness = async () => {
+      try {
+        setLoadingReadiness(true);
+        const res = await authFetch(`${API_BASE}/api/analytics/my-readiness`);
+        if (res.ok && !cancelled) {
+          setReadiness(await res.json());
+        }
+      } catch (err) {
+        console.error('Failed to load personal TOS readiness:', err);
+      } finally {
+        if (!cancelled) setLoadingReadiness(false);
+      }
+    };
+    loadReadiness();
+    return () => { cancelled = true; };
+  }, [token, authFetch]);
+
+  const handleStartRemediation = async (keyId, questionIds) => {
+    if (!onStartPractice || !questionIds || questionIds.length === 0) return;
+    try {
+      setLaunchingIds(keyId);
+      const res = await fetch(`${API_BASE}/api/questions/by-ids`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question_ids: questionIds }),
+      });
+      if (res.ok) {
+        const qs = await res.json();
+        if (qs.length > 0) onStartPractice(qs);
+      }
+    } catch (err) {
+      console.error('Failed to launch remediation quiz:', err);
+    } finally {
+      setLaunchingIds(null);
+    }
+  };
 
   const fetchTOSData = async () => {
     try {
@@ -138,6 +193,26 @@ export default function TOSAnalytics({ onStartPractice }) {
             style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
           >
             <BarChart3 size={16} /> เปรียบเทียบมาตรฐาน (TOS Benchmark)
+          </button>
+          <button
+            onClick={() => setActiveSubTab('readiness')}
+            className={`btn ${activeSubTab === 'readiness' ? 'btn-primary' : 'btn-outline'}`}
+            style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            <Target size={16} /> ความพร้อมของฉัน (My Readiness)
+            {readiness?.summary?.unique_answered > 0 && (
+              <span style={{
+                marginLeft: '0.25rem',
+                fontSize: '0.72rem',
+                fontWeight: 800,
+                padding: '0.1rem 0.45rem',
+                borderRadius: '10px',
+                background: readiness.summary.weighted_accuracy_pct >= 60 ? 'rgba(16,185,129,0.22)' : 'rgba(244,63,94,0.25)',
+                color: readiness.summary.weighted_accuracy_pct >= 60 ? '#34d399' : '#fb7185'
+              }}>
+                {readiness.summary.weighted_accuracy_pct}%
+              </span>
+            )}
           </button>
           <button
             onClick={() => setActiveSubTab('heatmap')}
@@ -497,6 +572,237 @@ export default function TOSAnalytics({ onStartPractice }) {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════
+         VIEW 4: PERSONAL TOS READINESS & HIGH-ROI REMEDIATION
+      ════════════════════════════════════════════════ */}
+      {activeSubTab === 'readiness' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {!user ? (
+            <div className="glass-panel" style={{ padding: '2.5rem', textAlign: 'center' }}>
+              <Target size={36} color="var(--accent)" style={{ marginBottom: '0.75rem' }} />
+              <h3 style={{ margin: '0 0 0.5rem 0' }}>เข้าสู่ระบบเพื่อดูแผนที่ความพร้อมรายบุคคล (My Readiness)</h3>
+              <p style={{ color: 'var(--text-sub)', fontSize: '0.92rem', maxWidth: '520px', margin: '0 auto' }}>
+                ระบบจะนำคะแนนจริงจากการทำข้อสอบทุกครั้งมาซ้อนทับกับพิมพ์เขียว ศ.ป.ท. เพื่อคาดการณ์คะแนนสอบและจัดชุดซ่อมเฉพาะหัวข้อที่คุ้มคะแนนที่สุดให้คุณ
+              </p>
+            </div>
+          ) : loadingReadiness && !readiness ? (
+            <div className="glass-panel" style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-sub)' }}>
+              กำลังวิเคราะห์ความพร้อมเทียบพิมพ์เขียว ศ.ป.ท. ...
+            </div>
+          ) : readiness ? (
+            <>
+              {/* Readiness KPI Cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem' }}>
+                <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: `4px solid ${readiness.summary.weighted_accuracy_pct >= 60 ? '#10b981' : '#fb7185'}` }}>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>ความแม่นยำถ่วงน้ำหนัก TOS</div>
+                  <div style={{ fontSize: '2rem', fontWeight: 900, color: readiness.summary.weighted_accuracy_pct >= 60 ? '#10b981' : '#fb7185' }}>
+                    {readiness.summary.weighted_accuracy_pct}%
+                  </div>
+                  <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)' }}>
+                    เกณฑ์ผ่าน ศ.ป.ท.: 60.0% ({readiness.summary.practiced_categories_count}/11 หมวดที่ฝึกแล้ว)
+                  </div>
+                </div>
+
+                <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: '4px solid #38bdf8' }}>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>ดัชนีความพร้อมรวม (คิดความครอบคลุม)</div>
+                  <div style={{ fontSize: '2rem', fontWeight: 900, color: '#38bdf8' }}>
+                    {readiness.summary.projected_nl_score}%
+                  </div>
+                  <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)' }}>
+                    ทำแล้ว {readiness.summary.unique_answered.toLocaleString()} / {readiness.summary.total_in_bank.toLocaleString()} ข้อ ({readiness.summary.coverage_pct}%)
+                  </div>
+                </div>
+
+                <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: '4px solid #a855f7' }}>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>ความแม่นยำรวมล่าสุด</div>
+                  <div style={{ fontSize: '2rem', fontWeight: 900, color: '#a855f7' }}>
+                    {readiness.summary.overall_accuracy}%
+                  </div>
+                  <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)' }}>
+                    ถูก {readiness.summary.unique_correct.toLocaleString()} ข้อ • ทั้งหมด {readiness.summary.total_attempts.toLocaleString()} ครั้ง
+                  </div>
+                </div>
+
+                <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: '4px solid #f59e0b' }}>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>หมวดที่ต้องเร่งซ่อม</div>
+                  <div style={{ fontSize: '2rem', fontWeight: 900, color: '#f59e0b' }}>
+                    {readiness.summary.critical_categories_count} หมวด
+                  </div>
+                  <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)' }}>
+                    ยังไม่เคยฝึก {readiness.summary.unpracticed_categories_count} หมวด
+                  </div>
+                </div>
+              </div>
+
+              {/* Cognitive & Task Readiness Row */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+                <div className="glass-panel" style={{ padding: '1.4rem' }}>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Award size={18} color="var(--accent)" /> ความพร้อมตามระดับ R / A / P
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                    {readiness.cognitive_readiness.map(cog => {
+                      const meta = READINESS_STATUS_META[cog.status] || READINESS_STATUS_META.unpracticed;
+                      return (
+                        <div key={cog.level} style={{ background: 'rgba(255,255,255,0.02)', padding: '0.85rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.86rem' }}>
+                            <span><strong>{cog.level}</strong> — {cog.name} <span style={{ color: 'var(--text-muted)', fontSize: '0.76rem' }}>(TOS {cog.target_pct}%)</span></span>
+                            <strong style={{ color: meta.color }}>{cog.accuracy !== null ? `${cog.accuracy}%` : 'ยังไม่ทำ'}</strong>
+                          </div>
+                          <div style={{ height: '7px', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', overflow: 'hidden' }}>
+                            <div style={{ width: `${cog.accuracy || 0}%`, height: '100%', background: meta.color, transition: 'width 0.3s ease' }} />
+                          </div>
+                          <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
+                            ทำแล้ว {cog.unique_answered}/{cog.total_in_bank} ข้อ (ถูก {cog.correct} ข้อ)
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="glass-panel" style={{ padding: '1.4rem' }}>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Activity size={18} color="#38bdf8" /> ความพร้อมตาม 5 สมรรถนะ (Tasks)
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
+                    {readiness.task_readiness.map(task => {
+                      const meta = READINESS_STATUS_META[task.status] || READINESS_STATUS_META.unpracticed;
+                      return (
+                        <div key={task.task}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
+                            <span style={{ color: 'var(--text)' }}>{task.task} <span style={{ color: 'var(--text-muted)' }}>({task.target_pct}%)</span></span>
+                            <span style={{ fontWeight: 700, color: meta.color }}>
+                              {task.accuracy !== null ? `${task.accuracy}% (${task.unique_answered} ข้อ)` : 'ยังไม่ทำ'}
+                            </span>
+                          </div>
+                          <div style={{ height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '3px', overflow: 'hidden' }}>
+                            <div style={{ width: `${task.accuracy || 0}%`, height: '100%', background: meta.color }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Top High-ROI Weak Topics Remediation */}
+              <div className="glass-panel" style={{ padding: '1.5rem', borderLeft: '4px solid #f59e0b' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.1rem' }}>
+                  <div>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: '0 0 0.25rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <AlertTriangle size={18} color="#f59e0b" /> Top High-ROI จุดอ่อนต้องซ่อมด่วน (คำนวณจากน้ำหนัก TOS × ความแม่นยำ)
+                    </h3>
+                    <p style={{ color: 'var(--text-sub)', fontSize: '0.85rem', margin: 0 }}>
+                      หัวข้อที่ลงทุนอ่าน/ฝึกทำแล้วดันคะแนนสอบรวมขึ้นได้เร็วที่สุด กดจัดชุดซ่อมเฉพาะจุดได้ใน 1 คลิก
+                    </p>
+                  </div>
+                </div>
+
+                {readiness.top_weak_topics.length === 0 ? (
+                  <div style={{ padding: '1.5rem', textAlign: 'center', color: '#10b981', fontWeight: 600 }}>
+                    🎉 ยอดเยี่ยม! คุณผ่านเกณฑ์ความแม่นยำสูงในทุกหัวข้อที่ฝึกมาแล้ว
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(310px, 1fr))', gap: '0.9rem' }}>
+                    {readiness.top_weak_topics.map((wt, idx) => (
+                      <div key={wt.topic_id} style={{
+                        background: 'rgba(255,255,255,0.025)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: '12px',
+                        padding: '1rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        gap: '0.75rem'
+                      }}>
+                        <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                            <span style={{ fontSize: '0.72rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '10px', background: 'rgba(245,158,11,0.16)', color: '#fbbf24' }}>
+                              #{idx + 1} ROI {wt.roi_score}
+                            </span>
+                            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{wt.category}</span>
+                          </div>
+                          <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.3rem' }}>
+                            {wt.title_th}
+                          </div>
+                          <div style={{ fontSize: '0.78rem', color: 'var(--text-sub)' }}>
+                            {wt.reason_th}
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          {onStartPractice && wt.question_ids?.length > 0 && (
+                            <button
+                              type="button"
+                              disabled={launchingIds === wt.topic_id}
+                              onClick={() => handleStartRemediation(wt.topic_id, wt.question_ids)}
+                              className="btn btn-primary btn-sm"
+                              style={{ flex: 1, fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+                            >
+                              <Zap size={14} /> {launchingIds === wt.topic_id ? 'กำลังโหลด...' : `ติวชุดซ่อม (${wt.question_ids.length} ข้อ)`}
+                            </button>
+                          )}
+                          {onOpenTopic && (
+                            <button
+                              type="button"
+                              onClick={() => onOpenTopic(wt.topic_id)}
+                              className="btn btn-secondary btn-sm"
+                              style={{ fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                            >
+                              <BookOpen size={14} /> เปิดบทเรียน
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* 11 Categories Readiness Breakdown */}
+              <div className="glass-panel" style={{ padding: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <TrendingUp size={18} color="#10b981" /> ความพร้อมรายสาขาวิชา (11 หมวดเทียบน้ำหนัก TOS)
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '0.85rem' }}>
+                  {readiness.category_readiness.map(cat => {
+                    const meta = READINESS_STATUS_META[cat.status] || READINESS_STATUS_META.unpracticed;
+                    return (
+                      <div key={cat.category} style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${meta.border}`, borderRadius: '10px', padding: '0.95rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.45rem' }}>
+                          <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text)' }}>{cat.category}</div>
+                          <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: '10px', background: meta.bg, color: meta.color, whiteSpace: 'nowrap' }}>
+                            {meta.label}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', color: 'var(--text-sub)', marginBottom: '0.35rem' }}>
+                          <span>น้ำหนักสอบ: {cat.target_pct}% • ทำแล้ว {cat.unique_answered}/{cat.total_in_bank} ({cat.coverage_pct}%)</span>
+                          <strong style={{ color: meta.color }}>{cat.accuracy !== null ? `${cat.accuracy}%` : '-'}</strong>
+                        </div>
+                        <div style={{ height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '3px', overflow: 'hidden', marginBottom: '0.5rem' }}>
+                          <div style={{ width: `${cat.accuracy || 0}%`, height: '100%', background: meta.color }} />
+                        </div>
+                        {onOpenTopic && cat.recommended_topic_ids?.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => onOpenTopic(cat.recommended_topic_ids[0])}
+                            className="btn btn-secondary btn-sm"
+                            style={{ fontSize: '0.74rem', padding: '0.28rem 0.65rem' }}
+                          >
+                            📖 ทบทวนหัวข้อหลักของหมวดนี้
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          ) : null}
         </div>
       )}
 

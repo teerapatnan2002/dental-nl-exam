@@ -3,7 +3,8 @@ import {
   BookOpen, PlayCircle, ShieldAlert, Brain,
   Stethoscope, ChevronDown, ChevronUp, Sparkles, Settings2,
   Target, GraduationCap, Wrench, Clock, AlertTriangle, User as UserIcon, Activity, Trophy,
-  Search, BookmarkCheck, ShieldCheck, MoreHorizontal, ChevronRight, Calendar, Flame, Lock
+  Search, BookmarkCheck, ShieldCheck, MoreHorizontal, ChevronRight, Calendar, Flame, Lock,
+  Zap, RotateCcw
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { API_BASE } from '../config';
@@ -30,6 +31,13 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
   const [customYear, setCustomYear] = useState('');
   const [userStats, setUserStats] = useState(null);
   const [reviewData, setReviewData] = useState(null);
+  const [dailyPlan, setDailyPlan] = useState(null);
+  const [launchingDailyFix, setLaunchingDailyFix] = useState(false);
+  const [studyHubLaunch, setStudyHubLaunch] = useState({
+    topicId: null,
+    classroomTab: 'synthesized',
+    hubMode: 'exam_topics',
+  });
   const [expandedCategories, setExpandedCategories] = useState({});
   const [activeCategoryModal, setActiveCategoryModal] = useState(null);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
@@ -105,6 +113,15 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
       .then(res => res.json())
       .then(data => setReviewData(data))
       .catch(err => console.error(err));
+
+      fetch(`${API_BASE}/api/tracking/daily-plan`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => { if (data) setDailyPlan(data); })
+      .catch(err => console.error(err));
+    } else {
+      setDailyPlan(null);
     }
   }, [token]);
 
@@ -137,6 +154,35 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
         questions: questionSet,
         count: questionSet.length
       });
+    }
+  };
+
+  const handleOpenStudyTopic = (topicId, classroomTab = 'synthesized', hubMode = 'exam_topics') => {
+    setStudyHubLaunch({
+      topicId: topicId || null,
+      classroomTab: classroomTab || 'synthesized',
+      hubMode: hubMode || 'exam_topics',
+    });
+    setActiveTab('study_hub');
+  };
+
+  const handleStartQuestionIds = async (questionIds) => {
+    if (!questionIds || questionIds.length === 0) return;
+    try {
+      setLaunchingDailyFix(true);
+      const res = await fetch(`${API_BASE}/api/questions/by-ids`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question_ids: questionIds }),
+      });
+      if (res.ok) {
+        const qs = await res.json();
+        handleStartPracticeQuestions(qs);
+      }
+    } catch (err) {
+      console.error('Failed to launch daily weak-topic quiz:', err);
+    } finally {
+      setLaunchingDailyFix(false);
     }
   };
 
@@ -221,6 +267,128 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
         onOpenLawHub={onOpenLawHub}
         onOpenScheduleModal={onOpenScheduleModal}
       />
+
+      {/* ── Today's Study Queue (Daily Adaptive Mission) ── */}
+      {user && dailyPlan && (
+        <div
+          className="glass-panel animate-fade-in"
+          style={{
+            marginTop: '1.25rem',
+            marginBottom: '1.25rem',
+            padding: '1.35rem 1.5rem',
+            borderLeft: '4px solid #10b981',
+            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(56, 189, 248, 0.05))',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+            <div>
+              <div style={{ fontSize: '0.76rem', fontWeight: 700, color: '#34d399', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.2rem' }}>
+                Adaptive Daily Queue
+              </div>
+              <h3 style={{ margin: 0, fontSize: '1.12rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <Target size={18} color="#34d399" /> ภารกิจทบทวนวันนี้ (Today&apos;s Study Plan)
+              </h3>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-sub)' }}>
+                ทำวันนี้: <strong style={{ color: '#34d399' }}>{dailyPlan.answered_today}</strong> / {dailyPlan.daily_target_questions} ข้อ
+              </div>
+              {dailyPlan.readiness_summary?.unique_answered > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('tos_analytics')}
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.78rem', padding: '0.32rem 0.7rem' }}
+                >
+                  📊 Readiness TOS: <strong>{dailyPlan.readiness_summary.weighted_accuracy_pct}%</strong>
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div style={{ height: '7px', background: 'rgba(255,255,255,0.07)', borderRadius: '4px', overflow: 'hidden', marginBottom: '1rem' }}>
+            <div style={{
+              height: '100%',
+              width: `${Math.min(100, Math.round((dailyPlan.answered_today / Math.max(1, dailyPlan.daily_target_questions)) * 100))}%`,
+              background: 'linear-gradient(90deg, #10b981, #38bdf8)',
+              transition: 'width 0.35s ease',
+            }} />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(235px, 1fr))', gap: '0.85rem' }}>
+            <div style={{ background: 'rgba(15, 23, 42, 0.45)', border: '1px solid rgba(245, 158, 11, 0.28)', borderRadius: '12px', padding: '0.95rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '0.6rem' }}>
+              <div>
+                <div style={{ fontSize: '0.74rem', color: '#fbbf24', fontWeight: 700, marginBottom: '0.2rem' }}>🔄 Spaced Repetition (SM-2)</div>
+                <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text)' }}>
+                  ข้อสอบถึงกำหนด {dailyPlan.due_questions_count} ข้อ
+                </div>
+                <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>คัดเฉพาะข้อที่เคยพลาดหรือตอบแบบไม่มั่นใจ</div>
+              </div>
+              {dailyPlan.due_questions_count > 0 && reviewData?.questions?.length > 0 ? (
+                <button type="button" onClick={handleStartReview} className="btn btn-sm" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#fff', border: 'none', fontWeight: 700 }}>
+                  <RotateCcw size={14} /> ทบทวนเลย ({Math.min(20, dailyPlan.due_questions_count)} ข้อ)
+                </button>
+              ) : (
+                <span style={{ fontSize: '0.76rem', color: '#34d399', fontWeight: 600 }}>✅ เคลียร์ข้อสอบค้างทวนครบแล้ว</span>
+              )}
+            </div>
+
+            <div style={{ background: 'rgba(15, 23, 42, 0.45)', border: '1px solid rgba(56, 189, 248, 0.28)', borderRadius: '12px', padding: '0.95rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '0.6rem' }}>
+              <div>
+                <div style={{ fontSize: '0.74rem', color: '#38bdf8', fontWeight: 700, marginBottom: '0.2rem' }}>🃏 Active Recall Flashcards</div>
+                <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text)' }}>
+                  การ์ดถึงกำหนด {dailyPlan.due_flashcards_count} ใบ
+                </div>
+                <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>ซิงค์วันทบทวนบนบัญชีของคุณอัตโนมัติ</div>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleOpenStudyTopic(dailyPlan.recommended_weak_topic?.topic_id || 'Endo-Pulp-Periapical-Diagnosis', 'flashcards', 'exam_topics')}
+                className="btn btn-secondary btn-sm"
+                style={{ fontWeight: 700 }}
+              >
+                🃏 เปิดโหมด Flashcards SM-2
+              </button>
+            </div>
+
+            {dailyPlan.recommended_weak_topic && (
+              <div style={{ background: 'rgba(15, 23, 42, 0.45)', border: '1px solid rgba(236, 72, 153, 0.3)', borderRadius: '12px', padding: '0.95rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '0.6rem' }}>
+                <div>
+                  <div style={{ fontSize: '0.74rem', color: '#f472b6', fontWeight: 700, marginBottom: '0.2rem' }}>🎯 จุดอ่อนคุ้มคะแนนสุดวันนี้</div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text)', lineHeight: 1.35 }}>
+                    {dailyPlan.recommended_weak_topic.title_th}
+                  </div>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                    {dailyPlan.recommended_weak_topic.reason_th}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
+                  {dailyPlan.recommended_weak_topic.question_ids?.length > 0 && (
+                    <button
+                      type="button"
+                      disabled={launchingDailyFix}
+                      onClick={() => handleStartQuestionIds(dailyPlan.recommended_weak_topic.question_ids)}
+                      className="btn btn-primary btn-sm"
+                      style={{ flex: 1, fontSize: '0.76rem' }}
+                    >
+                      <Zap size={13} /> {launchingDailyFix ? 'กำลังโหลด...' : 'ติวชุดซ่อม'}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleOpenStudyTopic(dailyPlan.recommended_weak_topic.topic_id, 'synthesized', 'exam_topics')}
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontSize: '0.76rem' }}
+                  >
+                    <BookOpen size={13} /> เรียนบทนี้
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── Grouped Tab Bar with Dropdown ─────────────── */}
       <div className="dashboard-tab-bar" role="tablist" aria-label="Main Navigation">
@@ -352,7 +520,12 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
       ════════════════════════════════════════════════ */}
       {activeTab === 'study_hub' && (
         <div className="animate-fade-in">
-          <ClinicalStudyHub onStartExam={handleStart} />
+          <ClinicalStudyHub
+            onStartExam={handleStart}
+            initialTopicId={studyHubLaunch.topicId}
+            initialClassroomTab={studyHubLaunch.classroomTab}
+            initialHubMode={studyHubLaunch.hubMode}
+          />
         </div>
       )}
 
@@ -361,7 +534,10 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
       ════════════════════════════════════════════════ */}
       {activeTab === 'tos_analytics' && (
         <div className="animate-fade-in">
-          <TOSAnalytics onStartPractice={handleStartPracticeQuestions} />
+          <TOSAnalytics
+            onStartPractice={handleStartPracticeQuestions}
+            onOpenTopic={(topicId) => handleOpenStudyTopic(topicId, 'synthesized', 'exam_topics')}
+          />
         </div>
       )}
 

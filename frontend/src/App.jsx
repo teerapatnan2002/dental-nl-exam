@@ -250,7 +250,7 @@ function AppContent() {
     }
   };
 
-  const finishExam = async (answers, duration, questionTimes = {}) => {
+  const finishExam = async (answers, duration, questionTimes = {}, confidenceMap = {}) => {
     setUserAnswers(answers);
     setCurrentView('result');
 
@@ -269,6 +269,7 @@ function AppContent() {
             selected_choice: answers[q.id] || null,
             is_correct: !!is_correct,
             time_spent_seconds: questionTimes[q.id] != null ? Math.round(questionTimes[q.id] / 1000) : null,
+            confidence: confidenceMap[q.id] || null,
           };
         });
 

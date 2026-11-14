@@ -80,6 +80,8 @@ export default function ClinicalStudyHub({
   onBack, 
   onStartExam, 
   initialTopicId = null,
+  initialClassroomTab = null,
+  initialHubMode = null,
   isModal = false,
   onClose = null 
 }) {
@@ -87,7 +89,7 @@ export default function ClinicalStudyHub({
   const { token, authFetch } = auth;
 
   // Primary Mode: 'exam_topics' (83 DB Topics), 'textbooks' (14 Gold Standard Textbooks), 'masterclass' (25 Curated Guides), 'mistake_clinic'
-  const [hubMode, setHubMode] = useState('exam_topics');
+  const [hubMode, setHubMode] = useState(initialHubMode || 'exam_topics');
   const [selectedSpecialty, setSelectedSpecialty] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -108,8 +110,23 @@ export default function ClinicalStudyHub({
   const [moduleData, setModuleData] = useState(null);
   const [loadingModule, setLoadingModule] = useState(false);
 
-  // Classroom Sub-Tabs: 'synthesized' | 'guided_teacher' | 'flashcards' | 'cheat_sheet' | 'differential' | 'pearls_traps'
-  const [classroomTab, setClassroomTab] = useState('synthesized');
+  // Classroom Sub-Tabs: 'synthesized' | 'guided_teacher' | 'pathways' | 'flashcards' | 'cheat_sheet' | 'differential' | 'pearls_traps'
+  const [classroomTab, setClassroomTab] = useState(initialClassroomTab || 'synthesized');
+
+  useEffect(() => {
+    if (initialTopicId) {
+      setSelectedTopicId(initialTopicId);
+      if (CLINICAL_STUDY_GUIDES[initialTopicId]) {
+        setSelectedMasterclassId(initialTopicId);
+      }
+    }
+    if (initialHubMode) {
+      setHubMode(initialHubMode);
+    }
+    if (initialClassroomTab) {
+      setClassroomTab(initialClassroomTab);
+    }
+  }, [initialTopicId, initialClassroomTab, initialHubMode]);
   const [selectedTaskFilter, setSelectedTaskFilter] = useState('all');
   const [selectedCogFilter, setSelectedCogFilter] = useState('all');
 
@@ -128,11 +145,13 @@ export default function ClinicalStudyHub({
   const [masterclassAsPathway, setMasterclassAsPathway] = useState(true);
   const [selectedPathwayFilter, setSelectedPathwayFilter] = useState('all');
 
-  // Flashcards Active Recall Deck State (persisted to localStorage)
+  // Flashcards Active Recall Deck State (DB-synced SM-2 + localStorage fallback)
   const [cardIndex, setCardIndex] = useState(0);
   const [cardFlipped, setCardFlipped] = useState(false);
   const [flashcardOrder, setFlashcardOrder] = useState(null);
   const [onlyUnmasteredCards, setOnlyUnmasteredCards] = useState(false);
+  const [onlyDueCards, setOnlyDueCards] = useState(false);
+  const [cardSm2Map, setCardSm2Map] = useState({});
   const [cardMastery, setCardMastery] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('nl_flashcard_mastery_v1') || '{}');
@@ -141,7 +160,7 @@ export default function ClinicalStudyHub({
     }
   });
 
-  // Topic Mastery Tracker State (persisted to localStorage)
+  // Topic Mastery Tracker State (DB-synced + localStorage fallback)
   const [topicMastery, setTopicMastery] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('nl_topic_mastery_v1') || '{}');
@@ -150,10 +169,70 @@ export default function ClinicalStudyHub({
     }
   });
 
+  // Hydrate and idempotently sync localStorage flashcards/topics to DB on login
+  useEffect(() => {
+    if (!token || !authFetch) return;
+    let cancelled = false;
+
+    const applyServerCards = (cards = []) => {
+      if (cancelled || !Array.isArray(cards)) return;
+      const nextFlash = {};
+      const nextTopics = {};
+      const nextSm2 = {};
+      cards.forEach((c) => {
+        if (c.card_type === 'topic') {
+          nextTopics[c.card_key] = c.mastery_status;
+        } else {
+          nextFlash[c.card_key] = c.mastery_status;
+          nextSm2[c.card_key] = c;
+        }
+      });
+      setCardMastery((prev) => ({ ...prev, ...nextFlash }));
+      setTopicMastery((prev) => ({ ...prev, ...nextTopics }));
+      setCardSm2Map((prev) => ({ ...prev, ...nextSm2 }));
+    };
+
+    const syncCards = async () => {
+      try {
+        const items = [];
+        try {
+          const localFlash = JSON.parse(localStorage.getItem('nl_flashcard_mastery_v1') || '{}');
+          Object.entries(localFlash).forEach(([k, v]) => {
+            if (v) items.push({ card_key: k, card_type: 'flashcard', mastery_status: String(v) });
+          });
+          const localTopics = JSON.parse(localStorage.getItem('nl_topic_mastery_v1') || '{}');
+          Object.entries(localTopics).forEach(([k, v]) => {
+            if (v) items.push({ card_key: k, card_type: 'topic', mastery_status: String(v) });
+          });
+        } catch {
+          // Ignore invalid JSON in localStorage
+        }
+
+        const res = items.length > 0
+          ? await authFetch(`${API_BASE}/api/tracking/cards/sync`, {
+              method: 'POST',
+              body: JSON.stringify({ items: items.slice(0, 900) }),
+            })
+          : await authFetch(`${API_BASE}/api/tracking/cards`);
+
+        if (res.ok) {
+          const data = await res.json();
+          applyServerCards(data.cards || []);
+        }
+      } catch (err) {
+        console.error('Failed to sync card mastery:', err);
+      }
+    };
+
+    syncCards();
+    return () => { cancelled = true; };
+  }, [token, authFetch]);
+
   const updateTopicMastery = useCallback((topicId, level) => {
     if (!topicId) return;
     setTopicMastery(prev => {
       const next = { ...prev };
+      const finalLevel = next[topicId] === level ? 'yellow' : level;
       if (next[topicId] === level) {
         delete next[topicId];
       } else {
@@ -164,9 +243,19 @@ export default function ClinicalStudyHub({
       } catch {
         // Ignore storage quota errors
       }
+      if (token && authFetch && next[topicId]) {
+        authFetch(`${API_BASE}/api/tracking/cards/review`, {
+          method: 'POST',
+          body: JSON.stringify({
+            card_key: topicId,
+            card_type: 'topic',
+            mastery_status: finalLevel,
+          }),
+        }).catch(() => {});
+      }
       return next;
     });
-  }, []);
+  }, [token, authFetch]);
 
   const updateCardMastery = useCallback((cardId, status) => {
     if (!cardId) return;
@@ -180,6 +269,33 @@ export default function ClinicalStudyHub({
       return next;
     });
   }, []);
+
+  const gradeFlashcardSm2 = useCallback(async (cardId, rating) => {
+    if (!cardId) return;
+    const optimisticStatus = rating >= 3 ? 'mastered' : 'review';
+    updateCardMastery(cardId, optimisticStatus);
+
+    if (!token || !authFetch) return;
+    try {
+      const res = await authFetch(`${API_BASE}/api/tracking/cards/review`, {
+        method: 'POST',
+        body: JSON.stringify({
+          card_key: cardId,
+          card_type: 'flashcard',
+          rating,
+        }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setCardSm2Map(prev => ({ ...prev, [cardId]: updated }));
+        if (updated.mastery_status) {
+          updateCardMastery(cardId, updated.mastery_status);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to save SM-2 card rating:', err);
+    }
+  }, [token, authFetch, updateCardMastery]);
 
   // Mistake Clinic State (Authenticated endpoint)
   const [mistakeClinicData, setMistakeClinicData] = useState(null);
@@ -395,13 +511,22 @@ export default function ClinicalStudyHub({
     if (onlyUnmasteredCards) {
       cards = cards.filter(c => cardMastery[c.id] !== 'mastered');
     }
+    if (onlyDueCards) {
+      cards = cards.filter(c => {
+        const sm2 = cardSm2Map[c.id];
+        return !sm2 || sm2.is_due;
+      });
+    }
     return cards;
-  }, [rawFlashcards, flashcardOrder, onlyUnmasteredCards, cardMastery]);
+  }, [rawFlashcards, flashcardOrder, onlyUnmasteredCards, onlyDueCards, cardMastery, cardSm2Map]);
 
   const currentFlashcard = activeFlashcards[cardIndex] || activeFlashcards[0] || null;
   const masteredCardsCount = useMemo(() => {
     return rawFlashcards.filter(c => cardMastery[c.id] === 'mastered').length;
   }, [rawFlashcards, cardMastery]);
+  const dueCardsCount = useMemo(() => {
+    return rawFlashcards.filter(c => !cardSm2Map[c.id] || cardSm2Map[c.id].is_due).length;
+  }, [rawFlashcards, cardSm2Map]);
 
   const handleShuffleFlashcards = () => {
     const idxs = rawFlashcards.map((_, i) => i);
@@ -2588,7 +2713,7 @@ export default function ClinicalStudyHub({
                           </div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
                           <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.78rem', color: 'var(--text-sub)', cursor: 'pointer' }}>
                             <input
                               type="checkbox"
@@ -2600,6 +2725,18 @@ export default function ClinicalStudyHub({
                               }}
                             />
                             เฉพาะการ์ดที่ยังไม่จำ
+                          </label>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.78rem', color: '#38bdf8', cursor: 'pointer' }}>
+                            <input
+                              type="checkbox"
+                              checked={onlyDueCards}
+                              onChange={(e) => {
+                                setOnlyDueCards(e.target.checked);
+                                setCardIndex(0);
+                                setCardFlipped(false);
+                              }}
+                            />
+                            ถึงกำหนดทวนวันนี้ ({dueCardsCount})
                           </label>
                           <button
                             type="button"
@@ -2616,6 +2753,7 @@ export default function ClinicalStudyHub({
                         const safeIdx = Math.min(cardIndex, activeFlashcards.length - 1);
                         const card = activeFlashcards[safeIdx] || currentFlashcard;
                         const isMastered = cardMastery[card.id] === 'mastered';
+                        const sm2Info = cardSm2Map[card.id];
                         const advanceCard = () => {
                           setCardFlipped(false);
                           setCardIndex(i => (activeFlashcards.length > 0 ? (i + 1) % activeFlashcards.length : 0));
@@ -2643,7 +2781,18 @@ export default function ClinicalStudyHub({
                                     {card.cognitive_level}
                                   </span>
                                 )}
-                                {isMastered && (
+                                {sm2Info ? (
+                                  <span style={{
+                                    fontSize: '0.72rem',
+                                    fontWeight: 700,
+                                    padding: '0.18rem 0.55rem',
+                                    borderRadius: '10px',
+                                    background: sm2Info.is_due ? 'rgba(245,158,11,0.18)' : 'rgba(16,185,129,0.16)',
+                                    color: sm2Info.is_due ? '#fbbf24' : '#34d399',
+                                  }}>
+                                    {sm2Info.is_due ? '⏰ ถึงกำหนดทวน' : `📅 ทวนอีก ${sm2Info.days_until_due} วัน`}
+                                  </span>
+                                ) : isMastered && (
                                   <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#34d399' }}>✅ จำแม่นแล้ว</span>
                                 )}
                               </div>
@@ -2725,29 +2874,34 @@ export default function ClinicalStudyHub({
                                   📚 {card.reference}
                                 </div>
 
-                                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap', marginTop: '1rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      updateCardMastery(card.id, 'review');
-                                      advanceCard();
-                                    }}
-                                    className="btn btn-secondary btn-sm"
-                                    style={{ fontWeight: 700, borderColor: 'rgba(245,158,11,0.45)', color: '#fbbf24', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
-                                  >
-                                    <RotateCcw size={14} /> ยังไม่แม่น — เก็บไว้ทวนอีก
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      updateCardMastery(card.id, 'mastered');
-                                      advanceCard();
-                                    }}
-                                    className="btn btn-primary btn-sm"
-                                    style={{ fontWeight: 800, background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
-                                  >
-                                    <Check size={14} /> จำแม่นแล้ว! การ์ดถัดไป
-                                  </button>
+                                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.55rem', flexWrap: 'wrap', marginTop: '1rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                                  {[
+                                    { rating: 1, label: '😵 ลืม (1 วัน)', border: 'rgba(239,68,68,0.45)', bg: 'rgba(239,68,68,0.14)', color: '#f87171' },
+                                    { rating: 2, label: '😓 ยาก', border: 'rgba(245,158,11,0.45)', bg: 'rgba(245,158,11,0.14)', color: '#fbbf24' },
+                                    { rating: 3, label: '🙂 พอได้', border: 'rgba(56,189,248,0.45)', bg: 'rgba(56,189,248,0.14)', color: '#38bdf8' },
+                                    { rating: 4, label: '🚀 แม่นเป๊ะ', border: 'rgba(16,185,129,0.55)', bg: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff' },
+                                  ].map((opt) => (
+                                    <button
+                                      key={opt.rating}
+                                      type="button"
+                                      onClick={() => {
+                                        gradeFlashcardSm2(card.id, opt.rating);
+                                        advanceCard();
+                                      }}
+                                      className="btn btn-sm"
+                                      style={{
+                                        fontWeight: 700,
+                                        border: `1px solid ${opt.border}`,
+                                        background: opt.bg,
+                                        color: opt.color,
+                                        padding: '0.45rem 0.85rem',
+                                        borderRadius: '10px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      {opt.label}
+                                    </button>
+                                  ))}
                                 </div>
                               </div>
                             )}

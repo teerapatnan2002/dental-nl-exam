@@ -53,6 +53,7 @@ tables = [
     "exam_sessions",
     "user_answers",
     "user_question_stats",
+    "user_card_reviews",
     "reported_questions",
     "bookmarks",
     "user_notes"
@@ -121,7 +122,16 @@ try:
     """)
 
     # Sensitive tables: Server-side only (block anon and authenticated via PostgREST)
-    sensitive_tables = ["users", "exam_sessions", "user_answers", "user_question_stats", "reported_questions", "bookmarks", "user_notes"]
+    sensitive_tables = [
+        "users",
+        "exam_sessions",
+        "user_answers",
+        "user_question_stats",
+        "user_card_reviews",
+        "reported_questions",
+        "bookmarks",
+        "user_notes",
+    ]
     for tbl in sensitive_tables:
         p_cur.execute(f'REVOKE ALL ON public."{tbl}" FROM anon, authenticated;')
 

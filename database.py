@@ -75,11 +75,23 @@ _COLUMN_MIGRATIONS = {
     },
     "user_answers": {
         "time_spent_seconds": "ALTER TABLE user_answers ADD COLUMN time_spent_seconds INTEGER",
+        "confidence": "ALTER TABLE user_answers ADD COLUMN confidence VARCHAR",
+    },
+    "user_question_stats": {
+        "last_quality": "ALTER TABLE user_question_stats ADD COLUMN last_quality INTEGER",
+        "lapse_count": "ALTER TABLE user_question_stats ADD COLUMN lapse_count INTEGER NOT NULL DEFAULT 0",
+        "last_reviewed_at": "ALTER TABLE user_question_stats ADD COLUMN last_reviewed_at INTEGER",
+        "last_confidence": "ALTER TABLE user_question_stats ADD COLUMN last_confidence VARCHAR",
     },
     "reported_questions": {
         "admin_reply": "ALTER TABLE reported_questions ADD COLUMN admin_reply VARCHAR",
     },
 }
+
+_INDEX_MIGRATIONS = [
+    "CREATE INDEX IF NOT EXISTS ix_user_qstat_user_due ON user_question_stats (user_id, next_review_date)",
+    "CREATE INDEX IF NOT EXISTS ix_user_card_reviews_user_due ON user_card_reviews (user_id, card_type, next_review_date)",
+]
 
 
 def run_migrations():
@@ -96,6 +108,31 @@ def run_migrations():
                 if col not in existing_cols:
                     logger.info("Migration: adding column %s.%s", table, col)
                     conn.execute(text(ddl))
+        for idx_ddl in _INDEX_MIGRATIONS:
+            try:
+                conn.execute(text(idx_ddl))
+            except Exception as exc:
+                logger.warning("Index migration skipped (%s): %s", idx_ddl, exc)
+        if not SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
+            try:
+                conn.execute(text("ALTER TABLE public.user_card_reviews ENABLE ROW LEVEL SECURITY;"))
+                conn.execute(
+                    text(
+                        """
+                        DO $$
+                        BEGIN
+                            IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
+                                REVOKE ALL ON public.user_card_reviews FROM anon;
+                            END IF;
+                            IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+                                REVOKE ALL ON public.user_card_reviews FROM authenticated;
+                            END IF;
+                        END $$;
+                        """
+                    )
+                )
+            except Exception as exc:
+                logger.warning("Supabase RLS migration skipped: %s", exc)
 
 
 def run_fts_migration():

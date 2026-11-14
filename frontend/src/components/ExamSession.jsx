@@ -339,7 +339,7 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
   }, [currentPageIndex, pages]);
 
   const handleSubmit = () => {
-    const finish = () => onFinish(answers, Date.now() - startTime, buildQuestionTimes());
+    const finish = () => onFinish(answers, Date.now() - startTime, buildQuestionTimes(), confidence);
     if (mode === 'practice') { finish(); return; }
 
     const unansweredCount = questions.length - Object.keys(answers).length;

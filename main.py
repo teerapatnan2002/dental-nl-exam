@@ -6,11 +6,14 @@ import logging
 from datetime import datetime, timezone, timedelta
 from typing import List, Optional
 
-TZ_BKK = timezone(timedelta(hours=7))
-MOCK_70_OPEN_TIME = datetime(2026, 9, 26, 13, 0, 0, tzinfo=TZ_BKK)
-
-def is_mock_70_locked() -> bool:
-    return datetime.now(TZ_BKK) < MOCK_70_OPEN_TIME
+from tos_blueprint import (
+    MOCK_70_OPEN_TIME,
+    TOS_CATEGORIES,
+    TOS_COGNITIVE,
+    TOS_TASKS,
+    TZ_BKK,
+    is_mock_70_locked,
+)
 
 
 from fastapi import FastAPI, Depends, HTTPException, Query, Request
@@ -235,35 +238,21 @@ def get_stats(db: Session = Depends(get_db)):
     }
 
 
+@app.get("/api/analytics/my-readiness")
+def get_analytics_my_readiness(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    from tracking import compute_user_readiness
+
+    return compute_user_readiness(current_user, db)
+
+
 @app.get("/api/analytics/tos")
 def get_tos_analytics(db: Session = Depends(get_db)):
-    tos_categories = [
-        {"category": "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก", "target_count": 35, "target_pct": 11.67},
-        {"category": "ทันตกรรมบดเคี้ยวและอาการปวดบริเวณช่องปากและใบหน้า", "target_count": 15, "target_pct": 5.00},
-        {"category": "ศัลยศาสตร์ช่องปาก", "target_count": 42, "target_pct": 14.00},
-        {"category": "ปริทันตวิทยา", "target_count": 35, "target_pct": 11.67},
-        {"category": "ทันตกรรมบูรณะ/หัตถการ", "target_count": 35, "target_pct": 11.67},
-        {"category": "วิทยาเอ็นโดดอนต์", "target_count": 23, "target_pct": 7.67},
-        {"category": "ทันตกรรมประดิษฐ์", "target_count": 38, "target_pct": 12.67},
-        {"category": "ทันตกรรมจัดฟัน", "target_count": 17, "target_pct": 5.67},
-        {"category": "ทันตกรรมสำหรับเด็ก", "target_count": 35, "target_pct": 11.67},
-        {"category": "ทันตกรรมชุมชน", "target_count": 25, "target_pct": 8.33},
-        {"category": "กฎหมายและจรรยาบรรณ", "target_count": 30, "target_pct": 9.09},
-    ]
-
-    tos_tasks = [
-        {"task": "การสร้างเสริมสุขภาพและการป้องกัน", "target_count": 30, "target_pct": 10.00},
-        {"task": "การเกิดและการดำเนินโรค", "target_count": 50, "target_pct": 16.67},
-        {"task": "การวินิจฉัยโรค", "target_count": 88, "target_pct": 29.33},
-        {"task": "การจัดการและการรักษาผู้ป่วย", "target_count": 92, "target_pct": 30.67},
-        {"task": "ขั้นตอนและวิธีการรักษา", "target_count": 40, "target_pct": 13.33},
-    ]
-
-    tos_cognitive = [
-        {"level": "R", "name": "ความจำและความเข้าใจ (Recall)", "target_count": 52, "target_pct": 17.33},
-        {"level": "A", "name": "การประยุกต์ใช้ (Application)", "target_count": 89, "target_pct": 29.67},
-        {"level": "P", "name": "การวิเคราะห์และแก้ปัญหา (Problem Solving)", "target_count": 159, "target_pct": 53.00},
-    ]
+    tos_categories = TOS_CATEGORIES
+    tos_tasks = TOS_TASKS
+    tos_cognitive = TOS_COGNITIVE
 
     all_q = db.query(
         models.Question.id,
@@ -508,6 +497,29 @@ def get_questions(
 
     questions = query.offset(skip).limit(limit).all()
     return [_serialize_question(q) for q in questions]
+
+
+class QuestionIdsRequest(BaseModel):
+    question_ids: List[int]
+
+
+@app.post("/api/questions/by-ids", response_model=List[QuestionResponse])
+def get_questions_by_ids(
+    payload: QuestionIdsRequest,
+    db: Session = Depends(get_db),
+):
+    requested = [int(qid) for qid in payload.question_ids[:100]]
+    if not requested:
+        return []
+    query = (
+        db.query(models.Question)
+        .options(selectinload(models.Question.choices))
+        .filter(models.Question.id.in_(requested))
+    )
+    if is_mock_70_locked():
+        query = query.filter(~models.Question.source_exam.like("%2570%"))
+    q_map = {q.id: q for q in query.all()}
+    return [_serialize_question(q_map[qid]) for qid in requested if qid in q_map]
 
 
 @app.get("/api/search", response_model=List[QuestionResponse])

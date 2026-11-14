@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, UniqueConstraint
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, UniqueConstraint, Index
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -72,6 +72,7 @@ class UserAnswer(Base):
     selected_choice = Column(String, nullable=True)
     is_correct = Column(Integer, nullable=False)  # 1 or 0
     time_spent_seconds = Column(Integer, nullable=True)  # per-question timing
+    confidence = Column(String, nullable=True)  # 'confident' | 'unsure' | 'hard'
 
     session = relationship("ExamSession", back_populates="answers")
     question = relationship("Question")
@@ -79,6 +80,9 @@ class UserAnswer(Base):
 
 class UserQuestionStat(Base):
     __tablename__ = "user_question_stats"
+    __table_args__ = (
+        Index("ix_user_qstat_user_due", "user_id", "next_review_date"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
@@ -89,9 +93,36 @@ class UserQuestionStat(Base):
     interval = Column(Integer, default=0, nullable=False)  # days
     ease_factor = Column(Integer, default=250, nullable=False)  # 2.5 represented as 250
     next_review_date = Column(Integer, nullable=False)  # Unix timestamp
+    last_quality = Column(Integer, nullable=True)  # 1-5 SM-2 quality score
+    lapse_count = Column(Integer, default=0, nullable=False)
+    last_reviewed_at = Column(Integer, nullable=True)
+    last_confidence = Column(String, nullable=True)
 
     user = relationship("User")
     question = relationship("Question")
+
+
+class UserCardReview(Base):
+    __tablename__ = "user_card_reviews"
+    __table_args__ = (
+        UniqueConstraint("user_id", "card_key", "card_type", name="uq_user_card_review"),
+        Index("ix_user_card_reviews_user_due", "user_id", "card_type", "next_review_date"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    card_key = Column(String, nullable=False, index=True)
+    card_type = Column(String, nullable=False, default="flashcard")  # 'flashcard' | 'topic' | 'cloze'
+    repetitions = Column(Integer, default=0, nullable=False)
+    interval = Column(Integer, default=0, nullable=False)
+    ease_factor = Column(Integer, default=250, nullable=False)
+    last_quality = Column(Integer, nullable=True)
+    lapse_count = Column(Integer, default=0, nullable=False)
+    mastery_status = Column(String, nullable=False, default="review")
+    next_review_date = Column(Integer, nullable=False)
+    updated_at = Column(Integer, nullable=False)
+
+    user = relationship("User")
 
 
 class ReportedQuestion(Base):
