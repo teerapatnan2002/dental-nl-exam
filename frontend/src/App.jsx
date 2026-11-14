@@ -12,7 +12,7 @@ import ScheduledExamModal from './components/ScheduledExamModal';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { XCircle, User as UserIcon, LogOut, Sun, Moon, Scale, Clock, BookOpen } from 'lucide-react';
 import { API_BASE } from './config';
-import { EXAM_SCHEDULES, calculateTimeRemaining } from './data/examSchedule';
+import { getPrimaryUpcomingExam, calculateTimeRemaining } from './data/examSchedule';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
@@ -76,9 +76,9 @@ function AppContent() {
   const [scheduledModalData, setScheduledModalData] = useState(null);
   const [isLoadingExam, setIsLoadingExam] = useState(false);
 
-  // Compute countdown for sticky header badge (Law 3/2569)
-  const nextExam = EXAM_SCHEDULES[0];
-  const nextExamTimeLeft = calculateTimeRemaining(nextExam.targetDate);
+  // Compute countdown for sticky header badge (always selects nearest upcoming exam)
+  const nextExam = getPrimaryUpcomingExam();
+  const nextExamTimeLeft = nextExam?.timing || (nextExam ? calculateTimeRemaining(nextExam.targetDate, nextExam.endDate) : null);
 
   // Fetch categories and stats on load
   useEffect(() => {
@@ -104,7 +104,7 @@ function AppContent() {
     }
 
     const isExam = (config.mode === 'exam' || config.examType === 'exam');
-    const isMock70 = (config.year === '2570' || config.year === 2570 || config.targetExamId === 'mock-law-2570');
+    const isMock70 = (!config.source_exam && (config.year === '2570' || config.year === 2570)) || config.targetExamId === 'mock-law-2570';
 
     // Strict lock: Mock 70 does not allow taking exam or practice before Saturday 13:00
     if (isMock70) {
@@ -362,43 +362,17 @@ function AppContent() {
             }}
             title="คลิกเพื่อดูตารางสอบทางการและประกาศ ศ.ป.ท."
           >
-            <Clock size={15} color="#f43f5e" />
-            <span className="theme-toggle-label tabular-nums" style={{ fontWeight: 600 }}>
-              {nextExamTimeLeft && !nextExamTimeLeft.isExpired ? `สอบกฎหมาย: อีก ${nextExamTimeLeft.days} วัน` : 'ตารางสอบ ศ.ป.ท.'}
+            <Clock size={15} color={nextExamTimeLeft && !nextExamTimeLeft.isPassed ? '#f43f5e' : 'var(--text-muted)'} />
+            <span className="header-schedule-label tabular-nums" style={{ fontWeight: 600 }}>
+              {nextExam && nextExamTimeLeft && !nextExamTimeLeft.isPassed
+                ? (nextExamTimeLeft.isInProgress
+                    ? `กำลังสอบ ${nextExam.shortLabel || nextExam.series}`
+                    : `${nextExam.shortLabel || nextExam.series} • ${nextExamTimeLeft.days} วัน`)
+                : 'ผ่านกำหนดการสอบแล้ว'}
             </span>
           </button>
 
-          {/* Clinical Study Hub Quick Access Button */}
-          <button
-            onClick={() => setCurrentView('study_hub')}
-            className="theme-toggle-btn header-study-btn"
-            style={{
-              background: currentView === 'study_hub' ? 'var(--primary)' : 'rgba(236, 72, 153, 0.12)',
-              color: currentView === 'study_hub' ? '#fff' : '#ec4899',
-              border: '1px solid rgba(236, 72, 153, 0.3)',
-              cursor: 'pointer'
-            }}
-            title="คลังบทเรียนและเลกเชอร์เจาะลึก 10 สาขา + กฎหมาย (Clinical Masterclass)"
-          >
-            <BookOpen size={15} color={currentView === 'study_hub' ? '#fff' : '#ec4899'} />
-            <span className="theme-toggle-label" style={{ fontWeight: 600 }}>เลกเชอร์เจาะลึก</span>
-          </button>
-
-          {/* Law Study Hub Quick Access Button */}
-          <button
-            onClick={() => setCurrentView('law_hub')}
-            className="theme-toggle-btn header-law-btn"
-            style={{
-              background: currentView === 'law_hub' ? 'var(--primary)' : 'rgba(124, 58, 237, 0.12)',
-              color: currentView === 'law_hub' ? '#fff' : 'var(--primary-light)',
-              border: '1px solid rgba(124, 58, 237, 0.3)',
-              cursor: 'pointer'
-            }}
-            title="สรุปกฎหมายทันตกรรม, ผังมโนทัศน์ & Flashcards"
-          >
-            <Scale size={15} color={currentView === 'law_hub' ? '#fff' : 'var(--primary-light)'} />
-            <span className="theme-toggle-label" style={{ fontWeight: 600 }}>สรุปกฎหมาย</span>
-          </button>
+          {/* Study & Law hubs are organized inside the Dashboard primary tabs & mobile bottom navigation */}
 
           {/* Theme Toggle Button */}
           <button

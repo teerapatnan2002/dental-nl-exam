@@ -17,7 +17,7 @@ import CategoryDetailModal from './CategoryDetailModal';
 import ExamCountdown from './ExamCountdown';
 import TOSAnalytics from './TOSAnalytics';
 import ClinicalStudyHub from './ClinicalStudyHub';
-import { calculateTimeRemaining } from '../data/examSchedule';
+import { calculateTimeRemaining, formatElapsedSinceExam } from '../data/examSchedule';
 
 const lawCategoryName = 'กฎหมายและจรรยาบรรณ';
 
@@ -45,11 +45,11 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
   const dropdownRef = useRef(null);
 
   // Live countdown to Saturday Mock 70 Exam (26 Sep 2026, 13:00)
-  const [mock70TimeLeft, setMock70TimeLeft] = useState(() => calculateTimeRemaining('2026-09-26T13:00:00+07:00'));
+  const [mock70TimeLeft, setMock70TimeLeft] = useState(() => calculateTimeRemaining('2026-09-26T13:00:00+07:00', '2026-09-26T14:00:00+07:00'));
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setMock70TimeLeft(calculateTimeRemaining('2026-09-26T13:00:00+07:00'));
+      setMock70TimeLeft(calculateTimeRemaining('2026-09-26T13:00:00+07:00', '2026-09-26T14:00:00+07:00'));
     }, 1000);
     return () => clearInterval(timer);
   }, []);
@@ -195,23 +195,21 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
   const selectedYearData = selectedYear ? years.find(y => y.year === selectedYear) : null;
 
   const mainTabs = [
-    { id: 'fullExam', label: 'สอบจัดเต็ม', emoji: '🎯' },
+    { id: 'fullExam', label: 'สนามสอบจำลอง', emoji: '🎯' },
     { id: 'practice', label: 'ฝึกซ้อมรายวิชา', emoji: '📚' },
-    { id: 'study_hub', label: 'เลกเชอร์เจาะลึก', emoji: '📖' },
-    { id: 'custom', label: 'สร้างข้อสอบเอง', emoji: '⚙️' },
-    { id: 'tos_analytics', label: 'TOS Analytics', emoji: '📊' },
-    { id: 'law_hub', label: 'สรุปกฎหมาย & บัตรคำ', emoji: '⚖️' },
-    { id: 'aihub', label: 'AI Hub', emoji: '🧠' },
+    { id: 'study_hub', label: 'เลกเชอร์คลินิก', emoji: '📖' },
+    { id: 'law_hub', label: 'สรุปกฎหมาย', emoji: '⚖️' },
+    { id: 'custom', label: 'จัดชุดสอบเอง', emoji: '⚙️' },
   ];
 
+  // Utility dropdown holds only tools, analytics & account views (no overlap with mainTabs)
   const toolsGroup = [
-    { id: 'study_hub', label: 'คลังบทเรียนและเลกเชอร์เจาะลึก', desc: 'เจาะลึกกลไกและ Decision Matrix 10 สาขา + กฎหมาย', emoji: '📖' },
-    { id: 'calc_lab_tool', label: 'ห้องฝึกคำนวณคลินิก (Calc Lab)', desc: 'สุ่มฝึก MRD ยาชา, ฟลูออไรด์ PTD, สถิติ 2×2, CAL & จัดฟัน', emoji: '🧮' },
+    { id: 'calc_lab_tool', label: 'Calc Lab คำนวณคลินิก', desc: 'สุ่มฝึก MRD ยาชา, ฟลูออไรด์ PTD, สถิติ 2×2, CAL & จัดฟัน', emoji: '🧮' },
     { id: 'cloze_arena_tool', label: 'Cloze & กับดักข้อสอบ', desc: 'ฝึกเติมตัวเลข-กฎหมาย จับไต๋ตัวลวง + จับเวลา 25 วิ & SM-2', emoji: '⚡' },
-    { id: 'tos_analytics', label: 'TOS Analytics & Benchmark', desc: 'เปรียบเทียบข้อสอบจริงกับเกณฑ์ ศ.ป.ท. 2563 & Coverage Matrix', emoji: '📊' },
-    { id: 'law_hub_tool', label: 'สรุปกฎหมาย & Flashcards', desc: 'ผังมโนทัศน์ 5 เสาหลัก & บัตรคำช่วยจำ', emoji: '⚖️' },
-    { id: 'search', label: 'ค้นหาข้อสอบ', desc: 'ค้นหาโจทย์ตามคำค้นหา', emoji: '🔍' },
-    { id: 'leaderboard', label: 'Leaderboard', desc: 'อันดับคะแนนและผู้ทำโจทย์', emoji: '🏆' },
+    { id: 'aihub', label: 'AI Hub ติวเตอร์', desc: 'ระบบวิเคราะห์จุดอ่อนเชิงลึกและวางแผนทบทวนเฉพาะบุคคล', emoji: '🧠' },
+    { id: 'search', label: 'ค้นหาข้อสอบ', desc: 'ค้นหาโจทย์ตามคำค้นหา ชื่อโรค หรือเลขมาตรา', emoji: '🔍' },
+    { id: 'tos_analytics', label: 'TOS Analytics', desc: 'เปรียบเทียบสัดส่วนข้อสอบจริงกับเกณฑ์ ศ.ป.ท. 2563', emoji: '📊' },
+    { id: 'leaderboard', label: 'Leaderboard', desc: 'ดูอันดับคะแนนสะสมและสถิติรวมผู้เข้าฝึกซ้อม', emoji: '🏆' },
   ];
 
   const personalGroup = user ? [
@@ -232,7 +230,9 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
     <div className="animate-fade-in">
 
       {/* ── Hero ─────────────────────────────────────── */}
-      <div className="hero-section glass-panel" style={{ marginBottom: '1.5rem' }}>
+      {/* ── Top Command Overview Grid (Hero + Chronological Countdown) ── */}
+      <div className="dashboard-overview-grid">
+        <div className="hero-section glass-panel">
         <div className="hero-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem' }}>
           <div>
             <div style={{ fontSize: '0.82rem', fontWeight: 600, letterSpacing: '0.1em', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
@@ -269,6 +269,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
         onOpenLawHub={onOpenLawHub}
         onOpenScheduleModal={onOpenScheduleModal}
       />
+      </div>
 
       {/* ── Today's Study Queue (Daily Adaptive Mission) ── */}
       {user && dailyPlan && (
@@ -429,9 +430,9 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span className="dashboard-tab-emoji" aria-hidden="true">
-                {activeMoreTab ? activeMoreTab.emoji : '✨'}
+                {activeMoreTab ? activeMoreTab.emoji : '🧰'}
               </span>
-              <span>{activeMoreTab ? activeMoreTab.label : 'เพิ่มเติม'}</span>
+              <span>{activeMoreTab ? activeMoreTab.label : 'เครื่องมือ & สถิติ'}</span>
             </div>
             {moreMenuOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
@@ -446,8 +447,8 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                   role="menuitem"
                   className={`tab-dropdown-item ${activeTab === item.id ? 'active' : ''}`}
                   onClick={() => {
-                    if (item.id === 'law_hub_tool') {
-                      if (onOpenLawHub) onOpenLawHub();
+                    if (item.id === 'aihub') {
+                      if (onOpenAIHub) onOpenAIHub();
                       setMoreMenuOpen(false);
                       return;
                     }
@@ -653,16 +654,33 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                 overflow: 'hidden'
               }}>
                 {/* ── Mock 70 Header ── */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
                   <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.3rem 0.8rem', borderRadius: '20px', background: mock70TimeLeft.isExpired ? 'rgba(236, 72, 153, 0.15)' : 'rgba(244, 63, 94, 0.18)', border: '1px solid ' + (mock70TimeLeft.isExpired ? 'rgba(236, 72, 153, 0.4)' : 'rgba(244, 63, 94, 0.5)'), color: mock70TimeLeft.isExpired ? '#f472b6' : '#fb7185', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.6rem' }}>
-                      {mock70TimeLeft.isExpired ? <Flame size={14} /> : <Lock size={14} />} {mock70TimeLeft.isExpired ? 'เปิดห้องสอบแล้ว' : '🔒 ล็อคระบบ • รอเปิดสอบพร้อมกันวันเสาร์นี้ 13:00 น.'}
+                    <div style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      padding: '0.3rem 0.8rem',
+                      borderRadius: '20px',
+                      background: mock70TimeLeft.isPassed
+                        ? 'rgba(16, 185, 129, 0.16)'
+                        : (mock70TimeLeft.isExpired ? 'rgba(236, 72, 153, 0.15)' : 'rgba(244, 63, 94, 0.18)'),
+                      border: '1px solid ' + (mock70TimeLeft.isPassed ? 'rgba(16, 185, 129, 0.4)' : (mock70TimeLeft.isExpired ? 'rgba(236, 72, 153, 0.4)' : 'rgba(244, 63, 94, 0.5)')),
+                      color: mock70TimeLeft.isPassed ? '#34d399' : (mock70TimeLeft.isExpired ? '#f472b6' : '#fb7185'),
+                      fontSize: '0.82rem',
+                      fontWeight: 700,
+                      marginBottom: '0.6rem'
+                    }}>
+                      {mock70TimeLeft.isPassed ? <Clock size={14} /> : (mock70TimeLeft.isExpired ? <Flame size={14} /> : <Lock size={14} />)}
+                      {mock70TimeLeft.isPassed
+                        ? `ผ่านกำหนดการสอบมาแล้ว (${formatElapsedSinceExam(mock70TimeLeft)}) • เปิดทำย้อนหลังได้`
+                        : (mock70TimeLeft.isExpired ? 'เปิดห้องสอบแล้ว' : '🔒 ล็อคระบบ • รอเปิดสอบพร้อมกัน')}
                     </div>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 0.4rem 0', color: '#fff', letterSpacing: '-0.02em', wordBreak: 'break-word' }}>
+                    <h2 style={{ fontSize: '1.45rem', fontWeight: 800, margin: '0 0 0.4rem 0', color: '#fff', letterSpacing: '-0.02em', wordBreak: 'break-word' }}>
                       🎯 ศ.ป.ท. Mock Exam 2570: กฎหมายและจรรยาบรรณวิชาชีพ
                     </h2>
-                    <div style={{ color: 'var(--text-sub)', fontSize: '0.92rem', maxWidth: '680px', lineHeight: 1.5, wordBreak: 'break-word' }}>
-                      ชุดข้อสอบจำลองเสมือนจริง <strong>30 ข้อ (10 STEM สถานการณ์คลินิก × 3 ข้อย่อย)</strong> ระบบตั้งล็อคไว้เพื่อเปิดสอบพร้อมกันในวันเสาร์ที่ 26 ก.ย. 69 เวลา 13:00 – 14:00 น. โดยไม่มีการเปิดสอบหรือฝึกทำล่วงหน้า
+                    <div style={{ color: 'var(--text-sub)', fontSize: '0.9rem', maxWidth: '680px', lineHeight: 1.5, wordBreak: 'break-word' }}>
+                      ชุดข้อสอบจำลองเสมือนจริง <strong>30 ข้อ (10 STEM สถานการณ์คลินิก × 3 ข้อย่อย)</strong> กำหนดสอบเดิมวันเสาร์ที่ 26 ก.ย. 69 เวลา 13:00 – 14:00 น. {mock70TimeLeft.isPassed ? 'ปัจจุบันสามารถเข้าสอบย้อนหลังและฝึกซ้อมได้ทันที' : ''}
                     </div>
                   </div>
 
@@ -724,33 +742,50 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                     minWidth: 0,
                     boxSizing: 'border-box'
                   }}>
-                    <div style={{ fontSize: '0.78rem', color: '#f472b6', fontWeight: 600, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
-                      {mock70TimeLeft.isExpired ? <Clock size={13} /> : <Lock size={13} />} {mock70TimeLeft.isExpired ? '🔥 ระบบเปิดให้สอบรอบจริงแล้ว' : '🔒 ห้องสอบล็อคอยู่ • นับถอยหลังสู่เวลาเปิดสอบวันเสาร์นี้ (13:00 น.)'}
+                    <div style={{ fontSize: '0.82rem', color: mock70TimeLeft.isPassed ? '#34d399' : '#f472b6', fontWeight: 700, marginBottom: '0.45rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
+                      {mock70TimeLeft.isPassed
+                        ? <><Clock size={14} /> ผ่านกำหนดการสอบมาแล้ว</>
+                        : mock70TimeLeft.isExpired
+                          ? <><Clock size={14} /> กำลังดำเนินการสอบอยู่</>
+                          : <><Lock size={13} /> นับถอยหลังสู่เวลาเปิดสอบ</>}
                     </div>
-                    <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', margin: '0.2rem 0', flexWrap: 'wrap', justifyContent: 'center' }}>
-                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.35rem 0.45rem', borderRadius: '8px', minWidth: '38px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.days).padStart(2, '0')}</div>
-                        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>วัน</div>
+                    {mock70TimeLeft.isPassed ? (
+                      <div style={{ padding: '0.55rem 0.75rem', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.25)', width: '100%', boxSizing: 'border-box' }}>
+                        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff' }}>
+                          {formatElapsedSinceExam(mock70TimeLeft)}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)', marginTop: '0.2rem' }}>
+                          กำหนดสอบเดิม: 26 ก.ย. 2569 (13:00–14:00 น.) • เปิดทำข้อสอบย้อนหลังแล้ว
+                        </div>
                       </div>
-                      <span style={{ fontWeight: 700, color: '#ec4899' }}>:</span>
-                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.35rem 0.45rem', borderRadius: '8px', minWidth: '38px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.hours).padStart(2, '0')}</div>
-                        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>ชม.</div>
-                      </div>
-                      <span style={{ fontWeight: 700, color: '#ec4899' }}>:</span>
-                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.35rem 0.45rem', borderRadius: '8px', minWidth: '38px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.minutes).padStart(2, '0')}</div>
-                        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>นาที</div>
-                      </div>
-                      <span style={{ fontWeight: 700, color: '#ec4899' }}>:</span>
-                      <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.35rem 0.45rem', borderRadius: '8px', minWidth: '38px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f472b6', fontFamily: 'monospace' }}>{String(mock70TimeLeft.seconds).padStart(2, '0')}</div>
-                        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>วินาที</div>
-                      </div>
-                    </div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-sub)', marginTop: '0.4rem' }}>
-                      *ระบบจะเปิดห้องสอบพร้อมกันในวันเสาร์ที่ 26 ก.ย. เวลา 13:00 น. ไม่มีเปิดสอบก่อนเวลา*
-                    </div>
+                    ) : (
+                      <>
+                        <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', margin: '0.2rem 0', flexWrap: 'wrap', justifyContent: 'center' }}>
+                          <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.35rem 0.45rem', borderRadius: '8px', minWidth: '38px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.days).padStart(2, '0')}</div>
+                            <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>วัน</div>
+                          </div>
+                          <span style={{ fontWeight: 700, color: '#ec4899' }}>:</span>
+                          <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.35rem 0.45rem', borderRadius: '8px', minWidth: '38px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.hours).padStart(2, '0')}</div>
+                            <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>ชม.</div>
+                          </div>
+                          <span style={{ fontWeight: 700, color: '#ec4899' }}>:</span>
+                          <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.35rem 0.45rem', borderRadius: '8px', minWidth: '38px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>{String(mock70TimeLeft.minutes).padStart(2, '0')}</div>
+                            <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>นาที</div>
+                          </div>
+                          <span style={{ fontWeight: 700, color: '#ec4899' }}>:</span>
+                          <div style={{ background: 'rgba(0,0,0,0.5)', padding: '0.35rem 0.45rem', borderRadius: '8px', minWidth: '38px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f472b6', fontFamily: 'monospace' }}>{String(mock70TimeLeft.seconds).padStart(2, '0')}</div>
+                            <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>วินาที</div>
+                          </div>
+                        </div>
+                        <div style={{ fontSize: '0.72rem', color: 'var(--text-sub)', marginTop: '0.4rem' }}>
+                          เปิดระบบสอบ: วันเสาร์ที่ 26 ก.ย. 2569 เวลา 13:00 น.
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { X, Calendar, Clock, MapPin, CheckCircle, AlertCircle, FileText, ArrowRight, BookOpen, PlayCircle, ShieldCheck } from 'lucide-react';
-import { EXAM_SCHEDULES } from '../data/examSchedule';
+import { getOrderedExamSchedules, formatElapsedSinceExam } from '../data/examSchedule';
 
 export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpenLawHub }) {
-  const [activeExamId, setActiveExamId] = useState('law-3-2569');
+  const orderedSchedules = getOrderedExamSchedules();
+  const [activeExamId, setActiveExamId] = useState(() => getOrderedExamSchedules()[0]?.id || 'nl-1-2570');
 
   // ESC key listener
   useEffect(() => {
@@ -18,7 +19,7 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
 
   if (!isOpen) return null;
 
-  const currentExam = EXAM_SCHEDULES.find(e => e.id === activeExamId) || EXAM_SCHEDULES[0];
+  const currentExam = orderedSchedules.find(e => e.id === activeExamId) || orderedSchedules[0];
 
   return ReactDOM.createPortal(
     <div
@@ -115,43 +116,70 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
           borderBottom: '1px solid var(--border)',
           overflowX: 'auto'
         }}>
-          {EXAM_SCHEDULES.map(exam => {
+          {orderedSchedules.map((exam, idx) => {
             const isActive = exam.id === activeExamId;
+            const isPassed = exam.timing.isPassed;
+            const prevExam = idx > 0 ? orderedSchedules[idx - 1] : null;
+            const showPassedDivider = isPassed && prevExam && !prevExam.timing.isPassed;
             return (
-              <button
-                key={exam.id}
-                onClick={() => setActiveExamId(exam.id)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.5rem 0.85rem',
-                  borderRadius: '10px',
-                  border: `1px solid ${isActive ? 'var(--primary)' : 'var(--border)'}`,
-                  background: isActive ? 'linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(6, 182, 212, 0.15))' : 'rgba(255, 255, 255, 0.03)',
-                  color: isActive ? '#fff' : 'var(--text-sub)',
-                  fontWeight: isActive ? 600 : 500,
-                  fontSize: '0.82rem',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                <span>{exam.icon}</span>
-                <span>{exam.series}</span>
-                {exam.badge && (
+              <React.Fragment key={exam.id}>
+                {showPassedDivider && (
+                  <span style={{
+                    fontSize: '0.7rem',
+                    color: 'var(--text-muted)',
+                    padding: '0 0.25rem',
+                    whiteSpace: 'nowrap',
+                    alignSelf: 'center',
+                  }}>
+                    | ผ่านมาแล้ว:
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setActiveExamId(exam.id)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    padding: '0.48rem 0.8rem',
+                    borderRadius: '10px',
+                    border: `1px solid ${isActive ? 'var(--primary)' : 'var(--border)'}`,
+                    background: isActive ? 'var(--primary)' : 'var(--surface-subtle)',
+                    color: isActive ? '#fff' : (isPassed ? 'var(--text-muted)' : 'var(--text)'),
+                    fontWeight: isActive ? 700 : 500,
+                    fontSize: '0.8rem',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    opacity: !isActive && isPassed ? 0.78 : 1,
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <span>{exam.icon}</span>
+                  <span>{exam.shortLabel || exam.series}</span>
                   <span style={{
                     fontSize: '0.65rem',
                     padding: '0.1rem 0.4rem',
                     borderRadius: '6px',
-                    background: exam.id === 'law-3-2569' ? 'rgba(244, 63, 94, 0.2)' : 'rgba(124, 58, 237, 0.2)',
-                    color: exam.id === 'law-3-2569' ? '#f43f5e' : 'var(--primary-light)',
+                    background: isActive
+                      ? 'rgba(255, 255, 255, 0.22)'
+                      : isPassed
+                        ? 'rgba(148, 163, 184, 0.16)'
+                        : 'rgba(6, 182, 212, 0.16)',
+                    color: isActive
+                      ? '#fff'
+                      : isPassed
+                        ? 'var(--text-muted)'
+                        : 'var(--ink-sky)',
                     fontWeight: 600
                   }}>
-                    {exam.id === 'law-3-2569' ? 'รอบด่วน' : 'NL'}
+                    {isPassed
+                      ? 'ผ่านแล้ว'
+                      : exam.timing.isInProgress
+                        ? 'กำลังสอบ'
+                        : `อีก ${exam.timing.days} วัน`}
                   </span>
-                )}
-              </button>
+                </button>
+              </React.Fragment>
             );
           })}
         </div>
@@ -177,17 +205,44 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
             gap: '1rem'
           }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
                 <span style={{ fontSize: '1.2rem' }}>{currentExam.icon}</span>
                 <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--accent)', textTransform: 'uppercase' }}>
                   {currentExam.series}
                 </span>
+                {currentExam.timing.isPassed ? (
+                  <span style={{
+                    fontSize: '0.72rem',
+                    padding: '0.15rem 0.55rem',
+                    borderRadius: '12px',
+                    background: 'rgba(148, 163, 184, 0.16)',
+                    color: 'var(--ink-amber)',
+                    fontWeight: 700,
+                    border: '1px solid rgba(245, 158, 11, 0.3)'
+                  }}>
+                    ⏰ ผ่านกำหนดการสอบมาแล้ว ({formatElapsedSinceExam(currentExam.timing)})
+                  </span>
+                ) : (
+                  <span style={{
+                    fontSize: '0.72rem',
+                    padding: '0.15rem 0.55rem',
+                    borderRadius: '12px',
+                    background: 'rgba(124, 58, 237, 0.15)',
+                    color: 'var(--ink-indigo)',
+                    fontWeight: 700,
+                    border: '1px solid rgba(124, 58, 237, 0.3)'
+                  }}>
+                    {currentExam.timing.isInProgress
+                      ? '🔴 กำลังสอบอยู่ตอนนี้'
+                      : `⏳ อีก ${currentExam.timing.days} วัน ${currentExam.timing.hours} ชม.`}
+                  </span>
+                )}
                 <span style={{
                   fontSize: '0.72rem',
                   padding: '0.15rem 0.5rem',
                   borderRadius: '12px',
                   background: currentExam.regStatus === 'closed' ? 'rgba(244, 63, 94, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-                  color: currentExam.regStatus === 'closed' ? '#f43f5e' : '#10b981',
+                  color: currentExam.regStatus === 'closed' ? 'var(--ink-rose)' : 'var(--ink-emerald)',
                   fontWeight: 600,
                   border: `1px solid ${currentExam.regStatus === 'closed' ? 'rgba(244, 63, 94, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`
                 }}>
@@ -203,7 +258,7 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
             </div>
 
             {/* Quick action button inside banner */}
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
               {currentExam.type === 'law' && onOpenLawHub && (
                 <button
                   className="btn btn-secondary btn-sm"
@@ -242,7 +297,7 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
                   }}
                   style={{ borderRadius: '8px' }}
                 >
-                  <PlayCircle size={14} /> {currentExam.quickAction.label}
+                  <PlayCircle size={14} /> {currentExam.timing.isPassed ? `ทำข้อสอบย้อนหลัง (${currentExam.questionsCount} ข้อ)` : currentExam.quickAction.label}
                 </button>
               )}
             </div>

@@ -11,19 +11,22 @@ export const EXAM_SCHEDULES = [
     id: 'mock-law-2570',
     title: 'สนามจำลองสอบเสมือนจริง: NL Law 70 (Mock Exam)',
     series: 'รอบปี พ.ศ. 2570',
+    shortLabel: 'Mock Law 70',
+    categoryGroup: 'mock',
     type: 'law',
     icon: '🎯',
-    badge: '🔥 เปิดสอบวันเสาร์นี้ 13:00 น.',
+    badge: 'ข้อสอบเก็ง NL Law 70',
     targetDate: '2026-09-26T13:00:00+07:00',
+    endDate: '2026-09-26T14:00:00+07:00',
     examDateText: 'วันเสาร์ที่ 26 กันยายน 2569',
     examTimeText: '13:00 – 14:00 น. (60 นาที)',
     questionsCount: 30,
     regPeriodText: 'เปิดให้ทุกท่านเข้าสอบได้ฟรี',
     regStatus: 'open',
-    regStatusText: 'พร้อมเปิดระบบเสาร์นี้',
+    regStatusText: 'เปิดให้เข้าสอบย้อนหลังและฝึกทำได้ทันที',
     announcementDateText: 'เฉลยและวิเคราะห์ผลทันทีหลังส่งข้อสอบ',
     fee: 'ฟรีสำหรับสมาชิก',
-    description: 'ข้อสอบเก็งแม่นยำ 30 ข้อ 10 STEMs เต็มรูปแบบ จำลองเวลาและเกณฑ์สอบจริงของ ศรวท. 60 นาที (13:00–14:00 น.)',
+    description: 'ข้อสอบเก็งแม่นยำ 30 ข้อ 10 STEMs เต็มรูปแบบ จำลองเวลาและเกณฑ์สอบจริงของ ศ.ป.ท. 60 นาที (13:00–14:00 น.)',
     subjects: [
       { name: 'พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537', items: 'อำนาจสภา, อายุใบอนุญาตตลอดชีพ, CDEC 100 หน่วย' },
       { name: 'จรรยาบรรณวิชาชีพทันตกรรม', items: 'ม.30 ห้ามทับถมเพื่อน, ห้ามโฆษณา Before-After, ห้ามอ้างผู้เชี่ยวชาญ' },
@@ -31,7 +34,7 @@ export const EXAM_SCHEDULES = [
       { name: 'ทันตนิติเวชศาสตร์ & สิทธิผู้ป่วย', items: 'Gustafson root transparency, Dental+DNA ไฟไหม้, Child abuse' },
     ],
     quickAction: {
-      label: '🔒 เปิดห้องสอบวันเสาร์ 13:00 น.',
+      label: 'เข้าสอบ Mock Law 70 (30 ข้อ)',
       actionType: 'exam_law_70',
       category: 'กฎหมายและจรรยาบรรณ',
       year: '2570',
@@ -42,16 +45,19 @@ export const EXAM_SCHEDULES = [
     id: 'dsat-mock-1',
     title: 'DSAT Mock Exam นิติทันตวิทยาและกฎหมาย ชุดที่ 1 (สนทท. 2569)',
     series: 'DSAT ชุดที่ 1',
+    shortLabel: 'DSAT ชุด 1',
+    categoryGroup: 'mock',
     type: 'law',
     icon: '📝',
     badge: '✨ สโมสรนิสิตฯ สนทท.',
-    targetDate: '2026-10-01T00:00:00+07:00',
-    examDateText: 'เปิดสอบทันที (On-Demand)',
+    targetDate: '2026-10-01T09:00:00+07:00',
+    endDate: '2026-10-01T10:00:00+07:00',
+    examDateText: 'กำหนดรอบ 1 ตุลาคม 2569 (ทำย้อนหลังได้)',
     examTimeText: '13:00 – 14:00 น. (60 นาที)',
     questionsCount: 30,
     regPeriodText: 'เปิดให้ทำข้อสอบฟรี',
     regStatus: 'open',
-    regStatusText: 'พร้อมเข้าสอบได้ทันที',
+    regStatusText: 'พร้อมเข้าสอบย้อนหลังได้ทันที',
     announcementDateText: 'เฉลยและวิเคราะห์ Cognitive Level ทันทีหลังส่ง',
     fee: 'ฟรีสำหรับสมาชิก',
     description: 'ข้อสอบมาตรฐาน สนทท. ชุดที่ 1 (30 ข้อ 10 STEMs) กฎหมายวิชาชีพ 24 ข้อ และทันตนิติเวช 6 ข้อ พร้อมเฉลยละเอียดและวิเคราะห์ระดับการเรียนรู้ (TOS)',
@@ -72,16 +78,19 @@ export const EXAM_SCHEDULES = [
     id: 'dsat-mock-2',
     title: 'DSAT Mock Exam นิติทันตวิทยาและกฎหมาย ชุดที่ 2 (สนทท. 2569)',
     series: 'DSAT ชุดที่ 2',
+    shortLabel: 'DSAT ชุด 2',
+    categoryGroup: 'mock',
     type: 'law',
     icon: '📝',
     badge: '✨ สโมสรนิสิตฯ สนทท.',
-    targetDate: '2026-10-01T00:00:00+07:00',
-    examDateText: 'เปิดสอบทันที (On-Demand)',
+    targetDate: '2026-10-01T11:00:00+07:00',
+    endDate: '2026-10-01T12:00:00+07:00',
+    examDateText: 'กำหนดรอบ 1 ตุลาคม 2569 (ทำย้อนหลังได้)',
     examTimeText: '13:00 – 14:00 น. (60 นาที)',
     questionsCount: 30,
     regPeriodText: 'เปิดให้ทำข้อสอบฟรี',
     regStatus: 'open',
-    regStatusText: 'พร้อมเข้าสอบได้ทันที',
+    regStatusText: 'พร้อมเข้าสอบย้อนหลังได้ทันที',
     announcementDateText: 'เฉลยและวิเคราะห์ Cognitive Level ทันทีหลังส่ง',
     fee: 'ฟรีสำหรับสมาชิก',
     description: 'ข้อสอบมาตรฐาน สนทท. ชุดที่ 2 (30 ข้อ 10 STEMs) เจาะลึกสถานพยาบาลเอกชน, ถ่ายโอน รพ.สต. ไป อบจ., ทันตนิติเวชศพเน่าสลายในป่า',
@@ -102,16 +111,19 @@ export const EXAM_SCHEDULES = [
     id: 'dsat-mock-3',
     title: 'DSAT Mock Exam นิติทันตวิทยาและกฎหมาย ชุดที่ 3 (สนทท. 2569)',
     series: 'DSAT ชุดที่ 3',
+    shortLabel: 'DSAT ชุด 3',
+    categoryGroup: 'mock',
     type: 'law',
     icon: '📝',
     badge: '✨ สโมสรนิสิตฯ สนทท.',
-    targetDate: '2026-10-01T00:00:00+07:00',
-    examDateText: 'เปิดสอบทันที (On-Demand)',
+    targetDate: '2026-10-01T13:00:00+07:00',
+    endDate: '2026-10-01T14:00:00+07:00',
+    examDateText: 'กำหนดรอบ 1 ตุลาคม 2569 (ทำย้อนหลังได้)',
     examTimeText: '13:00 – 14:00 น. (60 นาที)',
     questionsCount: 30,
     regPeriodText: 'เปิดให้ทำข้อสอบฟรี',
     regStatus: 'open',
-    regStatusText: 'พร้อมเข้าสอบได้ทันที',
+    regStatusText: 'พร้อมเข้าสอบย้อนหลังได้ทันที',
     announcementDateText: 'เฉลยและวิเคราะห์ Cognitive Level ทันทีหลังส่ง',
     fee: 'ฟรีสำหรับสมาชิก',
     description: 'ข้อสอบมาตรฐาน สนทท. ชุดที่ 3 (30 ข้อ 10 STEMs) เจาะลึกผู้ป่วย HIV, การถอนคำร้องจรรยาบรรณ, รอยกัด ABFO No.2, สงสัย Child Abuse และภัยพิบัติเครื่องบินตก',
@@ -132,16 +144,19 @@ export const EXAM_SCHEDULES = [
     id: 'dsat-mock-4',
     title: 'DSAT Mock Exam นิติทันตวิทยาและกฎหมาย ชุดที่ 4 (2570)',
     series: 'DSAT ชุดที่ 4',
+    shortLabel: 'DSAT ชุด 4',
+    categoryGroup: 'mock',
     type: 'law',
     icon: '📝',
     badge: '✨ สโมสรนิสิตฯ สนทท. (2570)',
-    targetDate: '2026-10-02T00:00:00+07:00',
-    examDateText: 'เปิดสอบทันที (On-Demand)',
+    targetDate: '2026-10-02T13:00:00+07:00',
+    endDate: '2026-10-02T14:00:00+07:00',
+    examDateText: 'กำหนดรอบ 2 ตุลาคม 2569 (ทำย้อนหลังได้)',
     examTimeText: '13:00 – 14:00 น. (60 นาที)',
     questionsCount: 30,
     regPeriodText: 'เปิดให้ทำข้อสอบฟรี',
     regStatus: 'open',
-    regStatusText: 'พร้อมเข้าสอบได้ทันที',
+    regStatusText: 'พร้อมเข้าสอบย้อนหลังได้ทันที',
     announcementDateText: 'เฉลยและวิเคราะห์ Cognitive Level ทันทีหลังส่ง',
     fee: 'ฟรีสำหรับสมาชิก',
     description: 'ข้อสอบมาตรฐาน สนทท. ชุดที่ 4 (30 ข้อ 10 STEMs) เจาะลึกสถานพยาบาล กฎหมาย CDEC สิทธิผู้ป่วย เวชระเบียน & PDPA ทันตนิติเวช DVI และการประเมินอายุ',
@@ -162,16 +177,21 @@ export const EXAM_SCHEDULES = [
     id: 'law-3-2569',
     title: 'สอบวิชากฎหมายที่เกี่ยวข้องกับวิชาชีพทันตกรรม',
     series: 'ครั้งที่ 3/2569',
+    shortLabel: 'กฎหมาย 3/2569',
+    categoryGroup: 'official',
     type: 'law',
     icon: '⚖️',
-    badge: 'ด่วนที่สุด • รอบถัดไป',
+    badge: 'รอบกฎหมาย 3/2569',
     targetDate: '2026-10-03T13:00:00+07:00',
+    endDate: '2026-10-03T13:45:00+07:00',
     examDateText: 'วันเสาร์ที่ 3 ตุลาคม 2569',
     examTimeText: '13.00 – 13.45 น. (45 นาที)',
     questionsCount: 30,
     regPeriodText: '17 – 21 สิงหาคม 2569',
+    regStartDate: '2026-08-17T00:00:00+07:00',
+    regEndDate: '2026-08-21T23:59:59+07:00',
     regStatus: 'closed', // 'open', 'closed', 'upcoming'
-    regStatusText: 'ปิดรับสมัครแล้ว (ชำระเงินเรียบร้อย)',
+    regStatusText: 'ปิดรับสมัครแล้ว (17–21 ส.ค. 2569)',
     announcementDateText: 'ภายในวันที่ 31 ตุลาคม 2569',
     fee: '900 บาท',
     description: 'การสอบประเมินความรู้ด้านกฎหมายทันตกรรม จรรยาบรรณ และ พ.ร.บ. วิชาชีพทันตกรรม สำหรับขึ้นทะเบียนใบอนุญาต',
@@ -207,16 +227,21 @@ export const EXAM_SCHEDULES = [
     id: 'nl-1-2570',
     title: 'สอบประเมินความรู้ฯ เพื่อขึ้นทะเบียนและรับใบอนุญาต (NL)',
     series: 'ครั้งที่ 1/2570',
+    shortLabel: 'NL 1/2570',
+    categoryGroup: 'official',
     type: 'nl',
     icon: '🎯',
-    badge: 'สอบใหญ่ประจำปี',
+    badge: 'สอบใหญ่ประจำปี 2570',
     targetDate: '2027-01-09T08:00:00+07:00',
+    endDate: '2027-01-10T17:20:00+07:00',
     examDateText: '9 – 10 มกราคม 2570',
     examTimeText: '08.00 – 18.20 น. (2 วันเต็ม)',
     questionsCount: 630,
     regPeriodText: '28 ตุลาคม – 6 พฤศจิกายน 2569',
-    regStatus: 'upcoming',
-    regStatusText: 'เตรียมเปิดรับสมัคร 28 ต.ค. 2569',
+    regStartDate: '2026-10-28T00:00:00+07:00',
+    regEndDate: '2026-11-06T23:59:59+07:00',
+    regStatus: 'closed',
+    regStatusText: 'ปิดรับสมัครแล้ว (28 ต.ค. – 6 พ.ย. 2569)',
     announcementDateText: 'ตามที่ ศ.ป.ท. ประกาศ',
     fee: 'ตามระเบียบ ศ.ป.ท.',
     description: 'การสอบประเมินความรู้ภาควิทยาศาสตร์การแพทย์/ทันตแพทย์พื้นฐาน (ภาค 1), ภาควิทยาคลินิกทันตกรรม (ภาค 2) และวิชากฎหมาย',
@@ -236,14 +261,19 @@ export const EXAM_SCHEDULES = [
     id: 'nl-2-2570',
     title: 'สอบประเมินความรู้ฯ เพื่อขึ้นทะเบียนและรับใบอนุญาต (NL)',
     series: 'ครั้งที่ 2/2570',
+    shortLabel: 'NL 2/2570',
+    categoryGroup: 'official',
     type: 'nl',
     icon: '🎯',
-    badge: 'รอบแก้ตัว / รอบต้นปี',
+    badge: 'รอบแก้ตัว / ต้นปี 2570',
     targetDate: '2027-03-13T08:00:00+07:00',
+    endDate: '2027-03-14T17:20:00+07:00',
     examDateText: '13 – 14 มีนาคม 2570',
     examTimeText: '08.00 – 18.20 น. (2 วันเต็ม)',
     questionsCount: 630,
     regPeriodText: '8 – 12 กุมภาพันธ์ 2570',
+    regStartDate: '2027-02-08T00:00:00+07:00',
+    regEndDate: '2027-02-12T23:59:59+07:00',
     regStatus: 'upcoming',
     regStatusText: 'เปิดรับสมัคร 8 ก.พ. 2570',
     announcementDateText: 'ตามที่ ศ.ป.ท. ประกาศ',
@@ -265,14 +295,19 @@ export const EXAM_SCHEDULES = [
     id: 'law-3-2570',
     title: 'สอบวิชากฎหมายที่เกี่ยวข้องกับวิชาชีพทันตกรรม',
     series: 'ครั้งที่ 3/2570',
+    shortLabel: 'กฎหมาย 3/2570',
+    categoryGroup: 'official',
     type: 'law',
     icon: '⚖️',
     badge: 'รอบปลายปี 2570',
     targetDate: '2027-10-02T13:00:00+07:00',
+    endDate: '2027-10-02T13:45:00+07:00',
     examDateText: 'วันเสาร์ที่ 2 ตุลาคม 2570',
     examTimeText: '13.00 – 13.45 น. (45 นาที)',
     questionsCount: 30,
     regPeriodText: '9 – 13 สิงหาคม 2570',
+    regStartDate: '2027-08-09T00:00:00+07:00',
+    regEndDate: '2027-08-13T23:59:59+07:00',
     regStatus: 'upcoming',
     regStatusText: 'เปิดรับสมัคร 9 ส.ค. 2570',
     announcementDateText: 'ภายในวันที่ 31 ตุลาคม 2570',
@@ -288,21 +323,144 @@ export const EXAM_SCHEDULES = [
 ];
 
 /**
- * คำนวณความแตกต่างของเวลาที่เหลือ (Days, Hours, Minutes, Seconds)
+ * คำนวณความแตกต่างของเวลาเทียบกับเวลาปัจจุบัน
+ * รองรับทั้งสถานะกำลังจะถึง (upcoming), กำลังสอบ (in_progress) และผ่านกำหนดการสอบมาแล้ว (passed)
  */
-export function calculateTimeRemaining(targetIsoDate) {
+export function calculateTimeRemaining(targetIsoDate, endIsoDate = null, nowMs = Date.now()) {
   const target = new Date(targetIsoDate).getTime();
-  const now = Date.now();
-  const diff = target - now;
+  const fallbackEnd = target + 60 * 60 * 1000;
+  const end = endIsoDate ? new Date(endIsoDate).getTime() : fallbackEnd;
+  const diff = target - nowMs;
 
-  if (diff <= 0) {
-    return { isExpired: true, days: 0, hours: 0, minutes: 0, seconds: 0, totalDiffMs: 0 };
+  if (diff > 0) {
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    return {
+      status: 'upcoming',
+      isExpired: false,
+      isPassed: false,
+      isInProgress: false,
+      days,
+      hours,
+      minutes,
+      seconds,
+      totalDiffMs: diff,
+      passedMs: 0,
+      elapsedDays: 0,
+      elapsedHours: 0,
+      elapsedMinutes: 0
+    };
   }
 
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  if (nowMs <= end) {
+    return {
+      status: 'in_progress',
+      isExpired: true,
+      isPassed: false,
+      isInProgress: true,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      totalDiffMs: 0,
+      passedMs: Math.max(0, nowMs - target),
+      elapsedDays: 0,
+      elapsedHours: 0,
+      elapsedMinutes: Math.floor(Math.max(0, nowMs - target) / (1000 * 60))
+    };
+  }
 
-  return { isExpired: false, days, hours, minutes, seconds, totalDiffMs: diff };
+  const passedMs = Math.max(0, nowMs - end);
+  const elapsedDays = Math.floor(passedMs / (1000 * 60 * 60 * 24));
+  const elapsedHours = Math.floor((passedMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const elapsedMinutes = Math.floor((passedMs % (1000 * 60 * 60)) / (1000 * 60));
+
+  return {
+    status: 'passed',
+    isExpired: true,
+    isPassed: true,
+    isInProgress: false,
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    totalDiffMs: 0,
+    passedMs,
+    elapsedDays,
+    elapsedHours,
+    elapsedMinutes
+  };
+}
+
+/**
+ * แปลงระยะเวลาที่ผ่านกำหนดการสอบมาแล้วเป็นข้อความภาษาไทย
+ */
+export function formatElapsedSinceExam(timeInfo) {
+  if (!timeInfo || !timeInfo.isPassed) return '';
+  if (timeInfo.elapsedDays >= 1) {
+    return `ผ่านมาแล้ว ${timeInfo.elapsedDays} วัน`;
+  }
+  if (timeInfo.elapsedHours >= 1) {
+    return `ผ่านมาแล้ว ${timeInfo.elapsedHours} ชม.`;
+  }
+  return `ผ่านมาแล้ว ${Math.max(1, timeInfo.elapsedMinutes)} นาที`;
+}
+
+/**
+ * ประเมินสถานะการรับสมัครแบบไดนามิกตามเวลาปัจจุบัน
+ */
+export function getDynamicRegStatus(exam, nowMs = Date.now()) {
+  if (!exam) return { regStatus: 'closed', regStatusText: '' };
+  if (exam.regStartDate && exam.regEndDate) {
+    const start = new Date(exam.regStartDate).getTime();
+    const end = new Date(exam.regEndDate).getTime();
+    if (nowMs < start) {
+      return { regStatus: 'upcoming', regStatusText: exam.regStatusText };
+    }
+    if (nowMs <= end) {
+      return { regStatus: 'open', regStatusText: `กำลังเปิดรับสมัคร (${exam.regPeriodText})` };
+    }
+    return { regStatus: 'closed', regStatusText: `ปิดรับสมัครแล้ว (${exam.regPeriodText})` };
+  }
+  return { regStatus: exam.regStatus, regStatusText: exam.regStatusText };
+}
+
+/**
+ * จัดเรียงตารางสอบทั้งหมด:
+ * 1) รอบที่กำลังสอบหรือใกล้จะถึงที่สุดขึ้นก่อนเสมอ (น้อย -> มาก ตามวันสอบ)
+ * 2) รอบที่ผ่านกำหนดการสอบไปแล้วต่อท้าย (ล่าสุด -> เก่าสุด) พร้อมสถานะชัดเจน
+ */
+export function getOrderedExamSchedules(nowMs = Date.now()) {
+  const rankOrder = { in_progress: 0, upcoming: 1, passed: 2 };
+
+  return EXAM_SCHEDULES
+    .map(exam => {
+      const timing = calculateTimeRemaining(exam.targetDate, exam.endDate, nowMs);
+      const dynamicReg = getDynamicRegStatus(exam, nowMs);
+      return {
+        ...exam,
+        ...dynamicReg,
+        timing,
+        targetMs: new Date(exam.targetDate).getTime()
+      };
+    })
+    .sort((a, b) => {
+      const rankDiff = rankOrder[a.timing.status] - rankOrder[b.timing.status];
+      if (rankDiff !== 0) return rankDiff;
+      if (a.timing.status === 'passed') {
+        return b.targetMs - a.targetMs;
+      }
+      return a.targetMs - b.targetMs;
+    });
+}
+
+/**
+ * ดึงรอบสอบแรกที่ใกล้จะถึงที่สุด (หรือกำลังสอบอยู่ / ล่าสุดหากผ่านหมดแล้ว)
+ */
+export function getPrimaryUpcomingExam(nowMs = Date.now()) {
+  const ordered = getOrderedExamSchedules(nowMs);
+  return ordered[0] || null;
 }
