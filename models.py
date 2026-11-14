@@ -165,8 +165,29 @@ class UserNote(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     question_id = Column(Integer, ForeignKey("questions.id"), nullable=False, index=True)
+    topic_id = Column(String, nullable=True, index=True)
+    mistake_tag = Column(String, nullable=True, index=True)
     note_text = Column(Text, nullable=False, default="")
     updated_at = Column(Integer, nullable=False)  # Unix timestamp
 
     user = relationship("User")
     question = relationship("Question")
+
+
+class UserTopicNote(Base):
+    """Personal High-Yield notes & AI Tutor takeaways saved per Must-Know Topic or Pathway."""
+
+    __tablename__ = "user_topic_notes"
+    __table_args__ = (
+        UniqueConstraint("user_id", "topic_id", name="uq_topic_note_user_topic"),
+        Index("ix_user_topic_notes_user_updated", "user_id", "updated_at"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    topic_id = Column(String, nullable=False, index=True)
+    mistake_tag = Column(String, nullable=True, index=True)
+    note_text = Column(Text, nullable=False, default="")
+    updated_at = Column(Integer, nullable=False)  # Unix timestamp
+
+    user = relationship("User")

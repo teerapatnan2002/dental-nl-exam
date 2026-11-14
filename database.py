@@ -86,11 +86,17 @@ _COLUMN_MIGRATIONS = {
     "reported_questions": {
         "admin_reply": "ALTER TABLE reported_questions ADD COLUMN admin_reply VARCHAR",
     },
+    "user_notes": {
+        "topic_id": "ALTER TABLE user_notes ADD COLUMN topic_id VARCHAR",
+        "mistake_tag": "ALTER TABLE user_notes ADD COLUMN mistake_tag VARCHAR",
+    },
 }
 
 _INDEX_MIGRATIONS = [
     "CREATE INDEX IF NOT EXISTS ix_user_qstat_user_due ON user_question_stats (user_id, next_review_date)",
     "CREATE INDEX IF NOT EXISTS ix_user_card_reviews_user_due ON user_card_reviews (user_id, card_type, next_review_date)",
+    "CREATE INDEX IF NOT EXISTS ix_user_notes_tag ON user_notes (user_id, mistake_tag)",
+    "CREATE INDEX IF NOT EXISTS ix_user_topic_notes_user_updated ON user_topic_notes (user_id, updated_at)",
 ]
 
 
@@ -114,25 +120,26 @@ def run_migrations():
             except Exception as exc:
                 logger.warning("Index migration skipped (%s): %s", idx_ddl, exc)
         if not SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
-            try:
-                conn.execute(text("ALTER TABLE public.user_card_reviews ENABLE ROW LEVEL SECURITY;"))
-                conn.execute(
-                    text(
-                        """
-                        DO $$
-                        BEGIN
-                            IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
-                                REVOKE ALL ON public.user_card_reviews FROM anon;
-                            END IF;
-                            IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
-                                REVOKE ALL ON public.user_card_reviews FROM authenticated;
-                            END IF;
-                        END $$;
-                        """
+            for rls_table in ("user_card_reviews", "user_topic_notes"):
+                try:
+                    conn.execute(text(f"ALTER TABLE public.{rls_table} ENABLE ROW LEVEL SECURITY;"))
+                    conn.execute(
+                        text(
+                            f"""
+                            DO $$
+                            BEGIN
+                                IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
+                                    REVOKE ALL ON public.{rls_table} FROM anon;
+                                END IF;
+                                IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+                                    REVOKE ALL ON public.{rls_table} FROM authenticated;
+                                END IF;
+                            END $$;
+                            """
+                        )
                     )
-                )
-            except Exception as exc:
-                logger.warning("Supabase RLS migration skipped: %s", exc)
+                except Exception as exc:
+                    logger.warning("Supabase RLS migration skipped for %s: %s", rls_table, exc)
 
 
 def run_fts_migration():

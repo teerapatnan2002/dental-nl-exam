@@ -4,7 +4,7 @@ import {
   CheckCircle2, XCircle, Compass, Award, Bookmark, 
   Layers, ChevronRight, ChevronLeft, Play, BookMarked, Share2, 
   Lightbulb, X, GraduationCap, Brain, FileText, Eye, Check, Filter,
-  RotateCcw, Zap, Stethoscope, Shuffle, Target, GitBranch
+  RotateCcw, Zap, Stethoscope, Shuffle, Target, GitBranch, Bot
 } from 'lucide-react';
 import { API_BASE } from '../config';
 import { useAuth } from '../contexts/AuthContext';
@@ -12,6 +12,7 @@ import ClinicalPathwayDiagram from './ClinicalPathwayDiagram';
 import VisualAtlas from './VisualAtlas';
 import CalcSimulator from './CalcSimulator';
 import ClozePitfallArena from './ClozePitfallArena';
+import TutorChat from './TutorChat';
 import {
   buildDynamicPathwayFromText,
   buildPathwayFromThaiProtocol,
@@ -111,6 +112,7 @@ export default function ClinicalStudyHub({
   // Active Module Data from /api/learning/topic/{id} or /api/learning/textbook/{id}
   const [moduleData, setModuleData] = useState(null);
   const [loadingModule, setLoadingModule] = useState(false);
+  const [showTopicTutor, setShowTopicTutor] = useState(false);
 
   // Lazy-load extended 64 Masterclass guides (completing all 83/83 Must-Know Topics)
   const [extraGuides, setExtraGuides] = useState({});
@@ -1429,6 +1431,28 @@ export default function ClinicalStudyHub({
                           </div>
                         )}
 
+                        {hubMode === 'exam_topics' && selectedTopicId && (
+                          <button
+                            type="button"
+                            onClick={() => setShowTopicTutor((v) => !v)}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              background: showTopicTutor ? 'var(--primary)' : 'rgba(124, 58, 237, 0.16)',
+                              border: '1px solid rgba(124, 58, 237, 0.45)',
+                              color: showTopicTutor ? '#fff' : '#c4b5fd',
+                              fontWeight: 700,
+                              fontSize: '0.8rem',
+                              padding: '0.4rem 0.85rem',
+                              borderRadius: '10px',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <Bot size={14} /> {showTopicTutor ? 'ซ่อน AI Tutor' : '💬 ถามอาจารย์ AI เรื่องนี้'}
+                          </button>
+                        )}
+
                         {onStartExam && (
                           <button
                             onClick={handleStartTopicPractice}
@@ -1588,6 +1612,17 @@ export default function ClinicalStudyHub({
                       </div>
                     )}
                   </div>
+
+                  {/* Inline Multi-Turn Socratic AI Tutor Drawer for this Must-Know Topic */}
+                  {showTopicTutor && hubMode === 'exam_topics' && selectedTopicId && (
+                    <div style={{ marginBottom: '1.25rem' }}>
+                      <TutorChat
+                        topicId={selectedTopicId}
+                        topicTitle={moduleData.module_info.title_th}
+                        pathwayId={allModulePathways[0]?.id || null}
+                      />
+                    </div>
+                  )}
 
                   {/* ── 6 Classroom Pedagogical Sub-Tabs ── */}
                   <div style={{

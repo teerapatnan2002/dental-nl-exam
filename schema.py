@@ -174,12 +174,17 @@ class BookmarkResponse(BaseModel):
 
 # --- User Note Schemas ---
 class UserNoteUpsert(BaseModel):
-    question_id: int
-    note_text: str = Field(default="", max_length=5000)
+    question_id: Optional[int] = None
+    topic_id: Optional[str] = None
+    mistake_tag: Optional[str] = Field(default=None, max_length=60)
+    note_text: str = Field(default="", max_length=8000)
+    append: bool = False
 
 class UserNoteResponse(BaseModel):
     id: int
-    question_id: int
+    question_id: Optional[int] = None
+    topic_id: Optional[str] = None
+    mistake_tag: Optional[str] = None
     note_text: str
     updated_at: int
 

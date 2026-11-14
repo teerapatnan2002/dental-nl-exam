@@ -72,6 +72,8 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
   const [eliminatedChoices, setEliminatedChoices] = useState({}); // question_id -> Set of choice labels
   const [fontSizeLevel, setFontSizeLevel] = useState(1); // 0: standard, 1: medium, 2: large
   const [notes, setNotes] = useState({});          // question_id -> note text
+  const [noteTags, setNoteTags] = useState({});    // question_id -> mistake_tag
+  const [noteSavedToast, setNoteSavedToast] = useState({}); // question_id -> bool
   const [noteEditorOpen, setNoteEditorOpen] = useState({}); // question_id -> bool
   const [confidence, setConfidence] = useState({}); // question_id -> 'confident' | 'unsure' | 'hard'
   const [lightboxImg, setLightboxImg] = useState(null);
@@ -213,6 +215,9 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
         if (res.ok) {
           const data = await res.json();
           setNotes(prev => ({ ...prev, [q.id]: data.note_text }));
+          if (data.mistake_tag) {
+            setNoteTags(prev => ({ ...prev, [q.id]: data.mistake_tag }));
+          }
         } else {
           setNotes(prev => ({ ...prev, [q.id]: '' }));
         }
@@ -224,10 +229,18 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
 
   const saveNote = async (q) => {
     try {
-      await authFetch(`${API_BASE}/api/bookmarks/notes`, {
+      const res = await authFetch(`${API_BASE}/api/bookmarks/notes`, {
         method: 'PUT',
-        body: JSON.stringify({ question_id: q.id, note_text: notes[q.id] || '' }),
+        body: JSON.stringify({
+          question_id: q.id,
+          note_text: notes[q.id] || '',
+          mistake_tag: noteTags[q.id] || '',
+        }),
       });
+      if (res.ok) {
+        setNoteSavedToast(prev => ({ ...prev, [q.id]: true }));
+        setTimeout(() => setNoteSavedToast(prev => ({ ...prev, [q.id]: false })), 2000);
+      }
     } catch (err) {
       console.error('Failed to save note', err);
     }
@@ -589,8 +602,37 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
         {/* Personal note editor */}
         {noteEditorOpen[q.id] && user && (
           <div style={{ marginBottom: '1rem', padding: '0.9rem', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <StickyNote size={13} /> โน้ตส่วนตัวของคุณ (เห็นเฉพาะคุณ)
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.45rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.4rem' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                <StickyNote size={13} /> โน้ตส่วนตัวของคุณ (ติด Tag สาเหตุเพื่อรวมเข้า Cheat Sheet)
+              </span>
+              {noteSavedToast[q.id] && (
+                <span style={{ color: '#34d399', fontWeight: 700, fontSize: '0.76rem' }}>✓ บันทึกแล้ว!</span>
+              )}
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.5rem' }}>
+              {['สับสนนิยาม', 'ลืมตัวเลข', 'พลาดแนวทางไทย', 'โดนตัวลวง'].map((tg) => {
+                const activeTag = noteTags[q.id] === tg;
+                return (
+                  <button
+                    key={tg}
+                    type="button"
+                    onClick={() => setNoteTags(prev => ({ ...prev, [q.id]: activeTag ? '' : tg }))}
+                    style={{
+                      padding: '0.2rem 0.55rem',
+                      borderRadius: '999px',
+                      fontSize: '0.73rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      background: activeTag ? 'rgba(245,158,11,0.22)' : 'rgba(255,255,255,0.04)',
+                      color: activeTag ? '#fbbf24' : 'var(--text-sub)',
+                      border: `1px solid ${activeTag ? 'rgba(245,158,11,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                    }}
+                  >
+                    #{tg}
+                  </button>
+                );
+              })}
             </div>
             <textarea
               value={notes[q.id] || ''}
