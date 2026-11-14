@@ -9,6 +9,7 @@ import models
 from auth import get_current_user
 from database import get_db
 from pathways import CURATED_TOPIC_PATHWAYS, get_topic_pathways
+from tos_blueprint import is_mock_70_locked
 
 router = APIRouter(prefix="/api/learning", tags=["learning"])
 
@@ -1488,4 +1489,166 @@ def get_topic_pathway_endpoint(
         "topic_id": topic_id,
         "title_th": meta["title_th"],
         "pathways": pathways_list,
+    }
+
+
+def _classify_visual_modality(q: models.Question, exp: Dict[str, Any]) -> str:
+    """Classify image-backed exam question into radiograph, cast_chart, or clinical_lesion."""
+    combined = " ".join(
+        filter(
+            None,
+            [
+                q.question_text,
+                q.stem,
+                q.proposition,
+                q.must_know_topic,
+                exp.get("core_principle", ""),
+                exp.get("key_takeaway", ""),
+            ],
+        )
+    ).lower()
+
+    radiograph_kw = [
+        "ภาพรังสี",
+        "ฟิล์ม",
+        "รังสี",
+        "x-ray",
+        "xray",
+        "radiograph",
+        "panoramic",
+        "opg",
+        "periapical",
+        "bitewing",
+        "cbct",
+        "radioluc",
+        "radiopaq",
+        "เงาดำ",
+        "เงาทึบ",
+        "oral-radiology",
+        "cephalometric",
+    ]
+    if any(k in combined for k in radiograph_kw):
+        return "radiograph"
+
+    cast_chart_kw = [
+        "แบบจำลอง",
+        "study cast",
+        "cast",
+        "surveyor",
+        "surveying",
+        "posselt",
+        "กราฟ",
+        "diagram",
+        "แผนภาพ",
+        "ตาราง",
+        "tracing",
+        "curve of spee",
+        "curve of wilson",
+        "chart",
+    ]
+    if any(k in combined for k in cast_chart_kw):
+        return "cast_chart"
+
+    return "clinical_lesion"
+
+
+_MODALITY_LABELS_TH = {
+    "radiograph": "ภาพรังสีวินิจฉัย (Radiograph)",
+    "clinical_lesion": "ภาพคลินิก / รอยโรค (Clinical)",
+    "cast_chart": "แบบจำลอง / กราฟ / แผนภาพ",
+}
+
+
+@router.get("/visual-atlas")
+def get_visual_atlas(
+    category: Optional[str] = Query(None),
+    modality: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+):
+    """Return Visual Spot-Diagnosis & Radiograph Atlas items across all image-backed NL questions."""
+    query = (
+        db.query(models.Question)
+        .options(selectinload(models.Question.choices))
+        .filter(models.Question.image_path.isnot(None))
+        .filter(models.Question.image_path != "")
+    )
+    if is_mock_70_locked():
+        query = query.filter(~models.Question.source_exam.like("%2570%"))
+
+    rows = query.order_by(models.Question.id.asc()).all()
+
+    stats_by_category: Dict[str, int] = {}
+    stats_by_modality: Dict[str, int] = {
+        "radiograph": 0,
+        "clinical_lesion": 0,
+        "cast_chart": 0,
+    }
+    all_items: List[Dict[str, Any]] = []
+
+    for q in rows:
+        exp = _parse_explanation(q.explanation)
+        mod = _classify_visual_modality(q, exp)
+        cat = q.category or "อื่นๆ"
+        stats_by_category[cat] = stats_by_category.get(cat, 0) + 1
+        stats_by_modality[mod] = stats_by_modality.get(mod, 0) + 1
+
+        topic_id = q.must_know_topic or ""
+        meta = get_topic_meta(topic_id, cat) if topic_id else {"title_th": cat, "title_en": ""}
+        correct_letter = (q.correct_answer or "").strip().upper()
+        correct_choice_text = ""
+        for ch in q.choices or []:
+            if (ch.label or "").strip().upper() == correct_letter:
+                correct_choice_text = ch.text
+                break
+
+        stem_raw = (q.proposition or q.question_text or "").strip()
+        all_items.append(
+            {
+                "id": q.id,
+                "image_path": q.image_path,
+                "category": cat,
+                "must_know_topic": topic_id,
+                "topic_title_th": meta["title_th"],
+                "source_exam": q.source_exam or "",
+                "cognitive_level": q.cognitive_level or "A",
+                "task": q.task or "",
+                "modality": mod,
+                "modality_label_th": _MODALITY_LABELS_TH.get(mod, mod),
+                "stem_preview": stem_raw,
+                "question_text": (q.question_text or "").strip(),
+                "correct_answer": correct_letter,
+                "correct_choice_text": correct_choice_text,
+                "core_principle": (exp.get("core_principle") or "").strip(),
+                "key_takeaway": (exp.get("key_takeaway") or exp.get("why_correct") or "").strip(),
+                "common_pitfall": (exp.get("common_pitfall") or "").strip(),
+                "reference": (exp.get("reference") or exp.get("legal_citation") or "").strip(),
+            }
+        )
+
+    filtered = all_items
+    if category and category != "ทั้งหมด":
+        filtered = [item for item in filtered if item["category"] == category]
+    if modality and modality != "all":
+        filtered = [item for item in filtered if item["modality"] == modality]
+    if search and search.strip():
+        s = search.strip().lower()
+        filtered = [
+            item
+            for item in filtered
+            if s in item["stem_preview"].lower()
+            or s in item["topic_title_th"].lower()
+            or s in item["category"].lower()
+            or s in item["key_takeaway"].lower()
+            or s in item["core_principle"].lower()
+            or s in item["correct_choice_text"].lower()
+            or s in str(item["id"])
+        ]
+
+    return {
+        "total_pool": len(all_items),
+        "total_items": len(filtered),
+        "stats_by_category": stats_by_category,
+        "stats_by_modality": stats_by_modality,
+        "items": filtered,
     }

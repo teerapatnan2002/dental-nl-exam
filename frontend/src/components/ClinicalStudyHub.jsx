@@ -9,14 +9,14 @@ import {
 import { API_BASE } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 import ClinicalPathwayDiagram from './ClinicalPathwayDiagram';
+import VisualAtlas from './VisualAtlas';
 import {
   buildDynamicPathwayFromText,
   buildPathwayFromThaiProtocol,
 } from '../utils/pathwayBuilder';
 import { 
   SPECIALTY_CATEGORIES, 
-  CLINICAL_STUDY_GUIDES, 
-  getGuidesBySpecialty 
+  CLINICAL_STUDY_GUIDES 
 } from '../data/clinicalStudyGuides';
 
 const SPECIALTY_COLOR_MAP = {
@@ -110,13 +110,38 @@ export default function ClinicalStudyHub({
   const [moduleData, setModuleData] = useState(null);
   const [loadingModule, setLoadingModule] = useState(false);
 
+  // Lazy-load extended 64 Masterclass guides (completing all 83/83 Must-Know Topics)
+  const [extraGuides, setExtraGuides] = useState({});
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([
+      import('../data/clinicalStudyGuidesExtra1'),
+      import('../data/clinicalStudyGuidesExtra2'),
+    ])
+      .then(([m1, m2]) => {
+        if (!cancelled) {
+          setExtraGuides({
+            ...(m1.CLINICAL_STUDY_GUIDES_EXTRA_1 || m1.default || {}),
+            ...(m2.CLINICAL_STUDY_GUIDES_EXTRA_2 || m2.default || {}),
+          });
+        }
+      })
+      .catch((err) => console.error('Failed to lazy-load extended study guides:', err));
+    return () => { cancelled = true; };
+  }, []);
+
+  const allStudyGuides = useMemo(
+    () => ({ ...CLINICAL_STUDY_GUIDES, ...extraGuides }),
+    [extraGuides]
+  );
+
   // Classroom Sub-Tabs: 'synthesized' | 'guided_teacher' | 'pathways' | 'flashcards' | 'cheat_sheet' | 'differential' | 'pearls_traps'
   const [classroomTab, setClassroomTab] = useState(initialClassroomTab || 'synthesized');
 
   useEffect(() => {
     if (initialTopicId) {
       setSelectedTopicId(initialTopicId);
-      if (CLINICAL_STUDY_GUIDES[initialTopicId]) {
+      if (allStudyGuides[initialTopicId]) {
         setSelectedMasterclassId(initialTopicId);
       }
     }
@@ -126,7 +151,7 @@ export default function ClinicalStudyHub({
     if (initialClassroomTab) {
       setClassroomTab(initialClassroomTab);
     }
-  }, [initialTopicId, initialClassroomTab, initialHubMode]);
+  }, [initialTopicId, initialClassroomTab, initialHubMode, allStudyGuides]);
   const [selectedTaskFilter, setSelectedTaskFilter] = useState('all');
   const [selectedCogFilter, setSelectedCogFilter] = useState('all');
 
@@ -337,7 +362,7 @@ export default function ClinicalStudyHub({
           if (existsInDb) {
             setSelectedTopicId(initialTopicId);
             setHubMode('exam_topics');
-          } else if (CLINICAL_STUDY_GUIDES[initialTopicId]) {
+          } else if (allStudyGuides[initialTopicId]) {
             setSelectedMasterclassId(initialTopicId);
             setHubMode('masterclass');
           }
@@ -427,7 +452,10 @@ export default function ClinicalStudyHub({
   }, [overviewData, selectedSpecialty, searchQuery]);
 
   const filteredMasterclass = useMemo(() => {
-    const list = getGuidesBySpecialty(selectedSpecialty);
+    const allList = Object.entries(allStudyGuides).map(([id, g]) => ({ id, ...g }));
+    const list = !selectedSpecialty || selectedSpecialty === 'all'
+      ? allList
+      : allList.filter(g => g.category === selectedSpecialty || g.specialty === selectedSpecialty);
     if (!searchQuery.trim()) return list;
     const q = searchQuery.toLowerCase().trim();
     return list.filter(g =>
@@ -436,7 +464,7 @@ export default function ClinicalStudyHub({
       g.core_mechanism.toLowerCase().includes(q) ||
       (g.must_know_topics && g.must_know_topics.some(t => t.toLowerCase().includes(q)))
     );
-  }, [selectedSpecialty, searchQuery]);
+  }, [allStudyGuides, selectedSpecialty, searchQuery]);
 
   // Filtered Guided Cases for Step-by-Step Teacher
   const filteredGuidedCases = useMemo(() => {
@@ -453,13 +481,13 @@ export default function ClinicalStudyHub({
   // Matching curated Masterclass guide (for decision matrix integration)
   const matchingMasterclass = useMemo(() => {
     if (hubMode === 'masterclass') {
-      return CLINICAL_STUDY_GUIDES[selectedMasterclassId] || null;
+      return allStudyGuides[selectedMasterclassId] || null;
     }
-    if (hubMode === 'exam_topics' && selectedTopicId && CLINICAL_STUDY_GUIDES[selectedTopicId]) {
-      return CLINICAL_STUDY_GUIDES[selectedTopicId];
+    if (hubMode === 'exam_topics' && selectedTopicId && allStudyGuides[selectedTopicId]) {
+      return allStudyGuides[selectedTopicId];
     }
     return null;
-  }, [hubMode, selectedMasterclassId, selectedTopicId]);
+  }, [hubMode, selectedMasterclassId, selectedTopicId, allStudyGuides]);
 
   // Combined Curated + Dynamic + Thai National Protocol Pathways
   const allModulePathways = useMemo(() => {
@@ -752,7 +780,26 @@ export default function ClinicalStudyHub({
                 border: hubMode === 'masterclass' ? '1px solid #ec4899' : '1px solid var(--border)',
               }}
             >
-              <span>🏆</span> ตารางสรุป Masterclass (25 Guides)
+              <span>🏆</span> ตารางสรุป Masterclass ({Object.keys(allStudyGuides).length} Guides)
+            </button>
+
+            <button
+              onClick={() => setHubMode('visual_atlas')}
+              style={{
+                padding: '0.45rem 0.9rem',
+                borderRadius: '10px',
+                fontSize: '0.82rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: hubMode === 'visual_atlas' ? '#0284c7' : 'rgba(56,189,248,0.08)',
+                color: hubMode === 'visual_atlas' ? '#fff' : '#7dd3fc',
+                border: hubMode === 'visual_atlas' ? '1px solid #0284c7' : '1px solid rgba(56,189,248,0.28)',
+              }}
+            >
+              <span>🖼️</span> คลังภาพวินิจฉัย (112 ภาพ)
             </button>
 
             <button
@@ -895,8 +942,24 @@ export default function ClinicalStudyHub({
         </div>
 
         {/* ══════════════════════════════════════════════════════════════════
-            3. MAIN SPLIT LAYOUT: LEFT CURRICULUM NAVIGATOR + RIGHT CLASSROOM
+            3. MAIN SPLIT LAYOUT OR VISUAL ATLAS GALLERY
         ══════════════════════════════════════════════════════════════════ */}
+        {hubMode === 'visual_atlas' ? (
+          <VisualAtlas
+            selectedSpecialty={selectedSpecialty}
+            searchQuery={searchQuery}
+            specialtyColorMap={SPECIALTY_COLOR_MAP}
+            onStartExam={onStartExam}
+            isModal={isModal}
+            onClose={onClose}
+            onOpenTopic={(topicId) => {
+              setSelectedSpecialty('all');
+              setSelectedTopicId(topicId);
+              setHubMode('exam_topics');
+              setClassroomTab('synthesized');
+            }}
+          />
+        ) : (
         <div style={{
           display: 'grid',
           gridTemplateColumns: '340px 1fr',
@@ -953,7 +1016,7 @@ export default function ClinicalStudyHub({
                   filteredTopics.map(topic => {
                     const isSelected = topic.id === selectedTopicId;
                     const badgeColor = SPECIALTY_COLOR_MAP[topic.category] || '#6366f1';
-                    const hasMasterclass = Boolean(CLINICAL_STUDY_GUIDES[topic.id]);
+                    const hasMasterclass = Boolean(allStudyGuides[topic.id]);
                     return (
                       <div
                         key={topic.id}
@@ -3498,6 +3561,7 @@ export default function ClinicalStudyHub({
           </div>
 
         </div>
+        )}
 
       </div>
     </div>

@@ -483,6 +483,13 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
     ],
 }
 
+# Merge extended curated pathways (reaches 83/83 Must-Know Topic coverage)
+from pathways_part1 import PATHWAYS_PART1  # noqa: E402
+from pathways_part2 import PATHWAYS_PART2  # noqa: E402
+
+CURATED_TOPIC_PATHWAYS.update(PATHWAYS_PART1)
+CURATED_TOPIC_PATHWAYS.update(PATHWAYS_PART2)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # DYNAMIC CAUSAL / PROCESS / PROTOCOL EXTRACTOR FOR ANY TOPIC OR QUESTION TEXT
