@@ -339,7 +339,24 @@ function AppContent() {
       {/* ── Sticky App Header ──────────────────────── */}
       <header className="app-header">
         <div className="app-brand" onClick={goHome}>
-          <div className="app-brand-icon">🦷</div>
+          <div
+            className="app-brand-icon"
+            style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '7px',
+              background: 'var(--primary)',
+              color: '#fff',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M7 3c-2.5 0-4 2-4 5 0 2.5 1 4.5 1.5 7 .6 2.8 1.4 6 2.7 6 1.1 0 1.6-2 2.4-4 .5-1.2 1.2-2 2.4-2s1.9.8 2.4 2c.8 2 1.3 4 2.4 4 1.3 0 2.1-3.2 2.7-6 .5-2.5 1.5-4.5 1.5-7 0-3-1.5-5-4-5-1.6 0-2.8.8-5 .8S8.6 3 7 3z" />
+            </svg>
+          </div>
           <span>NL Dental</span>
         </div>
 
@@ -355,14 +372,25 @@ function AppContent() {
             onClick={() => setIsScheduleModalOpen(true)}
             className="theme-toggle-btn header-schedule-btn"
             style={{
-              background: 'rgba(244, 63, 94, 0.12)',
-              color: 'var(--ink-rose)',
-              border: '1px solid rgba(244, 63, 94, 0.3)',
+              background: 'var(--surface-subtle)',
+              color: 'var(--text)',
+              border: '1px solid var(--border)',
               cursor: 'pointer'
             }}
             title="คลิกเพื่อดูตารางสอบทางการและประกาศ ศ.ป.ท."
           >
-            <Clock size={15} color={nextExamTimeLeft && !nextExamTimeLeft.isPassed ? '#f43f5e' : 'var(--text-muted)'} />
+            <span
+              aria-hidden="true"
+              style={{
+                width: '7px',
+                height: '7px',
+                borderRadius: '50%',
+                background: nextExamTimeLeft && !nextExamTimeLeft.isPassed
+                  ? (nextExamTimeLeft.days <= 14 ? 'var(--warning)' : 'var(--primary-light)')
+                  : 'var(--text-muted)',
+                flexShrink: 0,
+              }}
+            />
             <span className="header-schedule-label tabular-nums" style={{ fontWeight: 600 }}>
               {nextExam && nextExamTimeLeft && !nextExamTimeLeft.isPassed
                 ? (nextExamTimeLeft.isInProgress

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { X, Calendar, Clock, MapPin, CheckCircle, AlertCircle, FileText, ArrowRight, BookOpen, PlayCircle, ShieldCheck } from 'lucide-react';
+import { X, Calendar, Clock, MapPin, CheckCircle, AlertCircle, FileText, ArrowRight, BookOpen, PlayCircle, ShieldCheck, Scale, Stethoscope } from 'lucide-react';
 import { getOrderedExamSchedules, formatElapsedSinceExam } from '../data/examSchedule';
 
 export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpenLawHub }) {
@@ -28,13 +28,13 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(5, 5, 16, 0.75)',
-        backdropFilter: 'blur(10px)',
+        background: 'rgba(9, 9, 11, 0.72)',
+        backdropFilter: 'blur(8px)',
         zIndex: 99999,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '1.5rem',
+        padding: '1.25rem',
         overflowY: 'auto'
       }}
     >
@@ -48,40 +48,40 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          borderRadius: '20px',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.6)',
+          borderRadius: '14px',
+          border: '1px solid var(--border-hover)',
+          boxShadow: 'var(--shadow-elevated)',
           background: 'var(--bg-panel)'
         }}
       >
         {/* ── Modal Header ─────────────────────────────────── */}
         <div style={{
-          padding: '1.25rem 1.75rem',
+          padding: '1.15rem 1.5rem',
           borderBottom: '1px solid var(--border)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          background: 'rgba(255, 255, 255, 0.02)'
+          background: 'var(--bg-panel)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(6, 182, 212, 0.2))',
-              border: '1px solid rgba(124, 58, 237, 0.3)',
+              width: '38px',
+              height: '38px',
+              borderRadius: '10px',
+              background: 'rgba(13, 148, 136, 0.14)',
+              border: '1px solid rgba(13, 148, 136, 0.28)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.3rem'
+              color: 'var(--primary-light)'
             }}>
-              📅
+              <Calendar size={18} />
             </div>
             <div>
-              <h2 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: 'var(--text)' }}>
+              <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0, color: 'var(--text)' }}>
                 กำหนดการสอบทันตแพทยสภา (ศ.ป.ท.)
               </h2>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.15rem 0 0 0' }}>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0.12rem 0 0 0' }}>
                 ประกาศทางการ ประจำปี พ.ศ. 2569 – 2570 ศูนย์ประเมินและรับรองความรู้ความสามารถฯ
               </p>
             </div>
@@ -90,9 +90,9 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
             onClick={onClose}
             aria-label="Close modal"
             style={{
-              background: 'rgba(255, 255, 255, 0.06)',
-              border: 'none',
-              borderRadius: '50%',
+              background: 'var(--surface-subtle)',
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
               width: '34px',
               height: '34px',
               display: 'flex',
@@ -100,19 +100,19 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
               justifyContent: 'center',
               color: 'var(--text-muted)',
               cursor: 'pointer',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.15s ease'
             }}
           >
-            <X size={18} />
+            <X size={17} />
           </button>
         </div>
 
         {/* ── Tabs for 4 Exam Rounds ────────────────────────── */}
         <div style={{
           display: 'flex',
-          gap: '0.5rem',
-          padding: '0.75rem 1.75rem',
-          background: 'rgba(0, 0, 0, 0.15)',
+          gap: '0.45rem',
+          padding: '0.7rem 1.5rem',
+          background: 'var(--surface-subtle)',
           borderBottom: '1px solid var(--border)',
           overflowX: 'auto'
         }}>
@@ -121,6 +121,7 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
             const isPassed = exam.timing.isPassed;
             const prevExam = idx > 0 ? orderedSchedules[idx - 1] : null;
             const showPassedDivider = isPassed && prevExam && !prevExam.timing.isPassed;
+            const ExamIcon = exam.type === 'law' ? Scale : Stethoscope;
             return (
               <React.Fragment key={exam.id}>
                 {showPassedDivider && (
@@ -140,36 +141,37 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.45rem',
-                    padding: '0.48rem 0.8rem',
-                    borderRadius: '10px',
+                    gap: '0.4rem',
+                    padding: '0.45rem 0.75rem',
+                    borderRadius: '8px',
                     border: `1px solid ${isActive ? 'var(--primary)' : 'var(--border)'}`,
-                    background: isActive ? 'var(--primary)' : 'var(--surface-subtle)',
+                    background: isActive ? 'var(--primary)' : 'var(--bg-panel)',
                     color: isActive ? '#fff' : (isPassed ? 'var(--text-muted)' : 'var(--text)'),
-                    fontWeight: isActive ? 700 : 500,
+                    fontWeight: isActive ? 600 : 500,
                     fontSize: '0.8rem',
+                    fontFamily: 'inherit',
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
                     opacity: !isActive && isPassed ? 0.78 : 1,
                     transition: 'all 0.15s ease'
                   }}
                 >
-                  <span>{exam.icon}</span>
+                  <ExamIcon size={13} />
                   <span>{exam.shortLabel || exam.series}</span>
-                  <span style={{
-                    fontSize: '0.65rem',
-                    padding: '0.1rem 0.4rem',
-                    borderRadius: '6px',
+                  <span className="tabular-nums" style={{
+                    fontSize: '0.68rem',
+                    padding: '0.08rem 0.38rem',
+                    borderRadius: '5px',
                     background: isActive
                       ? 'rgba(255, 255, 255, 0.22)'
                       : isPassed
-                        ? 'rgba(148, 163, 184, 0.16)'
-                        : 'rgba(6, 182, 212, 0.16)',
+                        ? 'var(--surface-subtle)'
+                        : 'rgba(13, 148, 136, 0.14)',
                     color: isActive
                       ? '#fff'
                       : isPassed
                         ? 'var(--text-muted)'
-                        : 'var(--ink-sky)',
+                        : 'var(--primary-light)',
                     fontWeight: 600
                   }}>
                     {isPassed
@@ -186,18 +188,18 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
 
         {/* ── Modal Body Content (Scrollable) ────────────────── */}
         <div style={{
-          padding: '1.5rem 1.75rem',
+          padding: '1.35rem 1.5rem',
           overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
-          gap: '1.25rem'
+          gap: '1.2rem'
         }}>
           {/* Main Exam Title Banner */}
           <div style={{
-            padding: '1.25rem 1.5rem',
-            borderRadius: '14px',
-            background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(6, 182, 212, 0.08))',
-            border: '1px solid rgba(124, 58, 237, 0.25)',
+            padding: '1.15rem 1.35rem',
+            borderRadius: '12px',
+            background: 'var(--surface-subtle)',
+            border: '1px solid var(--border)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'flex-start',
@@ -205,36 +207,51 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
             gap: '1rem'
           }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '1.2rem' }}>{currentExam.icon}</span>
-                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--accent)', textTransform: 'uppercase' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
+                {currentExam.type === 'law'
+                  ? <Scale size={15} color="var(--primary-light)" />
+                  : <Stethoscope size={15} color="var(--primary-light)" />}
+                <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--primary-light)', textTransform: 'uppercase' }}>
                   {currentExam.series}
                 </span>
                 {currentExam.timing.isPassed ? (
                   <span style={{
                     fontSize: '0.72rem',
                     padding: '0.15rem 0.55rem',
-                    borderRadius: '12px',
-                    background: 'rgba(148, 163, 184, 0.16)',
+                    borderRadius: '6px',
+                    background: 'var(--bg-panel)',
                     color: 'var(--ink-amber)',
-                    fontWeight: 700,
-                    border: '1px solid rgba(245, 158, 11, 0.3)'
+                    fontWeight: 600,
+                    border: '1px solid var(--border)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.3rem'
                   }}>
-                    ⏰ ผ่านกำหนดการสอบมาแล้ว ({formatElapsedSinceExam(currentExam.timing)})
+                    <Clock size={12} /> ผ่านกำหนดการสอบมาแล้ว ({formatElapsedSinceExam(currentExam.timing)})
                   </span>
                 ) : (
-                  <span style={{
+                  <span className="tabular-nums" style={{
                     fontSize: '0.72rem',
                     padding: '0.15rem 0.55rem',
-                    borderRadius: '12px',
-                    background: 'rgba(124, 58, 237, 0.15)',
-                    color: 'var(--ink-indigo)',
-                    fontWeight: 700,
-                    border: '1px solid rgba(124, 58, 237, 0.3)'
+                    borderRadius: '6px',
+                    background: 'rgba(13, 148, 136, 0.14)',
+                    color: 'var(--primary-light)',
+                    fontWeight: 600,
+                    border: '1px solid rgba(13, 148, 136, 0.28)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem'
                   }}>
-                    {currentExam.timing.isInProgress
-                      ? '🔴 กำลังสอบอยู่ตอนนี้'
-                      : `⏳ อีก ${currentExam.timing.days} วัน ${currentExam.timing.hours} ชม.`}
+                    {currentExam.timing.isInProgress ? (
+                      <>
+                        <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'var(--danger)' }} />
+                        กำลังสอบอยู่ตอนนี้
+                      </>
+                    ) : (
+                      <>
+                        <Clock size={12} /> อีก {currentExam.timing.days} วัน {currentExam.timing.hours} ชม.
+                      </>
+                    )}
                   </span>
                 )}
                 <span style={{
@@ -357,7 +374,7 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
                   <div key={idx} style={{
                     padding: '0.75rem 1rem',
                     borderRadius: '10px',
-                    background: 'rgba(255, 255, 255, 0.03)',
+                    background: 'var(--surface-subtle)',
                     border: '1px solid var(--border)',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -369,7 +386,7 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
                       <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text)' }}>{p.title}</div>
                       <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{p.date}</div>
                     </div>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--accent)', background: 'rgba(6, 182, 212, 0.1)', padding: '0.2rem 0.55rem', borderRadius: '6px' }}>
+                    <span className="tabular-nums" style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary-light)', background: 'rgba(13, 148, 136, 0.12)', padding: '0.2rem 0.55rem', borderRadius: '6px' }}>
                       {p.count} ข้อ
                     </span>
                   </div>
@@ -388,7 +405,7 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
                   <div key={idx} style={{
                     padding: '0.65rem 0.9rem',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.02)',
+                    background: 'var(--surface-subtle)',
                     border: '1px solid var(--border)',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -407,18 +424,18 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
           {currentExam.centers && (
             <div>
               <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <MapPin size={15} color="#f43f5e" /> สนามสอบและจำนวนที่นั่งสอบที่เปิดรับ (13 สถาบัน)
+                <MapPin size={15} color="var(--danger)" /> สนามสอบและจำนวนที่นั่งสอบที่เปิดรับ (13 สถาบัน)
               </h4>
               <div style={{
                 maxHeight: '190px',
                 overflowY: 'auto',
                 border: '1px solid var(--border)',
                 borderRadius: '10px',
-                background: 'rgba(0, 0, 0, 0.1)'
+                background: 'var(--surface-subtle)'
               }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
                   <thead>
-                    <tr style={{ background: 'rgba(255, 255, 255, 0.04)', borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
+                    <tr style={{ background: 'var(--bg-panel)', borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
                       <th style={{ padding: '0.5rem 0.75rem', width: '50px' }}>ลำดับ</th>
                       <th style={{ padding: '0.5rem 0.75rem' }}>สนามสอบ</th>
                       <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right', width: '90px' }}>จำนวนที่นั่ง</th>
@@ -426,10 +443,10 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
                   </thead>
                   <tbody>
                     {currentExam.centers.map((c, idx) => (
-                      <tr key={idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.03)' }}>
-                        <td style={{ padding: '0.45rem 0.75rem', color: 'var(--text-muted)' }}>{idx + 1}</td>
+                      <tr key={idx} style={{ borderBottom: '1px solid var(--border)' }}>
+                        <td className="tabular-nums" style={{ padding: '0.45rem 0.75rem', color: 'var(--text-muted)' }}>{idx + 1}</td>
                         <td style={{ padding: '0.45rem 0.75rem', color: 'var(--text)' }}>{c.name}</td>
-                        <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontWeight: 600, color: 'var(--accent)' }}>
+                        <td className="tabular-nums" style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontWeight: 600, color: 'var(--primary-light)' }}>
                           {c.seats} ที่นั่ง
                         </td>
                       </tr>
@@ -450,7 +467,7 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
             color: 'var(--text-sub)',
             lineHeight: 1.6
           }}>
-            <div style={{ fontWeight: 600, color: '#f59e0b', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <div style={{ fontWeight: 600, color: 'var(--ink-amber)', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <AlertCircle size={14} /> ข้อควรปฏิบัติและเอกสารแสดงตนในวันสอบ
             </div>
             ผู้เข้าสอบสัญชาติไทยต้องนำ <strong>บัตรประจำตัวประชาชนที่ยังไม่หมดอายุ</strong> มาแสดงตนก่อนเข้าห้องสอบ หากไม่มีบัตรประชาชนให้ใช้บัตรประจำตัวผู้เข้าสอบหรือหนังสือเดินทางที่ยังไม่หมดอายุแทน ไม่อนุญาตให้ใช้เอกสารหรือบัตรอื่น
@@ -459,12 +476,12 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
 
         {/* ── Modal Footer ─────────────────────────────────── */}
         <div style={{
-          padding: '1rem 1.75rem',
+          padding: '0.9rem 1.5rem',
           borderTop: '1px solid var(--border)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          background: 'rgba(0, 0, 0, 0.15)'
+          background: 'var(--surface-subtle)'
         }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
             แหล่งข้อมูล: ศูนย์ประเมินและรับรองความรู้ความสามารถฯ (ศ.ป.ท.) ทันตแพทยสภา
