@@ -165,21 +165,21 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
           </div>
 
           {/* Quick Stats Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1rem', minWidth: '320px' }}>
-            <div className="stat-card" style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text)' }}>{summary.total_questions.toLocaleString()}</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 130px), 1fr))', gap: '0.85rem', width: '100%', maxWidth: '580px', minWidth: 0 }}>
+            <div className="stat-card" style={{ background: 'var(--surface-card)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', textAlign: 'center' }}>
+              <div className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text)' }}>{summary.total_questions.toLocaleString()}</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>ข้อสอบทั้งหมด</div>
             </div>
-            <div className="stat-card" style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#10b981' }}>{summary.clinical_questions.toLocaleString()}</div>
+            <div className="stat-card" style={{ background: 'var(--surface-card)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', textAlign: 'center' }}>
+              <div className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--ink-emerald)' }}>{summary.clinical_questions.toLocaleString()}</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>ภาคคลินิก (7.2x)</div>
             </div>
-            <div className="stat-card" style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f59e0b' }}>{summary.law_questions.toLocaleString()}</div>
+            <div className="stat-card" style={{ background: 'var(--surface-card)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', textAlign: 'center' }}>
+              <div className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--ink-amber)' }}>{summary.law_questions.toLocaleString()}</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>หมวดกฎหมาย (9.5x)</div>
             </div>
-            <div className="stat-card" style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#38bdf8' }}>{summary.total_must_know_topics}</div>
+            <div className="stat-card" style={{ background: 'var(--surface-card)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', textAlign: 'center' }}>
+              <div className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--ink-sky)' }}>{summary.total_must_know_topics}</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>Must-Know Topics</div>
             </div>
           </div>
@@ -246,11 +246,11 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
               สัดส่วนข้อสอบจริงในระบบจำแนกตาม Bloom's Taxonomy เทียบกับพิมพ์เขียว ศ.ป.ท. (R 17.3% : A 29.7% : P 53.0%)
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1rem' }}>
               {cognitive.map(cog => {
                 const isNear = Math.abs(cog.diff_pct) <= 5.0;
                 return (
-                  <div key={cog.level} style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '1.25rem', borderRadius: 'var(--radius)', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                  <div key={cog.level} style={{ background: 'var(--surface-card)', padding: '1.25rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                       <div>
                         <span style={{ fontSize: '1.25rem', fontWeight: 800, color: cog.level === 'P' ? '#ec4899' : cog.level === 'A' ? '#38bdf8' : '#10b981' }}>
@@ -376,9 +376,9 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
               สัดส่วนข้อสอบจริงเทียบกับเกณฑ์สมรรถนะ ศ.ป.ท.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '1rem' }}>
               {tasks.map(t => (
-                <div key={t.task} style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '1.1rem', borderRadius: 'var(--radius)', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <div key={t.task} style={{ background: 'var(--surface-card)', padding: '1.1rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
                   <div style={{ fontSize: '0.88rem', fontWeight: 700, marginBottom: '0.4rem', minHeight: '2.5rem' }}>{t.task}</div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.4rem' }}>
                     <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text)' }}>{t.actual_count} ข้อ</span>
@@ -532,13 +532,13 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
           </div>
 
           {/* Topics Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '0.85rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '0.85rem' }}>
             {filteredTopics.map((t, idx) => (
               <div
                 key={idx}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.02)',
-                  border: '1px solid rgba(255, 255, 255, 0.07)',
+                  background: 'var(--surface-card)',
+                  border: '1px solid var(--border)',
                   borderRadius: 'var(--radius-sm)',
                   padding: '1rem',
                   display: 'flex',
@@ -595,7 +595,7 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
           ) : readiness ? (
             <>
               {/* Readiness KPI Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 210px), 1fr))', gap: '1rem' }}>
                 <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: `4px solid ${readiness.summary.weighted_accuracy_pct >= 60 ? '#10b981' : '#fb7185'}` }}>
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>ความแม่นยำถ่วงน้ำหนัก TOS</div>
                   <div style={{ fontSize: '2rem', fontWeight: 900, color: readiness.summary.weighted_accuracy_pct >= 60 ? '#10b981' : '#fb7185' }}>
@@ -638,7 +638,7 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
               </div>
 
               {/* Cognitive & Task Readiness Row */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.25rem' }}>
                 <div className="glass-panel" style={{ padding: '1.4rem' }}>
                   <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <Award size={18} color="var(--accent)" /> ความพร้อมตามระดับ R / A / P
@@ -707,11 +707,11 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
                     🎉 ยอดเยี่ยม! คุณผ่านเกณฑ์ความแม่นยำสูงในทุกหัวข้อที่ฝึกมาแล้ว
                   </div>
                 ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(310px, 1fr))', gap: '0.9rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))', gap: '0.9rem' }}>
                     {readiness.top_weak_topics.map((wt, idx) => (
                       <div key={wt.topic_id} style={{
-                        background: 'rgba(255,255,255,0.025)',
-                        border: '1px solid rgba(255,255,255,0.08)',
+                        background: 'var(--surface-card)',
+                        border: '1px solid var(--border)',
                         borderRadius: '12px',
                         padding: '1rem',
                         display: 'flex',
@@ -768,7 +768,7 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
                 <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <TrendingUp size={18} color="#10b981" /> ความพร้อมรายสาขาวิชา (11 หมวดเทียบน้ำหนัก TOS)
                 </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '0.85rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))', gap: '0.85rem' }}>
                   {readiness.category_readiness.map(cat => {
                     const meta = READINESS_STATUS_META[cat.status] || READINESS_STATUS_META.unpracticed;
                     return (

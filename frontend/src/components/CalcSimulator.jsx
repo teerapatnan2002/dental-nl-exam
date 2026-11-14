@@ -817,7 +817,7 @@ export default function CalcSimulator({
               fontWeight: 700,
               cursor: 'pointer',
               background: showCheatSheet ? 'rgba(99,102,241,0.18)' : 'rgba(255,255,255,0.05)',
-              color: showCheatSheet ? '#a5b4fc' : 'var(--text)',
+              color: showCheatSheet ? 'var(--ink-indigo)' : 'var(--text)',
               border: `1px solid ${showCheatSheet ? 'rgba(99,102,241,0.45)' : 'var(--border)'}`,
             }}
           >
@@ -833,10 +833,10 @@ export default function CalcSimulator({
           className="card"
           style={{
             padding: '1rem 1.15rem',
-            background: 'rgba(15,23,42,0.7)',
+            background: 'var(--surface)',
             border: '1px solid rgba(99,102,241,0.3)',
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
             gap: '0.85rem',
           }}
         >
@@ -846,7 +846,8 @@ export default function CalcSimulator({
               style={{
                 padding: '0.75rem 0.9rem',
                 borderRadius: '10px',
-                background: 'rgba(255,255,255,0.03)',
+                background: 'var(--surface-card)',
+                border: '1px solid var(--border)',
                 borderLeft: `3px solid ${sec.color}`,
               }}
             >
@@ -986,14 +987,14 @@ export default function CalcSimulator({
         </div>
 
         {/* Given Parameters Chips */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.55rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '0.55rem' }}>
           {problem.params.map((p, idx) => (
             <div
               key={idx}
               style={{
                 padding: '0.55rem 0.8rem',
                 borderRadius: '10px',
-                background: 'rgba(255,255,255,0.025)',
+                background: 'var(--surface-card)',
                 border: '1px solid var(--border)',
               }}
             >

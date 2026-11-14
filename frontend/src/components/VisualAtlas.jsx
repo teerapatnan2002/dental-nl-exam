@@ -294,11 +294,11 @@ export default function VisualAtlas({
           marginBottom: '1.35rem',
           padding: '1rem 1.15rem',
           borderRadius: '14px',
-          background: 'rgba(15, 23, 42, 0.85)',
-          border: '1px solid rgba(245, 158, 11, 0.4)',
+          background: 'var(--surface-elevated)',
+          border: '1px solid rgba(245, 158, 11, 0.45)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--ink-amber)', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Columns size={17} />
               <span>⚖️ โต๊ะเปรียบเทียบภาพแยกวินิจฉัยเคียงคู่ (Differential Compare)</span>
             </div>
@@ -306,10 +306,10 @@ export default function VisualAtlas({
               type="button"
               onClick={() => { setCompareA(null); setCompareB(null); }}
               style={{
-                padding: '0.25rem 0.65rem',
+                padding: '0.28rem 0.7rem',
                 borderRadius: '8px',
                 fontSize: '0.75rem',
-                background: 'rgba(255,255,255,0.06)',
+                background: 'var(--surface-subtle)',
                 color: 'var(--text-sub)',
                 border: '1px solid var(--border)',
                 cursor: 'pointer',
@@ -319,7 +319,7 @@ export default function VisualAtlas({
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1rem' }}>
             {[
               { slot: 'A (ซ้าย)', item: compareA, clear: () => setCompareA(null), accent: '#38bdf8' },
               { slot: 'B (ขวา)', item: compareB, clear: () => setCompareB(null), accent: '#ec4899' },
@@ -398,7 +398,7 @@ export default function VisualAtlas({
       ) : (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(310px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))',
           gap: '1.1rem',
         }}>
           {visibleItems.map((item) => {
@@ -801,7 +801,7 @@ export default function VisualAtlas({
             {/* Lightbox Split View */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
               overflowY: 'auto',
               flex: 1,
             }}>
@@ -812,7 +812,7 @@ export default function VisualAtlas({
                 alignItems: 'center',
                 justifyContent: 'center',
                 overflow: 'auto',
-                minHeight: '340px',
+                minHeight: '260px',
               }}>
                 <img
                   src={`${API_BASE}/images/${lightboxItem.image_path}`}

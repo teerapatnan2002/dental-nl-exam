@@ -173,6 +173,7 @@ export default function ClinicalStudyHub({
   const [guidedTheoryAsPathway, setGuidedTheoryAsPathway] = useState(true);
   const [masterclassAsPathway, setMasterclassAsPathway] = useState(true);
   const [selectedPathwayFilter, setSelectedPathwayFilter] = useState('all');
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Flashcards Active Recall Deck State (DB-synced SM-2 + localStorage fallback)
   const [cardIndex, setCardIndex] = useState(0);
@@ -729,7 +730,7 @@ export default function ClinicalStudyHub({
           </div>
 
           {/* 3-Mode Switcher Pills */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+          <div className="study-mode-tabs">
             <button
               onClick={() => setHubMode('exam_topics')}
               style={{
@@ -741,7 +742,7 @@ export default function ClinicalStudyHub({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                background: hubMode === 'exam_topics' ? 'var(--primary)' : 'rgba(255,255,255,0.04)',
+                background: hubMode === 'exam_topics' ? 'var(--primary)' : 'var(--surface-card)',
                 color: hubMode === 'exam_topics' ? '#fff' : 'var(--text-sub)',
                 border: hubMode === 'exam_topics' ? '1px solid var(--primary)' : '1px solid var(--border)',
               }}
@@ -760,7 +761,7 @@ export default function ClinicalStudyHub({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                background: hubMode === 'textbooks' ? '#10b981' : 'rgba(255,255,255,0.04)',
+                background: hubMode === 'textbooks' ? '#10b981' : 'var(--surface-card)',
                 color: hubMode === 'textbooks' ? '#fff' : 'var(--text-sub)',
                 border: hubMode === 'textbooks' ? '1px solid #10b981' : '1px solid var(--border)',
               }}
@@ -779,7 +780,7 @@ export default function ClinicalStudyHub({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                background: hubMode === 'masterclass' ? '#ec4899' : 'rgba(255,255,255,0.04)',
+                background: hubMode === 'masterclass' ? '#ec4899' : 'var(--surface-card)',
                 color: hubMode === 'masterclass' ? '#fff' : 'var(--text-sub)',
                 border: hubMode === 'masterclass' ? '1px solid #ec4899' : '1px solid var(--border)',
               }}
@@ -798,9 +799,9 @@ export default function ClinicalStudyHub({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                background: hubMode === 'visual_atlas' ? '#0284c7' : 'rgba(56,189,248,0.08)',
-                color: hubMode === 'visual_atlas' ? '#fff' : '#7dd3fc',
-                border: hubMode === 'visual_atlas' ? '1px solid #0284c7' : '1px solid rgba(56,189,248,0.28)',
+                background: hubMode === 'visual_atlas' ? '#0284c7' : 'rgba(56,189,248,0.1)',
+                color: hubMode === 'visual_atlas' ? '#fff' : 'var(--ink-sky)',
+                border: hubMode === 'visual_atlas' ? '1px solid #0284c7' : '1px solid rgba(56,189,248,0.32)',
               }}
             >
               <span>🖼️</span> คลังภาพวินิจฉัย (112 ภาพ)
@@ -817,9 +818,9 @@ export default function ClinicalStudyHub({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                background: hubMode === 'calc_lab' ? '#059669' : 'rgba(16,185,129,0.08)',
-                color: hubMode === 'calc_lab' ? '#fff' : '#6ee7b7',
-                border: hubMode === 'calc_lab' ? '1px solid #059669' : '1px solid rgba(16,185,129,0.28)',
+                background: hubMode === 'calc_lab' ? '#059669' : 'rgba(16,185,129,0.1)',
+                color: hubMode === 'calc_lab' ? '#fff' : 'var(--ink-emerald)',
+                border: hubMode === 'calc_lab' ? '1px solid #059669' : '1px solid rgba(16,185,129,0.32)',
               }}
             >
               <span>🧮</span> ห้องฝึกคำนวณคลินิก
@@ -836,9 +837,9 @@ export default function ClinicalStudyHub({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                background: hubMode === 'cloze_arena' ? '#7c3aed' : 'rgba(139,92,246,0.08)',
-                color: hubMode === 'cloze_arena' ? '#fff' : '#c4b5fd',
-                border: hubMode === 'cloze_arena' ? '1px solid #7c3aed' : '1px solid rgba(139,92,246,0.28)',
+                background: hubMode === 'cloze_arena' ? '#7c3aed' : 'rgba(139,92,246,0.1)',
+                color: hubMode === 'cloze_arena' ? '#fff' : 'var(--ink-violet)',
+                border: hubMode === 'cloze_arena' ? '1px solid #7c3aed' : '1px solid rgba(139,92,246,0.32)',
               }}
             >
               <span>⚡</span> Cloze & กับดักข้อสอบ
@@ -858,9 +859,9 @@ export default function ClinicalStudyHub({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                background: hubMode === 'mistake_clinic' ? '#f43f5e' : 'rgba(244,63,94,0.08)',
-                color: hubMode === 'mistake_clinic' ? '#fff' : '#fda4af',
-                border: hubMode === 'mistake_clinic' ? '1px solid #f43f5e' : '1px solid rgba(244,63,94,0.28)',
+                background: hubMode === 'mistake_clinic' ? '#f43f5e' : 'rgba(244,63,94,0.1)',
+                color: hubMode === 'mistake_clinic' ? '#fff' : 'var(--ink-rose)',
+                border: hubMode === 'mistake_clinic' ? '1px solid #f43f5e' : '1px solid rgba(244,63,94,0.32)',
               }}
             >
               <Stethoscope size={15} /> คลินิกซ่อมจุดอ่อน
@@ -870,7 +871,7 @@ export default function ClinicalStudyHub({
                   fontWeight: 800,
                   padding: '0.05rem 0.45rem',
                   borderRadius: '10px',
-                  background: hubMode === 'mistake_clinic' ? 'rgba(255,255,255,0.25)' : 'rgba(244,63,94,0.25)',
+                  background: hubMode === 'mistake_clinic' ? 'rgba(255,255,255,0.25)' : '#f43f5e',
                   color: '#fff',
                 }}>
                   {mistakeClinicData.total_wrong_unique}
@@ -1029,6 +1030,25 @@ export default function ClinicalStudyHub({
             />
           </div>
         ) : (
+        <>
+          <div className="clinical-sidebar-mobile-bar">
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                กำลังศึกษาหัวข้อ
+              </div>
+              <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {moduleData?.module_info?.title_th || selectedMasterclassId || 'เลือกบทเรียนจากสารบัญ'}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setMobileSidebarOpen(prev => !prev)}
+              className="btn btn-secondary btn-sm"
+              style={{ flexShrink: 0, fontWeight: 700 }}
+            >
+              <Filter size={14} /> {mobileSidebarOpen ? 'ซ่อนรายการ' : 'เปลี่ยนหัวข้อ'}
+            </button>
+          </div>
         <div style={{
           display: 'grid',
           gridTemplateColumns: '340px 1fr',
@@ -1038,15 +1058,18 @@ export default function ClinicalStudyHub({
         }} className="clinical-study-grid">
           
           {/* ── LEFT COLUMN: CURRICULUM NAVIGATOR ───────────────────────── */}
-          <div style={{
-            borderRight: '1px solid var(--border)',
-            background: 'rgba(255, 255, 255, 0.01)',
-            overflowY: 'auto',
-            padding: '0.75rem',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem'
-          }}>
+          <div
+            className={`clinical-sidebar-panel ${mobileSidebarOpen ? '' : 'is-collapsed-mobile'}`}
+            style={{
+              borderRight: '1px solid var(--border)',
+              background: 'var(--surface-subtle)',
+              overflowY: 'auto',
+              padding: '0.75rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem'
+            }}
+          >
             {/* MODE 1 SIDEBAR: 83 EXAM-DRIVEN TOPICS */}
             {hubMode === 'exam_topics' && (
               <>
@@ -1089,14 +1112,14 @@ export default function ClinicalStudyHub({
                     return (
                       <div
                         key={topic.id}
-                        onClick={() => setSelectedTopicId(topic.id)}
+                        onClick={() => { setSelectedTopicId(topic.id); setMobileSidebarOpen(false); }}
                         style={{
                           padding: '0.75rem 0.85rem',
                           borderRadius: '10px',
                           cursor: 'pointer',
                           transition: 'all 0.15s ease',
-                          background: isSelected ? 'rgba(99, 102, 241, 0.14)' : 'rgba(255, 255, 255, 0.02)',
-                          border: isSelected ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.04)',
+                          background: isSelected ? 'rgba(99, 102, 241, 0.14)' : 'var(--surface-card)',
+                          border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border)',
                           borderLeft: isSelected ? `4px solid ${badgeColor}` : `4px solid ${badgeColor}50`,
                         }}
                       >
@@ -1184,14 +1207,14 @@ export default function ClinicalStudyHub({
                   return (
                     <div
                       key={tb.id}
-                      onClick={() => setSelectedTextbookId(tb.id)}
+                      onClick={() => { setSelectedTextbookId(tb.id); setMobileSidebarOpen(false); }}
                       style={{
                         padding: '0.85rem',
                         borderRadius: '10px',
                         cursor: 'pointer',
                         transition: 'all 0.15s ease',
-                        background: isSelected ? 'rgba(16, 185, 129, 0.12)' : 'rgba(255, 255, 255, 0.02)',
-                        border: isSelected ? `1px solid ${tb.color}` : '1px solid rgba(255,255,255,0.05)',
+                        background: isSelected ? 'rgba(16, 185, 129, 0.12)' : 'var(--surface-card)',
+                        border: isSelected ? `1px solid ${tb.color}` : '1px solid var(--border)',
                         borderLeft: `4px solid ${tb.color}`,
                       }}
                     >
@@ -1244,13 +1267,13 @@ export default function ClinicalStudyHub({
                   return (
                     <div
                       key={guide.id}
-                      onClick={() => setSelectedMasterclassId(guide.id)}
+                      onClick={() => { setSelectedMasterclassId(guide.id); setMobileSidebarOpen(false); }}
                       style={{
                         padding: '0.75rem 0.9rem',
                         borderRadius: '10px',
                         cursor: 'pointer',
-                        background: isSelected ? 'rgba(236, 72, 153, 0.12)' : 'rgba(255, 255, 255, 0.02)',
-                        border: isSelected ? '1px solid #ec4899' : '1px solid transparent',
+                        background: isSelected ? 'rgba(236, 72, 153, 0.12)' : 'var(--surface-card)',
+                        border: isSelected ? '1px solid #ec4899' : '1px solid var(--border)',
                         borderLeft: `4px solid ${guide.badgeColor || '#ec4899'}`,
                       }}
                     >
@@ -1335,11 +1358,14 @@ export default function ClinicalStudyHub({
           </div>
 
           {/* ── RIGHT COLUMN: INTERACTIVE PEDAGOGICAL CLASSROOM ─────────── */}
-          <div style={{
-            overflowY: 'auto',
-            padding: '1.75rem 2.25rem',
-            background: 'var(--bg-surface, rgba(15, 23, 42, 0.6))',
-          }}>
+          <div
+            className="clinical-classroom-panel"
+            style={{
+              overflowY: 'auto',
+              padding: '1.75rem 2.25rem',
+              background: 'var(--bg-surface)',
+            }}
+          >
             {/* ══════════════════════════════════════════════════════════════
                 MODES 1 & 2: EXAM-DRIVEN & TEXTBOOK-DRIVEN CLASSROOM
             ══════════════════════════════════════════════════════════════ */}
@@ -1484,19 +1510,19 @@ export default function ClinicalStudyHub({
                     {/* Textbook & Evidence Sources Shelf */}
                     {moduleData.textbook_references && moduleData.textbook_references.length > 0 && (
                       <div style={{
-                        background: 'rgba(15, 23, 42, 0.55)',
+                        background: 'var(--surface)',
                         borderRadius: '10px',
                         padding: '0.85rem 1rem',
-                        border: '1px solid rgba(255,255,255,0.08)',
+                        border: '1px solid var(--border)',
                         marginBottom: moduleData.thai_protocols?.length > 0 ? '0.85rem' : 0
                       }}>
                         <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--accent)', marginBottom: '0.45rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                           <BookMarked size={15} /> ตำรามาตรฐานและหลักฐานทางวิชาการ (Textbooks & Evidence) ที่ใช้ออกข้อสอบหัวข้อนี้:
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                           {moduleData.textbook_references.slice(0, 4).map((refItem, idx) => (
-                            <div key={idx} style={{ fontSize: '0.8rem', color: 'var(--text-sub)', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
-                              <span>
+                            <div key={idx} style={{ fontSize: '0.8rem', color: 'var(--text-sub)', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+                              <span style={{ minWidth: 0, flex: '1 1 200px', overflowWrap: 'anywhere' }}>
                                 <strong style={{ color: 'var(--text)' }}>{refItem.icon} [{idx + 1}]</strong> {refItem.citation}
                               </span>
                               <span style={{
@@ -1560,10 +1586,10 @@ export default function ClinicalStudyHub({
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                           {moduleData.thai_protocols.map((tp, tpIdx) => (
                             <div key={tp.id || tpIdx} style={{
-                              background: 'rgba(15, 23, 42, 0.55)',
+                              background: 'var(--surface)',
                               borderRadius: '10px',
                               padding: '0.85rem 1rem',
-                              border: '1px solid rgba(255,255,255,0.07)'
+                              border: '1px solid var(--border)'
                             }}>
                               {tp.thai_association && (
                                 <div style={{ fontSize: '0.83rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.45rem' }}>
@@ -1689,7 +1715,7 @@ export default function ClinicalStudyHub({
                             fontSize: '0.92rem',
                             lineHeight: 1.75,
                             whiteSpace: 'pre-wrap',
-                            background: 'rgba(15, 23, 42, 0.5)',
+                            background: 'var(--surface)',
                             padding: '1.25rem',
                             borderRadius: '10px',
                             border: '1px solid var(--border)',
@@ -1936,7 +1962,7 @@ export default function ClinicalStudyHub({
 
                                   {/* Pearl & Pitfall Footer */}
                                   {(lesson.clinical_pearl || lesson.common_pitfall) && (
-                                    <div style={{ display: 'grid', gridTemplateColumns: lesson.clinical_pearl && lesson.common_pitfall ? '1fr 1fr' : '1fr', gap: '0.75rem', marginTop: '0.75rem' }}>
+                                    <div className={lesson.clinical_pearl && lesson.common_pitfall ? 'responsive-2col' : ''} style={{ display: 'grid', gridTemplateColumns: lesson.clinical_pearl && lesson.common_pitfall ? undefined : '1fr', gap: '0.75rem', marginTop: '0.75rem' }}>
                                       {lesson.clinical_pearl && (
                                         <div style={{
                                           background: 'rgba(168, 85, 247, 0.08)',
@@ -2239,7 +2265,7 @@ export default function ClinicalStudyHub({
                                   fontWeight: 700,
                                   padding: '0.2rem 0.7rem',
                                   borderRadius: '20px',
-                                  background: 'rgba(15, 23, 42, 0.6)',
+                                  background: 'var(--surface)',
                                   color: 'var(--accent)',
                                   border: '1px solid rgba(6, 182, 212, 0.3)'
                                 }}>
@@ -2256,10 +2282,10 @@ export default function ClinicalStudyHub({
                                 fontSize: '0.95rem',
                                 lineHeight: 1.8,
                                 whiteSpace: 'pre-wrap',
-                                background: 'rgba(15, 23, 42, 0.45)',
+                                background: 'var(--surface)',
                                 padding: '1.25rem',
                                 borderRadius: '10px',
-                                border: '1px solid rgba(255,255,255,0.06)'
+                                border: '1px solid var(--border)'
                               }}>
                                 {currentGuidedCase.step1_textbook_lesson.core_principle}
                               </div>
@@ -2782,7 +2808,7 @@ export default function ClinicalStudyHub({
                       SUB-TAB 4: HIGH-YIELD PEARLS & PITFALLS
                   ────────────────────────────────────────────────────── */}
                   {classroomTab === 'pearls_traps' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+                    <div className="responsive-2col" style={{ gap: '1.25rem' }}>
                       {/* Column 1: Clinical Pearls */}
                       <div>
                         <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#c084fc', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -2925,13 +2951,13 @@ export default function ClinicalStudyHub({
                         };
                         return (
                           <div style={{
-                            background: 'linear-gradient(145deg, rgba(99, 102, 241, 0.09), rgba(15, 23, 42, 0.72))',
+                            background: 'var(--surface-elevated)',
                             border: isMastered ? '1.5px solid rgba(16, 185, 129, 0.45)' : '1.5px solid rgba(99, 102, 241, 0.35)',
                             borderRadius: '16px',
                             padding: '1.6rem',
                             maxWidth: '760px',
                             margin: '0 auto',
-                            boxShadow: '0 10px 28px rgba(0,0,0,0.18)'
+                            boxShadow: 'var(--shadow-card)'
                           }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
@@ -2976,8 +3002,8 @@ export default function ClinicalStudyHub({
                             <div style={{
                               padding: '1.35rem',
                               borderRadius: '12px',
-                              background: 'rgba(15, 23, 42, 0.55)',
-                              border: '1px solid rgba(255,255,255,0.08)',
+                              background: 'var(--surface)',
+                              border: '1px solid var(--border)',
                               marginBottom: '1rem'
                             }}>
                               <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
@@ -3182,16 +3208,7 @@ export default function ClinicalStudyHub({
                           {moduleData.high_yield_sheet?.triggers_map?.map((tm, idx) => (
                             <div
                               key={`${tm.question_id}-${idx}`}
-                              style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'minmax(200px, 1.1fr) auto minmax(220px, 1.3fr)',
-                                gap: '0.85rem',
-                                alignItems: 'center',
-                                background: 'rgba(255,255,255,0.025)',
-                                border: '1px solid var(--border)',
-                                borderRadius: '12px',
-                                padding: '0.9rem 1rem',
-                              }}
+                              className="clinical-trigger-row"
                             >
                               <div>
                                 <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--accent)', marginBottom: '0.2rem' }}>
@@ -3202,7 +3219,7 @@ export default function ClinicalStudyHub({
                                 </div>
                               </div>
 
-                              <div style={{ color: '#34d399', fontWeight: 900, fontSize: '1.1rem', textAlign: 'center' }}>
+                              <div className="clinical-trigger-arrow" style={{ color: 'var(--ink-emerald)', fontWeight: 900, fontSize: '1.1rem', textAlign: 'center' }}>
                                 ➔
                               </div>
 
@@ -3517,11 +3534,11 @@ export default function ClinicalStudyHub({
 
                       {/* Weakest Topics Ranking Grid */}
                       {mistakeClinicData.weak_topics?.length > 0 && (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.75rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 240px), 1fr))', gap: '0.75rem' }}>
                           {mistakeClinicData.weak_topics.slice(0, 6).map(wt => (
                             <div key={wt.topic_id} style={{
-                              background: 'rgba(15, 23, 42, 0.55)',
-                              border: '1px solid rgba(255,255,255,0.08)',
+                              background: 'var(--surface)',
+                              border: '1px solid var(--border)',
                               borderRadius: '10px',
                               padding: '0.8rem 0.9rem'
                             }}>
@@ -3663,6 +3680,7 @@ export default function ClinicalStudyHub({
           </div>
 
         </div>
+        </>
         )}
 
       </div>

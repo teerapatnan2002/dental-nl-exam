@@ -431,10 +431,10 @@ export default function ExplanationBox({
           background: 'rgba(244, 63, 94, 0.05)',
           border: '1px solid rgba(244, 63, 94, 0.25)',
         }}>
-          <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#fb7185', marginBottom: '0.65rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ fontSize: '0.84rem', fontWeight: 800, color: 'var(--ink-rose)', marginBottom: '0.65rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
             ⚔️ เทียบชัดๆ ทำไมข้อที่คุณเลือกถึงพลาด & ทำไมเฉลยจึงถูก:
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '0.75rem' }}>
             <div style={{
               background: 'rgba(244, 63, 94, 0.09)',
               border: '1px solid rgba(244, 63, 94, 0.28)',
@@ -560,7 +560,7 @@ export default function ExplanationBox({
                   display: 'inline-flex',
                   padding: '2px',
                   borderRadius: '9px',
-                  background: 'rgba(15, 23, 42, 0.55)',
+                  background: 'var(--surface)',
                   border: '1px solid var(--border)',
                 }}>
                   <button

@@ -343,10 +343,7 @@ function AppContent() {
           <span>NL Dental</span>
         </div>
 
-        <div className="app-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-          {currentView !== 'dashboard' && currentView !== 'aihub' && currentView !== 'law_hub' && (
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', display: 'none' }}></span>
-          )}
+        <div className="app-header-actions">
           {currentView === 'exam' && (
             <button className="btn btn-danger btn-sm" onClick={goHome}>
               <XCircle size={15} /> Abort
@@ -359,14 +356,14 @@ function AppContent() {
             className="theme-toggle-btn header-schedule-btn"
             style={{
               background: 'rgba(244, 63, 94, 0.12)',
-              color: '#f43f5e',
+              color: 'var(--ink-rose)',
               border: '1px solid rgba(244, 63, 94, 0.3)',
               cursor: 'pointer'
             }}
             title="คลิกเพื่อดูตารางสอบทางการและประกาศ ศ.ป.ท."
           >
             <Clock size={15} color="#f43f5e" />
-            <span className="theme-toggle-label" style={{ fontWeight: 600 }}>
+            <span className="theme-toggle-label tabular-nums" style={{ fontWeight: 600 }}>
               {nextExamTimeLeft && !nextExamTimeLeft.isExpired ? `สอบกฎหมาย: อีก ${nextExamTimeLeft.days} วัน` : 'ตารางสอบ ศ.ป.ท.'}
             </span>
           </button>
@@ -424,17 +421,18 @@ function AppContent() {
           </button>
           
           {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginLeft: '0.25rem', paddingLeft: '0.5rem', borderLeft: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.9rem', color: 'var(--text-sub)' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 600 }}>
+            <div className="header-user-wrap">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.9rem', color: 'var(--text-sub)' }}>
+                <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #6366f1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.85rem', boxShadow: '0 2px 8px var(--glow-purple)' }}>
                   {user.username.charAt(0).toUpperCase()}
                 </div>
                 <span className="header-user-name">{user.username}</span>
               </div>
-              <button 
+              <button
                 onClick={logout}
-                style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.2rem' }}
+                className="header-icon-btn"
                 title="ออกจากระบบ"
+                aria-label="ออกจากระบบ"
               >
                 <LogOut size={16} />
               </button>
@@ -567,6 +565,55 @@ function AppContent() {
           />
         )}
       </main>
+
+      {/* ── Mobile Sticky Bottom Navigation (<= 768px, hidden during active exam) ── */}
+      {currentView !== 'exam' && (
+        <nav className="mobile-bottom-nav" aria-label="เมนูนำทางบนมือถือ">
+          <button
+            type="button"
+            onClick={goHome}
+            className={`mobile-bottom-nav-btn ${currentView === 'dashboard' ? 'active' : ''}`}
+          >
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+            <span>หน้าหลัก</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setCurrentView('study_hub')}
+            className={`mobile-bottom-nav-btn ${currentView === 'study_hub' ? 'active' : ''}`}
+          >
+            <BookOpen size={19} aria-hidden="true" />
+            <span>เลกเชอร์</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setCurrentView('law_hub')}
+            className={`mobile-bottom-nav-btn ${currentView === 'law_hub' ? 'active' : ''}`}
+          >
+            <Scale size={19} aria-hidden="true" />
+            <span>กฎหมาย</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (!user) {
+                setIsAuthModalOpen(true);
+                return;
+              }
+              setCurrentView('aihub');
+            }}
+            className={`mobile-bottom-nav-btn ${currentView === 'aihub' ? 'active' : ''}`}
+          >
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 2a4 4 0 0 1 4 4v1a3 3 0 0 1 3 3 3 3 0 0 1-1 2.24A4 4 0 0 1 16 19a4 4 0 0 1-8 0 4 4 0 0 1-2-6.76A3 3 0 0 1 5 10a3 3 0 0 1 3-3V6a4 4 0 0 1 4-4z" />
+            </svg>
+            <span>AI Hub</span>
+          </button>
+        </nav>
+      )}
     </>
   );
 }

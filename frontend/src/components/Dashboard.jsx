@@ -309,7 +309,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
             </div>
           </div>
 
-          <div style={{ height: '7px', background: 'rgba(255,255,255,0.07)', borderRadius: '4px', overflow: 'hidden', marginBottom: '1rem' }}>
+          <div style={{ height: '7px', background: 'var(--surface-subtle)', borderRadius: '4px', overflow: 'hidden', marginBottom: '1rem' }}>
             <div style={{
               height: '100%',
               width: `${Math.min(100, Math.round((dailyPlan.answered_today / Math.max(1, dailyPlan.daily_target_questions)) * 100))}%`,
@@ -318,10 +318,10 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
             }} />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(235px, 1fr))', gap: '0.85rem' }}>
-            <div style={{ background: 'rgba(15, 23, 42, 0.45)', border: '1px solid rgba(245, 158, 11, 0.28)', borderRadius: '12px', padding: '0.95rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '0.6rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 235px), 1fr))', gap: '0.85rem' }}>
+            <div style={{ background: 'var(--surface)', border: '1px solid rgba(245, 158, 11, 0.32)', borderRadius: '12px', padding: '0.95rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '0.6rem' }}>
               <div>
-                <div style={{ fontSize: '0.74rem', color: '#fbbf24', fontWeight: 700, marginBottom: '0.2rem' }}>🔄 Spaced Repetition (SM-2)</div>
+                <div style={{ fontSize: '0.74rem', color: 'var(--ink-amber)', fontWeight: 700, marginBottom: '0.2rem' }}>🔄 Spaced Repetition (SM-2)</div>
                 <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text)' }}>
                   ข้อสอบถึงกำหนด {dailyPlan.due_questions_count} ข้อ
                 </div>
@@ -332,13 +332,13 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                   <RotateCcw size={14} /> ทบทวนเลย ({Math.min(20, dailyPlan.due_questions_count)} ข้อ)
                 </button>
               ) : (
-                <span style={{ fontSize: '0.76rem', color: '#34d399', fontWeight: 600 }}>✅ เคลียร์ข้อสอบค้างทวนครบแล้ว</span>
+                <span style={{ fontSize: '0.76rem', color: 'var(--ink-emerald)', fontWeight: 600 }}>✅ เคลียร์ข้อสอบค้างทวนครบแล้ว</span>
               )}
             </div>
 
-            <div style={{ background: 'rgba(15, 23, 42, 0.45)', border: '1px solid rgba(56, 189, 248, 0.28)', borderRadius: '12px', padding: '0.95rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '0.6rem' }}>
+            <div style={{ background: 'var(--surface)', border: '1px solid rgba(56, 189, 248, 0.32)', borderRadius: '12px', padding: '0.95rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '0.6rem' }}>
               <div>
-                <div style={{ fontSize: '0.74rem', color: '#38bdf8', fontWeight: 700, marginBottom: '0.2rem' }}>🃏 Active Recall Flashcards</div>
+                <div style={{ fontSize: '0.74rem', color: 'var(--ink-sky)', fontWeight: 700, marginBottom: '0.2rem' }}>🃏 Active Recall Flashcards</div>
                 <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text)' }}>
                   การ์ดถึงกำหนด {dailyPlan.due_flashcards_count} ใบ
                 </div>
@@ -355,9 +355,9 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
             </div>
 
             {dailyPlan.recommended_weak_topic && (
-              <div style={{ background: 'rgba(15, 23, 42, 0.45)', border: '1px solid rgba(236, 72, 153, 0.3)', borderRadius: '12px', padding: '0.95rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '0.6rem' }}>
+              <div style={{ background: 'var(--surface)', border: '1px solid rgba(236, 72, 153, 0.32)', borderRadius: '12px', padding: '0.95rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '0.6rem' }}>
                 <div>
-                  <div style={{ fontSize: '0.74rem', color: '#f472b6', fontWeight: 700, marginBottom: '0.2rem' }}>🎯 จุดอ่อนคุ้มคะแนนสุดวันนี้</div>
+                  <div style={{ fontSize: '0.74rem', color: '#ec4899', fontWeight: 700, marginBottom: '0.2rem' }}>🎯 จุดอ่อนคุ้มคะแนนสุดวันนี้</div>
                   <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text)', lineHeight: 1.35 }}>
                     {dailyPlan.recommended_weak_topic.title_th}
                   </div>
@@ -682,10 +682,10 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                   gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
                   gap: '1.25rem',
                   marginBottom: '1.75rem',
-                  background: 'rgba(15, 23, 42, 0.65)',
+                  background: 'var(--surface)',
                   padding: 'clamp(0.85rem, 2.5vw, 1.25rem)',
                   borderRadius: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  border: '1px solid var(--border)',
                   width: '100%',
                   boxSizing: 'border-box'
                 }}>
@@ -1146,14 +1146,14 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                       <div
                         key={set.setNum}
                         style={{
-                          background: 'rgba(15, 23, 42, 0.75)',
-                          border: `1px solid rgba(255, 255, 255, 0.1)`,
+                          background: 'var(--surface)',
+                          border: '1px solid var(--border)',
                           borderRadius: '18px',
                           padding: '1.25rem',
                           display: 'flex',
                           flexDirection: 'column',
                           justifyContent: 'space-between',
-                          boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
+                          boxShadow: 'var(--shadow-card)',
                           position: 'relative',
                           overflow: 'hidden'
                         }}
@@ -1176,10 +1176,10 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                             </span>
                           </div>
 
-                          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 0.2rem 0', color: '#fff' }}>
+                          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 0.2rem 0', color: 'var(--text)' }}>
                             {set.title}
                           </h3>
-                          <div style={{ fontSize: '0.82rem', color: '#38bdf8', fontWeight: 600, marginBottom: '0.6rem' }}>
+                          <div style={{ fontSize: '0.82rem', color: 'var(--ink-sky)', fontWeight: 600, marginBottom: '0.6rem' }}>
                             {set.subtitle}
                           </div>
                           <p style={{ fontSize: '0.8rem', color: 'var(--text-sub)', lineHeight: 1.45, margin: '0 0 1rem 0' }}>
@@ -1188,13 +1188,13 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
 
                           {/* Quick Badges */}
                           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '1.2rem' }}>
-                            <span style={{ background: 'rgba(255,255,255,0.06)', padding: '0.15rem 0.45rem', borderRadius: '6px', fontSize: '0.72rem', color: 'var(--text)' }}>
+                            <span style={{ background: 'var(--surface-subtle)', border: '1px solid var(--border)', padding: '0.18rem 0.5rem', borderRadius: '6px', fontSize: '0.72rem', color: 'var(--text)' }}>
                               🎯 30 ข้อ (10 STEMs)
                             </span>
-                            <span style={{ background: 'rgba(255,255,255,0.06)', padding: '0.15rem 0.45rem', borderRadius: '6px', fontSize: '0.72rem', color: 'var(--text)' }}>
+                            <span style={{ background: 'var(--surface-subtle)', border: '1px solid var(--border)', padding: '0.18rem 0.5rem', borderRadius: '6px', fontSize: '0.72rem', color: 'var(--text)' }}>
                               ⏱️ 60 นาที
                             </span>
-                            <span style={{ background: 'rgba(255,255,255,0.06)', padding: '0.15rem 0.45rem', borderRadius: '6px', fontSize: '0.72rem', color: '#a78bfa' }}>
+                            <span style={{ background: 'var(--surface-subtle)', border: '1px solid var(--border)', padding: '0.18rem 0.5rem', borderRadius: '6px', fontSize: '0.72rem', color: 'var(--primary-light)', fontWeight: 600 }}>
                               🧠 TOS ครบ 3 ระดับ
                             </span>
                           </div>
@@ -1202,7 +1202,7 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
 
                         {/* Action Buttons */}
                         <div>
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.6rem' }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.5rem', marginBottom: '0.6rem' }}>
                             <button
                               type="button"
                               className="btn btn-primary btn-sm"
@@ -2113,17 +2113,17 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
               <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>กำลังโหลดข้อมูล...</div>
             ) : (
               <>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem', marginBottom: '2rem' }}>
                   <div className="glass-panel" style={{ padding: '1.5rem', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2rem', fontWeight: 700, color: 'white' }}>{userStats.total_sessions}</div>
+                    <div className="tabular-nums" style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text)' }}>{userStats.total_sessions}</div>
                     <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>จำนวนครั้งที่ทำข้อสอบ</div>
                   </div>
                   <div className="glass-panel" style={{ padding: '1.5rem', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--accent)' }}>{userStats.total_questions_answered}</div>
+                    <div className="tabular-nums" style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--accent)' }}>{userStats.total_questions_answered}</div>
                     <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>จำนวนข้อที่ตอบทั้งหมด</div>
                   </div>
                   <div className="glass-panel" style={{ padding: '1.5rem', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--success)' }}>{userStats.overall_accuracy}%</div>
+                    <div className="tabular-nums" style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--success)' }}>{userStats.overall_accuracy}%</div>
                     <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>ความแม่นยำรวม</div>
                   </div>
                 </div>
@@ -2132,12 +2132,12 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '1rem' }}>
                   {userStats.category_stats.map((cat, idx) => (
                     <div key={idx} className="glass-panel" style={{ padding: '1rem', borderLeft: `3px solid ${cat.accuracy >= 60 ? 'var(--success)' : 'var(--danger)'}` }}>
-                      <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'white', marginBottom: '0.5rem' }}>{cat.category}</div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.5rem' }}>{cat.category}</div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
                         <span>ตอบถูก {cat.correct}/{cat.total} ข้อ</span>
-                        <span style={{ fontWeight: 600, color: cat.accuracy >= 60 ? 'var(--success)' : 'var(--danger)' }}>{cat.accuracy}%</span>
+                        <span className="tabular-nums" style={{ fontWeight: 600, color: cat.accuracy >= 60 ? 'var(--success)' : 'var(--danger)' }}>{cat.accuracy}%</span>
                       </div>
-                      <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
+                      <div style={{ height: '5px', background: 'var(--surface-subtle)', borderRadius: '3px', overflow: 'hidden' }}>
                         <div style={{ height: '100%', width: `${cat.accuracy}%`, background: cat.accuracy >= 60 ? 'var(--success)' : 'var(--danger)' }} />
                       </div>
                     </div>

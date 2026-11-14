@@ -167,7 +167,7 @@ export default function TutorChat({
 
   if (!user) {
     return (
-      <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1.35rem', borderRadius: '12px', textAlign: 'center', border: '1px solid var(--border)', marginTop: '0.85rem' }}>
+      <div style={{ background: 'var(--surface-subtle)', padding: '1.35rem', borderRadius: '12px', textAlign: 'center', border: '1px solid var(--border)', marginTop: '0.85rem' }}>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0 }}>
           กรุณาเข้าสู่ระบบเพื่อใช้งานอาจารย์ AI Socratic Tutor และบันทึกคำตอบเข้าสมุดโน้ตส่วนตัว
         </p>
@@ -176,17 +176,17 @@ export default function TutorChat({
   }
 
   return (
-    <div style={{ marginTop: '0.85rem', background: 'rgba(18,18,30,0.68)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' }}>
+    <div style={{ marginTop: '0.85rem', background: 'var(--surface)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' }}>
       {/* Header */}
-      <div style={{ padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+      <div style={{ padding: '0.75rem 1rem', background: 'var(--surface-subtle)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Bot size={18} color="var(--primary-light)" />
-          <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'white' }}>
+          <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)' }}>
             อาจารย์ AI Tutor (Multi-turn Socratic & Thai Protocols)
           </span>
         </div>
         {topicTitle && (
-          <span style={{ fontSize: '0.74rem', color: '#a5b4fc', fontWeight: 600 }}>
+          <span style={{ fontSize: '0.74rem', color: 'var(--ink-indigo)', fontWeight: 600 }}>
             📚 {topicTitle}
           </span>
         )}
@@ -196,17 +196,18 @@ export default function TutorChat({
       <div style={{ padding: '1rem', height: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {messages.map((m, i) => (
           <div key={i} style={{ display: 'flex', gap: '0.75rem', flexDirection: m.role === 'user' ? 'row-reverse' : 'row', alignItems: 'flex-start' }}>
-            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: m.role === 'user' ? 'var(--primary)' : 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: m.role === 'user' ? 'var(--primary)' : 'var(--surface-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid var(--border)' }}>
               {m.role === 'user' ? <User size={14} color="white" /> : <Bot size={14} color="var(--primary-light)" />}
             </div>
 
             <div style={{ maxWidth: '88%', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
               <div style={{
-                background: m.role === 'user' ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
+                background: m.role === 'user' ? 'var(--primary)' : 'var(--surface-card)',
+                border: m.role === 'user' ? 'none' : '1px solid var(--border)',
                 padding: '0.68rem 1rem', borderRadius: '12px',
                 borderTopRightRadius: m.role === 'user' ? '2px' : '12px',
                 borderTopLeftRadius: m.role === 'user' ? '12px' : '2px',
-                fontSize: '0.9rem', color: 'white',
+                fontSize: '0.9rem', color: m.role === 'user' ? '#fff' : 'var(--text)',
                 lineHeight: 1.55
               }}>
                 {m.role === 'user' ? m.text : (
@@ -229,11 +230,11 @@ export default function TutorChat({
                     disabled={Boolean(savedStates[i])}
                     style={{
                       fontSize: '0.72rem',
-                      padding: '0.2rem 0.45rem',
+                      padding: '0.22rem 0.45rem',
                       borderRadius: '7px',
-                      background: 'rgba(15, 23, 42, 0.75)',
-                      color: '#cbd5e1',
-                      border: '1px solid rgba(255,255,255,0.14)',
+                      background: 'var(--surface-elevated)',
+                      color: 'var(--text-sub)',
+                      border: '1px solid var(--border)',
                     }}
                   >
                     {QUICK_TAGS.map((tg) => (
@@ -251,11 +252,11 @@ export default function TutorChat({
                       gap: '4px',
                       fontSize: '0.73rem',
                       fontWeight: 700,
-                      padding: '0.22rem 0.65rem',
+                      padding: '0.24rem 0.65rem',
                       borderRadius: '8px',
                       cursor: savedStates[i] ? 'default' : 'pointer',
-                      background: savedStates[i] ? 'rgba(16,185,129,0.18)' : 'rgba(245,158,11,0.14)',
-                      color: savedStates[i] ? '#34d399' : '#fbbf24',
+                      background: savedStates[i] ? 'rgba(16,185,129,0.16)' : 'rgba(245,158,11,0.14)',
+                      color: savedStates[i] ? 'var(--ink-emerald)' : 'var(--ink-amber)',
                       border: `1px solid ${savedStates[i] ? 'rgba(16,185,129,0.4)' : 'rgba(245,158,11,0.38)'}`,
                     }}
                   >
@@ -277,10 +278,10 @@ export default function TutorChat({
         ))}
         {loading && (
           <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--surface-hover)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Bot size={14} color="var(--primary-light)" />
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1rem', borderRadius: '12px', borderTopLeftRadius: '2px', display: 'flex', alignItems: 'center' }}>
+            <div style={{ background: 'var(--surface-card)', border: '1px solid var(--border)', padding: '0.6rem 1rem', borderRadius: '12px', borderTopLeftRadius: '2px', display: 'flex', alignItems: 'center' }}>
               <Loader2 size={16} className="spin" color="var(--primary-light)" />
             </div>
           </div>
@@ -292,7 +293,7 @@ export default function TutorChat({
       <div style={{
         padding: '0.5rem 0.75rem',
         borderTop: '1px solid var(--border)',
-        background: 'rgba(15, 23, 42, 0.5)',
+        background: 'var(--surface-subtle)',
         display: 'flex',
         gap: '0.4rem',
         flexWrap: 'wrap'
@@ -306,9 +307,9 @@ export default function TutorChat({
             style={{
               fontSize: '0.74rem',
               fontWeight: 600,
-              padding: '0.25rem 0.65rem',
+              padding: '0.32rem 0.7rem',
               borderRadius: '14px',
-              background: 'rgba(124, 58, 237, 0.14)',
+              background: 'rgba(124, 58, 237, 0.12)',
               border: '1px solid rgba(124, 58, 237, 0.35)',
               color: 'var(--primary-light)',
               cursor: loading ? 'not-allowed' : 'pointer',
@@ -321,18 +322,19 @@ export default function TutorChat({
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSend} style={{ display: 'flex', borderTop: '1px solid var(--border)', background: 'rgba(0,0,0,0.2)' }}>
+      <form onSubmit={handleSend} style={{ display: 'flex', borderTop: '1px solid var(--border)', background: 'var(--surface-input)' }}>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={topicId && !questionId ? 'ถามอาจารย์เกี่ยวกับหัวข้อนี้หรือขอทริคเพิ่ม...' : 'ถามข้อสงสัยเกี่ยวกับข้อนี้ต่อได้เลย...'}
-          style={{ flex: 1, padding: '0.75rem 1rem', background: 'transparent', border: 'none', color: 'white', outline: 'none', fontSize: '0.9rem' }}
+          style={{ flex: 1, padding: '0.75rem 1rem', background: 'transparent', border: 'none', color: 'var(--text)', outline: 'none', fontSize: 'max(16px, 0.9rem)' }}
           disabled={loading}
         />
         <button
           type="submit"
-          style={{ padding: '0 1rem', background: 'transparent', border: 'none', color: input.trim() && !loading ? 'var(--primary-light)' : 'var(--text-muted)', cursor: input.trim() && !loading ? 'pointer' : 'default' }}
+          aria-label="ส่งข้อความ"
+          style={{ padding: '0 1rem', minWidth: '44px', minHeight: '44px', background: 'transparent', border: 'none', color: input.trim() && !loading ? 'var(--primary-light)' : 'var(--text-muted)', cursor: input.trim() && !loading ? 'pointer' : 'default' }}
         >
           <Send size={18} />
         </button>

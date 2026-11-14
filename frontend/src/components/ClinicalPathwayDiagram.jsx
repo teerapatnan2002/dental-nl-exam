@@ -265,7 +265,7 @@ export default function ClinicalPathwayDiagram({
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
           <div style={{
             display: 'inline-flex',
-            background: 'rgba(15, 23, 42, 0.55)',
+            background: 'var(--surface)',
             border: '1px solid var(--border)',
             borderRadius: '9px',
             padding: '2px',
@@ -383,12 +383,12 @@ export default function ClinicalPathwayDiagram({
             <React.Fragment key={step.step_num || idx}>
               <div style={{
                 position: 'relative',
-                background: 'rgba(15, 23, 42, 0.56)',
+                background: 'var(--surface)',
                 border: `1.5px solid ${rMeta.border}`,
                 borderLeft: `5px solid ${rMeta.accent}`,
                 borderRadius: '12px',
                 padding: compact ? '0.8rem 0.95rem' : '1rem 1.15rem',
-                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)',
+                boxShadow: 'var(--shadow-card)',
               }}>
                 {/* Top Row: Step Number + Semantic Stage Badge */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.4rem' }}>
@@ -479,64 +479,64 @@ export default function ClinicalPathwayDiagram({
                                   key={sCaseIdx}
                                   type="button"
                                   onClick={() => handleSelectScenarioBranch(idx, sCaseIdx)}
-                                  style={{
-                                    padding: '0.12rem 0.45rem',
-                                    borderRadius: '6px',
-                                    fontSize: '0.68rem',
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                    background: targetIdx === sCaseIdx ? '#f59e0b' : 'rgba(15, 23, 42, 0.55)',
-                                    color: targetIdx === sCaseIdx ? '#0f172a' : 'var(--text-sub)',
-                                    border: '1px solid rgba(245, 158, 11, 0.35)',
-                                  }}
-                                >
-                                  เคส {sCaseIdx + 1}
-                                </button>
-                              ))}
+                                    style={{
+                                      padding: '0.18rem 0.5rem',
+                                      borderRadius: '6px',
+                                      fontSize: '0.68rem',
+                                      fontWeight: 700,
+                                      cursor: 'pointer',
+                                      background: targetIdx === sCaseIdx ? '#f59e0b' : 'var(--surface-card)',
+                                      color: targetIdx === sCaseIdx ? '#0f172a' : 'var(--text-sub)',
+                                      border: '1px solid rgba(245, 158, 11, 0.35)',
+                                    }}
+                                  >
+                                    เคส {sCaseIdx + 1}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                            <div style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--ink-amber)', lineHeight: 1.5 }}>
+                              ◆ สถานการณ์ที่พบ: “{targetBr.condition}”
+                            </div>
+                            <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)', marginTop: '0.2rem' }}>
+                              เลือกแนวทางจัดการ / การวินิจฉัยที่ถูกต้องที่สุดสำหรับกรณีนี้:
                             </div>
                           </div>
-                          <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#fef3c7', lineHeight: 1.5 }}>
-                            ◆ สถานการณ์ที่พบ: “{targetBr.condition}”
-                          </div>
-                          <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)', marginTop: '0.2rem' }}>
-                            เลือกแนวทางจัดการ / การวินิจฉัยที่ถูกต้องที่สุดสำหรับกรณีนี้:
-                          </div>
-                        </div>
 
-                        {/* Interactive Intervention Choices */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-                          {options.map((opt, optPos) => {
-                            const isCorrectChoice = solved && opt.origIdx === targetIdx;
-                            const isTriedWrong = alertInfo?.triedIndices?.includes(opt.origIdx);
-                            const optLetter = optionLabels[optPos] || String(optPos + 1);
-                            return (
-                              <button
-                                key={opt.origIdx}
-                                type="button"
-                                disabled={Boolean(solved)}
-                                onClick={() => handlePickInteractiveBranch(idx, opt.origIdx, targetIdx, step)}
-                                style={{
-                                  textAlign: 'left',
-                                  padding: '0.65rem 0.85rem',
-                                  borderRadius: '10px',
-                                  cursor: solved ? 'default' : 'pointer',
-                                  transition: 'all 0.15s ease',
-                                  display: 'flex',
-                                  alignItems: 'flex-start',
-                                  gap: '0.6rem',
-                                  background: isCorrectChoice
-                                    ? 'rgba(16, 185, 129, 0.16)'
-                                    : isTriedWrong
-                                    ? 'rgba(239, 68, 68, 0.14)'
-                                    : 'rgba(15, 23, 42, 0.65)',
-                                  border: isCorrectChoice
-                                    ? '1.5px solid #10b981'
-                                    : isTriedWrong
-                                    ? '1.5px solid #ef4444'
-                                    : '1px solid rgba(255,255,255,0.14)',
-                                  color: 'var(--text)',
-                                }}
-                              >
+                          {/* Interactive Intervention Choices */}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                            {options.map((opt, optPos) => {
+                              const isCorrectChoice = solved && opt.origIdx === targetIdx;
+                              const isTriedWrong = alertInfo?.triedIndices?.includes(opt.origIdx);
+                              const optLetter = optionLabels[optPos] || String(optPos + 1);
+                              return (
+                                <button
+                                  key={opt.origIdx}
+                                  type="button"
+                                  disabled={Boolean(solved)}
+                                  onClick={() => handlePickInteractiveBranch(idx, opt.origIdx, targetIdx, step)}
+                                  style={{
+                                    textAlign: 'left',
+                                    padding: '0.65rem 0.85rem',
+                                    borderRadius: '10px',
+                                    cursor: solved ? 'default' : 'pointer',
+                                    transition: 'all 0.15s ease',
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    gap: '0.6rem',
+                                    background: isCorrectChoice
+                                      ? 'rgba(16, 185, 129, 0.16)'
+                                      : isTriedWrong
+                                      ? 'rgba(239, 68, 68, 0.14)'
+                                      : 'var(--surface-card)',
+                                    border: isCorrectChoice
+                                      ? '1.5px solid #10b981'
+                                      : isTriedWrong
+                                      ? '1.5px solid #ef4444'
+                                      : '1px solid var(--border)',
+                                    color: 'var(--text)',
+                                  }}
+                                >
                                 <span style={{
                                   width: '22px',
                                   height: '22px',
@@ -683,7 +683,7 @@ export default function ClinicalPathwayDiagram({
                     width: '22px',
                     height: '22px',
                     borderRadius: '50%',
-                    background: 'rgba(15, 23, 42, 0.85)',
+                    background: 'var(--surface-elevated)',
                     border: `1.5px solid ${nextMeta?.accent || rMeta.accent}`,
                     display: 'flex',
                     alignItems: 'center',

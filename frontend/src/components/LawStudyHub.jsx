@@ -791,12 +791,12 @@ export default function LawStudyHub({ onBack, onStartExam }) {
       {/* ── Hero Banner ────────────────────────────────────── */}
       <div className="hero-section glass-panel" style={{ marginBottom: '1.5rem', borderLeft: '4px solid var(--primary)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+          <div style={{ minWidth: 0, maxWidth: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.4rem' }}>
               <span className="badge" style={{ background: 'rgba(124,58,237,0.2)', color: 'var(--primary-light)', border: '1px solid rgba(124,58,237,0.4)' }}>
                 ⚖️ HIGH-YIELD PASS CRITICAL
               </span>
-              <span className="badge" style={{ background: 'rgba(16,185,129,0.2)', color: '#10b981', border: '1px solid rgba(16,185,129,0.4)' }}>
+              <span className="badge" style={{ background: 'rgba(16,185,129,0.2)', color: 'var(--ink-emerald)', border: '1px solid rgba(16,185,129,0.4)' }}>
                 133 ข้อครอบคลุม 100%
               </span>
             </div>

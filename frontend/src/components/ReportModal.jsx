@@ -134,10 +134,10 @@ export default function ReportModal({ questionId, onClose }) {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="เช่น คิดว่าข้อ C น่าจะถูกกว่าเพราะ..."
+                  className="theme-input"
                   style={{
-                    width: '100%', padding: '0.75rem', background: 'rgba(0,0,0,0.2)',
-                    border: '1px solid var(--border)', borderRadius: '8px',
-                    color: 'white', minHeight: '100px', resize: 'vertical'
+                    padding: '0.75rem',
+                    minHeight: '100px', resize: 'vertical'
                   }}
                 />
               </div>

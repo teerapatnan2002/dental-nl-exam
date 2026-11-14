@@ -246,14 +246,8 @@ export default function AuthModal({ isOpen, onClose }) {
                     placeholder="ตั้งชื่อผู้ใช้งาน (เช่น DoctorA)"
                     value={formData.username}
                     onChange={e => setFormData({...formData, username: e.target.value})}
-                    style={{
-                      width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem',
-                      background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '8px', color: 'white', fontSize: '0.92rem',
-                      transition: 'border-color 0.2s', outline: 'none'
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = 'var(--primary-light)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                    className="theme-input"
+                    style={{ padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '8px' }}
                   />
                 </div>
               </div>
@@ -278,14 +272,8 @@ export default function AuthModal({ isOpen, onClose }) {
                   autoCapitalize="none"
                   autoCorrect="off"
                   spellCheck="false"
-                  style={{
-                    width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem',
-                    background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: '8px', color: 'white', fontSize: '0.92rem',
-                    transition: 'border-color 0.2s', outline: 'none'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--primary-light)'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                  className="theme-input"
+                  style={{ padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '8px' }}
                 />
               </div>
             </div>
@@ -317,14 +305,8 @@ export default function AuthModal({ isOpen, onClose }) {
                   placeholder="รหัสผ่านอย่างน้อย 8 ตัวอักษร"
                   value={formData.password}
                   onChange={e => setFormData({...formData, password: e.target.value})}
-                  style={{
-                    width: '100%', padding: '0.75rem 2.6rem 0.75rem 2.5rem',
-                    background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: '8px', color: 'white', fontSize: '0.92rem',
-                    transition: 'border-color 0.2s', outline: 'none'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--primary-light)'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                  className="theme-input"
+                  style={{ padding: '0.75rem 2.6rem 0.75rem 2.5rem', borderRadius: '8px' }}
                 />
                 <button 
                   type="button"
@@ -424,14 +406,8 @@ export default function AuthModal({ isOpen, onClose }) {
                     placeholder="กรอกรหัสผ่านอีกครั้ง"
                     value={formData.confirmPassword}
                     onChange={e => setFormData({...formData, confirmPassword: e.target.value})}
-                    style={{
-                      width: '100%', padding: '0.75rem 2.6rem 0.75rem 2.5rem',
-                      background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '8px', color: 'white', fontSize: '0.92rem',
-                      transition: 'border-color 0.2s', outline: 'none'
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = 'var(--primary-light)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                    className="theme-input"
+                    style={{ padding: '0.75rem 2.6rem 0.75rem 2.5rem', borderRadius: '8px' }}
                   />
                   {formData.confirmPassword && formData.password === formData.confirmPassword && (
                     <CheckCircle2 size={16} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--success)' }} />

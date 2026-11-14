@@ -498,6 +498,7 @@ export default function ClozePitfallArena({
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               {timedMode && !currentAnswer && (
                 <div
+                  className="tabular-nums"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -506,8 +507,8 @@ export default function ClozePitfallArena({
                     borderRadius: '999px',
                     fontWeight: 800,
                     fontSize: '0.82rem',
-                    background: timeLeft <= 7 ? 'rgba(239,68,68,0.22)' : 'rgba(245,158,11,0.16)',
-                    color: timeLeft <= 7 ? '#fca5a5' : '#fde68a',
+                    background: timeLeft <= 7 ? 'rgba(239,68,68,0.18)' : 'rgba(245,158,11,0.16)',
+                    color: timeLeft <= 7 ? 'var(--ink-rose)' : 'var(--ink-amber)',
                     border: `1px solid ${timeLeft <= 7 ? '#ef4444' : '#f59e0b'}`,
                   }}
                 >
@@ -520,9 +521,9 @@ export default function ClozePitfallArena({
                 disabled={currentIdx === 0}
                 onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
                 style={{
-                  padding: '0.35rem 0.55rem',
+                  padding: '0.45rem 0.65rem',
                   borderRadius: '8px',
-                  background: 'rgba(255,255,255,0.05)',
+                  background: 'var(--surface-card)',
                   border: '1px solid var(--border)',
                   color: currentIdx === 0 ? 'var(--text-muted)' : 'var(--text)',
                   cursor: currentIdx === 0 ? 'not-allowed' : 'pointer',
@@ -530,7 +531,7 @@ export default function ClozePitfallArena({
               >
                 <ChevronLeft size={16} />
               </button>
-              <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text)' }}>
+              <span className="tabular-nums" style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text)' }}>
                 {currentIdx + 1} / {filteredItems.length}
               </span>
               <button
@@ -538,9 +539,9 @@ export default function ClozePitfallArena({
                 disabled={currentIdx >= filteredItems.length - 1}
                 onClick={() => setCurrentIdx((i) => Math.min(filteredItems.length - 1, i + 1))}
                 style={{
-                  padding: '0.35rem 0.55rem',
+                  padding: '0.45rem 0.65rem',
                   borderRadius: '8px',
-                  background: 'rgba(255,255,255,0.05)',
+                  background: 'var(--surface-card)',
                   border: '1px solid var(--border)',
                   color: currentIdx >= filteredItems.length - 1 ? 'var(--text-muted)' : 'var(--text)',
                   cursor: currentIdx >= filteredItems.length - 1 ? 'not-allowed' : 'pointer',
@@ -552,7 +553,7 @@ export default function ClozePitfallArena({
           </div>
 
           {/* Topic Subtitle */}
-          <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#a5b4fc' }}>
+          <div style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--ink-indigo)' }}>
             📚 {currentItem.topic_title_th}
           </div>
 
@@ -563,7 +564,7 @@ export default function ClozePitfallArena({
                 style={{
                   padding: '1.1rem 1.2rem',
                   borderRadius: '12px',
-                  background: 'rgba(255,255,255,0.03)',
+                  background: 'var(--surface-card)',
                   border: '1px solid var(--border)',
                   fontSize: '1.02rem',
                   lineHeight: 1.75,
@@ -573,24 +574,24 @@ export default function ClozePitfallArena({
                 {renderMaskedPrompt(currentItem, currentAnswer)}
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.65rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '0.65rem' }}>
                 {(currentItem.options || []).map((opt, idx) => {
                   const answered = Boolean(currentAnswer);
                   const isTarget = opt === currentItem.missing_answer;
                   const isChosen = currentAnswer?.chosen === opt;
 
-                  let bg = 'rgba(255,255,255,0.04)';
+                  let bg = 'var(--surface-card)';
                   let borderColor = 'var(--border)';
                   let textColor = 'var(--text)';
                   if (answered) {
                     if (isTarget) {
                       bg = 'rgba(16,185,129,0.16)';
                       borderColor = '#10b981';
-                      textColor = '#34d399';
+                      textColor = 'var(--ink-emerald)';
                     } else if (isChosen) {
                       bg = 'rgba(239,68,68,0.16)';
                       borderColor = '#ef4444';
-                      textColor = '#fca5a5';
+                      textColor = 'var(--ink-rose)';
                     }
                   }
                   return (
