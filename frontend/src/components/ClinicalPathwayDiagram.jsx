@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   GitBranch, ArrowDown, ArrowRight, ChevronRight, RotateCcw,
-  AlertTriangle, CheckCircle2, Sparkles, BookOpen, Layers
+  AlertTriangle, CheckCircle2, Sparkles, BookOpen, Layers, ShieldAlert, Play
 } from 'lucide-react';
 
 const PATHWAY_TYPE_META = {
@@ -85,22 +85,121 @@ export default function ClinicalPathwayDiagram({
   pathway,
   compact = false,
   defaultStepByStep = false,
+  defaultMode = null,
 }) {
-  const [stepByStep, setStepByStep] = useState(defaultStepByStep);
+  const initialMode = defaultMode || (defaultStepByStep ? 'step' : 'overview');
+  const [viewMode, setViewMode] = useState(initialMode);
   const [unlockedCount, setUnlockedCount] = useState(1);
 
+  // Interactive Branching Case Simulator state
+  const [scenarioMap, setScenarioMap] = useState({}); // { [stepIdx]: targetBranchIdx }
+  const [solvedSteps, setSolvedSteps] = useState({}); // { [stepIdx]: { chosenIdx, firstTry } }
+  const [wrongAlerts, setWrongAlerts] = useState({}); // { [stepIdx]: { chosenCondition, chosenOutcome, triedIndices: [] } }
+
   const steps = pathway?.steps || [];
+  const stepByStep = viewMode === 'step' || viewMode === 'interactive';
+  const isInteractive = viewMode === 'interactive';
 
   useEffect(() => {
     setUnlockedCount(1);
-    setStepByStep(defaultStepByStep);
-  }, [pathway?.id, defaultStepByStep]);
+    setViewMode(defaultMode || (defaultStepByStep ? 'step' : 'overview'));
+    setScenarioMap({});
+    setSolvedSteps({});
+    setWrongAlerts({});
+  }, [pathway?.id, defaultStepByStep, defaultMode]);
+
+  // Precompute deterministic shuffled branch display order per decision step for interactive mode
+  const shuffledOptionsByStep = useMemo(() => {
+    const out = {};
+    steps.forEach((step, sIdx) => {
+      if (step.branches && step.branches.length >= 2) {
+        const items = step.branches.map((br, bIdx) => ({ ...br, origIdx: bIdx }));
+        // Deterministic rotation/interleave based on pathway id & step index so answer isn't always first
+        const seed = (pathway?.id || 'p').split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0) + sIdx * 7;
+        items.sort((a, b) => {
+          const ha = ((a.origIdx + 1) * 31 + seed) % 97;
+          const hb = ((b.origIdx + 1) * 31 + seed) % 97;
+          return ha - hb;
+        });
+        out[sIdx] = items;
+      }
+    });
+    return out;
+  }, [pathway?.id, steps]);
 
   if (!pathway || steps.length === 0) return null;
 
   const pMeta = PATHWAY_TYPE_META[pathway.pathway_type] || PATHWAY_TYPE_META.protocol;
   const visibleSteps = stepByStep ? steps.slice(0, unlockedCount) : steps;
   const hasMoreSteps = stepByStep && unlockedCount < steps.length;
+
+  const lastVisibleIdx = visibleSteps.length - 1;
+  const lastVisibleStep = visibleSteps[lastVisibleIdx];
+  const lastStepRequiresDecision =
+    isInteractive &&
+    lastVisibleStep?.branches &&
+    lastVisibleStep.branches.length >= 2 &&
+    !solvedSteps[lastVisibleIdx];
+
+  const totalDecisionSteps = steps.filter((s) => s.branches && s.branches.length >= 2).length;
+  const firstTryCorrectCount = Object.values(solvedSteps).filter((v) => v.firstTry).length;
+
+  const startInteractiveMode = () => {
+    const initScenarios = {};
+    steps.forEach((s, idx) => {
+      if (s.branches && s.branches.length >= 2) {
+        initScenarios[idx] = Math.floor(Math.random() * s.branches.length);
+      }
+    });
+    setScenarioMap(initScenarios);
+    setSolvedSteps({});
+    setWrongAlerts({});
+    setUnlockedCount(1);
+    setViewMode('interactive');
+  };
+
+  const handleSelectScenarioBranch = (stepIdx, targetIdx) => {
+    setScenarioMap((prev) => ({ ...prev, [stepIdx]: targetIdx }));
+    setSolvedSteps((prev) => {
+      const next = { ...prev };
+      delete next[stepIdx];
+      return next;
+    });
+    setWrongAlerts((prev) => {
+      const next = { ...prev };
+      delete next[stepIdx];
+      return next;
+    });
+  };
+
+  const handlePickInteractiveBranch = (stepIdx, origIdx, targetIdx, step) => {
+    if (solvedSteps[stepIdx]) return;
+    if (origIdx === targetIdx) {
+      const hadPriorWrong = Boolean(wrongAlerts[stepIdx]?.triedIndices?.length);
+      setSolvedSteps((prev) => ({
+        ...prev,
+        [stepIdx]: { chosenIdx: origIdx, firstTry: !hadPriorWrong },
+      }));
+      setWrongAlerts((prev) => {
+        const next = { ...prev };
+        delete next[stepIdx];
+        return next;
+      });
+    } else {
+      const chosenBr = step.branches[origIdx];
+      const targetBr = step.branches[targetIdx];
+      const prevTried = wrongAlerts[stepIdx]?.triedIndices || [];
+      setWrongAlerts((prev) => ({
+        ...prev,
+        [stepIdx]: {
+          chosenCondition: chosenBr.condition,
+          chosenOutcome: chosenBr.outcome,
+          targetCondition: targetBr.condition,
+          triedIndices: prevTried.includes(origIdx) ? prevTried : [...prevTried, origIdx],
+        },
+      }));
+    }
+  };
 
   return (
     <div style={{
@@ -162,7 +261,7 @@ export default function ClinicalPathwayDiagram({
           )}
         </div>
 
-        {/* Interactive Mode Switcher: Full Overview vs Step-by-Step Reveal */}
+        {/* Interactive Mode Switcher: Full Overview vs Step-by-Step vs Interactive Case Simulator */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
           <div style={{
             display: 'inline-flex',
@@ -170,19 +269,20 @@ export default function ClinicalPathwayDiagram({
             border: '1px solid var(--border)',
             borderRadius: '9px',
             padding: '2px',
+            flexWrap: 'wrap',
           }}>
             <button
               type="button"
-              onClick={() => setStepByStep(false)}
+              onClick={() => setViewMode('overview')}
               style={{
-                padding: '0.22rem 0.6rem',
+                padding: '0.24rem 0.62rem',
                 borderRadius: '7px',
                 border: 'none',
                 fontSize: '0.72rem',
                 fontWeight: 700,
                 cursor: 'pointer',
-                background: !stepByStep ? 'var(--primary)' : 'transparent',
-                color: !stepByStep ? '#fff' : 'var(--text-sub)',
+                background: viewMode === 'overview' ? 'var(--primary)' : 'transparent',
+                color: viewMode === 'overview' ? '#fff' : 'var(--text-sub)',
               }}
             >
               🗺️ ดูแผนผังทั้งหมด
@@ -190,21 +290,37 @@ export default function ClinicalPathwayDiagram({
             <button
               type="button"
               onClick={() => {
-                setStepByStep(true);
+                setViewMode('step');
                 setUnlockedCount(1);
               }}
               style={{
-                padding: '0.22rem 0.6rem',
+                padding: '0.24rem 0.62rem',
                 borderRadius: '7px',
                 border: 'none',
                 fontSize: '0.72rem',
                 fontWeight: 700,
                 cursor: 'pointer',
-                background: stepByStep ? '#10b981' : 'transparent',
-                color: stepByStep ? '#fff' : 'var(--text-sub)',
+                background: viewMode === 'step' ? '#10b981' : 'transparent',
+                color: viewMode === 'step' ? '#fff' : 'var(--text-sub)',
               }}
             >
               👣 ไล่ดูทีละขั้น
+            </button>
+            <button
+              type="button"
+              onClick={startInteractiveMode}
+              style={{
+                padding: '0.24rem 0.65rem',
+                borderRadius: '7px',
+                border: 'none',
+                fontSize: '0.72rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                background: viewMode === 'interactive' ? 'linear-gradient(135deg, #f59e0b, #ec4899)' : 'transparent',
+                color: viewMode === 'interactive' ? '#fff' : '#fbbf24',
+              }}
+            >
+              🎮 จำลองตัดสินใจ
             </button>
           </div>
         </div>
@@ -327,8 +443,178 @@ export default function ClinicalPathwayDiagram({
                   {step.detail}
                 </div>
 
-                {/* Decision Branches Fork Cards */}
+                {/* Decision Branches Fork Cards (Static Overview OR Interactive Branching Simulator) */}
                 {step.branches && step.branches.length > 0 && (
+                  isInteractive && step.branches.length >= 2 ? (() => {
+                    const targetIdx = scenarioMap[idx] ?? 0;
+                    const targetBr = step.branches[targetIdx] || step.branches[0];
+                    const solved = solvedSteps[idx];
+                    const alertInfo = wrongAlerts[idx];
+                    const options = shuffledOptionsByStep[idx] || step.branches.map((b, i) => ({ ...b, origIdx: i }));
+                    const optionLabels = ['A', 'B', 'C', 'D', 'E'];
+
+                    return (
+                      <div style={{
+                        marginTop: '0.85rem',
+                        paddingTop: '0.75rem',
+                        borderTop: '1px dashed rgba(245, 158, 11, 0.35)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.65rem',
+                      }}>
+                        {/* Scenario Prompt Box */}
+                        <div style={{
+                          padding: '0.75rem 0.9rem',
+                          borderRadius: '10px',
+                          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(236, 72, 153, 0.09))',
+                          border: '1px solid rgba(245, 158, 11, 0.4)',
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.35rem' }}>
+                            <span style={{ fontSize: '0.73rem', fontWeight: 800, color: '#fbbf24' }}>
+                              🎮 ด่านจำลองการตัดสินใจ (สลับเปลี่ยนสถานการณ์ฝึกได้):
+                            </span>
+                            <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
+                              {step.branches.map((_, sCaseIdx) => (
+                                <button
+                                  key={sCaseIdx}
+                                  type="button"
+                                  onClick={() => handleSelectScenarioBranch(idx, sCaseIdx)}
+                                  style={{
+                                    padding: '0.12rem 0.45rem',
+                                    borderRadius: '6px',
+                                    fontSize: '0.68rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    background: targetIdx === sCaseIdx ? '#f59e0b' : 'rgba(15, 23, 42, 0.55)',
+                                    color: targetIdx === sCaseIdx ? '#0f172a' : 'var(--text-sub)',
+                                    border: '1px solid rgba(245, 158, 11, 0.35)',
+                                  }}
+                                >
+                                  เคส {sCaseIdx + 1}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#fef3c7', lineHeight: 1.5 }}>
+                            ◆ สถานการณ์ที่พบ: “{targetBr.condition}”
+                          </div>
+                          <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)', marginTop: '0.2rem' }}>
+                            เลือกแนวทางจัดการ / การวินิจฉัยที่ถูกต้องที่สุดสำหรับกรณีนี้:
+                          </div>
+                        </div>
+
+                        {/* Interactive Intervention Choices */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                          {options.map((opt, optPos) => {
+                            const isCorrectChoice = solved && opt.origIdx === targetIdx;
+                            const isTriedWrong = alertInfo?.triedIndices?.includes(opt.origIdx);
+                            const optLetter = optionLabels[optPos] || String(optPos + 1);
+                            return (
+                              <button
+                                key={opt.origIdx}
+                                type="button"
+                                disabled={Boolean(solved)}
+                                onClick={() => handlePickInteractiveBranch(idx, opt.origIdx, targetIdx, step)}
+                                style={{
+                                  textAlign: 'left',
+                                  padding: '0.65rem 0.85rem',
+                                  borderRadius: '10px',
+                                  cursor: solved ? 'default' : 'pointer',
+                                  transition: 'all 0.15s ease',
+                                  display: 'flex',
+                                  alignItems: 'flex-start',
+                                  gap: '0.6rem',
+                                  background: isCorrectChoice
+                                    ? 'rgba(16, 185, 129, 0.16)'
+                                    : isTriedWrong
+                                    ? 'rgba(239, 68, 68, 0.14)'
+                                    : 'rgba(15, 23, 42, 0.65)',
+                                  border: isCorrectChoice
+                                    ? '1.5px solid #10b981'
+                                    : isTriedWrong
+                                    ? '1.5px solid #ef4444'
+                                    : '1px solid rgba(255,255,255,0.14)',
+                                  color: 'var(--text)',
+                                }}
+                              >
+                                <span style={{
+                                  width: '22px',
+                                  height: '22px',
+                                  borderRadius: '6px',
+                                  flexShrink: 0,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: '0.75rem',
+                                  fontWeight: 800,
+                                  background: isCorrectChoice ? '#10b981' : isTriedWrong ? '#ef4444' : 'rgba(255,255,255,0.1)',
+                                  color: isCorrectChoice || isTriedWrong ? '#fff' : 'var(--text-sub)',
+                                }}>
+                                  {isCorrectChoice ? '✓' : isTriedWrong ? '✗' : optLetter}
+                                </span>
+                                <span style={{ fontSize: '0.82rem', lineHeight: 1.5, fontWeight: isCorrectChoice ? 700 : 500 }}>
+                                  {opt.outcome}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* Clinical Consequence Alert (on wrong decision) */}
+                        {alertInfo && !solved && (
+                          <div style={{
+                            padding: '0.75rem 0.9rem',
+                            borderRadius: '10px',
+                            background: 'rgba(239, 68, 68, 0.14)',
+                            border: '1.5px solid rgba(239, 68, 68, 0.5)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '0.45rem',
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fca5a5', fontSize: '0.8rem', fontWeight: 800 }}>
+                              <ShieldAlert size={16} />
+                              <span>🚨 Clinical Consequence Alert — เลือกผิดแนวทาง!</span>
+                            </div>
+                            <div style={{ fontSize: '0.79rem', color: '#fecaca', lineHeight: 1.55 }}>
+                              แนวทางที่คุณเลือกใช้เฉพาะเมื่อพบกรณี: <strong>“{alertInfo.chosenCondition}”</strong> แต่สถานการณ์จำลองนี้คือ <strong>“{alertInfo.targetCondition}”</strong> — การเลือกผิดทางอาจเสี่ยงต่อการรักษาล้มเหลว วินิจฉัยผิดซี่ หรือเกิดภาวะแทรกซ้อนทางคลินิก! กรุณาเลือกใหม่
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handlePickInteractiveBranch(idx, targetIdx, targetIdx, step)}
+                              style={{
+                                alignSelf: 'flex-start',
+                                padding: '0.24rem 0.6rem',
+                                borderRadius: '7px',
+                                background: 'rgba(255,255,255,0.08)',
+                                border: '1px solid rgba(255,255,255,0.18)',
+                                color: '#e2e8f0',
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              💡 ยอมรับคำใบ้และดูเฉลยขั้นนี้
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Solved Rationale Badge */}
+                        {solved && (
+                          <div style={{
+                            padding: '0.6rem 0.85rem',
+                            borderRadius: '10px',
+                            background: 'rgba(16, 185, 129, 0.14)',
+                            border: '1px solid rgba(16, 185, 129, 0.4)',
+                            fontSize: '0.8rem',
+                            color: '#6ee7b7',
+                            fontWeight: 700,
+                          }}>
+                            ✅ ตัดสินใจถูกต้อง! กรณี “{targetBr.condition}” ➔ {targetBr.outcome}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })() : (
                   <div style={{
                     marginTop: '0.75rem',
                     paddingTop: '0.65rem',
@@ -376,6 +662,7 @@ export default function ClinicalPathwayDiagram({
                       );
                     })}
                   </div>
+                  )
                 )}
               </div>
 
@@ -418,7 +705,7 @@ export default function ClinicalPathwayDiagram({
         })}
       </div>
 
-      {/* Step-by-step Reveal Controls */}
+      {/* Step-by-step & Interactive Simulator Reveal Controls */}
       {stepByStep && (
         <div style={{
           display: 'flex',
@@ -430,35 +717,51 @@ export default function ClinicalPathwayDiagram({
         }}>
           <span style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
             กำลังดูขั้นที่ {unlockedCount} จาก {steps.length}
+            {isInteractive && totalDecisionSteps > 0 && (
+              <span style={{ color: '#fbbf24', marginLeft: '8px', fontWeight: 700 }}>
+                • ตัดสินใจถูกครั้งแรก {firstTryCorrectCount}/{totalDecisionSteps} ด่าน
+              </span>
+            )}
           </span>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            {unlockedCount > 1 && (
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {(unlockedCount > 1 || isInteractive) && (
               <button
                 type="button"
-                onClick={() => setUnlockedCount(1)}
+                onClick={isInteractive ? startInteractiveMode : () => setUnlockedCount(1)}
                 className="btn btn-secondary btn-sm"
                 style={{ fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
               >
-                <RotateCcw size={13} /> เริ่มใหม่
+                <RotateCcw size={13} /> {isInteractive ? 'สุ่มเคสใหม่' : 'เริ่มใหม่'}
               </button>
             )}
             {hasMoreSteps ? (
               <button
                 type="button"
+                disabled={lastStepRequiresDecision}
                 onClick={() => setUnlockedCount(c => Math.min(steps.length, c + 1))}
                 className="btn btn-primary btn-sm"
-                style={{ fontSize: '0.76rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                style={{
+                  fontSize: '0.76rem',
+                  fontWeight: 800,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  opacity: lastStepRequiresDecision ? 0.5 : 1,
+                  cursor: lastStepRequiresDecision ? 'not-allowed' : 'pointer',
+                }}
               >
-                เปิดขั้นถัดไป ({unlockedCount + 1}/{steps.length}) <ChevronRight size={14} />
+                {lastStepRequiresDecision
+                  ? 'เลือกคำตอบด้านบนก่อนไปขั้นถัดไป'
+                  : `เปิดขั้นถัดไป (${unlockedCount + 1}/${steps.length})`} <ChevronRight size={14} />
               </button>
             ) : (
               <button
                 type="button"
-                onClick={() => setStepByStep(false)}
+                onClick={() => setViewMode('overview')}
                 className="btn btn-secondary btn-sm"
                 style={{ fontSize: '0.75rem', color: '#34d399', borderColor: 'rgba(16,185,129,0.4)' }}
               >
-                <CheckCircle2 size={13} /> ครบทุกขั้นตอนแล้ว
+                <CheckCircle2 size={13} /> {isInteractive ? 'ผ่านจำลองครบทุกขั้นตอน!' : 'ครบทุกขั้นตอนแล้ว'}
               </button>
             )}
           </div>

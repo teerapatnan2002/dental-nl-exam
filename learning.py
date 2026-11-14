@@ -1,12 +1,14 @@
 import json
+import math
+import random
 import re
 import time
 from typing import Dict, List, Optional, Any
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session, selectinload
 
 import models
-from auth import get_current_user
+from auth import _decode_token, get_current_user
 from database import get_db
 from pathways import CURATED_TOPIC_PATHWAYS, get_topic_pathways
 from tos_blueprint import is_mock_70_locked
@@ -1651,4 +1653,429 @@ def get_visual_atlas(
         "stats_by_category": stats_by_category,
         "stats_by_modality": stats_by_modality,
         "items": filtered,
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 7. PHASE 3: CLOZE DELETION & PITFALL ELIMINATION ARENA
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _resolve_optional_user(request: Request, db: Session) -> Optional[models.User]:
+    """Best-effort Bearer token resolution so Cloze Arena works anonymously or personalized."""
+    auth_header = (request.headers.get("authorization") or "").strip()
+    if not auth_header.lower().startswith("bearer "):
+        return None
+    token = auth_header[7:].strip()
+    if not token:
+        return None
+    try:
+        payload = _decode_token(token, expected_type="access")
+        username = payload.get("sub")
+        if not username:
+            return None
+        return db.query(models.User).filter(models.User.username == username).first()
+    except Exception:
+        return None
+
+
+def _serialize_cloze_sm2_row(row: Optional[models.UserCardReview], now_ts: int) -> Optional[Dict[str, Any]]:
+    if not row:
+        return None
+    days_until_due = (
+        max(0, math.ceil((row.next_review_date - now_ts) / 86400))
+        if row.next_review_date > now_ts
+        else 0
+    )
+    return {
+        "card_key": row.card_key,
+        "card_type": row.card_type,
+        "repetitions": row.repetitions,
+        "interval": row.interval,
+        "ease_factor": row.ease_factor,
+        "last_quality": row.last_quality,
+        "lapse_count": row.lapse_count or 0,
+        "mastery_status": row.mastery_status,
+        "next_review_date": row.next_review_date,
+        "days_until_due": days_until_due,
+        "is_due": row.next_review_date <= now_ts,
+    }
+
+
+def _perturb_numeric_answer(answer: str, rng: random.Random) -> List[str]:
+    """Generate plausible numeric/legal-section distractors by shifting the embedded value."""
+    match = re.search(r"(\d+(?:\.\d+)?)", answer)
+    if not match:
+        return []
+    prefix = answer[: match.start()]
+    num_str = match.group(1)
+    suffix = answer[match.end() :]
+    is_percent = "%" in suffix or "เปอร์เซ็นต์" in suffix
+    dec_places = len(num_str.split(".")[1]) if "." in num_str else 0
+    try:
+        orig_val = float(num_str)
+    except ValueError:
+        return []
+
+    raw_candidates: List[float] = []
+    if dec_places > 0:
+        for mult in (0.5, 1.5, 2.0, 0.25, 2.5):
+            raw_candidates.append(orig_val * mult)
+        for delta in (-1.0, 1.0, -0.5, 0.5, 2.0):
+            raw_candidates.append(orig_val + delta)
+    elif orig_val <= 15:
+        for delta in (-2, -1, 1, 2, 3, 5, -3):
+            raw_candidates.append(orig_val + delta)
+        raw_candidates.extend([orig_val * 2, orig_val * 3])
+    else:
+        for mult in (0.5, 1.5, 2.0):
+            raw_candidates.append(round(orig_val * mult))
+        for delta in (-10, -5, 5, 10, 20, -20, 1, -1):
+            raw_candidates.append(orig_val + delta)
+
+    rng.shuffle(raw_candidates)
+    distractors: List[str] = []
+    seen_vals = {num_str}
+    for cand_val in raw_candidates:
+        if cand_val <= 0 and orig_val > 0:
+            continue
+        if is_percent and cand_val > 100:
+            continue
+        if dec_places > 0:
+            formatted_num = f"{round(cand_val, dec_places):.{dec_places}f}"
+        else:
+            int_val = int(round(cand_val))
+            if int_val <= 0 and orig_val > 0:
+                continue
+            formatted_num = str(int_val)
+        if formatted_num in seen_vals:
+            continue
+        seen_vals.add(formatted_num)
+        cand_full = f"{prefix}{formatted_num}{suffix}".strip()
+        if cand_full and cand_full.lower() != answer.lower():
+            distractors.append(cand_full)
+        if len(distractors) >= 3:
+            break
+    return distractors
+
+
+_CLOZE_SKIP_EN_TERMS = {
+    "The", "And", "For", "With", "Type", "Stage", "Class", "Grade",
+    "High", "Low", "Normal", "NL", "NL2", "Dental", "Treatment", "Patient",
+}
+
+
+def _extract_cloze_candidate(q: models.Question, exp: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Extract 1 crisp Cloze blank (preferring numeric dosages/cutoffs/Thai laws, then EN terms)."""
+    candidate_texts = [
+        (exp.get("core_principle") or "").strip(),
+        (exp.get("key_takeaway") or "").strip(),
+        (exp.get("clinical_pearl") or "").strip(),
+    ]
+    for raw in candidate_texts:
+        clean = re.sub(r"\s+", " ", raw).strip()
+        if len(clean) < 28:
+            continue
+        snippet = clean if len(clean) <= 280 else (clean[:277] + "...")
+
+        num_matches = [m.strip() for m in _NUM_RULE_REGEX.findall(snippet) if len(m.strip()) >= 2]
+        if num_matches:
+            target = num_matches[0]
+            if target in snippet:
+                return {
+                    "prompt_masked": snippet.replace(target, "【 ____?____ 】", 1),
+                    "missing_answer": target,
+                    "blank_kind": "numeric_law",
+                    "full_explanation": snippet,
+                }
+
+        en_matches = [
+            m.strip()
+            for m in _EN_TERM_REGEX.findall(snippet)
+            if m.strip() not in _CLOZE_SKIP_EN_TERMS and len(m.strip()) >= 6
+        ]
+        if en_matches:
+            en_matches.sort(key=len, reverse=True)
+            target = en_matches[0]
+            if target in snippet:
+                return {
+                    "prompt_masked": snippet.replace(target, "【 ____?____ 】", 1),
+                    "missing_answer": target,
+                    "blank_kind": "clinical_term",
+                    "full_explanation": snippet,
+                }
+    return None
+
+
+@router.get("/cloze-arena")
+def get_cloze_pitfall_arena(
+    request: Request,
+    category: Optional[str] = Query(None),
+    mode: str = Query("mixed", pattern="^(mixed|cloze|pitfall)$"),
+    limit: int = Query(30, ge=5, le=80),
+    db: Session = Depends(get_db),
+):
+    """Build interactive Cloze Deletion & Pitfall Elimination Arena items with optional SM-2 & wrong-answer prioritization."""
+    user = _resolve_optional_user(request, db)
+    now_ts = int(time.time())
+
+    wrong_q_ids = set()
+    sm2_map: Dict[str, models.UserCardReview] = {}
+    if user:
+        wrong_rows = (
+            db.query(models.UserAnswer.question_id)
+            .join(models.ExamSession, models.ExamSession.id == models.UserAnswer.session_id)
+            .filter(models.ExamSession.user_id == user.id, models.UserAnswer.is_correct == 0)
+            .distinct()
+            .all()
+        )
+        wrong_q_ids = {r[0] for r in wrong_rows}
+
+        review_rows = (
+            db.query(models.UserCardReview)
+            .filter(
+                models.UserCardReview.user_id == user.id,
+                models.UserCardReview.card_type == "cloze",
+            )
+            .all()
+        )
+        sm2_map = {r.card_key: r for r in review_rows}
+
+    locked = is_mock_70_locked()
+    rows = (
+        db.query(models.Question)
+        .options(selectinload(models.Question.choices))
+        .order_by(models.Question.id.asc())
+        .all()
+    )
+
+    categories_set = set()
+    unlocked_rows: List[models.Question] = []
+    term_pool_by_cat: Dict[str, List[str]] = {}
+    num_pool_by_cat: Dict[str, List[str]] = {}
+
+    for q in rows:
+        if locked and q.source_exam and "2570" in q.source_exam:
+            continue
+        cat = q.category or "อื่นๆ"
+        categories_set.add(cat)
+        unlocked_rows.append(q)
+
+        exp = _parse_explanation(q.explanation)
+        blob = " ".join(
+            [
+                (exp.get("core_principle") or ""),
+                (exp.get("key_takeaway") or ""),
+            ]
+        )
+        for nm in _NUM_RULE_REGEX.findall(blob):
+            nm_clean = nm.strip()
+            if len(nm_clean) >= 2:
+                bucket = num_pool_by_cat.setdefault(cat, [])
+                if nm_clean not in bucket and len(bucket) < 80:
+                    bucket.append(nm_clean)
+        for en in _EN_TERM_REGEX.findall(blob):
+            en_clean = en.strip()
+            if en_clean not in _CLOZE_SKIP_EN_TERMS and len(en_clean) >= 6:
+                bucket = term_pool_by_cat.setdefault(cat, [])
+                if en_clean not in bucket and len(bucket) < 100:
+                    bucket.append(en_clean)
+
+    global_fallback_terms = [
+        "Irreversible pulpitis",
+        "Necrotic pulp",
+        "Symptomatic apical periodontitis",
+        "Osteoradionecrosis",
+        "Biologic width (STA)",
+        "Bisphosphonate MRONJ",
+        "Ameloblastoma",
+        "Dentigerous cyst",
+        "Erythroplakia",
+        "Pseudomembranous candidiasis",
+        "Primary herpetic gingivostomatitis",
+        "Mucous membrane pemphigoid",
+    ]
+
+    cloze_items: List[Dict[str, Any]] = []
+    pitfall_items: List[Dict[str, Any]] = []
+    active_cat = (category or "").strip()
+
+    for q in unlocked_rows:
+        cat = q.category or "อื่นๆ"
+        if active_cat and active_cat not in ("ทั้งหมด", "all") and cat != active_cat:
+            continue
+
+        exp = _parse_explanation(q.explanation)
+        tid = q.must_know_topic or ""
+        meta = get_topic_meta(tid, cat) if tid else {"title_th": cat, "title_en": ""}
+        ref_str = (exp.get("reference") or exp.get("legal_citation") or "").strip()
+        is_wrong = q.id in wrong_q_ids
+
+        # 1) Build Cloze Deletion item
+        if mode in ("mixed", "cloze"):
+            cloze_data = _extract_cloze_candidate(q, exp)
+            if cloze_data:
+                rng = random.Random(f"cloze-arena-{q.id}")
+                ans = cloze_data["missing_answer"]
+                distractors: List[str] = []
+                if cloze_data["blank_kind"] == "numeric_law":
+                    distractors.extend(_perturb_numeric_answer(ans, rng))
+
+                pool = (
+                    list(num_pool_by_cat.get(cat, []))
+                    if cloze_data["blank_kind"] == "numeric_law"
+                    else list(term_pool_by_cat.get(cat, []))
+                )
+                rng.shuffle(pool)
+                full_lower = cloze_data["full_explanation"].lower()
+                for cand in pool + global_fallback_terms:
+                    if len(distractors) >= 3:
+                        break
+                    if (
+                        cand.lower() != ans.lower()
+                        and cand.lower() not in full_lower
+                        and cand not in distractors
+                    ):
+                        distractors.append(cand)
+
+                if len(distractors) >= 3:
+                    options = [ans] + distractors[:3]
+                    rng.shuffle(options)
+                    ckey = f"cloze-{q.id}"
+                    cloze_items.append(
+                        {
+                            "item_type": "cloze",
+                            "card_key": ckey,
+                            "question_id": q.id,
+                            "category": cat,
+                            "topic_id": tid,
+                            "topic_title_th": meta["title_th"],
+                            "cognitive_level": q.cognitive_level or "A",
+                            "prompt_masked": cloze_data["prompt_masked"],
+                            "missing_answer": ans,
+                            "blank_kind": cloze_data["blank_kind"],
+                            "options": options,
+                            "full_explanation": cloze_data["full_explanation"],
+                            "why_correct": (exp.get("why_correct") or "").strip(),
+                            "common_pitfall": (exp.get("common_pitfall") or "").strip(),
+                            "key_takeaway": (exp.get("key_takeaway") or "").strip(),
+                            "reference": ref_str,
+                            "prioritized_wrong": is_wrong,
+                            "sm2_state": _serialize_cloze_sm2_row(sm2_map.get(ckey), now_ts),
+                        }
+                    )
+
+        # 2) Build Pitfall Elimination item
+        if mode in ("mixed", "pitfall"):
+            pitfall_txt = (exp.get("common_pitfall") or "").strip()
+            choice_expls = exp.get("choice_explanations")
+            correct_label = (q.correct_answer or "").strip()
+            choices_list = list(q.choices or [])
+            if (
+                len(pitfall_txt) >= 15
+                and isinstance(choice_expls, dict)
+                and len(choice_expls) >= 2
+                and len(choices_list) >= 3
+                and any((c.label or "").strip() == correct_label for c in choices_list)
+            ):
+                label_order = {"ก": 0, "ข": 1, "ค": 2, "ง": 3, "A": 0, "B": 1, "C": 2, "D": 3}
+                choices_list.sort(key=lambda c: label_order.get((c.label or "").strip(), 99))
+                formatted_choices = [
+                    {
+                        "label": (c.label or "").strip(),
+                        "text": (c.text or "").strip(),
+                        "explanation": str(choice_expls.get((c.label or "").strip(), "")).strip(),
+                    }
+                    for c in choices_list
+                ]
+                ckey = f"pitfall-{q.id}"
+                pitfall_items.append(
+                    {
+                        "item_type": "pitfall",
+                        "card_key": ckey,
+                        "question_id": q.id,
+                        "category": cat,
+                        "topic_id": tid,
+                        "topic_title_th": meta["title_th"],
+                        "cognitive_level": q.cognitive_level or "A",
+                        "stem": (q.question_text or "").strip(),
+                        "choices": formatted_choices,
+                        "correct_answer": correct_label,
+                        "common_pitfall": pitfall_txt,
+                        "why_correct": (exp.get("why_correct") or "").strip(),
+                        "key_takeaway": (exp.get("key_takeaway") or "").strip(),
+                        "reference": ref_str,
+                        "prioritized_wrong": is_wrong,
+                        "sm2_state": _serialize_cloze_sm2_row(sm2_map.get(ckey), now_ts),
+                    }
+                )
+
+    def _priority_key(item: Dict[str, Any]):
+        sm2 = item.get("sm2_state")
+        is_due = 1 if (sm2 and sm2.get("is_due")) else 0
+        is_wrong_flag = 1 if item.get("prioritized_wrong") else 0
+        is_unseen = 1 if not sm2 else 0
+        numeric_bonus = 1 if item.get("blank_kind") == "numeric_law" else 0
+        return (-is_wrong_flag, -is_due, -is_unseen, -numeric_bonus, (item["question_id"] * 2654435761) % 997)
+
+    cloze_items.sort(key=_priority_key)
+    pitfall_items.sort(key=_priority_key)
+
+    final_items: List[Dict[str, Any]] = []
+    if mode == "cloze":
+        final_items = cloze_items[:limit]
+    elif mode == "pitfall":
+        final_items = pitfall_items[:limit]
+    else:
+        seen_qids = set()
+        # Urgent items (past wrong answers or overdue SM-2 reviews) always lead the queue
+        urgent_items = [
+            it
+            for it in (cloze_items + pitfall_items)
+            if it["prioritized_wrong"] or (it["sm2_state"] and it["sm2_state"].get("is_due"))
+        ]
+        urgent_items.sort(key=_priority_key)
+        for u_item in urgent_items:
+            if len(final_items) >= limit:
+                break
+            if u_item["question_id"] not in seen_qids:
+                final_items.append(u_item)
+                seen_qids.add(u_item["question_id"])
+
+        ci, pi = 0, 0
+        while len(final_items) < limit and (ci < len(cloze_items) or pi < len(pitfall_items)):
+            added_any = False
+            while ci < len(cloze_items):
+                c_item = cloze_items[ci]
+                ci += 1
+                if c_item["question_id"] not in seen_qids:
+                    final_items.append(c_item)
+                    seen_qids.add(c_item["question_id"])
+                    added_any = True
+                    break
+            if len(final_items) >= limit:
+                break
+            while pi < len(pitfall_items):
+                p_item = pitfall_items[pi]
+                pi += 1
+                if p_item["question_id"] not in seen_qids:
+                    final_items.append(p_item)
+                    seen_qids.add(p_item["question_id"])
+                    added_any = True
+                    break
+            if not added_any:
+                break
+
+    return {
+        "items": final_items,
+        "summary": {
+            "total_available": len(cloze_items) + len(pitfall_items),
+            "cloze_available": len(cloze_items),
+            "pitfall_available": len(pitfall_items),
+            "returned_count": len(final_items),
+            "prioritized_wrong_count": sum(1 for it in final_items if it["prioritized_wrong"]),
+            "due_sm2_count": sum(
+                1 for it in final_items if it["sm2_state"] and it["sm2_state"].get("is_due")
+            ),
+            "categories": sorted(categories_set),
+        },
     }

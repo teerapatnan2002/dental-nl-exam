@@ -206,6 +206,8 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
 
   const toolsGroup = [
     { id: 'study_hub', label: 'คลังบทเรียนและเลกเชอร์เจาะลึก', desc: 'เจาะลึกกลไกและ Decision Matrix 10 สาขา + กฎหมาย', emoji: '📖' },
+    { id: 'calc_lab_tool', label: 'ห้องฝึกคำนวณคลินิก (Calc Lab)', desc: 'สุ่มฝึก MRD ยาชา, ฟลูออไรด์ PTD, สถิติ 2×2, CAL & จัดฟัน', emoji: '🧮' },
+    { id: 'cloze_arena_tool', label: 'Cloze & กับดักข้อสอบ', desc: 'ฝึกเติมตัวเลข-กฎหมาย จับไต๋ตัวลวง + จับเวลา 25 วิ & SM-2', emoji: '⚡' },
     { id: 'tos_analytics', label: 'TOS Analytics & Benchmark', desc: 'เปรียบเทียบข้อสอบจริงกับเกณฑ์ ศ.ป.ท. 2563 & Coverage Matrix', emoji: '📊' },
     { id: 'law_hub_tool', label: 'สรุปกฎหมาย & Flashcards', desc: 'ผังมโนทัศน์ 5 เสาหลัก & บัตรคำช่วยจำ', emoji: '⚖️' },
     { id: 'search', label: 'ค้นหาข้อสอบ', desc: 'ค้นหาโจทย์ตามคำค้นหา', emoji: '🔍' },
@@ -446,6 +448,16 @@ export default function Dashboard({ categories, stats, taskStats, categoryTasks 
                   onClick={() => {
                     if (item.id === 'law_hub_tool') {
                       if (onOpenLawHub) onOpenLawHub();
+                      setMoreMenuOpen(false);
+                      return;
+                    }
+                    if (item.id === 'calc_lab_tool') {
+                      handleOpenStudyTopic(null, 'synthesized', 'calc_lab');
+                      setMoreMenuOpen(false);
+                      return;
+                    }
+                    if (item.id === 'cloze_arena_tool') {
+                      handleOpenStudyTopic(null, 'synthesized', 'cloze_arena');
                       setMoreMenuOpen(false);
                       return;
                     }

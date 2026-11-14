@@ -10,6 +10,8 @@ import { API_BASE } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 import ClinicalPathwayDiagram from './ClinicalPathwayDiagram';
 import VisualAtlas from './VisualAtlas';
+import CalcSimulator from './CalcSimulator';
+import ClozePitfallArena from './ClozePitfallArena';
 import {
   buildDynamicPathwayFromText,
   buildPathwayFromThaiProtocol,
@@ -803,6 +805,44 @@ export default function ClinicalStudyHub({
             </button>
 
             <button
+              onClick={() => setHubMode('calc_lab')}
+              style={{
+                padding: '0.45rem 0.9rem',
+                borderRadius: '10px',
+                fontSize: '0.82rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: hubMode === 'calc_lab' ? '#059669' : 'rgba(16,185,129,0.08)',
+                color: hubMode === 'calc_lab' ? '#fff' : '#6ee7b7',
+                border: hubMode === 'calc_lab' ? '1px solid #059669' : '1px solid rgba(16,185,129,0.28)',
+              }}
+            >
+              <span>🧮</span> ห้องฝึกคำนวณคลินิก
+            </button>
+
+            <button
+              onClick={() => setHubMode('cloze_arena')}
+              style={{
+                padding: '0.45rem 0.9rem',
+                borderRadius: '10px',
+                fontSize: '0.82rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: hubMode === 'cloze_arena' ? '#7c3aed' : 'rgba(139,92,246,0.08)',
+                color: hubMode === 'cloze_arena' ? '#fff' : '#c4b5fd',
+                border: hubMode === 'cloze_arena' ? '1px solid #7c3aed' : '1px solid rgba(139,92,246,0.28)',
+              }}
+            >
+              <span>⚡</span> Cloze & กับดักข้อสอบ
+            </button>
+
+            <button
               onClick={() => {
                 setHubMode('mistake_clinic');
                 if (token) fetchMistakeClinic();
@@ -942,7 +982,7 @@ export default function ClinicalStudyHub({
         </div>
 
         {/* ══════════════════════════════════════════════════════════════════
-            3. MAIN SPLIT LAYOUT OR VISUAL ATLAS GALLERY
+            3. MAIN SPLIT LAYOUT OR INTERACTIVE FULL-WIDTH LABS
         ══════════════════════════════════════════════════════════════════ */}
         {hubMode === 'visual_atlas' ? (
           <VisualAtlas
@@ -959,6 +999,33 @@ export default function ClinicalStudyHub({
               setClassroomTab('synthesized');
             }}
           />
+        ) : hubMode === 'calc_lab' ? (
+          <div style={{ padding: '1.25rem', overflowY: isModal ? 'auto' : 'visible', maxHeight: isModal ? 'calc(94vh - 150px)' : 'none' }}>
+            <CalcSimulator
+              onOpenTopic={(topicId) => {
+                setSelectedSpecialty('all');
+                setSelectedTopicId(topicId);
+                setHubMode('exam_topics');
+                setClassroomTab('synthesized');
+              }}
+            />
+          </div>
+        ) : hubMode === 'cloze_arena' ? (
+          <div style={{ padding: '1.25rem', overflowY: isModal ? 'auto' : 'visible', maxHeight: isModal ? 'calc(94vh - 150px)' : 'none' }}>
+            <ClozePitfallArena
+              selectedSpecialty={selectedSpecialty}
+              searchQuery={searchQuery}
+              onStartExam={onStartExam}
+              isModal={isModal}
+              onClose={onClose}
+              onOpenTopic={(topicId) => {
+                setSelectedSpecialty('all');
+                setSelectedTopicId(topicId);
+                setHubMode('exam_topics');
+                setClassroomTab('synthesized');
+              }}
+            />
+          </div>
         ) : (
         <div style={{
           display: 'grid',
@@ -1889,7 +1956,7 @@ export default function ClinicalStudyHub({
                         color: 'var(--text-sub)'
                       }}>
                         <strong style={{ color: '#22d3ee' }}>🔀 แผนผังกลไก การเกิดโรค และโปรโตคอลการตัดสินใจ (Interactive Pathway Studio): </strong>
-                        รวบรวมลำดับขั้นกลไกพยาธิกำเนิด (Pathogenesis), จุดแยกตัดสินใจ (Decision Tree), ขั้นตอนหัตถการ และโปรโตคอลมาตรฐานประเทศไทย (ทันตแพทยสภา • สมาคมวิชาชีพ • กรมอนามัย) พร้อมโหมด <strong>"👣 ไล่ดูทีละขั้น"</strong> สำหรับทบทวนความจำ
+                        รวบรวมลำดับขั้นกลไกพยาธิกำเนิด (Pathogenesis), จุดแยกตัดสินใจ (Decision Tree), ขั้นตอนหัตถการ และโปรโตคอลมาตรฐานประเทศไทย (ทันตแพทยสภา • สมาคมวิชาชีพ • กรมอนามัย) พร้อมโหมด <strong>"👣 ไล่ดูทีละขั้น"</strong> และ <strong>"🎮 จำลองตัดสินใจ"</strong> สำหรับทดสอบ Clinical Judgment แบบโต้ตอบ
                       </div>
 
                       {/* Filter pills by Pathway Type */}
