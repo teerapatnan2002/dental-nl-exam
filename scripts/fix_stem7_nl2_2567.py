@@ -2,6 +2,10 @@ import sqlite3
 import json
 import os
 from sqlalchemy import create_engine, text
+try:
+    from supabase_env import get_supabase_url
+except ImportError:
+    from scripts.supabase_env import get_supabase_url
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Fix STEM 7 (NL2-2567 Part กฎหมาย: IDs 2300, 2301, 2302)
@@ -155,7 +159,7 @@ def update_sqlite():
 
 def update_supabase():
     print("=== 2. Updating Supabase PostgreSQL ===")
-    url = "postgresql://postgres.fgexylhuyaaedmtnplra:HuBAfgLaZ5IGeqpm@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require"
+    url = get_supabase_url()
     engine = create_engine(url, pool_pre_ping=True)
 
     with engine.begin() as conn:

@@ -53,7 +53,13 @@ try:
 except Exception as e:
     logger.warning("Startup DB migration deferred: %s", e)
 
-app = FastAPI(title="Dental Exam API")
+_is_prod = bool(os.environ.get("VERCEL") or os.environ.get("ENV") == "production")
+app = FastAPI(
+    title="Dental Exam API",
+    docs_url=None if _is_prod else "/docs",
+    redoc_url=None if _is_prod else "/redoc",
+    openapi_url=None if _is_prod else "/openapi.json",
+)
 
 
 @app.get("/api/health")
@@ -68,7 +74,13 @@ def health_check(db: Session = Depends(get_db)):
 
 
 # ── Import routers ──
-from auth import router as auth_router, get_current_user, _check_rate_limit
+from auth import (
+    router as auth_router,
+    get_current_user,
+    get_optional_current_user,
+    _check_rate_limit,
+    _get_client_ip,
+)
 from tracking import router as tracking_router
 from tutor import router as tutor_router
 from reports import router as reports_router
@@ -84,19 +96,28 @@ app.include_router(bookmarks_router)
 app.include_router(learning_router)
 app.include_router(presence_router)
 
-# ── CORS: read allowed origins from env, default to localhost only ──
+# ── CORS: read allowed origins from env, reject wildcard '*' when credentials=True ──
 _allowed_origins_env = os.environ.get("ALLOWED_ORIGINS", "")
-if _allowed_origins_env:
-    allowed_origins = [o.strip() for o in _allowed_origins_env.split(",") if o.strip()]
-else:
-    allowed_origins = ["http://localhost:5173", "http://localhost:8000", "http://127.0.0.1:5173", "http://127.0.0.1:8000"]
+_parsed_origins = [o.strip() for o in _allowed_origins_env.split(",") if o.strip()]
+if "*" in _parsed_origins:
+    logger.warning("Ignoring wildcard '*' in ALLOWED_ORIGINS because allow_credentials=True")
+allowed_origins = [o for o in _parsed_origins if o != "*"]
+if not allowed_origins:
+    if _is_prod:
+        allowed_origins = [
+            "https://dental-nl-exam.vercel.app",
+            "https://dental-nl-exam-teerapat5.vercel.app",
+            "https://dental-nl-exam-git-main-teerapat5.vercel.app",
+        ]
+    else:
+        allowed_origins = ["http://localhost:5173", "http://localhost:8000", "http://127.0.0.1:5173", "http://127.0.0.1:8000"]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-Requested-With"],
 )
 
 # ── Security Headers Middleware ──
@@ -110,8 +131,19 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-    response.headers["Content-Security-Policy"] = "frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+    response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+    response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
+    response.headers["Content-Security-Policy"] = "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+    response.headers["Content-Security-Policy-Report-Only"] = (
+        "default-src 'self'; "
+        "script-src 'self' https://va.vercel-scripts.com; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com data:; "
+        "img-src 'self' data: blob: https://upload.wikimedia.org https://*.wikimedia.org; "
+        "connect-src 'self' https://*.vercel-insights.com https://vitals.vercel-insights.com https://va.vercel-scripts.com; "
+        "object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    )
     if request.url.path.startswith("/api/"):
         response.headers["Cache-Control"] = "no-store, max-age=0"
     elif request.url.path.startswith("/assets/") and response.status_code == 200:
@@ -159,9 +191,10 @@ class QuestionResponse(BaseModel):
         from_attributes = True
 
 
-def _serialize_question(q: models.Question) -> dict:
+def _serialize_question(q: models.Question, include_answers: bool = False) -> dict:
     """Serialize a Question ORM object. Expects `choices` to be eager-loaded
-    via selectinload to avoid N+1 queries."""
+    via selectinload to avoid N+1 queries. Answers are withheld before submission
+    unless `include_answers=True`."""
     choices = [{"label": c.label, "text": c.text} for c in q.choices]
     return {
         "id": q.id,
@@ -170,8 +203,8 @@ def _serialize_question(q: models.Question) -> dict:
         "proposition": q.proposition,
         "category": q.category,
         "task": q.task,
-        "correct_answer": q.correct_answer,
-        "explanation": q.explanation,
+        "correct_answer": q.correct_answer if include_answers else None,
+        "explanation": q.explanation if include_answers else None,
         "source_exam": q.source_exam,
         "exam_origin": getattr(q, "exam_origin", None) or "real_exam",
         "image_path": q.image_path,
@@ -540,13 +573,15 @@ def get_years(db: Session = Depends(get_db)):
 
 @app.get("/api/questions", response_model=List[QuestionResponse])
 def get_questions(
+    request: Request,
     category: Optional[str] = None,
     task: Optional[str] = None,
     exam_origin: Optional[str] = "real_exam",
-    skip: int = 0,
-    limit: int = 100,
+    skip: int = Query(0, ge=0, le=5000),
+    limit: int = Query(50, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
+    _check_rate_limit(f"q-list:{_get_client_ip(request)}", max_attempts=30, window_seconds=300)
     query = db.query(models.Question).options(selectinload(models.Question.choices))
     if exam_origin == "mock":
         query = query.filter(models.Question.exam_origin.in_(["dsat_mock", "ai_mock"]))
@@ -566,18 +601,20 @@ def get_questions(
         query = query.filter(~models.Question.source_exam.like("%2570%"))
 
     questions = query.offset(skip).limit(limit).all()
-    return [_serialize_question(q) for q in questions]
+    return [_serialize_question(q, include_answers=False) for q in questions]
 
 
 class QuestionIdsRequest(BaseModel):
-    question_ids: List[int]
+    question_ids: List[int] = Field(..., max_length=100)
 
 
 @app.post("/api/questions/by-ids", response_model=List[QuestionResponse])
 def get_questions_by_ids(
     payload: QuestionIdsRequest,
+    request: Request,
     db: Session = Depends(get_db),
 ):
+    _check_rate_limit(f"q-byids:{_get_client_ip(request)}", max_attempts=60, window_seconds=300)
     requested = [int(qid) for qid in payload.question_ids[:100]]
     if not requested:
         return []
@@ -589,11 +626,12 @@ def get_questions_by_ids(
     if is_mock_70_locked():
         query = query.filter(~models.Question.source_exam.like("%2570%"))
     q_map = {q.id: q for q in query.all()}
-    return [_serialize_question(q_map[qid]) for qid in requested if qid in q_map]
+    return [_serialize_question(q_map[qid], include_answers=False) for qid in requested if qid in q_map]
 
 
 @app.get("/api/search", response_model=List[QuestionResponse])
 def search_questions(
+    request: Request,
     q: str = Query(..., min_length=2, max_length=200),
     category: Optional[str] = None,
     limit: int = Query(30, gt=0, le=100),
@@ -601,6 +639,7 @@ def search_questions(
 ):
     """Full-text search over real exam question text/stem/proposition via SQLite FTS5.
     Falls back to LIKE matching if the FTS table is unavailable (e.g. Postgres)."""
+    _check_rate_limit(f"q-search:{_get_client_ip(request)}", max_attempts=60, window_seconds=300)
     fts_available = None
     is_sqlite = bool(db.bind and db.bind.dialect.name == "sqlite")
     if is_sqlite:
@@ -653,12 +692,13 @@ def search_questions(
         query = query.filter(models.Question.category == category)
 
     questions = query.limit(limit).all()
-    return [_serialize_question(qs) for qs in questions]
+    return [_serialize_question(qs, include_answers=False) for qs in questions]
 
 
 @app.get("/api/exam/random", response_model=List[QuestionResponse])
 def generate_random_exam(
-    n: int = Query(10, gt=0, le=1000),
+    request: Request,
+    n: int = Query(10, gt=0, le=500),
     category: Optional[str] = None,
     task: Optional[str] = None,
     must_know_topic: Optional[str] = None,
@@ -671,6 +711,7 @@ def generate_random_exam(
     clinical_only: bool = False,
     db: Session = Depends(get_db),
 ):
+    _check_rate_limit(f"exam-rand:{_get_client_ip(request)}", max_attempts=40, window_seconds=300)
     query = (
         db.query(models.Question)
         .options(selectinload(models.Question.choices))
@@ -859,7 +900,7 @@ def generate_random_exam(
     for g in group_list:
         questions.extend(g)
 
-    return [_serialize_question(q) for q in questions]
+    return [_serialize_question(q, include_answers=False) for q in questions]
 
 
 # ── Auth‑gated endpoints (AI calls, mock generation, analysis, reports) ──
@@ -875,22 +916,37 @@ class ExplainRequest(BaseModel):
 @app.post("/api/explain")
 async def explain(
     req: ExplainRequest,
-    current_user: models.User = Depends(get_current_user),
+    request: Request,
+    current_user: Optional[models.User] = Depends(get_optional_current_user),
     db: Session = Depends(get_db),
 ):
-    """Return the correct answer + Thai explanation (requires auth)."""
+    """Return the correct answer + Thai explanation. Cached DB explanations allow
+    rate-limited practice reveal; uncached AI generation requires authentication."""
     q = db.query(models.Question).filter(models.Question.id == req.question_id).first()
     if q is None:
         raise HTTPException(status_code=404, detail="Question not found")
+    if is_mock_70_locked() and q.source_exam and "2570" in q.source_exam:
+        raise HTTPException(status_code=403, detail="Mock 2570 exam question is locked")
 
-    # Return cached if available
+    client_ip = _get_client_ip(request)
+    # Return cached if available (rate-limited to prevent bulk answer harvesting)
     if q.correct_answer and q.explanation:
+        if current_user is not None:
+            _check_rate_limit(f"explain-cached-u:{current_user.id}", max_attempts=120, window_seconds=300)
+        else:
+            _check_rate_limit(f"explain-cached-ip:{client_ip}", max_attempts=40, window_seconds=300)
         return {
             "question_id": q.id,
             "correct_answer": q.correct_answer,
             "explanation": q.explanation,
             "cached": True,
         }
+
+    if current_user is None:
+        raise HTTPException(
+            status_code=401,
+            detail="กรุณาเข้าสู่ระบบเพื่อใช้ AI สร้างคำอธิบายสำหรับข้อนี้",
+        )
 
     _check_rate_limit(f"ai-explain:{current_user.id}", max_attempts=20, window_seconds=300)
 
@@ -1105,24 +1161,48 @@ async def generate_mock_exam(
     return saved_questions
 
 
-# ---- Instant Post-Exam Analysis (requires auth) ----
+# ---- Instant Post-Exam Analysis (cached answers only, supports logged-in & free guest mode) ----
 class AnalysisRequest(BaseModel):
-    question_ids: List[int]
+    question_ids: List[int] = Field(..., max_length=500)
     user_answers: dict
 
 
 @app.post("/api/analysis")
 def get_exam_analysis(
     req: AnalysisRequest,
-    current_user: models.User = Depends(get_current_user),
+    request: Request,
+    current_user: Optional[models.User] = Depends(get_optional_current_user),
     db: Session = Depends(get_db),
 ):
-    """Return instant analysis. Uses cached data only (requires auth)."""
+    """Return instant post-submission analysis using cached DB answers only."""
+    if current_user is not None:
+        _check_rate_limit(f"analysis-u:{current_user.id}", max_attempts=60, window_seconds=300)
+    else:
+        _check_rate_limit(f"analysis-ip:{_get_client_ip(request)}", max_attempts=25, window_seconds=300)
+
+    requested_ids = [int(qid) for qid in (req.question_ids or [])[:500] if int(qid) > 0]
+    unique_ids = list(dict.fromkeys(requested_ids))
+    q_map: dict[int, models.Question] = {}
+    if unique_ids:
+        db_qs = (
+            db.query(models.Question)
+            .filter(
+                models.Question.id.in_(unique_ids),
+                models.Question.exam_origin != "duplicate_archive",
+            )
+            .all()
+        )
+        locked = is_mock_70_locked()
+        for item in db_qs:
+            if locked and item.source_exam and "2570" in item.source_exam:
+                continue
+            q_map[item.id] = item
+
     results = []
     category_stats = {}
 
-    for qid in req.question_ids:
-        q = db.query(models.Question).filter(models.Question.id == qid).first()
+    for qid in unique_ids:
+        q = q_map.get(qid)
         if not q:
             continue
 

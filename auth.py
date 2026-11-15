@@ -25,8 +25,13 @@ logger = logging.getLogger(__name__)
 # SECRET_KEY: read from env or use default fallback for local dev
 _FALLBACK_SECRET_KEY = "dental-nl-exam-super-secret-jwt-key-2026-production-fallback"
 SECRET_KEY = os.environ.get("SECRET_KEY") or os.environ.get("JWT_SECRET") or _FALLBACK_SECRET_KEY
-if SECRET_KEY == _FALLBACK_SECRET_KEY and os.environ.get("VERCEL"):
-    logger.warning("SECURITY WARNING: Using fallback SECRET_KEY on Vercel. Set SECRET_KEY in Vercel Environment Variables.")
+if (SECRET_KEY == _FALLBACK_SECRET_KEY or len(SECRET_KEY) < 32) and (
+    os.environ.get("VERCEL") or os.environ.get("ENV") == "production"
+):
+    raise RuntimeError(
+        "SECURITY ERROR: Weak or fallback SECRET_KEY detected in production. "
+        "Set a strong random SECRET_KEY (>= 32 chars) in Environment Variables."
+    )
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", "720"))  # 12 hours
@@ -43,15 +48,18 @@ _MAX_STORE_KEYS = 2000
 
 
 def _get_client_ip(request: Request) -> str:
-    """Extract client IP safely across direct connections and reverse proxies."""
+    """Extract client IP safely across Vercel edge headers, reverse proxies, and direct connections."""
+    for header_name in ("x-vercel-forwarded-for", "x-real-ip"):
+        val = (request.headers.get(header_name) or "").strip()
+        if val:
+            first_ip = val.split(",")[0].strip()
+            if first_ip:
+                return first_ip[:64]
     xff = (request.headers.get("x-forwarded-for") or "").strip()
     if xff:
         first_ip = xff.split(",")[0].strip()
         if first_ip:
             return first_ip[:64]
-    xri = (request.headers.get("x-real-ip") or "").strip()
-    if xri:
-        return xri[:64]
     return (request.client.host if request.client else "unknown")[:64]
 
 
@@ -169,7 +177,7 @@ def _verify_token_password_sig(payload: dict, user: models.User) -> None:
             )
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def _resolve_user_from_access_token(token: str, db: Session) -> models.User:
     payload = _decode_token(token, expected_type="access")
     username: str = payload.get("sub")
     user = db.query(models.User).filter(models.User.username == username).first()
@@ -181,6 +189,22 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         )
     _verify_token_password_sig(payload, user)
     return user
+
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    return _resolve_user_from_access_token(token, db)
+
+
+def get_optional_current_user(request: Request, db: Session = Depends(get_db)) -> Optional[models.User]:
+    """Return authenticated user if Bearer token is sent; None if unauthenticated.
+    Still raises 401 for malformed/expired non-empty tokens so clients refresh cleanly."""
+    auth_header = (request.headers.get("Authorization") or "").strip()
+    if not auth_header or not auth_header.lower().startswith("bearer "):
+        return None
+    token = auth_header[7:].strip()
+    if not token or token.lower() in ("null", "undefined", "none"):
+        return None
+    return _resolve_user_from_access_token(token, db)
 
 
 def get_current_admin(current_user: models.User = Depends(get_current_user)):

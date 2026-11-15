@@ -11,6 +11,10 @@ import json
 import re
 import os
 import psycopg
+try:
+    from supabase_env import get_supabase_url
+except ImportError:
+    from scripts.supabase_env import get_supabase_url
 
 # ---------------------------------------------------------
 # 1. Must Know Topic Definitions & Keyword Matchers
@@ -227,7 +231,7 @@ def main():
         
     # Sync to Supabase PostgreSQL
     print("\nSyncing updates to Supabase PostgreSQL...")
-    conn_str = "postgresql://postgres.fgexylhuyaaedmtnplra:HuBAfgLaZ5IGeqpm@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require"
+    conn_str = get_supabase_url(sqlalchemy=False)
     try:
         with psycopg.connect(conn_str, prepare_threshold=None) as pg_conn:
             with pg_conn.cursor() as pg_cur:

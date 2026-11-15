@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session, selectinload
 
 import models
-from auth import _decode_token, get_current_user
+from auth import _decode_token, get_current_user, _check_rate_limit, _get_client_ip
 from database import get_db
 from pathways import CURATED_TOPIC_PATHWAYS, get_topic_pathways
 from tos_blueprint import is_mock_70_locked
@@ -1177,9 +1177,10 @@ def _build_cloze_flashcard(
 # ─────────────────────────────────────────────────────────────────────────────
 
 @router.get("/overview")
-def get_learning_overview(db: Session = Depends(get_db)):
+def get_learning_overview(request: Request, db: Session = Depends(get_db)):
     """Return all 83 Must-Know Topics and Gold-Standard Textbooks extracted from the real NL exam questions."""
-    questions = (
+    _check_rate_limit(f"learning-overview:ip:{_get_client_ip(request)}", max_attempts=60, window_seconds=300)
+    query = (
         db.query(
             models.Question.id,
             models.Question.category,
@@ -1190,8 +1191,10 @@ def get_learning_overview(db: Session = Depends(get_db)):
             models.Question.source_exam,
         )
         .filter(models.Question.exam_origin == "real_exam")
-        .all()
     )
+    if is_mock_70_locked():
+        query = query.filter(~models.Question.source_exam.like("%2570%"))
+    questions = query.all()
 
     topics_map: Dict[str, Dict[str, Any]] = {}
     textbooks_map: Dict[str, Dict[str, Any]] = {
@@ -1520,7 +1523,7 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
                 "common_pitfall": common_pitfall,
                 "choice_explanations": choice_exps if isinstance(choice_exps, dict) else {},
             },
-            # Raw question object for compatibility with practice mode
+            # Raw question object for compatibility with practice mode (answers loaded dynamically via /api/explain)
             "raw_question": {
                 "id": q.id,
                 "question_text": q.question_text,
@@ -1528,8 +1531,8 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
                 "proposition": q.proposition,
                 "category": q.category,
                 "task": q.task,
-                "correct_answer": actual_correct,
-                "explanation": q.explanation,
+                "correct_answer": None,
+                "explanation": None,
                 "source_exam": q.source_exam,
                 "image_path": q.image_path,
                 "cognitive_level": q.cognitive_level,
@@ -1621,11 +1624,13 @@ def _build_pedagogical_module(questions: List[models.Question], title_th: str, t
 
 @router.get("/mistake-clinic")
 def get_mistake_clinic(
+    request: Request,
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Analyze the logged-in student's past wrong answers and due spaced-repetition reviews to prescribe targeted lessons and parallel twin drills."""
-    user_answers = (
+    _check_rate_limit(f"learning-clinic:u:{current_user.id}", max_attempts=60, window_seconds=300)
+    ua_query = (
         db.query(models.UserAnswer, models.Question)
         .join(models.ExamSession, models.ExamSession.id == models.UserAnswer.session_id)
         .join(models.Question, models.Question.id == models.UserAnswer.question_id)
@@ -1633,9 +1638,10 @@ def get_mistake_clinic(
             models.ExamSession.user_id == current_user.id,
             models.Question.exam_origin != "duplicate_archive",
         )
-        .order_by(models.UserAnswer.id.desc())
-        .all()
     )
+    if is_mock_70_locked():
+        ua_query = ua_query.filter(~models.Question.source_exam.like("%2570%"))
+    user_answers = ua_query.order_by(models.UserAnswer.id.desc()).all()
 
     topic_stats: Dict[str, Dict[str, Any]] = {}
     wrong_cases: List[Dict[str, Any]] = []
@@ -1709,19 +1715,21 @@ def get_mistake_clinic(
     parallel_questions = []
     top_weak_ids = [t["topic_id"] for t in weak_topics[:3]]
     if top_weak_ids:
-        candidates = (
+        cand_query = (
             db.query(models.Question)
             .options(selectinload(models.Question.choices))
             .filter(
                 models.Question.must_know_topic.in_(top_weak_ids),
                 models.Question.exam_origin == "real_exam",
             )
-            .limit(40)
-            .all()
         )
+        if is_mock_70_locked():
+            cand_query = cand_query.filter(~models.Question.source_exam.like("%2570%"))
+        candidates = cand_query.limit(40).all()
         # Prefer unseen questions first, then previously missed
         candidates.sort(key=lambda q: (0 if q.id not in answered_q_ids else (1 if q.id in seen_wrong_q else 2), q.id))
         for pq in candidates[:12]:
+            revealed = pq.id in answered_q_ids or current_user.role == "admin"
             parallel_questions.append({
                 "id": pq.id,
                 "question_text": pq.question_text,
@@ -1729,8 +1737,8 @@ def get_mistake_clinic(
                 "proposition": pq.proposition,
                 "category": pq.category,
                 "task": pq.task,
-                "correct_answer": pq.correct_answer,
-                "explanation": pq.explanation,
+                "correct_answer": pq.correct_answer if revealed else None,
+                "explanation": pq.explanation if revealed else None,
                 "source_exam": pq.source_exam,
                 "image_path": pq.image_path,
                 "cognitive_level": pq.cognitive_level,
@@ -1763,18 +1771,24 @@ def get_mistake_clinic(
 @router.get("/topic/{topic_id}")
 def get_topic_learning_module(
     topic_id: str,
+    request: Request,
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Extract and synthesize a complete Textbook & Evidence teaching module from all exam questions in a Must-Know Topic."""
-    questions = (
+    _check_rate_limit(f"learning-topic:u:{current_user.id}", max_attempts=90, window_seconds=300)
+    _check_rate_limit(f"learning-topic:ip:{_get_client_ip(request)}", max_attempts=120, window_seconds=300)
+    query = (
         db.query(models.Question)
         .options(selectinload(models.Question.choices))
         .filter(
             models.Question.must_know_topic == topic_id,
             models.Question.exam_origin == "real_exam",
         )
-        .all()
     )
+    if is_mock_70_locked():
+        query = query.filter(~models.Question.source_exam.like("%2570%"))
+    questions = query.all()
 
     if not questions:
         raise HTTPException(status_code=404, detail=f"Topic '{topic_id}' not found")
@@ -1793,11 +1807,15 @@ def get_topic_learning_module(
 @router.get("/textbook/{textbook_id}")
 def get_textbook_learning_module(
     textbook_id: str,
+    request: Request,
     topic: Optional[str] = Query(None),
     limit: int = Query(120, gt=0, le=300),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Extract and synthesize a teaching module for a specific Gold-Standard Textbook / Evidence Guideline."""
+    _check_rate_limit(f"learning-textbook:u:{current_user.id}", max_attempts=60, window_seconds=300)
+    _check_rate_limit(f"learning-textbook:ip:{_get_client_ip(request)}", max_attempts=90, window_seconds=300)
     tb_meta = next((t for t in CANONICAL_TEXTBOOKS if t["id"] == textbook_id), None)
     if not tb_meta:
         raise HTTPException(status_code=404, detail=f"Textbook '{textbook_id}' not found")
@@ -1807,6 +1825,8 @@ def get_textbook_learning_module(
         .options(selectinload(models.Question.choices))
         .filter(models.Question.exam_origin == "real_exam")
     )
+    if is_mock_70_locked():
+        query = query.filter(~models.Question.source_exam.like("%2570%"))
     if topic:
         query = query.filter(models.Question.must_know_topic == topic)
 
@@ -1836,9 +1856,11 @@ def get_textbook_learning_module(
 @router.get("/pathway/{topic_id}")
 def get_topic_pathway_endpoint(
     topic_id: str,
+    request: Request,
     db: Session = Depends(get_db),
 ):
     """Lightweight endpoint returning curated & auto-extracted Pathways/Protocols for a Must-Know Topic."""
+    _check_rate_limit(f"learning-pathway:ip:{_get_client_ip(request)}", max_attempts=90, window_seconds=300)
     if topic_id in CURATED_TOPIC_PATHWAYS:
         meta = get_topic_meta(topic_id)
         return {
@@ -1847,15 +1869,16 @@ def get_topic_pathway_endpoint(
             "pathways": CURATED_TOPIC_PATHWAYS[topic_id],
         }
 
-    questions = (
+    p_query = (
         db.query(models.Question)
         .filter(
             models.Question.must_know_topic == topic_id,
             models.Question.exam_origin == "real_exam",
         )
-        .limit(12)
-        .all()
     )
+    if is_mock_70_locked():
+        p_query = p_query.filter(~models.Question.source_exam.like("%2570%"))
+    questions = p_query.limit(12).all()
     if not questions:
         raise HTTPException(status_code=404, detail=f"Pathway for topic '{topic_id}' not found")
 
@@ -1945,12 +1968,16 @@ _MODALITY_LABELS_TH = {
 
 @router.get("/visual-atlas")
 def get_visual_atlas(
+    request: Request,
     category: Optional[str] = Query(None),
     modality: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Return Visual Spot-Diagnosis & Radiograph Atlas items across all image-backed NL questions."""
+    _check_rate_limit(f"visual-atlas:u:{current_user.id}", max_attempts=60, window_seconds=300)
+    _check_rate_limit(f"visual-atlas:{_get_client_ip(request)}", max_attempts=90, window_seconds=300)
     query = (
         db.query(models.Question)
         .options(selectinload(models.Question.choices))
@@ -2415,10 +2442,13 @@ def get_cloze_pitfall_arena(
     category: Optional[str] = Query(None),
     mode: str = Query("mixed", pattern="^(mixed|cloze|pitfall)$"),
     limit: int = Query(30, ge=5, le=80),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Build interactive Cloze Deletion & Pitfall Elimination Arena items with optional SM-2 & wrong-answer prioritization."""
-    user = _resolve_optional_user(request, db)
+    """Build interactive Cloze Deletion & Pitfall Elimination Arena items with SM-2 & wrong-answer prioritization."""
+    _check_rate_limit(f"cloze-arena:u:{current_user.id}", max_attempts=60, window_seconds=300)
+    _check_rate_limit(f"cloze-arena:{_get_client_ip(request)}", max_attempts=90, window_seconds=300)
+    user = current_user
     now_ts = int(time.time())
 
     wrong_q_ids = set()

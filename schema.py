@@ -181,10 +181,10 @@ class TwoFactorDisableRequest(BaseModel):
 # --- Tracking Schemas ---
 class UserAnswerCreate(BaseModel):
     question_id: int
-    selected_choice: Optional[str]
+    selected_choice: Optional[str] = Field(default=None, max_length=20)
     is_correct: bool
     time_spent_seconds: Optional[int] = None  # per-question timing
-    confidence: Optional[str] = None  # 'confident' | 'unsure' | 'hard'
+    confidence: Optional[str] = Field(default=None, max_length=20)  # 'confident' | 'unsure' | 'hard'
 
 
 class CardReviewSubmit(BaseModel):
@@ -221,12 +221,12 @@ class CardReviewOut(BaseModel):
 class ExamSessionCreate(BaseModel):
     start_time: int
     end_time: int
-    exam_type: str
+    exam_type: str = Field(..., min_length=1, max_length=50)
     score: Optional[int]
     total_questions: int
     time_limit_seconds: Optional[int] = None  # NULL = untimed practice mode
     time_spent_seconds: Optional[int] = None
-    answers: List[UserAnswerCreate]
+    answers: List[UserAnswerCreate] = Field(default_factory=list, max_length=500)
 
 class ExamSessionResponse(BaseModel):
     id: int

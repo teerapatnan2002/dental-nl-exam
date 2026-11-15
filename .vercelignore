@@ -14,3 +14,10 @@ NLLaw/
 NL2Test*/
 *.pdf
 scratch/
+scripts/
+export_users.py
+add_column.py
+create_user.py
+migrate_to_supabase.py
+migrate_and_secure_supabase.py
+test_upgrade_backend.py

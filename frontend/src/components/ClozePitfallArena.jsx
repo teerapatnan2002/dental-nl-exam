@@ -27,6 +27,7 @@ export default function ClozePitfallArena({
   searchQuery = '',
   onOpenTopic = null,
   onStartExam = null,
+  onOpenAuthModal = null,
   isModal = false,
   onClose = null,
 }) {
@@ -50,6 +51,12 @@ export default function ClozePitfallArena({
   const [startingExamId, setStartingExamId] = useState(null);
 
   const fetchArenaDeck = useCallback(async () => {
+    if (!token || !authFetch) {
+      setArenaData(null);
+      setError('auth_required');
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -61,7 +68,12 @@ export default function ClozePitfallArena({
         params.set('category', selectedSpecialty);
       }
       const url = `${API_BASE}/api/learning/cloze-arena?${params.toString()}`;
-      const res = token ? await authFetch(url) : await fetch(url);
+      const res = await authFetch(url);
+      if (res.status === 401) {
+        setArenaData(null);
+        setError('auth_required');
+        return;
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setArenaData(data);
@@ -185,7 +197,8 @@ export default function ClozePitfallArena({
     if (!onStartExam || !questionId || startingExamId) return;
     setStartingExamId(questionId);
     try {
-      const res = await fetch(`${API_BASE}/api/questions/by-ids`, {
+      const doFetch = authFetch || fetch;
+      const res = await doFetch(`${API_BASE}/api/questions/by-ids`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question_ids: [questionId] }),
@@ -420,7 +433,29 @@ export default function ClozePitfallArena({
         </div>
       )}
 
-      {!loading && error && (
+      {!loading && error === 'auth_required' && (
+        <div className="card" style={{ padding: '2.5rem 1.5rem', textAlign: 'center', maxWidth: '520px', margin: '0.5rem auto' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '0.6rem' }}>🔐</div>
+          <div style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text)', marginBottom: '0.45rem' }}>
+            กรุณาเข้าสู่ระบบเพื่อฝึกใน Cloze & Pitfall Arena
+          </div>
+          <div style={{ fontSize: '0.86rem', color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: '1.15rem' }}>
+            ระบบจัดคิวทวน SM-2 และดึงเฉลยเฉพาะจุดเสี่ยงให้เหมาะกับประวัติการทำข้อสอบของคุณโดยเฉพาะ
+          </div>
+          {onOpenAuthModal && (
+            <button
+              type="button"
+              onClick={onOpenAuthModal}
+              className="btn btn-primary"
+              style={{ fontWeight: 700, padding: '0.6rem 1.35rem', borderRadius: '10px' }}
+            >
+              เข้าสู่ระบบ / สมัครสมาชิก
+            </button>
+          )}
+        </div>
+      )}
+
+      {!loading && error && error !== 'auth_required' && (
         <div className="card" style={{ padding: '1.5rem', color: 'var(--ink-rose)', border: '1px solid rgba(239,68,68,0.4)' }}>
           {error}
         </div>

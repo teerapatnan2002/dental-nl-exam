@@ -754,6 +754,7 @@ function AppContent() {
           <ClinicalStudyHub
             onBack={goHome}
             onStartExam={startExam}
+            onOpenAuthModal={() => setIsAuthModalOpen(true)}
           />
         )}
 

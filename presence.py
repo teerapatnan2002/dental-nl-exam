@@ -11,7 +11,7 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session
 
 import models
-from auth import _decode_token
+from auth import _decode_token, _check_rate_limit, _get_client_ip
 from database import get_db
 
 router = APIRouter(prefix="/api/presence", tags=["presence"])
@@ -113,6 +113,7 @@ def ping_presence(
     db: Session = Depends(get_db),
 ):
     """Record a browser heartbeat and return live online + registered member counts."""
+    _check_rate_limit(f"presence-ping:{_get_client_ip(request)}", max_attempts=60, window_seconds=300)
     session_key = _sanitize_key(payload.session_key, "session_key")
     visitor_key = _sanitize_key(payload.visitor_key, "visitor_key") if payload.visitor_key else None
     user_id = _resolve_optional_user_id(request, db)

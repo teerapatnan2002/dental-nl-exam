@@ -5,6 +5,7 @@ import {
   Columns, Play, BookOpen, X, AlertTriangle, CheckCircle2, Sparkles
 } from 'lucide-react';
 import { API_BASE } from '../config';
+import { useAuth } from '../contexts/AuthContext';
 
 const MODALITY_META = {
   all: { label: 'ทั้งหมดทุกประเภท', color: '#2563eb' },
@@ -19,9 +20,11 @@ export default function VisualAtlas({
   specialtyColorMap = {},
   onOpenTopic = null,
   onStartExam = null,
+  onOpenAuthModal = null,
   isModal = false,
   onClose = null,
 }) {
+  const { token, authFetch } = useAuth() || {};
   const [atlasData, setAtlasData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,9 +47,16 @@ export default function VisualAtlas({
 
   useEffect(() => {
     let cancelled = false;
+    if (!token || !authFetch) {
+      setAtlasData(null);
+      setError('auth_required');
+      setLoading(false);
+      return () => { cancelled = true; };
+    }
     setLoading(true);
-    fetch(`${API_BASE}/api/learning/visual-atlas`)
+    authFetch(`${API_BASE}/api/learning/visual-atlas`)
       .then((res) => {
+        if (res.status === 401) throw new Error('AUTH_REQUIRED');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
@@ -59,14 +69,18 @@ export default function VisualAtlas({
       .catch((err) => {
         if (!cancelled) {
           console.error('Failed to load Visual Atlas:', err);
-          setError('ไม่สามารถโหลดคลังภาพวินิจฉัยได้ กรุณาลองใหม่อีกครั้ง');
+          if (err.message === 'AUTH_REQUIRED') {
+            setError('auth_required');
+          } else {
+            setError('ไม่สามารถโหลดคลังภาพวินิจฉัยได้ กรุณาลองใหม่อีกครั้ง');
+          }
         }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
     return () => { cancelled = true; };
-  }, []);
+  }, [token, authFetch]);
 
   const visibleItems = useMemo(() => {
     const raw = atlasData?.items || [];
@@ -106,7 +120,8 @@ export default function VisualAtlas({
     if (!onStartExam || !questionIds || questionIds.length === 0 || startingDrill) return;
     setStartingDrill(true);
     try {
-      const res = await fetch(`${API_BASE}/api/questions/by-ids`, {
+      const doFetch = authFetch || fetch;
+      const res = await doFetch(`${API_BASE}/api/questions/by-ids`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question_ids: questionIds.slice(0, 30) }),
@@ -147,6 +162,30 @@ export default function VisualAtlas({
         <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
           กำลังจัดหมวดภาพรังสี ภาพรอยโรคทางคลินิก และแบบจำลองทันตกรรมจากข้อสอบ NL จริง
         </div>
+      </div>
+    );
+  }
+
+  if (error === 'auth_required') {
+    return (
+      <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', maxWidth: '520px', margin: '0 auto' }}>
+        <div style={{ fontSize: '2.2rem', marginBottom: '0.75rem' }}>🔐</div>
+        <div style={{ fontWeight: 800, fontSize: '1.08rem', color: 'var(--text)', marginBottom: '0.45rem' }}>
+          กรุณาเข้าสู่ระบบเพื่อใช้งาน Visual Spot-Diagnosis & Radiograph Atlas
+        </div>
+        <div style={{ fontSize: '0.86rem', color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: '1.2rem' }}>
+          คลังภาพฟิล์มรังสีและรอยโรคทางคลินิกพร้อมเฉลยสงวนไว้สำหรับผู้ใช้งานที่เข้าสู่ระบบแล้ว
+        </div>
+        {onOpenAuthModal && (
+          <button
+            type="button"
+            onClick={onOpenAuthModal}
+            className="btn btn-primary"
+            style={{ fontWeight: 700, padding: '0.6rem 1.35rem', borderRadius: '10px' }}
+          >
+            เข้าสู่ระบบ / สมัครสมาชิก
+          </button>
+        )}
       </div>
     );
   }

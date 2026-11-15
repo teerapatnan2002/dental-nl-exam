@@ -2,6 +2,10 @@ import json
 import sqlite3
 import os
 from sqlalchemy import create_engine, text
+try:
+    from supabase_env import get_supabase_url
+except ImportError:
+    from scripts.supabase_env import get_supabase_url
 
 with open('./scratch/dsat_mock_parsed.json', 'r', encoding='utf-8') as f:
     questions = json.load(f)
@@ -62,7 +66,7 @@ print("✓ 1. SQLite sync completed successfully.")
 # -------------------------------------------------------------------------
 # 2. Sync to Supabase PostgreSQL
 # -------------------------------------------------------------------------
-supabase_url = "postgresql+psycopg://postgres.fgexylhuyaaedmtnplra:HuBAfgLaZ5IGeqpm@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require"
+supabase_url = get_supabase_url()
 engine = create_engine(supabase_url)
 
 with engine.begin() as s_conn:

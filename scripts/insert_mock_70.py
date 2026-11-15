@@ -1,6 +1,10 @@
 import json
 import sqlite3
 from sqlalchemy import create_engine, text
+try:
+    from supabase_env import get_supabase_url
+except ImportError:
+    from scripts.supabase_env import get_supabase_url
 
 QUESTIONS_DATA = [
     # STEM 1
@@ -845,7 +849,7 @@ def run():
     print(f"✅ SQLite inserted: {sqlite_q_count} questions, {sqlite_c_count} choices")
 
     # 2. Supabase Insert
-    supabase_url = 'postgresql://postgres.fgexylhuyaaedmtnplra:HuBAfgLaZ5IGeqpm@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require'
+    supabase_url = get_supabase_url()
     engine = create_engine(supabase_url)
     with engine.begin() as con:
         # Check existing

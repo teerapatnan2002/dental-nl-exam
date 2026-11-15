@@ -6,7 +6,7 @@ import { API_BASE } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function AIHub({ categories, tasks, onStartMockTest, onBack }) {
-  const { token } = useAuth();
+  const { token, authFetch } = useAuth();
   const [activeTab, setActiveTab] = useState('prediction');
 
   // Prediction State
@@ -34,11 +34,13 @@ export default function AIHub({ categories, tasks, onStartMockTest, onBack }) {
   };
 
   const fetchPrediction = async () => {
+    if (!token) {
+      setPredictionReport('**กรุณาเข้าสู่ระบบก่อน** เพื่อใช้งานการวิเคราะห์แนวโน้มด้วย AI');
+      return;
+    }
     setIsPredicting(true);
     try {
-      const res = await fetch(`${API_BASE}/api/prediction`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await authFetch(`${API_BASE}/api/prediction`);
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data.detail || 'Prediction request failed');
@@ -53,15 +55,15 @@ export default function AIHub({ categories, tasks, onStartMockTest, onBack }) {
 
   const handleGenerateMock = async (e) => {
     e.preventDefault();
+    if (!token) {
+      setGenError('กรุณาเข้าสู่ระบบก่อนสร้างข้อสอบจำลองด้วย AI');
+      return;
+    }
     setIsGenerating(true);
     setGenError('');
     try {
-      const res = await fetch(`${API_BASE}/api/mock/generate`, {
+      const res = await authFetch(`${API_BASE}/api/mock/generate`, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
         body: JSON.stringify({ category: mockCategory, task: mockTask, count: parseInt(mockCount) }),
       });
       if (!res.ok) {

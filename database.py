@@ -9,19 +9,25 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 logger = logging.getLogger(__name__)
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "")
+SQLALCHEMY_DATABASE_URL = (
+    os.getenv("DATABASE_URL")
+    or os.getenv("POSTGRES_URL")
+    or ""
+).strip()
 
-# Automatic transition: if pointing to old Tokyo project or unset on Vercel, use new Singapore project
-SINGAPORE_SUPABASE_URL = "postgresql+psycopg://postgres.fgexylhuyaaedmtnplra:HuBAfgLaZ5IGeqpm@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require"
+_is_prod_db = bool(os.getenv("VERCEL") or os.getenv("ENV") == "production")
 
 if not SQLALCHEMY_DATABASE_URL:
-    if os.getenv("VERCEL"):
-        SQLALCHEMY_DATABASE_URL = SINGAPORE_SUPABASE_URL
-    else:
-        SQLALCHEMY_DATABASE_URL = "sqlite:///./data/exam_bank.db"
-elif "cbaytqufljdiwsetsgry" in SQLALCHEMY_DATABASE_URL:
-    # Auto-redirect legacy Tokyo Supabase URL to new Singapore Supabase
-    SQLALCHEMY_DATABASE_URL = SINGAPORE_SUPABASE_URL
+    if _is_prod_db:
+        raise RuntimeError(
+            "DATABASE_URL environment variable must be set when running on Vercel or in production."
+        )
+    SQLALCHEMY_DATABASE_URL = "sqlite:///./data/exam_bank.db"
+
+if _is_prod_db and SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
+    raise RuntimeError(
+        "SQLite DATABASE_URL is not supported on Vercel or in production; configure PostgreSQL (Supabase)."
+    )
 
 # Normalize generic postgres URIs to postgresql+psycopg:// for psycopg3
 if SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
@@ -264,6 +270,8 @@ def run_migrations():
                 ).fetchall()
             }
             for rls_table in (
+                "questions",
+                "choices",
                 "users",
                 "exam_sessions",
                 "user_answers",

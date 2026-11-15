@@ -78,17 +78,22 @@ export const AuthProvider = ({ children }) => {
    * refreshes it once on 401 before retrying the request.
    */
   const authFetch = useCallback(async (url, options = {}) => {
-    const withAuth = (tok) => ({
-      ...options,
-      headers: {
+    const withAuth = (tok) => {
+      const headers = {
         'Content-Type': 'application/json',
         ...(options.headers || {}),
-        'Authorization': `Bearer ${tok}`,
-      },
-    });
+      };
+      if (tok) {
+        headers['Authorization'] = `Bearer ${tok}`;
+      }
+      return {
+        ...options,
+        headers,
+      };
+    };
 
     let res = await fetch(url, withAuth(token));
-    if (res.status === 401 && refreshToken) {
+    if (res.status === 401 && token && refreshToken) {
       const ok = await doRefresh();
       if (ok) {
         const newTok = localStorage.getItem('token');

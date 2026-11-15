@@ -2,13 +2,13 @@ import os
 import re
 from typing import Any, Dict, List, Literal, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from openai import AsyncOpenAI
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session, selectinload
 
 import models
-from auth import get_current_user
+from auth import get_current_user, _check_rate_limit, _get_client_ip
 from database import get_db
 from learning import (
     CANONICAL_TEXTBOOKS,
@@ -33,11 +33,11 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     question_id: Optional[int] = None
-    topic_id: Optional[str] = None
-    pathway_id: Optional[str] = None
+    topic_id: Optional[str] = Field(default=None, max_length=120)
+    pathway_id: Optional[str] = Field(default=None, max_length=120)
     message: str = Field(..., min_length=1, max_length=3000)
-    history: List[ChatMessage] = Field(default_factory=list)
-    user_answer: Optional[str] = None
+    history: List[ChatMessage] = Field(default_factory=list, max_length=20)
+    user_answer: Optional[str] = Field(default=None, max_length=20)
 
 
 class ChatResponse(BaseModel):
@@ -282,7 +282,7 @@ async def call_openrouter_chat(
         return None
 
 
-def _collect_tutor_context(req: ChatRequest, db: Session) -> Dict[str, Any]:
+def _collect_tutor_context(req: ChatRequest, current_user: models.User, db: Session) -> Dict[str, Any]:
     if not req.question_id and not (req.topic_id or "").strip():
         raise HTTPException(
             status_code=400,
@@ -295,6 +295,7 @@ def _collect_tutor_context(req: ChatRequest, db: Session) -> Dict[str, Any]:
     topic_id = (req.topic_id or "").strip() or None
     topic_sample_exps: List[Dict[str, Any]] = []
     unlocked_q_rows: List[models.Question] = []
+    answer_revealed = False
 
     if req.question_id is not None:
         question = (
@@ -307,21 +308,39 @@ def _collect_tutor_context(req: ChatRequest, db: Session) -> Dict[str, Any]:
             raise HTTPException(status_code=404, detail="Question not found")
         if is_mock_70_locked() and question.source_exam and "2570" in question.source_exam:
             raise HTTPException(status_code=403, detail="Mock 2570 exam question is locked")
-        exp = _parse_explanation(question.explanation)
+        if current_user.role == "admin":
+            answer_revealed = True
+        else:
+            answered = (
+                db.query(models.UserAnswer.id)
+                .join(models.ExamSession, models.ExamSession.id == models.UserAnswer.session_id)
+                .filter(
+                    models.ExamSession.user_id == current_user.id,
+                    models.UserAnswer.question_id == question.id,
+                )
+                .first()
+            )
+            answer_revealed = answered is not None
+        exp = _parse_explanation(question.explanation) if answer_revealed else {}
         category = question.category or ""
         topic_id = topic_id or question.must_know_topic
 
     if topic_id:
         q_rows = (
             db.query(models.Question)
-            .filter(models.Question.must_know_topic == topic_id)
+            .filter(
+                models.Question.must_know_topic == topic_id,
+                models.Question.exam_origin != "duplicate_archive",
+            )
             .order_by(models.Question.id.asc())
             .limit(8)
             .all()
         )
         locked = is_mock_70_locked()
         unlocked_q_rows = [
-            q for q in q_rows if not (locked and q.source_exam and "2570" in q.source_exam)
+            q for q in q_rows
+            if not (locked and q.source_exam and "2570" in q.source_exam)
+            and (answer_revealed or question is None or q.id != question.id)
         ]
         if not question and not unlocked_q_rows and topic_id not in TOPIC_METADATA and topic_id not in CURATED_TOPIC_PATHWAYS:
             raise HTTPException(status_code=404, detail=f"Topic '{topic_id}' not found")
@@ -334,11 +353,12 @@ def _collect_tutor_context(req: ChatRequest, db: Session) -> Dict[str, Any]:
 
     meta = get_topic_meta(topic_id, category) if topic_id else {"title_th": category, "title_en": ""}
     title_th = meta.get("title_th") or category
+    pathway_seed_rows = unlocked_q_rows if unlocked_q_rows else ([question] if (question and answer_revealed) else [])
     pathways_list = (
         get_topic_pathways(
             topic_id,
             category,
-            unlocked_q_rows if unlocked_q_rows else ([question] if question else []),
+            pathway_seed_rows,
             title_th,
             parse_fn=_parse_explanation,
         )
@@ -350,6 +370,7 @@ def _collect_tutor_context(req: ChatRequest, db: Session) -> Dict[str, Any]:
     return {
         "question": question,
         "exp": exp,
+        "answer_revealed": answer_revealed,
         "category": category,
         "topic_id": topic_id,
         "topic_title_th": meta.get("title_th") or category,
@@ -358,7 +379,7 @@ def _collect_tutor_context(req: ChatRequest, db: Session) -> Dict[str, Any]:
         "thai_protocols": thai_protocols,
         "topic_sample_exps": topic_sample_exps,
         "user_answer": req.user_answer,
-        "correct_answer": question.correct_answer if question else None,
+        "correct_answer": question.correct_answer if (question and answer_revealed) else None,
     }
 
 
@@ -389,11 +410,18 @@ def _build_system_prompt(req: ChatRequest, ctx: Dict[str, Any]) -> str:
         context_blocks.append(f"คำถาม: {q.proposition or q.question_text}")
         choices_txt = "\n".join(f"{c.label}. {c.text}" for c in q.choices)
         context_blocks.append(f"ตัวเลือก:\n{choices_txt}")
-        context_blocks.append(f"เฉลยที่ถูกต้อง: {q.correct_answer}")
-        if req.user_answer:
-            context_blocks.append(f"คำตอบที่นักศึกษาเลือก: {req.user_answer}")
-        if q.explanation:
-            context_blocks.append(f"คำอธิบายและหลักฐานทางวิชาการ: {q.explanation}")
+        if ctx.get("answer_revealed"):
+            context_blocks.append(f"เฉลยที่ถูกต้อง: {q.correct_answer}")
+            if req.user_answer:
+                context_blocks.append(f"คำตอบที่นักศึกษาเลือก: {req.user_answer}")
+            if q.explanation:
+                context_blocks.append(f"คำอธิบายและหลักฐานทางวิชาการ: {q.explanation}")
+        else:
+            if req.user_answer:
+                context_blocks.append(f"คำตอบที่นักศึกษาเลือก: {req.user_answer}")
+            context_blocks.append(
+                "หมายเหตุระบบ: นักศึกษายังไม่ได้ส่งคำตอบของข้อนี้ในระบบ ห้ามบอกเฉลยหรือฟันธงตัวอักษรคำตอบโดยตรง ให้สอนหลักคิดและใบ้แนวทางแบบ Socratic เท่านั้น"
+            )
     elif ctx["topic_sample_exps"]:
         snippets = []
         for idx, sexp in enumerate(ctx["topic_sample_exps"][:3], 1):
@@ -435,10 +463,13 @@ def _build_system_prompt(req: ChatRequest, ctx: Dict[str, Any]) -> str:
 @router.post("/chat", response_model=ChatResponse)
 async def chat_with_tutor(
     req: ChatRequest,
+    request: Request,
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    ctx = _collect_tutor_context(req, db)
+    _check_rate_limit(f"tutor:u:{current_user.id}", max_attempts=30, window_seconds=300)
+    _check_rate_limit(f"tutor:ip:{_get_client_ip(request)}", max_attempts=60, window_seconds=300)
+    ctx = _collect_tutor_context(req, current_user, db)
     system_prompt = _build_system_prompt(req, ctx)
     suggested_tag = _infer_suggested_tag(req.message, ctx)
 

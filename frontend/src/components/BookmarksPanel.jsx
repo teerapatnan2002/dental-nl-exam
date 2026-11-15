@@ -228,7 +228,7 @@ export default function BookmarksPanel({ onStartPractice }) {
       <h1>🦷 NL Dental Treasury Exam-Day High-Yield Cheat Sheet</h1>
       <div class="meta">สรุปเฉพาะโน้ตส่วนตัว, จุดผิดซ้ำ และ Pathway สำคัญ • พิมพ์เมื่อ ${new Date().toLocaleDateString('th-TH')}</div>
     </div>
-    <button class="no-print" onclick="window.print()" style="padding:7px 14px;background:#4f46e5;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:700;">🖨️ พิมพ์ / Save PDF</button>
+    <button id="cheat-sheet-print-btn" class="no-print" style="padding:7px 14px;background:#4f46e5;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:700;">🖨️ พิมพ์ / Save PDF</button>
   </div>
 
   ${topicNotes.length > 0 ? `
@@ -248,7 +248,7 @@ export default function BookmarksPanel({ onStartPractice }) {
       <div class="card">
         <div class="badges">Q#${it.id} · ${escapeHtml(it.category)} ${it.topic_title_th ? `— ${escapeHtml(it.topic_title_th)}` : ''} ${it.mistake_tag ? `<span class="tag">${escapeHtml(it.mistake_tag)}</span>` : ''}</div>
         <div><b>โจทย์:</b> ${escapeHtml(it.question_text.slice(0, 260))}${it.question_text.length > 260 ? '…' : ''}</div>
-        <div style="margin-top:3px;color:#065f46;"><b>✓ เฉลย (${escapeHtml(it.correct_answer)}):</b> ${escapeHtml(it.correct_choice_text || it.core_principle)}</div>
+        ${it.correct_answer ? `<div style="margin-top:3px;color:#065f46;"><b>✓ เฉลย (${escapeHtml(it.correct_answer)}):</b> ${escapeHtml(it.correct_choice_text || it.core_principle)}</div>` : '<div style="margin-top:3px;color:#64748b;"><i>🔒 ยังไม่ได้ส่งคำตอบข้อนี้ (ซ่อนเฉลย)</i></div>'}
         ${it.note_text ? `<div class="note"><b>📝 โน้ตของคุณ:</b> ${escapeHtml(it.note_text)}</div>` : ''}
         ${it.common_pitfall ? `<div class="pitfall"><b>💣 จุดหลอก:</b> ${escapeHtml(it.common_pitfall)}</div>` : ''}
       </div>
@@ -271,6 +271,7 @@ export default function BookmarksPanel({ onStartPractice }) {
     win.document.open();
     win.document.write(html);
     win.document.close();
+    win.document.getElementById('cheat-sheet-print-btn')?.addEventListener('click', () => win.print());
     setExportFeedback('✓ เปิดหน้าต่าง High-Yield Cheat Sheet สำหรับพิมพ์/Save as PDF แล้ว');
   };
 
@@ -488,11 +489,15 @@ export default function BookmarksPanel({ onStartPractice }) {
                     {q.question_text.length > 260 ? q.question_text.slice(0, 260) + '…' : q.question_text}
                   </div>
 
-                  {(q.key_takeaway || q.correct_choice_text) && (
+                  {q.correct_answer && (q.key_takeaway || q.correct_choice_text) ? (
                     <div style={{ marginTop: '0.45rem', fontSize: '0.82rem', color: '#6ee7b7' }}>
                       ✓ <strong>เฉลย ({q.correct_answer}):</strong> {q.key_takeaway || q.correct_choice_text}
                     </div>
-                  )}
+                  ) : !q.correct_answer ? (
+                    <div style={{ marginTop: '0.45rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      🔒 เฉลยจะแสดงหลังจากคุณลองส่งคำตอบข้อนี้ในโหมดฝึกหรือสอบแล้ว
+                    </div>
+                  ) : null}
 
                   {isEditing ? (
                     <div style={{ marginTop: '0.7rem', padding: '0.75rem', borderRadius: '9px', background: 'var(--surface-subtle)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

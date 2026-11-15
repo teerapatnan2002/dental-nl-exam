@@ -2,6 +2,10 @@ import sqlite3
 import re
 import os
 from sqlalchemy import create_engine, text
+try:
+    from supabase_env import get_supabase_url
+except ImportError:
+    from scripts.supabase_env import get_supabase_url
 
 # ══════════════════════════════════════════════════════════════
 # Standardized, Cleaned Question Data for NL Law 2566 (ID 2222 - 2251)
@@ -403,7 +407,7 @@ def update_sqlite():
 
 def update_supabase():
     print("--- Updating Supabase PostgreSQL ---")
-    url = "postgresql://postgres.fgexylhuyaaedmtnplra:HuBAfgLaZ5IGeqpm@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require"
+    url = get_supabase_url()
     engine = create_engine(url, pool_pre_ping=True)
     with engine.begin() as conn:
         for qid, data in UPDATES.items():

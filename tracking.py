@@ -448,19 +448,37 @@ def submit_exam_session(
                 and str(ans.selected_choice).strip() == str(db_corr).strip()
             )
         else:
-            is_corr_bool = bool(ans.is_correct)
+            # Never trust client-supplied is_correct when DB has no verified answer
+            is_corr_bool = False
         if is_corr_bool:
             verified_correct_count += 1
         verified_records.append((ans, is_corr_bool))
 
-    verified_total = len(verified_records) if verified_records else max(0, min(int(session.total_questions or 0), 500))
-    verified_score = verified_correct_count if verified_records else max(0, min(int(session.score or 0), verified_total))
+    resolved_exam_type = session.exam_type
+    if verified_records:
+        verified_total = len(verified_records)
+        verified_score = verified_correct_count
+    else:
+        # Only transient non-admin AI mock questions use negative IDs (max 10);
+        # never allow unverified submissions onto the official "mock" leaderboard.
+        transient_ai_answers = [ans for ans in dedup_answers if ans.question_id < 0][:10]
+        if transient_ai_answers and len(transient_ai_answers) == len(dedup_answers):
+            verified_total = len(transient_ai_answers)
+            verified_score = min(
+                sum(1 for ans in transient_ai_answers if bool(ans.is_correct)),
+                verified_total,
+            )
+            if resolved_exam_type == "mock":
+                resolved_exam_type = "ai_mock"
+        else:
+            verified_total = 0
+            verified_score = 0
 
     db_session = models.ExamSession(
         user_id=current_user.id,
         start_time=session.start_time,
         end_time=session.end_time,
-        exam_type=session.exam_type,
+        exam_type=resolved_exam_type,
         score=verified_score,
         total_questions=verified_total,
         time_limit_seconds=session.time_limit_seconds,
@@ -647,8 +665,8 @@ def get_questions_due_for_review(
                 "proposition": q.proposition,
                 "category": q.category,
                 "task": q.task,
-                "correct_answer": q.correct_answer,
-                "explanation": q.explanation,
+                "correct_answer": None,
+                "explanation": None,
                 "source_exam": q.source_exam,
                 "image_path": q.image_path,
                 "cognitive_level": q.cognitive_level,
@@ -937,9 +955,12 @@ def get_leaderboard(db: Session = Depends(get_db)):
             else 100.0
         )
         user = db.query(models.User).filter(models.User.id == s.user_id).first()
-        display_name = user.email.split("@")[0] if user else f"User {s.user_id}"
-        if len(display_name) > 3:
-            display_name = display_name[:3] + "***"
+        raw_name = (
+            (user.display_name or user.username)
+            if user and (user.display_name or user.username)
+            else f"User {s.user_id}"
+        )
+        display_name = raw_name[:3] + "***" if len(raw_name) > 3 else raw_name
 
         result.append(
             {

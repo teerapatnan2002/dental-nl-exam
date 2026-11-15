@@ -1,13 +1,14 @@
 import time
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 import models
-from auth import get_current_user, get_current_admin
+from auth import get_current_user, get_current_admin, _check_rate_limit, _get_client_ip
 from database import get_db
+from tos_blueprint import is_mock_70_locked
 
 router = APIRouter(prefix="/api/reports", tags=["reports"])
 
@@ -16,8 +17,8 @@ VALID_STATUSES = {"pending", "reviewing", "resolved", "rejected"}
 
 class ReportCreate(BaseModel):
     question_id: int
-    issue_type: str
-    description: Optional[str] = None
+    issue_type: str = Field(..., min_length=1, max_length=64)
+    description: Optional[str] = Field(default=None, max_length=2000)
 
 
 class ReportResponse(BaseModel):
@@ -32,25 +33,35 @@ class ReportResponse(BaseModel):
 
 
 class ReportStatusUpdate(BaseModel):
-    status: str
-    admin_reply: Optional[str] = None
+    status: str = Field(..., min_length=1, max_length=32)
+    admin_reply: Optional[str] = Field(default=None, max_length=2000)
 
 
 @router.post("", response_model=ReportResponse)
 def create_report(
     req: ReportCreate,
+    request: Request,
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    _check_rate_limit(f"report:u:{current_user.id}", max_attempts=15, window_seconds=300)
+    _check_rate_limit(f"report:ip:{_get_client_ip(request)}", max_attempts=30, window_seconds=300)
+
     # Verify the question exists so bogus reports can't be filed
     question = db.query(models.Question).filter(models.Question.id == req.question_id).first()
     if not question:
         raise HTTPException(status_code=404, detail="Question not found")
+    if is_mock_70_locked() and question.source_exam and "2570" in question.source_exam:
+        raise HTTPException(status_code=403, detail="Mock 2570 exam question is locked")
+
+    issue_type_clean = req.issue_type.strip()
+    if not issue_type_clean:
+        raise HTTPException(status_code=422, detail="issue_type cannot be empty")
 
     db_report = models.ReportedQuestion(
         question_id=req.question_id,
         user_id=current_user.id,
-        issue_type=req.issue_type,
+        issue_type=issue_type_clean,
         description=req.description,
         created_at=int(time.time()),
     )

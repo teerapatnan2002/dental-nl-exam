@@ -1031,6 +1031,7 @@ export default function Dashboard({
         <div className="animate-fade-in">
           <ClinicalStudyHub
             onStartExam={handleStart}
+            onOpenAuthModal={onOpenAuthModal}
             initialTopicId={studyHubLaunch.topicId}
             initialClassroomTab={studyHubLaunch.classroomTab}
             initialHubMode={studyHubLaunch.hubMode}
@@ -2264,7 +2265,7 @@ export default function Dashboard({
                       <button
                         className="btn btn-primary btn-sm"
                         style={{ width: '100%' }}
-                        onClick={() => handleStart('', '', 1000, 'exam', true, true, '')}
+                        onClick={() => handleStart('', '', 500, 'exam', true, true, '')}
                       >
                         <PlayCircle size={14} /> เริ่มสอบจำลอง 4 Parts มาราธอน
                       </button>

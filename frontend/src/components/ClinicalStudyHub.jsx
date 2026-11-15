@@ -159,6 +159,7 @@ function highlightClinicalClues(text, enabled) {
 export default function ClinicalStudyHub({ 
   onBack, 
   onStartExam, 
+  onOpenAuthModal = null,
   initialTopicId = null,
   initialClassroomTab = null,
   initialHubMode = null,
@@ -189,6 +190,7 @@ export default function ClinicalStudyHub({
   // Active Module Data from /api/learning/topic/{id} or /api/learning/textbook/{id}
   const [moduleData, setModuleData] = useState(null);
   const [loadingModule, setLoadingModule] = useState(false);
+  const [authRequiredModule, setAuthRequiredModule] = useState(false);
 
   // Lazy-load extended 64 Masterclass guides (completing all 83/83 Must-Know Topics)
   const [extraGuides, setExtraGuides] = useState({});
@@ -501,17 +503,29 @@ export default function ClinicalStudyHub({
   // Fetch topic or textbook pedagogical module when selection changes
   const fetchPedagogicalModule = useCallback((mode, id) => {
     if (!id) return;
+    if (!token || !authFetch) {
+      setModuleData(null);
+      setAuthRequiredModule(true);
+      setLoadingModule(false);
+      return;
+    }
+    setAuthRequiredModule(false);
     setLoadingModule(true);
     const endpoint = mode === 'textbooks' 
       ? `${API_BASE}/api/learning/textbook/${encodeURIComponent(id)}`
       : `${API_BASE}/api/learning/topic/${encodeURIComponent(id)}`;
 
-    fetch(endpoint)
+    authFetch(endpoint)
       .then(res => {
+        if (res.status === 401) {
+          setAuthRequiredModule(true);
+          throw new Error('Authentication required');
+        }
         if (!res.ok) throw new Error('Module not found');
         return res.json();
       })
       .then(data => {
+        setAuthRequiredModule(false);
         setModuleData(data);
         setSelectedTaskFilter('all');
         setSelectedCogFilter('all');
@@ -527,7 +541,7 @@ export default function ClinicalStudyHub({
         setModuleData(null);
       })
       .finally(() => setLoadingModule(false));
-  }, []);
+  }, [token, authFetch]);
 
   useEffect(() => {
     if (hubMode === 'exam_topics' && selectedTopicId) {
@@ -1191,6 +1205,7 @@ export default function ClinicalStudyHub({
             searchQuery={searchQuery}
             specialtyColorMap={SPECIALTY_COLOR_MAP}
             onStartExam={onStartExam}
+            onOpenAuthModal={onOpenAuthModal}
             isModal={isModal}
             onClose={onClose}
             onOpenTopic={(topicId) => {
@@ -1218,6 +1233,7 @@ export default function ClinicalStudyHub({
               selectedSpecialty={selectedSpecialty}
               searchQuery={searchQuery}
               onStartExam={onStartExam}
+              onOpenAuthModal={onOpenAuthModal}
               isModal={isModal}
               onClose={onClose}
               onOpenTopic={(topicId) => {
@@ -3390,6 +3406,26 @@ export default function ClinicalStudyHub({
                     </div>
                   )}
 
+                </div>
+              ) : (authRequiredModule || !token) ? (
+                <div style={{ textAlign: 'center', padding: '4rem 1.5rem', maxWidth: '520px', margin: '0 auto' }}>
+                  <div style={{ fontSize: '2.2rem', marginBottom: '0.75rem' }}>🔐</div>
+                  <div style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--text)', marginBottom: '0.5rem' }}>
+                    กรุณาเข้าสู่ระบบเพื่อเปิดอ่านบทเรียนเจาะลึกและเคสฝึกจากคลังข้อสอบ
+                  </div>
+                  <div style={{ fontSize: '0.88rem', color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: '1.25rem' }}>
+                    เพื่อความปลอดภัยของเฉลยและเนื้อหาคลังข้อสอบ ระบบสงวนสิทธิ์บทเรียนสังเคราะห์ Flashcards และเคสฝึกวิเคราะห์เฉพาะผู้ใช้งานที่เข้าสู่ระบบแล้ว
+                  </div>
+                  {onOpenAuthModal && (
+                    <button
+                      type="button"
+                      onClick={onOpenAuthModal}
+                      className="btn btn-primary"
+                      style={{ fontWeight: 700, padding: '0.65rem 1.4rem', borderRadius: '10px' }}
+                    >
+                      เข้าสู่ระบบ / สมัครสมาชิก
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--text-muted)' }}>

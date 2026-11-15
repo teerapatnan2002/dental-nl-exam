@@ -1,13 +1,13 @@
 import time
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy import func
 from sqlalchemy.orm import Session, selectinload
 
 import models
 import schema
-from auth import get_current_user
+from auth import get_current_user, _check_rate_limit, _get_client_ip
 from database import get_db
 from learning import _parse_explanation, get_topic_meta
 from pathways import get_topic_pathways
@@ -29,18 +29,19 @@ def _serialize_vault_question(
     bm: Optional[models.Bookmark],
     note: Optional[models.UserNote],
     wrong_count: int = 0,
+    reveal_answer: bool = True,
 ) -> Dict[str, Any]:
-    exp = _parse_explanation(q.explanation)
+    exp = _parse_explanation(q.explanation) if reveal_answer else {}
     tid = (note.topic_id if note and note.topic_id else None) or q.must_know_topic or ""
     cat = q.category or ""
     meta = get_topic_meta(tid, cat) if tid else {"title_th": cat, "title_en": ""}
-    correct_label = (q.correct_answer or "").strip().upper()
+    correct_label = (q.correct_answer or "").strip().upper() if reveal_answer else ""
     correct_choice_text = ""
     choices_out = []
     for ch in q.choices or []:
         lbl = (ch.label or "").strip()
         choices_out.append({"label": lbl, "text": ch.text})
-        if lbl.upper() == correct_label:
+        if reveal_answer and lbl.upper() == correct_label:
             correct_choice_text = ch.text
 
     return {
@@ -62,13 +63,13 @@ def _serialize_vault_question(
         "question_text": q.question_text,
         "stem": q.stem,
         "proposition": q.proposition,
-        "correct_answer": q.correct_answer,
+        "correct_answer": q.correct_answer if reveal_answer else None,
         "correct_choice_text": correct_choice_text,
-        "explanation": q.explanation,
-        "core_principle": (exp.get("core_principle") or exp.get("why_correct") or "").strip(),
-        "key_takeaway": (exp.get("key_takeaway") or "").strip(),
-        "common_pitfall": (exp.get("common_pitfall") or "").strip(),
-        "reference": (exp.get("reference") or exp.get("legal_citation") or "").strip(),
+        "explanation": q.explanation if reveal_answer else None,
+        "core_principle": (exp.get("core_principle") or exp.get("why_correct") or "").strip() if reveal_answer else "",
+        "key_takeaway": (exp.get("key_takeaway") or "").strip() if reveal_answer else "",
+        "common_pitfall": (exp.get("common_pitfall") or "").strip() if reveal_answer else "",
+        "reference": (exp.get("reference") or exp.get("legal_citation") or "").strip() if reveal_answer else "",
         "wrong_count": int(wrong_count or 0),
         "choices": choices_out,
     }
@@ -92,12 +93,14 @@ def list_bookmarks(
         return []
 
     question_ids = [r.question_id for r in rows]
-    questions = (
+    q_query = (
         db.query(models.Question)
         .options(selectinload(models.Question.choices))
         .filter(models.Question.id.in_(question_ids))
-        .all()
     )
+    if is_mock_70_locked():
+        q_query = q_query.filter(~models.Question.source_exam.like("%2570%"))
+    questions = q_query.all()
     q_map = {q.id: q for q in questions}
 
     result = []
@@ -115,8 +118,8 @@ def list_bookmarks(
                 "proposition": q.proposition,
                 "category": q.category,
                 "task": q.task,
-                "correct_answer": q.correct_answer,
-                "explanation": q.explanation,
+                "correct_answer": None,
+                "explanation": None,
                 "source_exam": q.source_exam,
                 "image_path": q.image_path,
                 "choices": [{"label": c.label, "text": c.text} for c in q.choices],
@@ -200,8 +203,32 @@ def list_bookmarks_with_notes(
             vault_qids.append(n.question_id)
             seen.add(n.question_id)
 
+    # Only reveal answers/explanations for questions the user has already answered (or admin)
+    if current_user.role == "admin":
+        revealed_qids = set(q_map.keys())
+    elif q_map:
+        ans_rows = (
+            db.query(models.UserAnswer.question_id)
+            .join(models.ExamSession, models.ExamSession.id == models.UserAnswer.session_id)
+            .filter(
+                models.ExamSession.user_id == current_user.id,
+                models.UserAnswer.question_id.in_(list(q_map.keys())),
+            )
+            .distinct()
+            .all()
+        )
+        revealed_qids = {int(r[0]) for r in ans_rows} | set(wrong_count_map.keys())
+    else:
+        revealed_qids = set()
+
     all_vault_items = [
-        _serialize_vault_question(q_map[qid], bm_map.get(qid), note_map.get(qid), wrong_count_map.get(qid, 0))
+        _serialize_vault_question(
+            q_map[qid],
+            bm_map.get(qid),
+            note_map.get(qid),
+            wrong_count_map.get(qid, 0),
+            reveal_answer=(qid in revealed_qids),
+        )
         for qid in vault_qids
     ]
 
@@ -320,15 +347,20 @@ def list_bookmarks_with_notes(
 @router.post("", response_model=schema.BookmarkResponse, status_code=201)
 def add_bookmark(
     req: schema.BookmarkCreate,
+    request: Request,
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Bookmark a question. Idempotent — returns the existing bookmark if present."""
+    _check_rate_limit(f"bookmark:u:{current_user.id}", max_attempts=120, window_seconds=300)
+    _check_rate_limit(f"bookmark:ip:{_get_client_ip(request)}", max_attempts=180, window_seconds=300)
     question = (
         db.query(models.Question).filter(models.Question.id == req.question_id).first()
     )
     if not question:
         raise HTTPException(status_code=404, detail="Question not found")
+    if is_mock_70_locked() and question.source_exam and "2570" in question.source_exam:
+        raise HTTPException(status_code=403, detail="Mock 2570 exam question is locked")
 
     existing = (
         db.query(models.Bookmark)
@@ -412,10 +444,13 @@ def get_note(
 @router.put("/notes", response_model=schema.UserNoteResponse)
 def upsert_note(
     req: schema.UserNoteUpsert,
+    request: Request,
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Create, update, or append a personal note on a Question or Must-Know Topic (with optional mistake_tag)."""
+    _check_rate_limit(f"note:u:{current_user.id}", max_attempts=120, window_seconds=300)
+    _check_rate_limit(f"note:ip:{_get_client_ip(request)}", max_attempts=180, window_seconds=300)
     now = int(time.time())
     clean_tag = (req.mistake_tag or "").strip() or None
     incoming_text = (req.note_text or "").strip()
@@ -426,6 +461,8 @@ def upsert_note(
         )
         if not question:
             raise HTTPException(status_code=404, detail="Question not found")
+        if is_mock_70_locked() and question.source_exam and "2570" in question.source_exam:
+            raise HTTPException(status_code=403, detail="Mock 2570 exam question is locked")
         resolved_topic = (req.topic_id or "").strip() or question.must_know_topic or None
 
         note = (

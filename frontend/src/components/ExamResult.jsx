@@ -131,6 +131,8 @@ export default function ExamResult({ questions, userAnswers, startTime, analysis
   }).length;
   const localUnanswered = questions.filter(q => !userAnswers[q.id]).length;
   const hasAnswerQ = questions.filter(q => q.correct_answer).length;
+  const hasAnswerCount = summary?.has_cached ?? hasAnswerQ;
+  const isGradingPending = !analysisData && hasAnswerQ === 0 && questions.length > 0;
 
   const correctCount   = summary?.correct   ?? localCorrect;
   const incorrectCount = summary?.wrong      ?? localIncorrect;
@@ -181,24 +183,33 @@ export default function ExamResult({ questions, userAnswers, startTime, analysis
           </span>
         </div>
 
-        <ScoreRing percentage={scorePercentage} passed={passed} />
+        {isGradingPending ? (
+          <div style={{ padding: '1.5rem 0 1.25rem' }}>
+            <Loader2 size={28} className="spin" color="var(--primary-light)" style={{ margin: '0 auto 0.65rem' }} />
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.94rem', margin: 0 }}>กำลังตรวจคำตอบและคำนวณคะแนน...</p>
+          </div>
+        ) : (
+          <>
+            <ScoreRing percentage={scorePercentage} passed={passed} />
 
-        <div>
-          <span className={`result-status-pill ${passed ? 'result-status-pill--pass' : 'result-status-pill--fail'}`}>
-            {passed ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
-            {passed ? 'ผ่านเกณฑ์ประเมิน (≥ 60%)' : 'ยังไม่ถึงเกณฑ์ (60%)'}
-          </span>
-        </div>
+            <div>
+              <span className={`result-status-pill ${passed ? 'result-status-pill--pass' : 'result-status-pill--fail'}`}>
+                {passed ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
+                {passed ? 'ผ่านเกณฑ์ประเมิน (≥ 60%)' : 'ยังไม่ถึงเกณฑ์ (60%)'}
+              </span>
+            </div>
 
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginTop: '0.35rem', marginBottom: '1.25rem' }}>
-          ตอบถูก <strong className="tabular-nums" style={{ color: 'var(--text)' }}>{correctCount}</strong> จาก{' '}
-          <strong className="tabular-nums" style={{ color: 'var(--text)' }}>{hasAnswerQ > 0 ? hasAnswerQ : questions.length}</strong> ข้อ
-          {elapsed !== null && (
-            <span className="tabular-nums" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', marginLeft: '0.65rem' }}>
-              · <Clock size={14} /> {formatTime(elapsed)}
-            </span>
-          )}
-        </p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginTop: '0.35rem', marginBottom: '1.25rem' }}>
+              ตอบถูก <strong className="tabular-nums" style={{ color: 'var(--text)' }}>{correctCount}</strong> จาก{' '}
+              <strong className="tabular-nums" style={{ color: 'var(--text)' }}>{hasAnswerCount > 0 ? hasAnswerCount : questions.length}</strong> ข้อ
+              {elapsed !== null && (
+                <span className="tabular-nums" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', marginLeft: '0.65rem' }}>
+                  · <Clock size={14} /> {formatTime(elapsed)}
+                </span>
+              )}
+            </p>
+          </>
+        )}
 
         {/* Stats row */}
         <div className="stat-cards-row">
