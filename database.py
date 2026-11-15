@@ -71,13 +71,19 @@ _COLUMN_MIGRATIONS = {
         "display_name": "ALTER TABLE users ADD COLUMN display_name VARCHAR",
         "dental_school": "ALTER TABLE users ADD COLUMN dental_school VARCHAR",
         "academic_year": "ALTER TABLE users ADD COLUMN academic_year VARCHAR",
-        "target_exam_session": "ALTER TABLE users ADD COLUMN target_exam_session VARCHAR DEFAULT 'NL 1/2570'",
+        "target_exam_session": "ALTER TABLE users ADD COLUMN target_exam_session VARCHAR DEFAULT 'ครั้งที่ 1 ปี 2570'",
         "target_score_pct": "ALTER TABLE users ADD COLUMN target_score_pct INTEGER DEFAULT 75",
         "daily_goal_questions": "ALTER TABLE users ADD COLUMN daily_goal_questions INTEGER DEFAULT 20",
         "subscription_tier": "ALTER TABLE users ADD COLUMN subscription_tier VARCHAR NOT NULL DEFAULT 'early_access'",
         "subscription_status": "ALTER TABLE users ADD COLUMN subscription_status VARCHAR NOT NULL DEFAULT 'active'",
         "subscription_expires_at": "ALTER TABLE users ADD COLUMN subscription_expires_at INTEGER",
         "billing_customer_id": "ALTER TABLE users ADD COLUMN billing_customer_id VARCHAR",
+        "two_factor_enabled": "ALTER TABLE users ADD COLUMN two_factor_enabled INTEGER NOT NULL DEFAULT 0",
+        "totp_secret_enc": "ALTER TABLE users ADD COLUMN totp_secret_enc VARCHAR",
+        "totp_pending_secret_enc": "ALTER TABLE users ADD COLUMN totp_pending_secret_enc VARCHAR",
+        "totp_backup_codes": "ALTER TABLE users ADD COLUMN totp_backup_codes TEXT",
+        "totp_last_used_step": "ALTER TABLE users ADD COLUMN totp_last_used_step BIGINT",
+        "two_factor_enabled_at": "ALTER TABLE users ADD COLUMN two_factor_enabled_at INTEGER",
     },
     "exam_sessions": {
         "time_limit_seconds": "ALTER TABLE exam_sessions ADD COLUMN time_limit_seconds INTEGER",
@@ -107,6 +113,7 @@ _INDEX_MIGRATIONS = [
     "CREATE INDEX IF NOT EXISTS ix_user_card_reviews_user_due ON user_card_reviews (user_id, card_type, next_review_date)",
     "CREATE INDEX IF NOT EXISTS ix_user_notes_tag ON user_notes (user_id, mistake_tag)",
     "CREATE INDEX IF NOT EXISTS ix_user_topic_notes_user_updated ON user_topic_notes (user_id, updated_at)",
+    "CREATE INDEX IF NOT EXISTS ix_active_presence_last_seen ON active_presence (last_seen_at)",
 ]
 
 
@@ -130,7 +137,18 @@ def run_migrations():
             except Exception as exc:
                 logger.warning("Index migration skipped (%s): %s", idx_ddl, exc)
         if not SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
-            for rls_table in ("user_card_reviews", "user_topic_notes"):
+            for rls_table in (
+                "users",
+                "exam_sessions",
+                "user_answers",
+                "user_question_stats",
+                "user_card_reviews",
+                "reported_questions",
+                "bookmarks",
+                "user_notes",
+                "user_topic_notes",
+                "active_presence",
+            ):
                 try:
                     conn.execute(text(f"ALTER TABLE public.{rls_table} ENABLE ROW LEVEL SECURITY;"))
                     conn.execute(

@@ -95,7 +95,7 @@ export default function ScheduledExamModal({ data, onClose, onOpenLawHub }) {
           marginBottom: '1.15rem'
         }}>
           <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.45rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <Calendar size={14} color="var(--ink-rose)" /> กำหนดการเปิดห้องสอบจริง
+            <Calendar size={14} color="var(--ink-rose)" /> กำหนดการเปิดห้องสอบ
           </div>
           <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.55rem' }}>
             {examTitle || 'ศ.ป.ท. Mock Exam 2570: กฎหมายและจรรยาบรรณวิชาชีพ'}
@@ -107,7 +107,7 @@ export default function ScheduledExamModal({ data, onClose, onOpenLawHub }) {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
               <Clock size={14} color="var(--text-muted)" />
-              <span><strong>เวลาสอบจริง:</strong> <span style={{ color: 'var(--ink-rose)', fontWeight: 700 }}>{timeText || '13:00 – 14:00 น. (60 นาที)'}</span></span>
+              <span><strong>เวลาสอบ:</strong> <span style={{ color: 'var(--ink-rose)', fontWeight: 700 }}>{timeText || '13:00 – 14:00 น. (60 นาที)'}</span></span>
             </div>
           </div>
 

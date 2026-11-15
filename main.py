@@ -24,7 +24,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session, selectinload
 from sqlalchemy.sql.expression import func
 from sqlalchemy import or_, text
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from database import (
     SessionLocal,
@@ -55,22 +55,26 @@ except Exception as e:
 
 app = FastAPI(title="Dental Exam API")
 
+
 @app.get("/api/health")
 @app.get("/health")
 def health_check(db: Session = Depends(get_db)):
     try:
         db.execute(text("SELECT 1"))
-        return {"status": "ok", "database": "connected"}
+        return {"status": "ok", "service": "Dental Exam API", "database": "connected"}
     except Exception as e:
-        return {"status": "degraded", "database_error": str(e)}
+        logger.warning("Health check database probe failed: %s", e)
+        return {"status": "degraded", "service": "Dental Exam API", "database": "unavailable"}
+
 
 # ── Import routers ──
-from auth import router as auth_router, get_current_user
+from auth import router as auth_router, get_current_user, _check_rate_limit
 from tracking import router as tracking_router
 from tutor import router as tutor_router
 from reports import router as reports_router
 from bookmarks import router as bookmarks_router
 from learning import router as learning_router
+from presence import router as presence_router
 
 app.include_router(auth_router)
 app.include_router(tracking_router)
@@ -78,13 +82,14 @@ app.include_router(tutor_router)
 app.include_router(reports_router)
 app.include_router(bookmarks_router)
 app.include_router(learning_router)
+app.include_router(presence_router)
 
 # ── CORS: read allowed origins from env, default to localhost only ──
 _allowed_origins_env = os.environ.get("ALLOWED_ORIGINS", "")
 if _allowed_origins_env:
     allowed_origins = [o.strip() for o in _allowed_origins_env.split(",") if o.strip()]
 else:
-    allowed_origins = ["http://localhost:5173", "http://localhost:8000"]
+    allowed_origins = ["http://localhost:5173", "http://localhost:8000", "http://127.0.0.1:5173", "http://127.0.0.1:8000"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -104,8 +109,11 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    response.headers["Cache-Control"] = "no-store, max-age=0"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Content-Security-Policy"] = "frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    if request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store, max-age=0"
     return response
 
 # GZip middleware
@@ -117,13 +125,6 @@ try:
     app.mount("/images", StaticFiles(directory="images"), name="images")
 except Exception as e:
     logger.warning("Could not mount /images: %s", e)
-
-
-# ── Health endpoint ──
-@app.get("/api/health")
-@app.get("/health")
-def health_check():
-    return {"status": "ok", "service": "Dental Exam API"}
 
 
 # ── Response Schemas ──
@@ -788,6 +789,8 @@ async def explain(
             "cached": True,
         }
 
+    _check_rate_limit(f"ai-explain:{current_user.id}", max_attempts=20, window_seconds=300)
+
     try:
         result = await explain_question_async(
             question_text=req.question_text,
@@ -795,9 +798,9 @@ async def explain(
             category=req.category,
             task=req.task,
         )
-    except Exception as e:
+    except Exception:
         logger.exception("AI explanation failed for question %d", req.question_id)
-        raise HTTPException(status_code=502, detail=f"AI explanation failed: {e}")
+        raise HTTPException(status_code=502, detail="ไม่สามารถสร้างคำอธิบายด้วย AI ได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง")
 
     # Backfill DB
     q.correct_answer = result.correct_answer
@@ -827,6 +830,7 @@ async def get_prediction(
     db: Session = Depends(get_db),
 ):
     """Fetch database stats and generate an AI prediction report (requires auth)."""
+    _check_rate_limit(f"ai-prediction:{current_user.id}", max_attempts=10, window_seconds=300)
     stats = (
         db.query(models.Question.category, models.Question.task, func.count(models.Question.id))
         .group_by(models.Question.category, models.Question.task)
@@ -839,15 +843,15 @@ async def get_prediction(
     try:
         report = await predict_trends_async(stats_text)
         return {"report": report}
-    except Exception as e:
+    except Exception:
         logger.exception("Prediction failed")
-        raise HTTPException(status_code=502, detail=f"Prediction failed: {e}")
+        raise HTTPException(status_code=502, detail="ไม่สามารถสร้างรายงานวิเคราะห์แนวโน้มได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง")
 
 
 class MockGenerateRequest(BaseModel):
-    category: str
-    task: str
-    count: int = 1
+    category: str = Field(..., max_length=200)
+    task: str = Field(..., max_length=200)
+    count: int = Field(default=1, ge=1, le=10)
 
 
 @app.post("/api/mock/generate", response_model=List[QuestionResponse])
@@ -856,6 +860,7 @@ async def generate_mock_exam(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    _check_rate_limit(f"ai-mock:{current_user.id}", max_attempts=10, window_seconds=300)
     """Generate new mock questions via AI (requires auth)."""
     examples = (
         db.query(models.Question)
@@ -901,53 +906,75 @@ async def generate_mock_exam(
             count=req.count,
             examples=example_list,
         )
-    except Exception as e:
+    except Exception:
         logger.exception("Mock generation failed")
-        raise HTTPException(status_code=502, detail=f"Mock generation failed: {e}")
+        raise HTTPException(status_code=502, detail="ไม่สามารถสร้างข้อสอบจำลองด้วย AI ได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง")
 
+    is_admin_user = getattr(current_user, "role", "user") == "admin"
     saved_questions = []
-    for gq in generated_questions:
-        new_q = models.Question(
-            question_text=gq.get("question_text", ""),
-            stem=gq.get("stem"),
-            proposition=gq.get("proposition"),
-            category=req.category,
-            task=req.task,
-            correct_answer=gq.get("correct_answer"),
-            explanation=gq.get("explanation"),
-            source_exam="AI_MOCK_TEST",
-        )
-        db.add(new_q)
-        db.commit()
-        db.refresh(new_q)
-
-        choices = []
-        for c in gq.get("choices", []):
-            new_choice = models.Choice(
-                question_id=new_q.id,
-                label=c.get("label"),
-                text=c.get("text"),
+    for idx, gq in enumerate(generated_questions, start=1):
+        if is_admin_user:
+            new_q = models.Question(
+                question_text=gq.get("question_text", ""),
+                stem=gq.get("stem"),
+                proposition=gq.get("proposition"),
+                category=req.category,
+                task=req.task,
+                correct_answer=gq.get("correct_answer"),
+                explanation=gq.get("explanation"),
+                source_exam="AI_MOCK_TEST",
             )
-            db.add(new_choice)
-            choices.append({"label": new_choice.label, "text": new_choice.text})
+            db.add(new_q)
+            db.commit()
+            db.refresh(new_q)
 
-        db.commit()
+            choices = []
+            for c in gq.get("choices", []):
+                new_choice = models.Choice(
+                    question_id=new_q.id,
+                    label=c.get("label"),
+                    text=c.get("text"),
+                )
+                db.add(new_choice)
+                choices.append({"label": new_choice.label, "text": new_choice.text})
 
-        saved_questions.append(
-            {
-                "id": new_q.id,
-                "question_text": new_q.question_text,
-                "stem": new_q.stem,
-                "proposition": new_q.proposition,
-                "category": new_q.category,
-                "task": new_q.task,
-                "correct_answer": new_q.correct_answer,
-                "explanation": new_q.explanation,
-                "source_exam": new_q.source_exam,
-                "image_path": new_q.image_path,
-                "choices": choices,
-            }
-        )
+            db.commit()
+
+            saved_questions.append(
+                {
+                    "id": new_q.id,
+                    "question_text": new_q.question_text,
+                    "stem": new_q.stem,
+                    "proposition": new_q.proposition,
+                    "category": new_q.category,
+                    "task": new_q.task,
+                    "correct_answer": new_q.correct_answer,
+                    "explanation": new_q.explanation,
+                    "source_exam": new_q.source_exam,
+                    "image_path": new_q.image_path,
+                    "choices": choices,
+                }
+            )
+        else:
+            choices = [
+                {"label": str(c.get("label", "")), "text": str(c.get("text", ""))}
+                for c in gq.get("choices", [])
+            ]
+            saved_questions.append(
+                {
+                    "id": -idx,
+                    "question_text": gq.get("question_text", ""),
+                    "stem": gq.get("stem"),
+                    "proposition": gq.get("proposition"),
+                    "category": req.category,
+                    "task": req.task,
+                    "correct_answer": gq.get("correct_answer"),
+                    "explanation": gq.get("explanation"),
+                    "source_exam": "AI_MOCK_TEST",
+                    "image_path": None,
+                    "choices": choices,
+                }
+            )
 
     return saved_questions
 
@@ -1093,15 +1120,17 @@ if os.path.exists(frontend_path):
     async def serve_spa(full_path: str):
         # Do not intercept /api routes (let them 404 properly if unmatched)
         if full_path.startswith("api"):
-            return {"error": "Not Found fallback", "full_path": full_path}
+            raise HTTPException(status_code=404, detail="API endpoint not found")
 
-        # Serve static file if it directly exists in frontend/dist (e.g. favicon.svg)
-        target_file = os.path.join(frontend_path, full_path)
-        if full_path and os.path.isfile(target_file):
-            return FileResponse(target_file)
+        # Serve static file if it directly exists inside frontend/dist (guard against path traversal)
+        real_root = os.path.realpath(frontend_path)
+        if full_path:
+            real_target = os.path.realpath(os.path.join(real_root, full_path))
+            if real_target.startswith(real_root + os.sep) and os.path.isfile(real_target):
+                return FileResponse(real_target)
 
         # Fallback to index.html for React SPA client-side routing
-        index_file = os.path.join(frontend_path, "index.html")
+        index_file = os.path.join(real_root, "index.html")
         if os.path.exists(index_file):
             return FileResponse(index_file)
         raise HTTPException(status_code=404, detail="index.html not found")

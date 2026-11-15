@@ -832,7 +832,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
       </div>
 
       {/* ── Sub-Tab Navigation Bar ─────────────────────────── */}
-      <div className="dashboard-tab-bar" style={{ marginBottom: '1.5rem' }}>
+      <div className="dashboard-tab-bar dashboard-tab-bar--4col" style={{ marginBottom: '1.5rem' }}>
         <button
           className={`dashboard-tab-item ${activeTab === 'flashcards' ? 'active' : ''}`}
           onClick={() => setActiveTab('flashcards')}

@@ -1,5 +1,10 @@
+.env
+.env.*
+.vercel/
 venv/
 .venv/
+frontend/node_modules/
+frontend/dist/
 data/*.db
 faiss_index/
 vector_db/

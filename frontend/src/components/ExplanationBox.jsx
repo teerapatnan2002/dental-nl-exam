@@ -12,16 +12,60 @@ import ClinicalStudyHub from './ClinicalStudyHub';
 
 const topicPathwayCache = new Map();
 
-const EXTRACT_NUMBER_REGEX = /(?:มาตรา\s*\d+(?:\s*\/\s*\d+)?|พ\.ร\.บ\.[^,.\n]{2,30}พ\.ศ\.\s*\d{4}|[<>≤≥≈]?\s*\d+(?:[.,–-]\d+)?(?:\/\d+)?\s*(?:mg\/kg|mg\/dL|mg\/L|mg|g|mL|mmHg|mm|cm|µm|ppm|%|°|องศา|สัปดาห์|วัน|เดือน|ปี|ขวบ|นาที|ชั่วโมง|ชม\.|บาท|ซี่|คู่สบ|เท่า|INR|RDT|Stage\s*[IV]+|Grade\s*[A-C]|Class\s*[IV]+))/gi;
+const EXTRACT_NUMBER_REGEX = /(?:(?:มาตรา|ม\.)\s*\d+(?:\s*\/\s*\d+)?(?:\s*\(\d+\))?|หมวด\s*\d+(?:\s*ข้อ\s*\d+)?|พ\.ร\.บ\.[^,.\n()]{2,38}?พ\.ศ\.\s*\d{4}|\bCN\s*(?:XII|XI|IX|X|VIII|VII|VI|IV|V|III|II|I)\b|\b1\s*:\s*(?:50|80|100|200),000(?:\s*epinephrine)?\b|(?:[<>≤≥≈]\s*)?\d+(?:,\d{3})*(?:\.\d+)?(?:\s*(?:[–\-~]|ถึง)\s*\d+(?:,\d{3})*(?:\.\d+)?)?\s*(?:mg\s*F\/kg|mg\/kg\/dose|mg\/kg\/day|mg\/kg|mL\/min|ml\/min|mg\/dL|mg\/L|mm\/yr|mcg|µg|mg|g|kg|mL|ml|mmHg|mm|มม\.|cm|ซม\.|µm|ppm|%|°|องศา|สัปดาห์|อาทิตย์|วัน|เดือน|ปี|ขวบ|นาที|ชั่วโมง|ชม\.|บาท|ซี่|คู่สบ|เท่า|สถาน|หน่วยกิต|รอบ|INR|RDT)(?:\/\s*(?:\d+(?:\.\d+)?\s*)?(?:ml|mL|cc|day|dose|hr|วัน|ชม\.))?|\b(?:Stage\s*(?:IV|III|II|I|[1-4])|Grade\s*[A-D]|Class\s*(?:IV|III|II|I|[1-5]))\b)/gi;
+
+function isVignetteNumberJS(src, start, end, matchStr) {
+  const ms = (matchStr || '').trim();
+  if (ms.length < 2) return true;
+  const before = src.slice(Math.max(0, start - 34), start);
+  const after = src.slice(end, Math.min(src.length, end + 26));
+  const combined = `${before} ${ms} ${after}`;
+
+  const hasThreshold =
+    /^[<>≤≥≈]/.test(ms) ||
+    /(?:[<>≤≥≈]|ไม่เกิน|อย่างน้อย|ตั้งแต่|เกินอายุ|หลังอายุ|ก่อนอายุ|จนถึงอายุ|อายุความ|ต่ออายุ|กำหนดเวลา|ครบรอบ|1\s*รอบ|ภายใน|พ้นกำหนด|ระวางโทษ|จำคุก|ปรับ|พักใช้|เพิกถอน|ช่วงอายุ|เกณฑ์|ค่าปกติ|ตัดยอด|จุดตัด|เพดาน|ใบอนุญาต|ขึ้นไป|ต่ำกว่า|สูงกว่า|น้อยกว่า|มากกว่า|เท่ากับ)/i.test(before) ||
+    /^\s*(?:ขึ้นไป|ต่อรอบ|ต่อปี|ต่อวัน|ต่อสัปดาห์|ก่อนทำหัตถการ|อย่างน้อย|ไม่เกิน)/.test(after);
+
+  if (/(?:BP|ความดัน|ชีพจร|eGFR|CrCl|FBS|HbA1c|Hb|INR)\s*(?:ได้|คือ)?\s*[=:]?\s*$/i.test(before) && !hasThreshold) {
+    return true;
+  }
+  if (/=/.test(before.slice(-8)) && !hasThreshold) return true;
+
+  if (/^(?:มาตรา|ม\.|หมวด|พ\.ร\.บ\.|CN\s*[IVX]+|1\s*:|Stage|Grade|Class)/i.test(ms)) return false;
+  if (/(?:mg\/kg|mg\s*F\/kg|mL\/min|ml\/min|mg\/dL|mg\/L|mm\/yr|ppm|หน่วยกิต|สถาน|INR|RDT|epinephrine)/i.test(ms)) return false;
+
+  if (/ซี่$/.test(ms)) {
+    const n = parseInt(ms, 10);
+    if (![20, 28, 32].includes(n)) return true;
+  }
+  if (/(?:^|\d\s*)kg$/i.test(ms)) {
+    if (/(?:น้ำหนัก|หนัก|เด็ก|ผู้ป่วย)/.test(before) || !hasThreshold) return true;
+  }
+  if (/(?:ปี|ขวบ|เดือน)$/.test(ms)) {
+    const isLicenseAge = combined.includes('ใบอนุญาต') && /(?:อายุ|ต่ออายุ|ปี)/.test(combined);
+    if (isLicenseAge) return false;
+    if (/(?:อายุ|วัย|ขวบ|เด็ก|ทารก|ผู้ป่วย|ชาย|หญิง|คนไข้|นักเรียน|สามเณร|ประถม)/.test(before) && !hasThreshold) return true;
+    if (/^\s*ก่อน/.test(after)) return true;
+    if (/(?:เมื่อ\s*$|เมื่อ\s+\S+\s*$|มานาน|เป็นเวลา|มาแล้ว\s*$|มาตรวจ|มาหา|มาด้วย|มา\s*$|ทำครอบ.{0,8}มา)/.test(before) && !hasThreshold) return true;
+  }
+  if (/(?:วัน|สัปดาห์|อาทิตย์|นาที|ชั่วโมง|ชม\.)$/.test(ms)) {
+    if (/(?:เมื่อ\s*$|มานาน|เป็นเวลา|มาแล้ว\s*$|มาตรวจ|มาหา|มาด้วย|มา\s*$)/.test(before) && !hasThreshold) return true;
+    if (/^\s*ก่อน/.test(after) && !after.includes('ก่อนทำหัตถการ') && !after.includes('ก่อนนอน')) return true;
+  }
+  return false;
+}
 
 function extractHighYieldTokens(texts) {
   const seen = new Set();
   const tokens = [];
   for (const txt of texts) {
     if (!txt) continue;
-    const matches = txt.match(EXTRACT_NUMBER_REGEX) || [];
-    for (const m of matches) {
-      const clean = m.trim();
+    const src = String(txt);
+    const re = new RegExp(EXTRACT_NUMBER_REGEX.source, 'gi');
+    for (const m of src.matchAll(re)) {
+      const clean = (m[0] || '').trim();
+      const idx = m.index ?? 0;
+      if (isVignetteNumberJS(src, idx, idx + (m[0] || '').length, clean)) continue;
       const key = clean.toLowerCase();
       if (clean.length >= 2 && !seen.has(key)) {
         seen.add(key);
@@ -52,17 +96,71 @@ function splitReadableSteps(text) {
   return chunks;
 }
 
+const CLOZE_SKIP_EN_JS = new Set([
+  'the', 'and', 'for', 'with', 'this', 'that', 'from', 'into', 'only', 'most',
+  'more', 'less', 'high', 'low', 'normal', 'common', 'severe', 'mild', 'moderate',
+  'acute', 'chronic', 'primary', 'secondary', 'type', 'stage', 'class', 'grade',
+  'group', 'step', 'note', 'case', 'stem', 'patient', 'dental', 'dentist',
+  'treatment', 'management', 'diagnosis', 'clinical', 'oral', 'tooth', 'teeth',
+  'root', 'bone', 'pain', 'risk', 'care', 'before', 'after', 'first', 'second',
+  'however', 'therefore', 'because', 'known complication',
+]);
+
+const KNOWN_SHORT_EN_JS = new Set([
+  'RMGIC', 'GIC', 'MTA', 'NaOCl', 'EDTA', 'CHX', 'MRONJ', 'CBCT',
+  'ANUG', 'DMFT', 'ICDAS', 'PRGF', 'PRF', 'DNA', 'BOP', 'CEJ', 'CAL',
+]);
+
 function maskKeyTerms(text) {
   if (!text) return '';
-  let out = String(text);
-  const nums = out.match(EXTRACT_NUMBER_REGEX) || [];
-  for (const n of nums.slice(0, 3)) {
-    out = out.replace(n.trim(), '【 ____?____ 】');
+  const src = String(text);
+  let out = src;
+
+  const numRe = new RegExp(EXTRACT_NUMBER_REGEX.source, 'gi');
+  const validNums = [];
+  for (const m of src.matchAll(numRe)) {
+    const val = (m[0] || '').trim();
+    if (!isVignetteNumberJS(src, m.index ?? 0, (m.index ?? 0) + m[0].length, val)) {
+      validNums.push(val);
+    }
   }
-  if (out === text) {
-    // Mask English technical terms >= 5 chars
-    const enTerms = out.match(/\b[A-Z][A-Za-z0-9\-\/]{4,}(?:\s+[A-Za-z0-9\-\/]{3,}){0,2}\b/g) || [];
-    for (const t of enTerms.slice(0, 2)) {
+  for (const n of validNums.slice(0, 3)) {
+    out = out.replace(n, '【 ____?____ 】');
+  }
+
+  if (out === src) {
+    const enRe = /(?<![A-Za-z0-9])([A-Z][A-Za-z0-9'\-\/]{1,}(?:\s+(?:[A-Z][A-Za-z0-9'\-\/]*|[a-z]{2,}(?:-[a-z]+)?)){0,3})(?![A-Za-z0-9])/g;
+    const standalone = [];
+    const fallbackParen = [];
+    for (const m of src.matchAll(enRe)) {
+      let term = (m[1] || '').trim();
+      const idx = m.index ?? 0;
+      const beforeAll = src.slice(0, idx);
+      const lastOpen = beforeAll.lastIndexOf('(');
+      const lastClose = beforeAll.lastIndexOf(')');
+      const inParens = lastOpen > lastClose && src.slice(idx + term.length, idx + term.length + 30).includes(')');
+      const low = term.toLowerCase();
+      const isShortKnown = KNOWN_SHORT_EN_JS.has(term) || KNOWN_SHORT_EN_JS.has(term.toUpperCase());
+      if (CLOZE_SKIP_EN_JS.has(low)) continue;
+      if (term.length < 5 && (inParens || !isShortKnown)) continue;
+
+      const afterAlias = src.slice(idx + term.length).match(/^\s*\([A-Za-z0-9\s.\-\/]{2,20}\)/);
+      if (!inParens && afterAlias && term.length + afterAlias[0].length <= 44) {
+        term = `${term}${afterAlias[0]}`;
+      }
+      if (inParens) {
+        const preParen = src.slice(Math.max(0, lastOpen - 20), lastOpen).trim();
+        if (!/[\u0E00-\u0E7F]$/.test(preParen)) {
+          fallbackParen.push(term);
+        }
+      } else {
+        standalone.push(term);
+      }
+    }
+    const chosen = (standalone.length ? standalone : fallbackParen)
+      .sort((a, b) => b.length - a.length)
+      .slice(0, 2);
+    for (const t of chosen) {
       out = out.replace(t, '【 ____?____ 】');
     }
   }
@@ -275,7 +373,10 @@ export default function ExplanationBox({
             <button
               type="button"
               className="expl-study-btn"
-              onClick={() => setStudyModalGuideId(targetTopicId)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setStudyModalGuideId(targetTopicId);
+              }}
             >
               <BookOpen size={14} /> บทเรียน & Textbook
             </button>
@@ -367,7 +468,10 @@ export default function ExplanationBox({
           <button
             type="button"
             className="expl-study-btn"
-            onClick={() => setStudyModalGuideId(targetTopicId)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setStudyModalGuideId(targetTopicId);
+            }}
             title="คลิกเพื่อเปิดห้องเรียน Textbook & Evidence เจาะลึกหัวข้อนี้"
           >
             <BookOpen size={14} /> <span>บทเรียน & Textbook</span>
@@ -716,7 +820,10 @@ export default function ExplanationBox({
             <button
               type="button"
               className="expl-study-btn"
-              onClick={() => setStudyModalGuideId(targetTopicId)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setStudyModalGuideId(targetTopicId);
+              }}
             >
               <Layers size={14} /> เปิดบทเรียน & Flashcards
             </button>

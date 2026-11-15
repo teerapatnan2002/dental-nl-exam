@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Eye, EyeOff, ZoomIn, ZoomOut, SunMedium, Contrast,
   Columns, Play, BookOpen, X, AlertTriangle, CheckCircle2, Sparkles
@@ -680,14 +681,16 @@ export default function VisualAtlas({
       )}
 
       {/* ── Radiograph & Clinical Lightbox Modal ── */}
-      {lightboxItem && (
+      {lightboxItem && typeof document !== 'undefined' && createPortal(
         <div
           onClick={() => setLightboxItem(null)}
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 1100,
-            background: 'rgba(2, 6, 23, 0.92)',
+            zIndex: 100100,
+            background: 'rgba(2, 6, 23, 0.88)',
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -918,7 +921,8 @@ export default function VisualAtlas({
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

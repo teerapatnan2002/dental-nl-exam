@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   BookOpen, PlayCircle, ShieldAlert, Brain,
   Stethoscope, ChevronDown, ChevronUp, Sparkles, Settings2,
-  Target, GraduationCap, Wrench, Clock, AlertTriangle, User as UserIcon, Activity, Trophy,
+  Target, GraduationCap, Wrench, Clock, AlertTriangle, User as UserIcon, Users, Activity, Trophy,
   Search, BookmarkCheck, ShieldCheck, MoreHorizontal, ChevronRight, Calendar, Flame, Lock,
   Zap, RotateCcw, Scale, BarChart3, Bookmark, Layers, FileText, CheckCircle2, ArrowRight, Calculator
 } from 'lucide-react';
@@ -64,6 +64,8 @@ export default function Dashboard({
   onOpenLawHub,
   onOpenScheduleModal,
   onOpenAccountModal,
+  onOpenAuthModal,
+  presenceStats,
 }) {
   const { user, token } = useAuth();
   const [internalTab, setInternalTab] = useState('fullExam');
@@ -280,7 +282,7 @@ export default function Dashboard({
 
   const personalGroup = [
     { id: 'account_profile', label: 'โปรไฟล์ & เป้าหมายสอบ', desc: 'ตั้งค่าสถาบัน ชั้นปี รอบสอบเป้าหมาย และคะแนนที่ตั้งไว้', Icon: GraduationCap },
-    { id: 'account_subscription', label: 'แพ็กเกจสมาชิก (เร็วๆ นี้)', desc: 'ดูสิทธิ์ Early Access และแผนสมาชิกเว็บไซต์ในอนาคต', Icon: Sparkles },
+    { id: 'account_subscription', label: 'สิทธิ์การใช้งาน (Free Plan)', desc: 'ดูรายละเอียดสิทธิ์ Free Plan และฟีเจอร์ที่เปิดให้ใช้งานฟรีทั้งหมด', Icon: Sparkles },
     ...(user ? [
       { id: 'bookmarks', label: 'บุ๊กมาร์กของฉัน', desc: 'ข้อสอบที่บันทึกไว้ทบทวน', Icon: Bookmark },
       { id: 'mystats', label: 'สถิติของฉัน', desc: 'ประวัติและวิเคราะห์จุดอ่อน', Icon: Activity },
@@ -380,6 +382,47 @@ export default function Dashboard({
                 </button>
               </>
             )}
+          </div>
+
+          <div className="hero-community-strip tabular-nums" aria-label="สถานะผู้ใช้งานออนไลน์และจำนวนสมาชิก">
+            <div className="community-stat-pill is-online">
+              <span className="community-online-dot" aria-hidden="true" />
+              <span>
+                ออนไลน์ตอนนี้{' '}
+                <strong>
+                  {presenceStats?.online_count !== null && presenceStats?.online_count !== undefined
+                    ? presenceStats.online_count.toLocaleString()
+                    : '—'}
+                </strong>{' '}
+                คน
+              </span>
+            </div>
+
+            <span className="community-strip-sep" aria-hidden="true" />
+
+            <button
+              type="button"
+              className="community-stat-pill is-members"
+              onClick={() => {
+                if (user) {
+                  if (onOpenAccountModal) onOpenAccountModal('profile');
+                } else if (onOpenAuthModal) {
+                  onOpenAuthModal();
+                }
+              }}
+              title={user ? 'เปิดโปรไฟล์ของคุณ' : 'สมัครสมาชิกเพื่อบันทึกสถิติและเป้าหมายการสอบ'}
+            >
+              <Users size={13} className="community-members-icon" aria-hidden="true" />
+              <span>
+                สมาชิกที่สมัครใช้งาน{' '}
+                <strong>
+                  {presenceStats?.registered_members !== null && presenceStats?.registered_members !== undefined
+                    ? presenceStats.registered_members.toLocaleString()
+                    : '—'}
+                </strong>{' '}
+                คน
+              </span>
+            </button>
           </div>
         </section>
       </div>
@@ -1147,7 +1190,7 @@ export default function Dashboard({
                   {/* Schedule Info */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', justifyContent: 'center', minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--primary-light)', fontWeight: 700, fontSize: '0.88rem', flexWrap: 'wrap' }}>
-                      <Calendar size={15} style={{ flexShrink: 0 }} /> กำหนดการสอบ (ตามตารางจริง ศ.ป.ท.)
+                      <Calendar size={15} style={{ flexShrink: 0 }} /> กำหนดการจำลองสอบ (Mock Exam บนเว็บไซต์)
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.32rem', fontSize: '0.84rem', color: 'var(--text)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -1160,7 +1203,7 @@ export default function Dashboard({
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                         <span style={{ color: 'var(--text-muted)', width: '82px', flexShrink: 0 }}>ระยะเวลา:</span>
-                        <span><strong>60 นาที</strong> (1 ชั่วโมงเต็มตามเวลาสอบจริง)</span>
+                        <span><strong>60 นาที</strong> (ฝึกจับเวลา · สอบจริง ศ.ป.ท. 45 นาที)</span>
                       </div>
                     </div>
                   </div>
@@ -2316,7 +2359,7 @@ export default function Dashboard({
                   รวมข้อสอบทั้งหมด {totalQuestions.toLocaleString()} ข้อ (ทฤษฎีคลินิก {totalClinical} ข้อ | กฎหมาย {totalLaw} ข้อ)
                 </p>
               </div>
-              <div style={{ display: 'flex', gap: '0.55rem' }}>
+              <div style={{ display: 'flex', gap: '0.55rem', flexWrap: 'wrap' }}>
                 <button className="btn btn-secondary btn-sm" onClick={() => handleStart('', '', 20, 'exam', false, false, '', '')}>
                   <PlayCircle size={14} /> สุ่มสอบคลินิก 20 ข้อ
                 </button>

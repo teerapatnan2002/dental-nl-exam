@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, UniqueConstraint, Index
+from sqlalchemy import Column, Integer, BigInteger, String, ForeignKey, Text, UniqueConstraint, Index
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -47,7 +47,7 @@ class User(Base):
     display_name = Column(String, nullable=True)
     dental_school = Column(String, nullable=True)
     academic_year = Column(String, nullable=True)
-    target_exam_session = Column(String, default="NL 1/2570", nullable=True)
+    target_exam_session = Column(String, default="ครั้งที่ 1 ปี 2570", nullable=True)
     target_score_pct = Column(Integer, default=75, nullable=True)
     daily_goal_questions = Column(Integer, default=20, nullable=True)
 
@@ -56,6 +56,25 @@ class User(Base):
     subscription_status = Column(String, default="active", nullable=False)  # 'active' | 'trialing' | 'past_due' | 'canceled' | 'expired'
     subscription_expires_at = Column(Integer, nullable=True)  # Unix timestamp (None = unlimited)
     billing_customer_id = Column(String, nullable=True)
+
+    # 2-Factor Authentication (TOTP RFC 6238 + encrypted secrets + recovery codes)
+    two_factor_enabled = Column(Integer, default=0, nullable=False)  # 0 = disabled, 1 = enabled
+    totp_secret_enc = Column(String, nullable=True)
+    totp_pending_secret_enc = Column(String, nullable=True)
+    totp_backup_codes = Column(Text, nullable=True)  # JSON list of salted SHA-256 hashes
+    totp_last_used_step = Column(BigInteger, nullable=True)  # Replay protection step index
+    two_factor_enabled_at = Column(Integer, nullable=True)
+
+    @property
+    def two_factor_backup_remaining(self) -> int:
+        if not self.totp_backup_codes:
+            return 0
+        try:
+            import json
+            parsed = json.loads(self.totp_backup_codes)
+            return len(parsed) if isinstance(parsed, list) else 0
+        except Exception:
+            return 0
 
     sessions = relationship("ExamSession", back_populates="user", cascade="all, delete-orphan")
 
@@ -205,3 +224,16 @@ class UserTopicNote(Base):
     updated_at = Column(Integer, nullable=False)  # Unix timestamp
 
     user = relationship("User")
+
+
+class ActivePresence(Base):
+    """Tracks active browser sessions inside the online sliding-window TTL."""
+
+    __tablename__ = "active_presence"
+    __table_args__ = (
+        Index("ix_active_presence_last_seen", "last_seen_at"),
+    )
+
+    session_key = Column(String(64), primary_key=True)
+    identity_key = Column(String(64), nullable=False)
+    last_seen_at = Column(BigInteger, nullable=False, index=True)

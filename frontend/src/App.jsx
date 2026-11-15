@@ -10,11 +10,30 @@ import AccountModal from './components/AccountModal';
 import ExamScheduleModal from './components/ExamScheduleModal';
 import ScheduledExamModal from './components/ScheduledExamModal';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { XCircle, User as UserIcon, LogOut, Sun, Moon, Scale, Calendar, BookOpen, AlertCircle, X, ArrowRight } from 'lucide-react';
+import { XCircle, User as UserIcon, Users, LogOut, Sun, Moon, Scale, Calendar, BookOpen, AlertCircle, X, ArrowRight } from 'lucide-react';
 import { API_BASE } from './config';
 import { getPrimaryUpcomingExam, calculateTimeRemaining } from './data/examSchedule';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+
+function getOrCreateClientKey(storageType, storageKey) {
+  const makeId = () => {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID().replace(/-/g, '');
+    }
+    return `nl_${Math.random().toString(36).slice(2, 12)}${Date.now().toString(36)}`;
+  };
+  try {
+    const store = storageType === 'session' ? window.sessionStorage : window.localStorage;
+    const existing = store.getItem(storageKey);
+    if (existing && /^[A-Za-z0-9_-]{6,64}$/.test(existing)) return existing;
+    const created = makeId();
+    store.setItem(storageKey, created);
+    return created;
+  } catch {
+    return makeId();
+  }
+}
 
 function useSessionState(defaultValue, key) {
   const [value, setValue] = useState(() => {
@@ -63,7 +82,7 @@ function AppContent() {
     document.documentElement.setAttribute('data-theme', theme);
     const metaTheme = document.querySelector('meta[name="theme-color"]');
     if (metaTheme) {
-      metaTheme.setAttribute('content', theme === 'dark' ? '#09090b' : '#f8f7f4');
+      metaTheme.setAttribute('content', theme === 'dark' ? '#09090b' : '#f8fafc');
     }
   }, [theme]);
 
@@ -116,6 +135,86 @@ function AppContent() {
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [scheduledModalData, setScheduledModalData] = useState(null);
   const [isLoadingExam, setIsLoadingExam] = useState(false);
+  const [presenceStats, setPresenceStats] = useState({ online_count: null, registered_members: null });
+  const presenceTabKeyRef = useRef(null);
+  const presenceVisitorKeyRef = useRef(null);
+  const lastPresencePingRef = useRef(0);
+
+  if (!presenceTabKeyRef.current) {
+    presenceTabKeyRef.current = getOrCreateClientKey('session', 'nl_presence_tab_v1');
+  }
+  if (!presenceVisitorKeyRef.current) {
+    presenceVisitorKeyRef.current = getOrCreateClientKey('local', 'nl_presence_visitor_v1');
+  }
+
+  // Live online presence heartbeat + registered member counter
+  useEffect(() => {
+    let active = true;
+
+    const sendHeartbeat = async (force = false) => {
+      if (!force && document.visibilityState === 'hidden') return;
+      const now = Date.now();
+      if (!force && now - lastPresencePingRef.current < 10000) return;
+      lastPresencePingRef.current = now;
+
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers.Authorization = `Bearer ${token}`;
+        const res = await fetch(`${API_BASE}/api/presence/ping`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            session_key: presenceTabKeyRef.current,
+            visitor_key: presenceVisitorKeyRef.current,
+          }),
+        });
+        if (res.ok && active) {
+          const data = await res.json();
+          setPresenceStats({
+            online_count: typeof data.online_count === 'number' ? data.online_count : null,
+            registered_members: typeof data.registered_members === 'number' ? data.registered_members : null,
+          });
+        }
+      } catch {}
+    };
+
+    sendHeartbeat(true);
+    const intervalId = window.setInterval(() => sendHeartbeat(false), 35000);
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        sendHeartbeat(false);
+      }
+    };
+    const onRefreshEvent = () => sendHeartbeat(true);
+    const onPageHide = () => {
+      try {
+        if (navigator.sendBeacon) {
+          const payload = new Blob(
+            [JSON.stringify({ session_key: presenceTabKeyRef.current })],
+            { type: 'application/json' }
+          );
+          navigator.sendBeacon(`${API_BASE}/api/presence/leave`, payload);
+        }
+      } catch {}
+    };
+
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('nl-presence-refresh', onRefreshEvent);
+    window.addEventListener('pagehide', onPageHide);
+
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('nl-presence-refresh', onRefreshEvent);
+      window.removeEventListener('pagehide', onPageHide);
+    };
+  }, [token]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [currentView]);
 
   // Compute countdown for sticky header badge (always selects nearest upcoming exam)
   const nextExam = getPrimaryUpcomingExam();
@@ -595,6 +694,8 @@ function AppContent() {
             onOpenLawHub={() => setCurrentView('law_hub')}
             onOpenScheduleModal={() => setIsScheduleModalOpen(true)}
             onOpenAccountModal={(tab = 'profile') => setAccountModalState({ open: true, tab })}
+            onOpenAuthModal={() => setIsAuthModalOpen(true)}
+            presenceStats={presenceStats}
           />
         )}
 
@@ -673,6 +774,22 @@ function AppContent() {
             onHome={goHome}
             onPracticeTopic={startExam}
           />
+        )}
+
+        {currentView !== 'exam' && (
+          <footer className="app-community-footer tabular-nums" aria-label="สถานะผู้ใช้งานและสมาชิก">
+            <span>NL Dental Treasury</span>
+            <span aria-hidden="true">·</span>
+            <span className="app-footer-live">
+              <span className="community-online-dot" aria-hidden="true" />
+              ออนไลน์ตอนนี้ <strong>{presenceStats.online_count !== null ? presenceStats.online_count.toLocaleString() : '—'}</strong> คน
+            </span>
+            <span aria-hidden="true">·</span>
+            <span className="app-footer-members">
+              <Users size={13} aria-hidden="true" />
+              สมาชิกในระบบ <strong>{presenceStats.registered_members !== null ? presenceStats.registered_members.toLocaleString() : '—'}</strong> คน
+            </span>
+          </footer>
         )}
       </main>
 

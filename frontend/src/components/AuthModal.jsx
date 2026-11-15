@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { X, Mail, Lock, User, AlertCircle, Loader2, Eye, EyeOff, CheckCircle2, ShieldCheck, PhoneCall } from 'lucide-react';
+import { X, Mail, Lock, User, AlertCircle, Loader2, Eye, EyeOff, CheckCircle2, ShieldCheck, PhoneCall, KeyRound, ArrowLeft } from 'lucide-react';
 
 export default function AuthModal({ isOpen, onClose }) {
-  const { login, register } = useAuth();
+  const { login, verifyTwoFactorLogin, register } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showForgotHelp, setShowForgotHelp] = useState(false);
+  const [twoFactorStep, setTwoFactorStep] = useState({
+    active: false,
+    challengeToken: '',
+    code: '',
+  });
 
   useEffect(() => {
     if (!isOpen) return;
@@ -67,6 +72,7 @@ export default function AuthModal({ isOpen, onClose }) {
       setIsLogin(true);
       setShowPassword(false);
       setShowForgotHelp(false);
+      setTwoFactorStep({ active: false, challengeToken: '', code: '' });
     }
   }, [isOpen]);
 
@@ -77,6 +83,14 @@ export default function AuthModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   const validateForm = () => {
+    if (twoFactorStep.active) {
+      const cleaned = twoFactorStep.code.trim();
+      if (cleaned.length < 6) {
+        setError('กรุณากรอกรหัส 6 หลักจากแอป Authenticator หรือรหัสสำรอง (XXXX-XXXX)');
+        return false;
+      }
+      return true;
+    }
     if (!isLogin) {
       if (!formData.username || formData.username.trim().length < 3) {
         setError('ชื่อผู้ใช้งานต้องมีความยาวอย่างน้อย 3 ตัวอักษร');
@@ -116,10 +130,20 @@ export default function AuthModal({ isOpen, onClose }) {
     
     setLoading(true);
     try {
+      if (twoFactorStep.active) {
+        await verifyTwoFactorLogin(twoFactorStep.challengeToken, twoFactorStep.code.trim());
+        onClose();
+        return;
+      }
       if (isLogin) {
-        await login(formData.email, formData.password);
+        const res = await login(formData.email, formData.password);
+        if (res?.requires2fa && res.challengeToken) {
+          setTwoFactorStep({ active: true, challengeToken: res.challengeToken, code: '' });
+          return;
+        }
       } else {
         await register(formData.email, formData.username, formData.password);
+        window.dispatchEvent(new CustomEvent('nl-presence-refresh'));
       }
       onClose();
     } catch (err) {
@@ -180,10 +204,14 @@ export default function AuthModal({ isOpen, onClose }) {
           </button>
 
           <h2 style={{ margin: '0 0 0.25rem', paddingRight: '2.2rem', fontSize: '1.35rem', fontWeight: 700, color: 'var(--text)' }}>
-            {isLogin ? 'เข้าสู่ระบบ (Sign In)' : 'สมัครสมาชิกใหม่ (Register)'}
+            {twoFactorStep.active
+              ? 'ยืนยันตัวตน 2 ชั้น (2FA)'
+              : (isLogin ? 'เข้าสู่ระบบ (Sign In)' : 'สมัครสมาชิกใหม่ (Register)')}
           </h2>
           <p style={{ margin: 0, color: 'var(--text-sub)', fontSize: '0.84rem' }}>
-            {isLogin ? 'เข้าสู่ระบบเพื่อทำข้อสอบและดูสถิติของคุณ' : 'กรอกข้อมูลเพื่อเริ่มต้นใช้งานระบบคลังข้อสอบ NL Dental Treasury'}
+            {twoFactorStep.active
+              ? 'กรอกรหัส 6 หลักจากแอป Authenticator หรือรหัสสำรองแบบใช้ครั้งเดียว'
+              : (isLogin ? 'เข้าสู่ระบบเพื่อทำข้อสอบและดูสถิติของคุณ' : 'กรอกข้อมูลเพื่อเริ่มต้นใช้งานระบบคลังข้อสอบ NL Dental Treasury')}
           </p>
         </div>
 
@@ -231,7 +259,89 @@ export default function AuthModal({ isOpen, onClose }) {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+          {twoFactorStep.active ? (
+            <form onSubmit={handleSubmit} className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{
+                padding: '0.8rem 0.95rem',
+                borderRadius: '10px',
+                background: 'var(--primary-surface)',
+                border: '1px solid var(--primary-border)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.7rem',
+                fontSize: '0.82rem',
+                color: 'var(--text)'
+              }}>
+                <ShieldCheck size={20} color="var(--primary)" style={{ flexShrink: 0 }} />
+                <div>
+                  <div style={{ fontWeight: 700 }}>บัญชีของคุณเปิดใช้งาน 2FA อยู่</div>
+                  <div style={{ color: 'var(--text-sub)', fontSize: '0.77rem' }}>
+                    ตรวจสอบรหัสผ่านสำเร็จแล้ว กรุณายืนยันรหัส OTP 6 หลักเพื่อเข้าสู่ระบบ
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="auth-2fa-code" style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-sub)', marginBottom: '0.4rem', fontWeight: 600 }}>
+                  รหัสยืนยัน 6 หลัก หรือ Backup Code (XXXX-XXXX)
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <KeyRound size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                  <input
+                    id="auth-2fa-code"
+                    type="text"
+                    required
+                    autoFocus
+                    autoComplete="one-time-code"
+                    inputMode="text"
+                    maxLength={20}
+                    placeholder="เช่น 123456 หรือ ABCD-EFGH"
+                    value={twoFactorStep.code}
+                    onChange={e => setTwoFactorStep({ ...twoFactorStep, code: e.target.value })}
+                    className="theme-input auth-2fa-otp-input"
+                    style={{ padding: '0.82rem 1rem 0.82rem 2.5rem', borderRadius: '8px' }}
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-primary"
+                style={{
+                  width: '100%', padding: '0.78rem',
+                  fontSize: '0.98rem', fontWeight: 600, display: 'flex', justifyContent: 'center', gap: '0.45rem'
+                }}
+                disabled={loading}
+              >
+                {loading ? <Loader2 size={18} className="spin" /> : 'ยืนยันรหัสและเข้าสู่ระบบ'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setTwoFactorStep({ active: false, challengeToken: '', code: '' });
+                  setError('');
+                }}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid var(--border)',
+                  borderRadius: '8px',
+                  color: 'var(--text-sub)',
+                  padding: '0.58rem 0.9rem',
+                  fontSize: '0.83rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.4rem'
+                }}
+              >
+                <ArrowLeft size={14} /> กลับไปหน้ากรอกรหัสผ่าน
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
             
             {!isLogin && (
               <div className="animate-fade-in">
@@ -428,21 +538,24 @@ export default function AuthModal({ isOpen, onClose }) {
               {loading ? <Loader2 size={18} className="spin" /> : (isLogin ? 'เข้าสู่ระบบ (Sign In)' : 'สร้างบัญชี (Create Account)')}
             </button>
           </form>
+          )}
 
-          <div style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.88rem', color: 'var(--text-muted)' }}>
-            {isLogin ? 'ยังไม่มีบัญชีใช่ไหม? ' : 'มีบัญชีอยู่แล้ว? '}
-            <button 
-              type="button"
-              onClick={() => { setIsLogin(!isLogin); setError(''); setShowForgotHelp(false); setFormData({...formData, password: '', confirmPassword: ''}); }}
-              style={{ 
-                background: 'transparent', border: 'none', color: 'var(--primary-light)', 
-                cursor: 'pointer', padding: 0, fontWeight: 600, fontSize: '0.88rem',
-                textDecoration: 'underline', textUnderlineOffset: '3px'
-              }}
-            >
-              {isLogin ? 'สมัครสมาชิกที่นี่' : 'เข้าสู่ระบบ'}
-            </button>
-          </div>
+          {!twoFactorStep.active && (
+            <div style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.88rem', color: 'var(--text-muted)' }}>
+              {isLogin ? 'ยังไม่มีบัญชีใช่ไหม? ' : 'มีบัญชีอยู่แล้ว? '}
+              <button 
+                type="button"
+                onClick={() => { setIsLogin(!isLogin); setError(''); setShowForgotHelp(false); setFormData({...formData, password: '', confirmPassword: ''}); }}
+                style={{ 
+                  background: 'transparent', border: 'none', color: 'var(--primary-light)', 
+                  cursor: 'pointer', padding: 0, fontWeight: 600, fontSize: '0.88rem',
+                  textDecoration: 'underline', textUnderlineOffset: '3px'
+                }}
+              >
+                {isLogin ? 'สมัครสมาชิกที่นี่' : 'เข้าสู่ระบบ'}
+              </button>
+            </div>
+          )}
 
           {/* Support hotline footer */}
           <div style={{ 

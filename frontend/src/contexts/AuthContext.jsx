@@ -100,6 +100,13 @@ export const AuthProvider = ({ children }) => {
     return res;
   }, [token, refreshToken]);
 
+  const extractErrorMessage = (data, fallback) => {
+    if (Array.isArray(data?.detail)) {
+      return data.detail.map(e => e.msg).join(', ');
+    }
+    return data?.detail || fallback;
+  };
+
   const login = async (email, password) => {
     const res = await fetch(`${API_BASE}/api/auth/login`, {
       method: 'POST',
@@ -108,13 +115,29 @@ export const AuthProvider = ({ children }) => {
     });
     const data = await res.json();
     if (!res.ok) {
-      if (Array.isArray(data.detail)) {
-        throw new Error(data.detail.map(e => e.msg).join(', '));
-      }
-      throw new Error(data.detail || 'Login failed');
+      throw new Error(extractErrorMessage(data, 'Login failed'));
+    }
+    if (data.requires_2fa && data.challenge_token) {
+      return { requires2fa: true, challengeToken: data.challenge_token };
     }
     setToken(data.access_token);
     if (data.refresh_token) setRefreshToken(data.refresh_token);
+    return { requires2fa: false };
+  };
+
+  const verifyTwoFactorLogin = async (challengeToken, code) => {
+    const res = await fetch(`${API_BASE}/api/auth/2fa/verify-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ challenge_token: challengeToken, code })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(extractErrorMessage(data, 'รหัสยืนยัน 2FA ไม่ถูกต้อง'));
+    }
+    setToken(data.access_token);
+    if (data.refresh_token) setRefreshToken(data.refresh_token);
+    return data;
   };
 
   const register = async (email, username, password) => {
@@ -167,11 +190,80 @@ export const AuthProvider = ({ children }) => {
     });
     const data = await res.json();
     if (!res.ok) {
-      if (Array.isArray(data.detail)) {
-        throw new Error(data.detail.map(e => e.msg).join(', '));
-      }
-      throw new Error(data.detail || 'ไม่สามารถเปลี่ยนรหัสผ่านได้');
+      throw new Error(extractErrorMessage(data, 'ไม่สามารถเปลี่ยนรหัสผ่านได้'));
     }
+    if (data.access_token) {
+      localStorage.setItem('token', data.access_token);
+      setToken(data.access_token);
+    }
+    if (data.refresh_token) {
+      localStorage.setItem('refresh_token', data.refresh_token);
+      setRefreshToken(data.refresh_token);
+    }
+    return data;
+  };
+
+  const setupTwoFactor = async () => {
+    const res = await authFetch(`${API_BASE}/api/auth/2fa/setup`, { method: 'POST' });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(extractErrorMessage(data, 'ไม่สามารถสร้าง QR ตั้งค่า 2FA ได้'));
+    }
+    return data;
+  };
+
+  const enableTwoFactor = async (code) => {
+    const res = await authFetch(`${API_BASE}/api/auth/2fa/enable`, {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(extractErrorMessage(data, 'รหัสยืนยัน 6 หลักไม่ถูกต้อง'));
+    }
+    setUser(prev => prev ? {
+      ...prev,
+      two_factor_enabled: true,
+      two_factor_enabled_at: data.enabled_at ?? prev.two_factor_enabled_at,
+      two_factor_backup_remaining: data.backup_codes_remaining ?? 8,
+    } : prev);
+    await fetchCurrentUser();
+    return data;
+  };
+
+  const disableTwoFactor = async (currentPassword, code) => {
+    const res = await authFetch(`${API_BASE}/api/auth/2fa/disable`, {
+      method: 'POST',
+      body: JSON.stringify({ current_password: currentPassword, code }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(extractErrorMessage(data, 'ไม่สามารถปิดใช้งาน 2FA ได้'));
+    }
+    setUser(prev => prev ? {
+      ...prev,
+      two_factor_enabled: false,
+      two_factor_enabled_at: null,
+      two_factor_backup_remaining: 0,
+    } : prev);
+    await fetchCurrentUser();
+    return data;
+  };
+
+  const regenerateBackupCodes = async (code) => {
+    const res = await authFetch(`${API_BASE}/api/auth/2fa/backup-codes/regenerate`, {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(extractErrorMessage(data, 'ไม่สามารถออกรหัสสำรองชุดใหม่ได้'));
+    }
+    setUser(prev => prev ? {
+      ...prev,
+      two_factor_backup_remaining: data.backup_codes_remaining ?? 8,
+    } : prev);
+    await fetchCurrentUser();
     return data;
   };
 
@@ -180,7 +272,23 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, authFetch, updateProfile, changePassword, refreshUser: fetchCurrentUser }}>
+    <AuthContext.Provider value={{
+      user,
+      token,
+      loading,
+      login,
+      verifyTwoFactorLogin,
+      register,
+      logout,
+      authFetch,
+      updateProfile,
+      changePassword,
+      setupTwoFactor,
+      enableTwoFactor,
+      disableTwoFactor,
+      regenerateBackupCodes,
+      refreshUser: fetchCurrentUser
+    }}>
       {children}
     </AuthContext.Provider>
   );

@@ -56,3 +56,5 @@ NL2Test*/
 NLLaw/
 Obsidian_NL_Exam/
 parsed_exams/
+.vercel
+.env*

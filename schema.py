@@ -88,6 +88,23 @@ class UserLogin(BaseModel):
             raise ValueError('กรุณากรอกอีเมลหรือชื่อผู้ใช้งาน')
         return v
 
+_LEGACY_SESSION_LABELS = {
+    "NL 1/2570": "ครั้งที่ 1 ปี 2570",
+    "ครั้งที่ 1/2570": "ครั้งที่ 1 ปี 2570",
+    "NL 2/2570": "ครั้งที่ 2 ปี 2570",
+    "ครั้งที่ 2/2570": "ครั้งที่ 2 ปี 2570",
+}
+
+
+def normalize_exam_session_label(value: Optional[str]) -> Optional[str]:
+    if value is None:
+        return "ครั้งที่ 1 ปี 2570"
+    trimmed = value.strip()
+    if not trimmed:
+        return "ครั้งที่ 1 ปี 2570"
+    return _LEGACY_SESSION_LABELS.get(trimmed, trimmed)
+
+
 class UserResponse(BaseModel):
     id: int
     email: str
@@ -97,14 +114,22 @@ class UserResponse(BaseModel):
     display_name: Optional[str] = None
     dental_school: Optional[str] = None
     academic_year: Optional[str] = None
-    target_exam_session: Optional[str] = "NL 1/2570"
+    target_exam_session: Optional[str] = "ครั้งที่ 1 ปี 2570"
     target_score_pct: Optional[int] = 75
     daily_goal_questions: Optional[int] = 20
     subscription_tier: str = "early_access"
     subscription_status: str = "active"
     subscription_expires_at: Optional[int] = None
+    two_factor_enabled: bool = False
+    two_factor_backup_remaining: int = 0
+    two_factor_enabled_at: Optional[int] = None
     access_token: Optional[str] = None
     refresh_token: Optional[str] = None
+
+    @field_validator("target_exam_session", mode="before")
+    @classmethod
+    def _normalize_target_exam_session(cls, v):
+        return normalize_exam_session_label(v)
 
 
 class UserProfileUpdate(BaseModel):
@@ -117,6 +142,11 @@ class UserProfileUpdate(BaseModel):
     target_score_pct: Optional[int] = Field(default=None, ge=50, le=100)
     daily_goal_questions: Optional[int] = Field(default=None, ge=5, le=200)
 
+    @field_validator("target_exam_session", mode="before")
+    @classmethod
+    def _normalize_update_target_exam_session(cls, v):
+        return None if v is None else normalize_exam_session_label(v)
+
 
 class PasswordChangeRequest(BaseModel):
     current_password: str
@@ -128,9 +158,25 @@ class PasswordChangeRequest(BaseModel):
         return UserCreate.validate_password(v)
 
 class Token(BaseModel):
-    access_token: str
-    token_type: str
+    access_token: Optional[str] = None
+    token_type: str = "bearer"
     refresh_token: Optional[str] = None
+    requires_2fa: bool = False
+    challenge_token: Optional[str] = None
+
+
+class TwoFactorVerifyLoginRequest(BaseModel):
+    challenge_token: str
+    code: str = Field(..., min_length=4, max_length=24)
+
+
+class TwoFactorCodeConfirmRequest(BaseModel):
+    code: str = Field(..., min_length=4, max_length=24)
+
+
+class TwoFactorDisableRequest(BaseModel):
+    current_password: str = Field(..., min_length=1)
+    code: str = Field(..., min_length=4, max_length=24)
 
 # --- Tracking Schemas ---
 class UserAnswerCreate(BaseModel):

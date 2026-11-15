@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
-  X, User, GraduationCap, Target, Crown, ShieldCheck, Lock, Mail,
+  X, User, GraduationCap, Target, ShieldCheck, Lock, Mail,
   CheckCircle2, AlertCircle, Calendar, Sparkles, LogOut, Loader2,
-  BookOpen, Award, Flame, Bell, Check
+  BookOpen, Award, Flame, Check, Smartphone, KeyRound, Copy, RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { API_BASE } from '../config';
-import { EXAM_SCHEDULES, calculateTimeRemaining } from '../data/examSchedule';
+import { EXAM_SCHEDULES, calculateTimeRemaining, normalizeExamSessionLabel } from '../data/examSchedule';
 
 const DENTAL_SCHOOLS = [
   'ไม่ระบุ / เลือกสถาบัน',
@@ -51,39 +51,22 @@ const DEFAULT_PLANS = [
   {
     id: 'free',
     name: 'Free Plan',
-    tagline: 'สำหรับทดลองฝึกซ้อมและดูแนวข้อสอบเบื้องต้น',
+    tagline: 'เปิดใช้งานฟรีครบทุกฟีเจอร์สำหรับผู้เตรียมสอบทุกคน ไม่มีค่าใช้จ่าย',
     price_thb: 0,
-    billing_period: 'ตลอดชีพ',
-    badge: 'เริ่มต้นฟรี',
+    billing_period: 'ฟรี',
+    badge: 'กำลังใช้งานอยู่ · ฟรีทั้งหมด',
     available_now: true,
     features: [
-      'สุ่มฝึกซ้อมข้อสอบรายวัน (จำกัด 20 ข้อ/วัน เมื่อเปิดระบบสมาชิก)',
-      'ดูตารางกำหนดการสอบและตัวนับถอยหลัง ศ.ป.ท.',
-      'เข้าถึงสรุปกฎหมายทันตแพทยสภาและโครงสร้างเกณฑ์ TOS 2563',
-      'บันทึกบุ๊กมาร์กข้อสอบพื้นฐาน',
-    ],
-  },
-  {
-    id: 'pro',
-    name: 'Pro Plan',
-    tagline: 'ปลดล็อกคลังข้อสอบ สรุปคลินิก และเครื่องมือวิเคราะห์ครบทุกฟีเจอร์',
-    price_thb: 199,
-    billing_period: 'ต่อเดือน',
-    badge: 'แนะนำ · ปลดล็อกครบทุกฟีเจอร์',
-    highlight: true,
-    available_now: false,
-    features: [
-      'ปลดล็อกคลังข้อสอบจริงและข้อสอบจำลองครบทั้ง 2,443 ข้อ ไม่จำกัดจำนวนครั้ง',
-      'เฉลยละเอียดรายตัวเลือก + แผนผัง Clinical Pathway ครบ 83 หัวข้อ',
-      'ใช้งาน Calc Lab คำนวณคลินิก และ Cloze & กับดักข้อสอบครบทุกด่าน',
-      'ระบบทบทวนข้อที่เคยทำผิดอัตโนมัติ (SM-2) และวิเคราะห์จุดอ่อนรายสาขาเชิงลึก',
-      'ส่งออกและสั่งพิมพ์สมุดโน้ตส่วนตัว High-Yield Cheat Sheet (PDF) ไม่จำกัด',
+      'เข้าถึงคลังข้อสอบจริงและข้อสอบจำลองครบทุกชุด ไม่จำกัดจำนวนครั้ง',
+      'เฉลยละเอียดรายตัวเลือก พร้อมสรุปคลินิกและแผนผัง Clinical Pathway ครบทุกหัวข้อ',
+      'ใช้งาน Calc Lab คำนวณคลินิก, Cloze & กับดักข้อสอบ และสรุปกฎหมายทันตแพทยสภา',
+      'ระบบทบทวนข้อที่เคยทำผิดอัตโนมัติ (SM-2), บุ๊กมาร์ก และสถิติวิเคราะห์จุดอ่อนรายสาขา',
+      'ดูตารางกำหนดการสอบและตัวนับถอยหลัง ศ.ป.ท. พร้อมตั้งเป้าหมายส่วนตัว',
     ],
   },
 ];
 
 const LOCAL_PREF_KEY = 'nl_profile_prefs_v1';
-const SUB_WAITLIST_KEY = 'nl_sub_waitlist_v1';
 
 function loadLocalProfilePrefs() {
   try {
@@ -100,7 +83,17 @@ export default function AccountModal({
   initialTab = 'profile',
   onOpenAuthModal,
 }) {
-  const { user, logout, authFetch, updateProfile, changePassword } = useAuth();
+  const {
+    user,
+    logout,
+    authFetch,
+    updateProfile,
+    changePassword,
+    setupTwoFactor,
+    enableTwoFactor,
+    disableTwoFactor,
+    regenerateBackupCodes,
+  } = useAuth();
   const [activeTab, setActiveTab] = useState(initialTab || 'profile');
 
   const upcomingExamOptions = useMemo(() => {
@@ -121,7 +114,7 @@ export default function AccountModal({
     display_name: '',
     dental_school: '',
     academic_year: 'ชั้นปีที่ 6 (Extern)',
-    target_exam_session: 'NL 1/2570',
+    target_exam_session: 'ครั้งที่ 1 ปี 2570',
     target_score_pct: 75,
     daily_goal_questions: 20,
   });
@@ -137,29 +130,32 @@ export default function AccountModal({
     confirmPassword: '',
   });
 
-  // Subscription plans & user study summary
+  // Active plan & user study summary
   const [plansCatalog, setPlansCatalog] = useState({
-    enforcement_mode: 'early_access',
+    enforcement_mode: 'free',
     early_access_all_unlocked: true,
     disclaimer:
-      'แพ็กเกจสมาชิกนี้เป็นค่าบริการใช้งานระบบคลังข้อสอบและเครื่องมือวิเคราะห์บนเว็บไซต์ NL Dental Treasury เท่านั้น ไม่เกี่ยวข้องและไม่รวมค่าธรรมเนียมการสมัครสอบของ ศ.ป.ท.',
+      'NL Dental Treasury เปิดให้บริการใช้งานคลังข้อสอบและเครื่องมือเตรียมสอบฟรีทั้งหมดภายใต้ Free Plan ไม่มีค่าใช้จ่าย (เว็บไซต์นี้ไม่เกี่ยวข้องกับค่าธรรมเนียมการสมัครสอบของ ศ.ป.ท.)',
     plans: DEFAULT_PLANS,
   });
   const [userStatsSummary, setUserStatsSummary] = useState(null);
-  const [waitlistPlans, setWaitlistPlans] = useState(() => {
-    try {
-      const saved = localStorage.getItem(SUB_WAITLIST_KEY);
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {};
-    }
-  });
 
   // Status feedback
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileMessage, setProfileMessage] = useState(null);
   const [savingSecurity, setSavingSecurity] = useState(false);
   const [securityMessage, setSecurityMessage] = useState(null);
+
+  // 2FA management state
+  const [twoFactorMode, setTwoFactorMode] = useState('idle'); // 'idle' | 'setup' | 'regenerate' | 'disable'
+  const [twoFactorSetupData, setTwoFactorSetupData] = useState(null);
+  const [twoFactorOtpInput, setTwoFactorOtpInput] = useState('');
+  const [backupCodesList, setBackupCodesList] = useState(null);
+  const [disable2faForm, setDisable2faForm] = useState({ currentPassword: '', code: '' });
+  const [regenOtpCode, setRegenOtpCode] = useState('');
+  const [twoFactorBusy, setTwoFactorBusy] = useState(false);
+  const [copiedSecret, setCopiedSecret] = useState(false);
+  const [copiedBackup, setCopiedBackup] = useState(false);
 
   useEffect(() => {
     if (isOpen && initialTab) {
@@ -176,9 +172,26 @@ export default function AccountModal({
     };
   }, [isOpen]);
 
-  // Populate form from authenticated user or localStorage fallback
   useEffect(() => {
     if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && onClose) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Populate form from authenticated user or localStorage fallback
+  useEffect(() => {
+    if (!isOpen) {
+      setTwoFactorMode('idle');
+      setTwoFactorSetupData(null);
+      setTwoFactorOtpInput('');
+      setBackupCodesList(null);
+      setDisable2faForm({ currentPassword: '', code: '' });
+      setRegenOtpCode('');
+      return;
+    }
     setProfileMessage(null);
     setSecurityMessage(null);
     const localPrefs = loadLocalProfilePrefs();
@@ -188,7 +201,7 @@ export default function AccountModal({
         display_name: user.display_name ?? localPrefs.display_name ?? '',
         dental_school: user.dental_school ?? localPrefs.dental_school ?? '',
         academic_year: user.academic_year ?? localPrefs.academic_year ?? 'ชั้นปีที่ 6 (Extern)',
-        target_exam_session: user.target_exam_session ?? localPrefs.target_exam_session ?? 'NL 1/2570',
+        target_exam_session: normalizeExamSessionLabel(user.target_exam_session ?? localPrefs.target_exam_session),
         target_score_pct: user.target_score_pct ?? localPrefs.target_score_pct ?? 75,
         daily_goal_questions: user.daily_goal_questions ?? localPrefs.daily_goal_questions ?? 20,
       });
@@ -201,7 +214,7 @@ export default function AccountModal({
         display_name: localPrefs.display_name || '',
         dental_school: localPrefs.dental_school || '',
         academic_year: localPrefs.academic_year || 'ชั้นปีที่ 6 (Extern)',
-        target_exam_session: localPrefs.target_exam_session || 'NL 1/2570',
+        target_exam_session: normalizeExamSessionLabel(localPrefs.target_exam_session),
         target_score_pct: localPrefs.target_score_pct ?? 75,
         daily_goal_questions: localPrefs.daily_goal_questions ?? 20,
       });
@@ -318,14 +331,91 @@ export default function AccountModal({
     }
   };
 
-  const toggleWaitlistPlan = (planId) => {
-    setWaitlistPlans(prev => {
-      const next = { ...prev, [planId]: !prev[planId] };
-      try {
-        localStorage.setItem(SUB_WAITLIST_KEY, JSON.stringify(next));
-      } catch {}
-      return next;
-    });
+  const copyTextSafely = async (text, onCopied) => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        onCopied(true);
+        setTimeout(() => onCopied(false), 1800);
+      }
+    } catch {
+      // Clipboard API may be unavailable in restricted contexts
+    }
+  };
+
+  const runTwoFactorAction = async (action, fallbackError) => {
+    setTwoFactorBusy(true);
+    setSecurityMessage(null);
+    try {
+      await action();
+    } catch (err) {
+      setSecurityMessage({
+        type: 'error',
+        text: err.message || fallbackError,
+      });
+    } finally {
+      setTwoFactorBusy(false);
+    }
+  };
+
+  const handleStartTwoFactorSetup = () => {
+    if (!setupTwoFactor) return;
+    setBackupCodesList(null);
+    return runTwoFactorAction(async () => {
+      const data = await setupTwoFactor();
+      setTwoFactorSetupData(data);
+      setTwoFactorOtpInput('');
+      setTwoFactorMode('setup');
+      setTimeout(() => {
+        document.getElementById('account-2fa-section')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 60);
+    }, 'ไม่สามารถเริ่มต้นตั้งค่า 2FA ได้');
+  };
+
+  const handleConfirmEnableTwoFactor = (e) => {
+    e.preventDefault();
+    if (!enableTwoFactor) return;
+    return runTwoFactorAction(async () => {
+      const data = await enableTwoFactor(twoFactorOtpInput.trim());
+      setBackupCodesList(data.backup_codes || []);
+      setTwoFactorSetupData(null);
+      setTwoFactorOtpInput('');
+      setTwoFactorMode('idle');
+      setSecurityMessage({
+        type: 'success',
+        text: 'เปิดใช้งานการยืนยันตัวตน 2 ชั้น (2FA) สำเร็จแล้ว กรุณาเก็บรหัสสำรองไว้ในที่ปลอดภัย',
+      });
+    }, 'รหัส OTP 6 หลักไม่ถูกต้อง');
+  };
+
+  const handleRegenerateBackupCodes = (e) => {
+    e.preventDefault();
+    if (!regenerateBackupCodes) return;
+    return runTwoFactorAction(async () => {
+      const data = await regenerateBackupCodes(regenOtpCode.trim());
+      setBackupCodesList(data.backup_codes || []);
+      setRegenOtpCode('');
+      setTwoFactorMode('idle');
+      setSecurityMessage({
+        type: 'success',
+        text: 'สร้างรหัสสำรอง (Backup Codes) ชุดใหม่ทั้ง 8 รหัสเรียบร้อยแล้ว (รหัสชุดเดิมถูกยกเลิกทันที)',
+      });
+    }, 'ไม่สามารถสร้างรหัสสำรองชุดใหม่ได้');
+  };
+
+  const handleDisableTwoFactor = (e) => {
+    e.preventDefault();
+    if (!disableTwoFactor) return;
+    return runTwoFactorAction(async () => {
+      await disableTwoFactor(disable2faForm.currentPassword, disable2faForm.code.trim());
+      setBackupCodesList(null);
+      setDisable2faForm({ currentPassword: '', code: '' });
+      setTwoFactorMode('idle');
+      setSecurityMessage({
+        type: 'success',
+        text: 'ปิดการใช้งานการยืนยันตัวตน 2 ชั้น (2FA) เรียบร้อยแล้ว',
+      });
+    }, 'ไม่สามารถปิดใช้งาน 2FA ได้');
   };
 
   const displayTitle =
@@ -338,7 +428,10 @@ export default function AccountModal({
 
   const tierLabel = user?.role === 'admin'
     ? 'Admin · ผู้ดูแลระบบ'
-    : 'Early Access · ใช้ฟรีครบทุกฟีเจอร์';
+    : 'Free Plan · ใช้ฟรีครบทุกฟีเจอร์';
+
+  const freePlansOnly = (plansCatalog.plans || DEFAULT_PLANS).filter(p => p.id === 'free');
+  const visiblePlans = freePlansOnly.length > 0 ? freePlansOnly : DEFAULT_PLANS;
 
   const registeredDateStr = user?.created_at
     ? new Date(Number(user.created_at) * 1000).toLocaleDateString('th-TH', {
@@ -424,7 +517,7 @@ export default function AccountModal({
         <div className="account-tabs-bar" role="tablist" aria-label="หมวดหมู่การตั้งค่าบัญชี">
           {[
             { id: 'profile', label: 'โปรไฟล์ & เป้าหมายสอบ', Icon: User },
-            { id: 'subscription', label: 'แพ็กเกจสมาชิก', badge: 'เร็วๆ นี้', Icon: Crown },
+            { id: 'subscription', label: 'สิทธิ์การใช้งาน', badge: 'Free', Icon: Sparkles },
             { id: 'security', label: 'บัญชี & ความปลอดภัย', Icon: ShieldCheck },
           ].map(tab => {
             const Icon = tab.Icon;
@@ -648,102 +741,65 @@ export default function AccountModal({
             </form>
           )}
 
-          {/* ══════════ TAB 2: SUBSCRIPTION PLANS ══════════ */}
+          {/* ══════════ TAB 2: FREE PLAN OVERVIEW ══════════ */}
           {activeTab === 'subscription' && (
             <div className="account-section-stack">
               <div className="account-early-access-banner">
                 <div className="account-early-access-icon">
-                  <Crown size={20} />
+                  <Sparkles size={20} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <strong>สถานะปัจจุบันของคุณ: Early Adopter Access</strong>
-                    <span className="account-status-active-pill">ปลดล็อกครบ 100%</span>
+                    <strong>แพ็กเกจปัจจุบัน: Free Plan (ใช้งานฟรีทั้งหมด)</strong>
+                    <span className="account-status-active-pill">เปิดครบทุกฟีเจอร์</span>
                   </div>
                   <p style={{ margin: '0.25rem 0 0', fontSize: '0.84rem', color: 'var(--text-sub)', lineHeight: 1.55 }}>
-                    ในช่วงเปิดระบบระยะแรก (Early Access) ผู้ใช้งานทุกคนสามารถเข้าฝึกคลังข้อสอบจริง 2,443 ข้อ, เลกเชอร์คลินิก 83 บท, สรุปกฎหมาย และเครื่องมือคำนวณได้ครบทุกฟีเจอร์โดยไม่เสียค่าใช้จ่าย
+                    ระบบเปิดให้บริการใช้งานคลังข้อสอบจริงและข้อสอบจำลองครบทุกชุด สรุปคลินิก สรุปกฎหมาย และเครื่องมือวิเคราะห์จุดอ่อนฟรี 100% ภายใต้ Free Plan โดยไม่มีค่าใช้จ่าย
                   </p>
                 </div>
               </div>
 
-              <div className="account-plans-grid">
-                {(plansCatalog.plans || DEFAULT_PLANS).map((plan) => {
-                  const isCurrentFree = plan.id === 'free';
-                  const isWaitlisted = Boolean(waitlistPlans[plan.id]);
-                  return (
-                    <div
-                      key={plan.id}
-                      className={`account-plan-card ${plan.highlight ? 'is-featured' : ''}`}
-                    >
-                      <div className="account-plan-top">
-                        <span className={`account-plan-badge ${plan.highlight ? 'is-featured' : ''}`}>
-                          {plan.badge}
-                        </span>
-                        <h3 className="account-plan-name">{plan.name}</h3>
-                        <p className="account-plan-tagline">{plan.tagline}</p>
-                      </div>
-
-                      <div className="account-plan-price-row tabular-nums">
-                        <span className="account-plan-price">
-                          {Number(plan.price_thb || 0) === 0
-                            ? 'ฟรี'
-                            : `฿${Number(plan.price_thb || 0).toLocaleString()}`}
-                        </span>
-                        <span className="account-plan-period">
-                          {Number(plan.price_thb || 0) === 0
-                            ? `(฿0 / ${plan.billing_period})`
-                            : `/ ${plan.billing_period}`}
-                        </span>
-                      </div>
-                      {plan.price_per_month_thb && (
-                        <div className="account-plan-subprice tabular-nums">
-                          เฉลี่ยเพียง ฿{plan.price_per_month_thb} / เดือน
-                        </div>
-                      )}
-
-                      <ul className="account-plan-features">
-                        {(plan.features || []).map((feat, idx) => (
-                          <li key={idx}>
-                            <Check size={14} className="account-plan-check" />
-                            <span>{feat}</span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      <div style={{ marginTop: 'auto', paddingTop: '0.9rem' }}>
-                        {isCurrentFree ? (
-                          <button type="button" className="btn btn-secondary account-plan-cta" disabled>
-                            เปิดใช้งานอยู่ (รวมสิทธิ์ Early Access)
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            className={`btn account-plan-cta ${isWaitlisted ? 'btn-secondary' : 'btn-primary'}`}
-                            onClick={() => toggleWaitlistPlan(plan.id)}
-                          >
-                            {isWaitlisted ? (
-                              <>
-                                <CheckCircle2 size={15} style={{ flexShrink: 0 }} />
-                                <span>ลงชื่อรับแจ้งเตือนเมื่อเปิดให้สมัครแล้ว</span>
-                              </>
-                            ) : (
-                              <>
-                                <Bell size={15} style={{ flexShrink: 0 }} />
-                                <span>แจ้งเตือนเมื่อเปิดระบบสมาชิก (เร็วๆ นี้)</span>
-                              </>
-                            )}
-                          </button>
-                        )}
-                      </div>
+              <div className={`account-plans-grid ${visiblePlans.length === 1 ? 'is-single' : ''}`}>
+                {visiblePlans.map((plan) => (
+                  <div
+                    key={plan.id}
+                    className="account-plan-card"
+                  >
+                    <div className="account-plan-top">
+                      <span className="account-plan-badge">
+                        {plan.badge}
+                      </span>
+                      <h3 className="account-plan-name">{plan.name}</h3>
+                      <p className="account-plan-tagline">{plan.tagline}</p>
                     </div>
-                  );
-                })}
+
+                    <div className="account-plan-price-row tabular-nums">
+                      <span className="account-plan-price">ฟรี</span>
+                      <span className="account-plan-period">(฿0 · ไม่มีค่าใช้จ่าย)</span>
+                    </div>
+
+                    <ul className="account-plan-features">
+                      {(plan.features || []).map((feat, idx) => (
+                        <li key={idx}>
+                          <Check size={14} className="account-plan-check" />
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div style={{ marginTop: 'auto', paddingTop: '0.9rem' }}>
+                      <button type="button" className="btn btn-secondary account-plan-cta" disabled>
+                        กำลังใช้งาน Free Plan อยู่
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className="account-sub-disclaimer">
                 <ShieldCheck size={16} style={{ flexShrink: 0, color: 'var(--primary-light)', marginTop: '1px' }} />
                 <div>
-                  <strong>หมายเหตุสำคัญเกี่ยวกับแพ็กเกจสมาชิกเว็บไซต์:</strong>{' '}
+                  <strong>หมายเหตุเกี่ยวกับสิทธิ์การใช้งาน:</strong>{' '}
                   {plansCatalog.disclaimer}
                 </div>
               </div>
@@ -856,6 +912,250 @@ export default function AccountModal({
                       </button>
                     </div>
                   </form>
+
+                  {/* 2-Factor Authentication Management Card */}
+                  <div className="account-security-card account-2fa-card" id="account-2fa-section">
+                    <div className="account-2fa-header">
+                      <div>
+                        <h3 className="account-card-title" style={{ marginBottom: '0.25rem' }}>
+                          <Smartphone size={16} /> การยืนยันตัวตน 2 ชั้น (2FA / Authenticator)
+                        </h3>
+                        <p className="account-2fa-desc">
+                          เพิ่มเกราะป้องกันอีกชั้นด้วยรหัส OTP 6 หลักจาก Google Authenticator, Apple Passwords หรือ Authy
+                        </p>
+                      </div>
+                      <span className={`account-2fa-status-pill ${user.two_factor_enabled ? 'is-enabled' : 'is-disabled'}`}>
+                        {user.two_factor_enabled ? 'เปิดใช้งานแล้ว' : 'ยังไม่เปิดใช้งาน'}
+                      </span>
+                    </div>
+
+                    {backupCodesList && backupCodesList.length > 0 && (
+                      <div className="account-2fa-backup-box">
+                        <div className="account-2fa-backup-head">
+                          <strong>รหัสสำรองแบบใช้ครั้งเดียว (Backup Recovery Codes)</strong>
+                          <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
+                            <button
+                              type="button"
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => copyTextSafely(backupCodesList.join('\n'), setCopiedBackup)}
+                            >
+                              <Copy size={13} /> {copiedBackup ? 'คัดลอกแล้ว' : 'คัดลอกทั้งหมด'}
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => setBackupCodesList(null)}
+                            >
+                              ซ่อน
+                            </button>
+                          </div>
+                        </div>
+                        <p className="account-2fa-backup-note">
+                          กรุณาบันทึกหรือคัดลอกเก็บไว้ในที่ปลอดภัย หากทำมือถือหายสามารถใช้ 1 รหัสนี้เข้าสู่ระบบได้ (แสดงให้ดูเพียงครั้งเดียว)
+                        </p>
+                        <div className="account-2fa-backup-grid">
+                          {backupCodesList.map((code) => (
+                            <code key={code} className="account-2fa-backup-code">{code}</code>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {!user.two_factor_enabled ? (
+                      twoFactorMode === 'setup' && twoFactorSetupData ? (
+                        <form onSubmit={handleConfirmEnableTwoFactor} className="account-2fa-setup-grid">
+                          <div className="account-2fa-qr-wrap">
+                            <div className="account-2fa-qr-frame">
+                              <img
+                                src={twoFactorSetupData.qr_data_uri}
+                                alt="QR Code สำหรับตั้งค่า 2FA"
+                                className="account-2fa-qr-img"
+                              />
+                            </div>
+                            <span className="account-2fa-qr-caption">สแกนผ่านแอป Authenticator</span>
+                          </div>
+                          <div className="account-2fa-setup-steps">
+                            <div>
+                              <div className="account-2fa-step-label">1. สแกน QR หรือกรอกรหัสลับด้วยตนเอง (Manual Key)</div>
+                              <div className="account-2fa-secret-row">
+                                <code className="account-2fa-secret-code">{twoFactorSetupData.secret}</code>
+                                <button
+                                  type="button"
+                                  className="btn btn-secondary btn-sm"
+                                  onClick={() => copyTextSafely(twoFactorSetupData.secret, setCopiedSecret)}
+                                >
+                                  <Copy size={13} /> {copiedSecret ? 'คัดลอกแล้ว' : 'คัดลอก'}
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="account-field">
+                              <label htmlFor="acc-2fa-setup-otp">2. กรอกรหัส OTP 6 หลักที่แสดงในแอปเพื่อยืนยัน</label>
+                              <input
+                                id="acc-2fa-setup-otp"
+                                type="text"
+                                inputMode="numeric"
+                                autoComplete="one-time-code"
+                                maxLength={10}
+                                required
+                                placeholder="เช่น 123456"
+                                className="account-input account-2fa-code-input"
+                                value={twoFactorOtpInput}
+                                onChange={(e) => setTwoFactorOtpInput(e.target.value)}
+                              />
+                            </div>
+
+                            <div className="account-2fa-actions">
+                              <button type="submit" className="btn btn-primary btn-sm" disabled={twoFactorBusy}>
+                                {twoFactorBusy ? <Loader2 size={14} className="spin" /> : <CheckCircle2 size={14} />}
+                                ยืนยันและเปิดใช้งาน 2FA
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                disabled={twoFactorBusy}
+                                onClick={() => {
+                                  setTwoFactorMode('idle');
+                                  setTwoFactorSetupData(null);
+                                  setTwoFactorOtpInput('');
+                                }}
+                              >
+                                ยกเลิก
+                              </button>
+                            </div>
+                          </div>
+                        </form>
+                      ) : (
+                        <div className="account-2fa-actions" style={{ marginTop: '0.75rem' }}>
+                          <button
+                            type="button"
+                            className="btn btn-primary btn-sm"
+                            onClick={handleStartTwoFactorSetup}
+                            disabled={twoFactorBusy}
+                          >
+                            {twoFactorBusy ? <Loader2 size={14} className="spin" /> : <KeyRound size={14} />}
+                            ตั้งค่าและเปิดใช้งาน 2FA
+                          </button>
+                        </div>
+                      )
+                    ) : (
+                      <div className="account-2fa-active-body">
+                        <div className="account-2fa-active-meta">
+                          <span>
+                            สถานะ: <strong style={{ color: 'var(--ink-emerald)' }}>ปกป้องบัญชีด้วย TOTP</strong>
+                          </span>
+                          <span className="account-2fa-sep">•</span>
+                          <span>
+                            รหัสสำรองคงเหลือ: <strong>{user.two_factor_backup_remaining ?? 0}</strong> รหัส
+                          </span>
+                        </div>
+
+                        {twoFactorMode === 'idle' && (
+                          <div className="account-2fa-actions">
+                            <button
+                              type="button"
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => {
+                                setTwoFactorMode('regenerate');
+                                setRegenOtpCode('');
+                                setSecurityMessage(null);
+                              }}
+                            >
+                              <RefreshCw size={14} /> สร้างรหัสสำรองชุดใหม่
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm"
+                              onClick={() => {
+                                setTwoFactorMode('disable');
+                                setDisable2faForm({ currentPassword: '', code: '' });
+                                setSecurityMessage(null);
+                              }}
+                            >
+                              ปิดการใช้งาน 2FA
+                            </button>
+                          </div>
+                        )}
+
+                        {twoFactorMode === 'regenerate' && (
+                          <form onSubmit={handleRegenerateBackupCodes} className="account-2fa-inline-form">
+                            <div className="account-field">
+                              <label htmlFor="acc-2fa-regen-otp">กรอกรหัส OTP 6 หลักจากแอป Authenticator เพื่อออกรหัสสำรองชุดใหม่ (ชุดเก่าจะถูกยกเลิก)</label>
+                              <input
+                                id="acc-2fa-regen-otp"
+                                type="text"
+                                inputMode="numeric"
+                                autoComplete="one-time-code"
+                                maxLength={10}
+                                required
+                                placeholder="รหัส 6 หลักล่าสุด"
+                                className="account-input account-2fa-code-input"
+                                value={regenOtpCode}
+                                onChange={(e) => setRegenOtpCode(e.target.value)}
+                              />
+                            </div>
+                            <div className="account-2fa-actions">
+                              <button type="submit" className="btn btn-primary btn-sm" disabled={twoFactorBusy}>
+                                {twoFactorBusy ? <Loader2 size={14} className="spin" /> : 'ยืนยันออกรหัสสำรองใหม่'}
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                disabled={twoFactorBusy}
+                                onClick={() => setTwoFactorMode('idle')}
+                              >
+                                ยกเลิก
+                              </button>
+                            </div>
+                          </form>
+                        )}
+
+                        {twoFactorMode === 'disable' && (
+                          <form onSubmit={handleDisableTwoFactor} className="account-2fa-inline-form">
+                            <div className="account-form-grid">
+                              <div className="account-field">
+                                <label htmlFor="acc-2fa-disable-pw">รหัสผ่านปัจจุบัน</label>
+                                <input
+                                  id="acc-2fa-disable-pw"
+                                  type="password"
+                                  required
+                                  className="account-input"
+                                  value={disable2faForm.currentPassword}
+                                  onChange={(e) => setDisable2faForm({ ...disable2faForm, currentPassword: e.target.value })}
+                                />
+                              </div>
+                              <div className="account-field">
+                                <label htmlFor="acc-2fa-disable-code">รหัส OTP 6 หลัก หรือ Backup Code</label>
+                                <input
+                                  id="acc-2fa-disable-code"
+                                  type="text"
+                                  required
+                                  maxLength={20}
+                                  placeholder="123456 หรือ XXXX-XXXX"
+                                  className="account-input account-2fa-code-input"
+                                  value={disable2faForm.code}
+                                  onChange={(e) => setDisable2faForm({ ...disable2faForm, code: e.target.value })}
+                                />
+                              </div>
+                            </div>
+                            <div className="account-2fa-actions">
+                              <button type="submit" className="btn btn-danger btn-sm" disabled={twoFactorBusy}>
+                                {twoFactorBusy ? <Loader2 size={14} className="spin" /> : 'ยืนยันปิดใช้งาน 2FA'}
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                disabled={twoFactorBusy}
+                                onClick={() => setTwoFactorMode('idle')}
+                              >
+                                ยกเลิก
+                              </button>
+                            </div>
+                          </form>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
                   {securityMessage && (
                     <div className={`account-alert ${securityMessage.type === 'error' ? 'is-error' : 'is-success'}`}>

@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   BookOpen, Search, Sparkles, AlertTriangle, ArrowLeft, 
   CheckCircle2, XCircle, Compass, Award, Bookmark, 
@@ -36,10 +37,87 @@ const SPECIALTY_COLOR_MAP = {
 };
 
 const MASTERY_META = {
-  red: { emoji: '', label: 'ยังสับสน', bg: 'rgba(239, 68, 68, 0.14)', color: 'var(--ink-rose)', border: 'rgba(239, 68, 68, 0.35)' },
-  yellow: { emoji: '', label: 'พอจำได้', bg: 'rgba(245, 158, 11, 0.14)', color: 'var(--ink-amber)', border: 'rgba(245, 158, 11, 0.35)' },
-  green: { emoji: '', label: 'พร้อมสอบ!', bg: 'rgba(16, 185, 129, 0.14)', color: 'var(--ink-emerald)', border: 'rgba(16, 185, 129, 0.35)' },
+  red: {
+    dotColor: '#ef4444',
+    label: 'ยังสับสน',
+    bg: 'rgba(239, 68, 68, 0.14)',
+    color: 'var(--ink-rose)',
+    border: 'rgba(239, 68, 68, 0.45)',
+  },
+  yellow: {
+    dotColor: '#f59e0b',
+    label: 'พอจำได้',
+    bg: 'rgba(245, 158, 11, 0.15)',
+    color: 'var(--ink-amber)',
+    border: 'rgba(245, 158, 11, 0.48)',
+  },
+  green: {
+    dotColor: '#10b981',
+    label: 'พร้อมสอบ!',
+    bg: 'rgba(16, 185, 129, 0.14)',
+    color: 'var(--ink-emerald)',
+    border: 'rgba(16, 185, 129, 0.45)',
+  },
 };
+
+function TopicMasterySelector({
+  topicId,
+  value,
+  onChange,
+  feedbackText,
+  label = 'ระดับจำหัวข้อนี้:',
+  compact = false,
+}) {
+  if (!topicId) return null;
+  return (
+    <div
+      className={`topic-mastery-bar ${compact ? 'is-compact' : ''}`}
+      role="group"
+      aria-label={label}
+    >
+      <span className="topic-mastery-label">
+        <Brain size={14} /> {label}
+      </span>
+      <div className="topic-mastery-pills">
+        {Object.entries(MASTERY_META).map(([lvl, meta]) => {
+          const active = value === lvl;
+          return (
+            <button
+              key={lvl}
+              type="button"
+              aria-pressed={active}
+              onClick={() => onChange(topicId, lvl)}
+              className={`topic-mastery-btn ${active ? 'is-active' : ''}`}
+              title={active ? `คลิกซ้ำเพื่อล้างสถานะ "${meta.label}"` : `ตั้งระดับจำ: ${meta.label}`}
+              style={
+                active
+                  ? {
+                      background: meta.bg,
+                      color: meta.color,
+                      borderColor: meta.border,
+                    }
+                  : undefined
+              }
+            >
+              <span
+                className="topic-mastery-dot"
+                style={{ backgroundColor: meta.dotColor }}
+                aria-hidden="true"
+              />
+              <span>{meta.label}</span>
+              {active && <Check size={13} strokeWidth={2.75} aria-hidden="true" />}
+            </button>
+          );
+        })}
+      </div>
+      {feedbackText && (
+        <span className="topic-mastery-saved" role="status">
+          <Check size={12} strokeWidth={2.5} /> {feedbackText}
+        </span>
+      )}
+    </div>
+  );
+}
 
 const CLUE_REGEX = /(มาตรา\s*\d+(?:\/\d+)?|\d+(?:\.\d+)?\s*(?:–|-|ถึง)?\s*(?:\d+(?:\.\d+)?)?\s*(?:%|มม\.|mm|ซม\.|cm|วัน|สัปดาห์|เดือน|ปี|ขวบ|ซี่|คู่สบ|นาที|ชั่วโมง|ชม\.|mg|มก\.|mL|มล\.|IU|unit|องศา|°)|spontaneous pain|percussion|palpation|thermal test|cold test|EPT|electric pulp test|mobility|sinus tract|fistula|trismus|paresthesia|avulsion|intrusion|extrusion|luxation|irreversible|reversible|necrosis|vitality|ปวดกลางคืน|ปวดเอง|หนอง|บวม|ไข้|เคาะเจ็บ|คลำเจ็บ|โยก|ทะลุโพรงประสาท|ฟันหลุด|ประวัติแพ้|ตั้งครรภ์|ความดันโลหิต)/gi;
 
@@ -196,6 +274,21 @@ export default function ClinicalStudyHub({
       return {};
     }
   });
+  const topicMasteryRef = useRef(topicMastery);
+  const [masteryFeedback, setMasteryFeedback] = useState(null);
+  const masteryFeedbackTimerRef = useRef(null);
+
+  useEffect(() => {
+    topicMasteryRef.current = topicMastery;
+  }, [topicMastery]);
+
+  useEffect(() => {
+    return () => {
+      if (masteryFeedbackTimerRef.current) {
+        clearTimeout(masteryFeedbackTimerRef.current);
+      }
+    };
+  }, []);
 
   // Hydrate and idempotently sync localStorage flashcards/topics to DB on login
   useEffect(() => {
@@ -258,31 +351,52 @@ export default function ClinicalStudyHub({
 
   const updateTopicMastery = useCallback((topicId, level) => {
     if (!topicId) return;
-    setTopicMastery(prev => {
-      const next = { ...prev };
-      const finalLevel = next[topicId] === level ? 'yellow' : level;
-      if (next[topicId] === level) {
-        delete next[topicId];
+    const prev = topicMasteryRef.current || {};
+    const isRemoving = prev[topicId] === level;
+    const next = { ...prev };
+    if (isRemoving) {
+      delete next[topicId];
+    } else {
+      next[topicId] = level;
+    }
+
+    topicMasteryRef.current = next;
+    setTopicMastery(next);
+
+    try {
+      localStorage.setItem('nl_topic_mastery_v1', JSON.stringify(next));
+    } catch {
+      // Ignore storage quota errors
+    }
+
+    setMasteryFeedback({
+      topicId,
+      text: isRemoving ? 'ล้างระดับจำแล้ว' : 'บันทึกแล้ว',
+    });
+    if (masteryFeedbackTimerRef.current) {
+      clearTimeout(masteryFeedbackTimerRef.current);
+    }
+    masteryFeedbackTimerRef.current = setTimeout(() => {
+      setMasteryFeedback(null);
+    }, 1800);
+
+    if (token && authFetch) {
+      if (isRemoving) {
+        authFetch(
+          `${API_BASE}/api/tracking/cards/review?card_key=${encodeURIComponent(topicId)}&card_type=topic`,
+          { method: 'DELETE' }
+        ).catch(() => {});
       } else {
-        next[topicId] = level;
-      }
-      try {
-        localStorage.setItem('nl_topic_mastery_v1', JSON.stringify(next));
-      } catch {
-        // Ignore storage quota errors
-      }
-      if (token && authFetch && next[topicId]) {
         authFetch(`${API_BASE}/api/tracking/cards/review`, {
           method: 'POST',
           body: JSON.stringify({
             card_key: topicId,
             card_type: 'topic',
-            mastery_status: finalLevel,
+            mastery_status: level,
           }),
         }).catch(() => {});
       }
-      return next;
-    });
+    }
   }, [token, authFetch]);
 
   const updateCardMastery = useCallback((cardId, status) => {
@@ -647,16 +761,50 @@ export default function ClinicalStudyHub({
     }
   };
 
+  const modalBodyRef = useRef(null);
+
+  useEffect(() => {
+    if (!isModal) return;
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    const focusTimer = setTimeout(() => {
+      modalBodyRef.current?.focus({ preventScroll: true });
+    }, 0);
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      clearTimeout(focusTimer);
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isModal, onClose]);
+
+  useEffect(() => {
+    if (isModal && modalBodyRef.current) {
+      modalBodyRef.current.scrollTop = 0;
+    }
+  }, [isModal, selectedTopicId, classroomTab, hubMode]);
+
   const containerStyle = isModal ? {
     position: 'fixed',
     inset: 0,
-    zIndex: 10000,
-    background: 'rgba(10, 15, 29, 0.90)',
-    backdropFilter: 'blur(10px)',
+    zIndex: 100000,
+    background: 'rgba(15, 23, 42, 0.58)',
+    backdropFilter: 'blur(6px)',
+    WebkitBackdropFilter: 'blur(6px)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '1.25rem',
+    padding: 'clamp(0.5rem, 2vw, 1.25rem)',
+    boxSizing: 'border-box',
+    overscrollBehavior: 'contain',
   } : {
     width: '100%',
     paddingBottom: '4rem',
@@ -665,70 +813,117 @@ export default function ClinicalStudyHub({
   const innerStyle = isModal ? {
     width: '100%',
     maxWidth: '1280px',
-    maxHeight: '94vh',
-    background: 'var(--bg-surface, #0f172a)',
-    borderRadius: '16px',
-    border: '1px solid var(--border)',
+    height: 'min(92vh, 920px)',
+    maxHeight: '92vh',
+    background: 'var(--bg-panel)',
+    borderRadius: '18px',
+    border: '1px solid var(--border-hover)',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.65)',
+    boxShadow: 'var(--shadow-elevated)',
   } : {};
 
-  return (
-    <div style={containerStyle}>
-      <div style={innerStyle} className="animate-fade-in">
+  const hubContent = (
+    <div
+      style={containerStyle}
+      onClick={isModal && onClose ? onClose : undefined}
+      role={isModal ? 'dialog' : undefined}
+      aria-modal={isModal ? 'true' : undefined}
+    >
+      <div
+        style={innerStyle}
+        className={isModal ? 'clinical-study-modal-panel' : 'animate-fade-in'}
+        onClick={isModal ? (e) => e.stopPropagation() : undefined}
+      >
         
         {/* ══════════════════════════════════════════════════════════════════
-            1. TOP HEADER & 3-MODE PEDAGOGICAL SWITCHER
+            1. PINNED TITLE HEADER
         ══════════════════════════════════════════════════════════════════ */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '1rem 1.5rem',
+          padding: isModal ? '0.8rem 1.25rem' : '1rem 1.5rem',
           borderBottom: '1px solid var(--border)',
           background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(2, 132, 199, 0.05))',
-          flexWrap: 'wrap',
-          gap: '1rem'
+          flexShrink: 0,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            {onBack && !isModal && (
-              <button 
-                onClick={onBack}
-                className="btn btn-secondary btn-sm"
-                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-              >
-                <ArrowLeft size={16} /> กลับหน้าหลัก
-              </button>
-            )}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)'
-              }}>
-                <GraduationCap size={22} />
-              </div>
-              <div>
-                <h2 style={{ fontSize: '1.18rem', fontWeight: 800, margin: 0, color: 'var(--text)' }}>
-                  ระบบการเรียนรู้จากข้อสอบด้วย Textbook & Evidence (Exam-Driven Academy)
-                </h2>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>
-                  สกัดเนื้อหา ทฤษฎี และกลไกจากข้อสอบจริง {overviewData?.summary?.total_questions?.toLocaleString() || '2,443'} ข้อ ครบ {overviewData?.summary?.total_topics || 83} หัวข้อ มาสอนตามตำราอ้างอิงมาตรฐาน
-                </span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', width: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0, flex: 1 }}>
+              {onBack && !isModal && (
+                <button 
+                  onClick={onBack}
+                  className="btn btn-secondary btn-sm"
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}
+                >
+                  <ArrowLeft size={16} /> กลับหน้าหลัก
+                </button>
+              )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
+                  flexShrink: 0,
+                }}>
+                  <GraduationCap size={22} />
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <h2 style={{ fontSize: 'clamp(1rem, 2.2vw, 1.18rem)', fontWeight: 800, margin: 0, color: 'var(--text)', lineHeight: 1.3 }}>
+                    ระบบการเรียนรู้จากข้อสอบด้วย Textbook & Evidence (Exam-Driven Academy)
+                  </h2>
+                  <span className="clinical-header-subtitle" style={{ fontSize: '0.8rem', color: 'var(--text-sub)', display: 'block', marginTop: '0.15rem' }}>
+                    สกัดเนื้อหา ทฤษฎี และกลไกจากข้อสอบจริง {overviewData?.summary?.total_questions?.toLocaleString() || '2,443'} ข้อ ครบ {overviewData?.summary?.total_topics || 83} หัวข้อ มาสอนตามตำราอ้างอิงมาตรฐาน
+                  </span>
+                </div>
               </div>
             </div>
+            {isModal && onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="ปิดหน้าต่างบทเรียน"
+                className="btn btn-secondary btn-sm"
+                style={{ width: '36px', height: '36px', padding: 0, borderRadius: '999px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+              >
+                <X size={18} />
+              </button>
+            )}
           </div>
+        </div>
 
+        {/* Unified scrollable body (mode switcher, filters, and lesson content all scroll smoothly) */}
+        <div
+          ref={modalBodyRef}
+          tabIndex={isModal ? -1 : undefined}
+          className={isModal ? 'clinical-study-modal-body' : undefined}
+          style={isModal ? {
+            flex: '1 1 0%',
+            minHeight: 0,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            WebkitOverflowScrolling: 'touch',
+            overscrollBehavior: 'contain',
+            touchAction: 'pan-y',
+            outline: 'none',
+          } : undefined}
+        >
           {/* 3-Mode Switcher Pills */}
-          <div className="study-mode-tabs">
+          <div
+            className="study-mode-tabs"
+            style={{
+              padding: '0.75rem 1.35rem',
+              borderBottom: '1px solid var(--border)',
+              background: 'var(--bg-panel)',
+            }}
+          >
             <button
               onClick={() => setHubMode('exam_topics')}
               style={{
@@ -786,124 +981,121 @@ export default function ClinicalStudyHub({
               ตารางสรุป Masterclass ({Object.keys(allStudyGuides).length} Guides)
             </button>
 
-            <button
-              onClick={() => setHubMode('visual_atlas')}
-              style={{
-                padding: '0.45rem 0.9rem',
-                borderRadius: '10px',
-                fontSize: '0.82rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                background: hubMode === 'visual_atlas' ? '#0284c7' : 'rgba(56,189,248,0.1)',
-                color: hubMode === 'visual_atlas' ? '#fff' : 'var(--ink-sky)',
-                border: hubMode === 'visual_atlas' ? '1px solid #0284c7' : '1px solid rgba(56,189,248,0.32)',
-              }}
-            >
-              คลังภาพวินิจฉัย (112 ภาพ)
-            </button>
+            {!isModal && (
+              <>
+                <button
+                  onClick={() => setHubMode('visual_atlas')}
+                  style={{
+                    padding: '0.45rem 0.9rem',
+                    borderRadius: '10px',
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    background: hubMode === 'visual_atlas' ? '#0284c7' : 'rgba(56,189,248,0.1)',
+                    color: hubMode === 'visual_atlas' ? '#fff' : 'var(--ink-sky)',
+                    border: hubMode === 'visual_atlas' ? '1px solid #0284c7' : '1px solid rgba(56,189,248,0.32)',
+                  }}
+                >
+                  คลังภาพวินิจฉัย (112 ภาพ)
+                </button>
 
-            <button
-              onClick={() => setHubMode('calc_lab')}
-              style={{
-                padding: '0.45rem 0.9rem',
-                borderRadius: '10px',
-                fontSize: '0.82rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                background: hubMode === 'calc_lab' ? '#059669' : 'rgba(16,185,129,0.1)',
-                color: hubMode === 'calc_lab' ? '#fff' : 'var(--ink-emerald)',
-                border: hubMode === 'calc_lab' ? '1px solid #059669' : '1px solid rgba(16,185,129,0.32)',
-              }}
-            >
-              ห้องฝึกคำนวณคลินิก
-            </button>
+                <button
+                  onClick={() => setHubMode('calc_lab')}
+                  style={{
+                    padding: '0.45rem 0.9rem',
+                    borderRadius: '10px',
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    background: hubMode === 'calc_lab' ? '#059669' : 'rgba(16,185,129,0.1)',
+                    color: hubMode === 'calc_lab' ? '#fff' : 'var(--ink-emerald)',
+                    border: hubMode === 'calc_lab' ? '1px solid #059669' : '1px solid rgba(16,185,129,0.32)',
+                  }}
+                >
+                  ห้องฝึกคำนวณคลินิก
+                </button>
 
-            <button
-              onClick={() => setHubMode('cloze_arena')}
-              style={{
-                padding: '0.45rem 0.9rem',
-                borderRadius: '10px',
-                fontSize: '0.82rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                background: hubMode === 'cloze_arena' ? 'var(--primary)' : 'var(--surface-card)',
-                color: hubMode === 'cloze_arena' ? '#fff' : 'var(--text-sub)',
-                border: hubMode === 'cloze_arena' ? '1px solid var(--primary)' : '1px solid var(--border)',
-              }}
-            >
-              Cloze & กับดักข้อสอบ
-            </button>
+                <button
+                  onClick={() => setHubMode('cloze_arena')}
+                  style={{
+                    padding: '0.45rem 0.9rem',
+                    borderRadius: '10px',
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    background: hubMode === 'cloze_arena' ? 'var(--primary)' : 'var(--surface-card)',
+                    color: hubMode === 'cloze_arena' ? '#fff' : 'var(--text-sub)',
+                    border: hubMode === 'cloze_arena' ? '1px solid var(--primary)' : '1px solid var(--border)',
+                  }}
+                >
+                  Cloze & กับดักข้อสอบ
+                </button>
 
-            <button
-              onClick={() => {
-                setHubMode('mistake_clinic');
-                if (token) fetchMistakeClinic();
-              }}
-              style={{
-                padding: '0.45rem 0.9rem',
-                borderRadius: '10px',
-                fontSize: '0.82rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                background: hubMode === 'mistake_clinic' ? '#f43f5e' : 'rgba(244,63,94,0.1)',
-                color: hubMode === 'mistake_clinic' ? '#fff' : 'var(--ink-rose)',
-                border: hubMode === 'mistake_clinic' ? '1px solid #f43f5e' : '1px solid rgba(244,63,94,0.32)',
-              }}
-            >
-              <Stethoscope size={15} /> คลินิกซ่อมจุดอ่อน
-              {mistakeClinicData?.total_wrong_unique > 0 && (
-                <span style={{
-                  fontSize: '0.7rem',
-                  fontWeight: 800,
-                  padding: '0.05rem 0.45rem',
-                  borderRadius: '10px',
-                  background: hubMode === 'mistake_clinic' ? 'rgba(255,255,255,0.25)' : '#f43f5e',
-                  color: '#fff',
-                }}>
-                  {mistakeClinicData.total_wrong_unique}
-                </span>
-              )}
-            </button>
+                <button
+                  onClick={() => {
+                    setHubMode('mistake_clinic');
+                    if (token) fetchMistakeClinic();
+                  }}
+                  style={{
+                    padding: '0.45rem 0.9rem',
+                    borderRadius: '10px',
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    background: hubMode === 'mistake_clinic' ? '#f43f5e' : 'rgba(244,63,94,0.1)',
+                    color: hubMode === 'mistake_clinic' ? '#fff' : 'var(--ink-rose)',
+                    border: hubMode === 'mistake_clinic' ? '1px solid #f43f5e' : '1px solid rgba(244,63,94,0.32)',
+                  }}
+                >
+                  <Stethoscope size={15} /> คลินิกซ่อมจุดอ่อน
+                  {mistakeClinicData?.total_wrong_unique > 0 && (
+                    <span style={{
+                      fontSize: '0.7rem',
+                      fontWeight: 800,
+                      padding: '0.05rem 0.45rem',
+                      borderRadius: '10px',
+                      background: hubMode === 'mistake_clinic' ? 'rgba(255,255,255,0.25)' : '#f43f5e',
+                      color: '#fff',
+                    }}>
+                      {mistakeClinicData.total_wrong_unique}
+                    </span>
+                  )}
+                </button>
+              </>
+            )}
 
             {copiedNotification && (
               <span style={{ fontSize: '0.78rem', color: 'var(--success)', fontWeight: 600 }}>
                 คัดลอกลิงก์แล้ว!
               </span>
             )}
-            {isModal && onClose && (
-              <button
-                onClick={onClose}
-                className="btn btn-secondary btn-sm"
-                style={{ padding: '0.4rem', borderRadius: '50%' }}
-              >
-                <X size={18} />
-              </button>
-            )}
           </div>
-        </div>
 
         {/* ══════════════════════════════════════════════════════════════════
             2. SEARCH & SPECIALTY PILL FILTERS
         ══════════════════════════════════════════════════════════════════ */}
-        <div style={{
+        <div
+          className={`clinical-filter-bar ${(hubMode === 'exam_topics' || hubMode === 'textbooks' || hubMode === 'masterclass' || hubMode === 'mistake_clinic') && !mobileSidebarOpen ? 'is-collapsed-mobile' : ''}`}
+          style={{
           padding: '0.85rem 1.5rem',
           borderBottom: '1px solid var(--border)',
-          background: 'rgba(255, 255, 255, 0.01)',
+          background: 'var(--surface-subtle)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '0.7rem'
+          gap: '0.7rem',
+          flexShrink: 0,
         }}>
           <div style={{ position: 'relative', width: '100%' }}>
             <Search 
@@ -986,6 +1178,7 @@ export default function ClinicalStudyHub({
             3. MAIN SPLIT LAYOUT OR INTERACTIVE FULL-WIDTH LABS
         ══════════════════════════════════════════════════════════════════ */}
         {hubMode === 'visual_atlas' ? (
+          <div>
           <VisualAtlas
             selectedSpecialty={selectedSpecialty}
             searchQuery={searchQuery}
@@ -1000,8 +1193,9 @@ export default function ClinicalStudyHub({
               setClassroomTab('synthesized');
             }}
           />
+          </div>
         ) : hubMode === 'calc_lab' ? (
-          <div style={{ padding: '1.25rem', overflowY: isModal ? 'auto' : 'visible', maxHeight: isModal ? 'calc(94vh - 150px)' : 'none' }}>
+          <div style={{ padding: '1.25rem' }}>
             <CalcSimulator
               onOpenTopic={(topicId) => {
                 setSelectedSpecialty('all');
@@ -1012,7 +1206,7 @@ export default function ClinicalStudyHub({
             />
           </div>
         ) : hubMode === 'cloze_arena' ? (
-          <div style={{ padding: '1.25rem', overflowY: isModal ? 'auto' : 'visible', maxHeight: isModal ? 'calc(94vh - 150px)' : 'none' }}>
+          <div style={{ padding: '1.25rem' }}>
             <ClozePitfallArena
               selectedSpecialty={selectedSpecialty}
               searchQuery={searchQuery}
@@ -1050,9 +1244,10 @@ export default function ClinicalStudyHub({
         <div style={{
           display: 'grid',
           gridTemplateColumns: '340px 1fr',
-          minHeight: isModal ? 'calc(94vh - 150px)' : '780px',
-          maxHeight: isModal ? 'calc(94vh - 150px)' : 'none',
-          overflow: 'hidden'
+          alignItems: isModal ? 'start' : undefined,
+          minHeight: isModal ? 0 : '780px',
+          height: 'auto',
+          overflow: isModal ? 'visible' : 'hidden'
         }} className="clinical-study-grid">
           
           {/* ── LEFT COLUMN: CURRICULUM NAVIGATOR ───────────────────────── */}
@@ -1079,19 +1274,29 @@ export default function ClinicalStudyHub({
                   <div style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
-                    padding: '0.35rem 0.55rem',
-                    margin: '0 0.15rem 0.25rem 0.15rem',
-                    borderRadius: '8px',
+                    gap: '10px',
+                    padding: '0.4rem 0.65rem',
+                    margin: '0 0.15rem 0.3rem 0.15rem',
+                    borderRadius: '10px',
                     background: 'var(--surface-subtle)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    fontSize: '0.7rem',
+                    border: '1px solid var(--border)',
+                    fontSize: '0.73rem',
+                    fontWeight: 600,
                     color: 'var(--text-sub)'
                   }}>
-                    <span>🟢 {Object.values(topicMastery).filter(v => v === 'green').length}</span>
-                    <span>🟡 {Object.values(topicMastery).filter(v => v === 'yellow').length}</span>
-                    <span>🔴 {Object.values(topicMastery).filter(v => v === 'red').length}</span>
-                    <span style={{ color: 'var(--text-muted)', marginLeft: 'auto' }}>ความคล่องตัว</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <span className="topic-mastery-dot" style={{ backgroundColor: MASTERY_META.green.dotColor }} />
+                      {Object.values(topicMastery).filter(v => v === 'green').length}
+                    </span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <span className="topic-mastery-dot" style={{ backgroundColor: MASTERY_META.yellow.dotColor }} />
+                      {Object.values(topicMastery).filter(v => v === 'yellow').length}
+                    </span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <span className="topic-mastery-dot" style={{ backgroundColor: MASTERY_META.red.dotColor }} />
+                      {Object.values(topicMastery).filter(v => v === 'red').length}
+                    </span>
+                    <span style={{ color: 'var(--text-muted)', marginLeft: 'auto' }}>ระดับจำทั้งหมด</span>
                   </div>
                 )}
                 {loadingOverview ? (
@@ -1175,15 +1380,23 @@ export default function ClinicalStudyHub({
                           )}
                           {topicMastery[topic.id] && MASTERY_META[topicMastery[topic.id]] && (
                             <span style={{
-                              fontSize: '0.65rem',
-                              padding: '0.05rem 0.4rem',
-                              borderRadius: '4px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              fontSize: '0.67rem',
+                              padding: '0.1rem 0.45rem',
+                              borderRadius: '6px',
                               background: MASTERY_META[topicMastery[topic.id]].bg,
                               color: MASTERY_META[topicMastery[topic.id]].color,
+                              border: `1px solid ${MASTERY_META[topicMastery[topic.id]].border}`,
                               fontWeight: 700,
                               marginLeft: 'auto'
                             }}>
-                              {MASTERY_META[topicMastery[topic.id]].emoji} {MASTERY_META[topicMastery[topic.id]].label}
+                              <span
+                                className="topic-mastery-dot"
+                                style={{ backgroundColor: MASTERY_META[topicMastery[topic.id]].dotColor, width: '6px', height: '6px' }}
+                              />
+                              {MASTERY_META[topicMastery[topic.id]].label}
                             </span>
                           )}
                         </div>
@@ -1359,8 +1572,9 @@ export default function ClinicalStudyHub({
           <div
             className="clinical-classroom-panel"
             style={{
-              overflowY: 'auto',
-              padding: '1.75rem 2.25rem',
+              overflowY: isModal ? 'visible' : 'auto',
+              minHeight: 0,
+              padding: isModal ? '1.5rem 2rem 2.25rem' : '1.75rem 2.25rem',
               background: 'var(--bg-surface)',
             }}
           >
@@ -1418,43 +1632,6 @@ export default function ClinicalStudyHub({
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-                        {hubMode === 'exam_topics' && selectedTopicId && (
-                          <div style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '3px',
-                            padding: '0.2rem 0.35rem',
-                            borderRadius: '10px',
-                            background: 'var(--surface-subtle)',
-                            border: '1px solid rgba(255,255,255,0.08)'
-                          }}>
-                            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', padding: '0 4px' }}>ระดับจำ:</span>
-                            {Object.entries(MASTERY_META).map(([lvl, meta]) => {
-                              const active = topicMastery[selectedTopicId] === lvl;
-                              return (
-                                <button
-                                  key={lvl}
-                                  type="button"
-                                  onClick={() => updateTopicMastery(selectedTopicId, lvl)}
-                                  title={meta.label}
-                                  style={{
-                                    padding: '0.18rem 0.45rem',
-                                    borderRadius: '7px',
-                                    fontSize: '0.72rem',
-                                    fontWeight: active ? 800 : 500,
-                                    cursor: 'pointer',
-                                    background: active ? meta.bg : 'transparent',
-                                    color: active ? meta.color : 'var(--text-sub)',
-                                    border: active ? `1px solid ${meta.border}` : '1px solid transparent',
-                                  }}
-                                >
-                                  {meta.emoji} {active ? meta.label : ''}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        )}
-
                         {onStartExam && (
                           <button
                             onClick={handleStartTopicPractice}
@@ -1479,9 +1656,21 @@ export default function ClinicalStudyHub({
                     <h1 style={{ fontSize: '1.55rem', fontWeight: 800, color: 'var(--text)', margin: '0 0 0.35rem 0', lineHeight: 1.35 }}>
                       {moduleData.module_info.title_th}
                     </h1>
-                    <div style={{ fontSize: '0.9rem', color: 'var(--text-sub)', marginBottom: '1rem' }}>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--text-sub)', marginBottom: '0.85rem' }}>
                       {moduleData.module_info.title_en}
                     </div>
+
+                    {hubMode === 'exam_topics' && selectedTopicId && (
+                      <div style={{ marginBottom: '0.9rem' }}>
+                        <TopicMasterySelector
+                          topicId={selectedTopicId}
+                          value={topicMastery[selectedTopicId]}
+                          onChange={updateTopicMastery}
+                          feedbackText={masteryFeedback?.topicId === selectedTopicId ? masteryFeedback.text : null}
+                          label="ระดับจำหัวข้อนี้:"
+                        />
+                      </div>
+                    )}
 
                     {/* Textbook & Evidence Sources Shelf */}
                     {moduleData.textbook_references && moduleData.textbook_references.length > 0 && (
@@ -2580,7 +2769,7 @@ export default function ClinicalStudyHub({
                             <div style={{
                               marginTop: '1.1rem',
                               paddingTop: '0.9rem',
-                              borderTop: '1px solid rgba(255,255,255,0.08)',
+                              borderTop: '1px solid var(--border)',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'space-between',
@@ -2588,33 +2777,14 @@ export default function ClinicalStudyHub({
                               gap: '0.75rem'
                             }}>
                               {caseTopicId && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-                                  <span style={{ fontSize: '0.78rem', color: 'var(--text-sub)', fontWeight: 700 }}>
-                                    จบเคสนี้แล้ว ประเมินความเข้าใจหัวข้อ:
-                                  </span>
-                                  {Object.entries(MASTERY_META).map(([lvl, meta]) => {
-                                    const active = topicMastery[caseTopicId] === lvl;
-                                    return (
-                                      <button
-                                        key={lvl}
-                                        type="button"
-                                        onClick={() => updateTopicMastery(caseTopicId, lvl)}
-                                        style={{
-                                          padding: '0.28rem 0.6rem',
-                                          borderRadius: '8px',
-                                          fontSize: '0.74rem',
-                                          fontWeight: active ? 800 : 600,
-                                          cursor: 'pointer',
-                                          background: active ? meta.bg : 'var(--surface-card)',
-                                          color: active ? meta.color : 'var(--text-sub)',
-                                          border: active ? `1px solid ${meta.border}` : '1px solid var(--border)',
-                                        }}
-                                      >
-                                        {meta.emoji} {meta.label}
-                                      </button>
-                                    );
-                                  })}
-                                </div>
+                                <TopicMasterySelector
+                                  topicId={caseTopicId}
+                                  value={topicMastery[caseTopicId]}
+                                  onChange={updateTopicMastery}
+                                  feedbackText={masteryFeedback?.topicId === caseTopicId ? masteryFeedback.text : null}
+                                  label="จบเคสนี้แล้ว ประเมินระดับจำ:"
+                                  compact
+                                />
                               )}
                               {activeCaseIndex < filteredGuidedCases.length - 1 && (
                                 <button
@@ -3647,8 +3817,13 @@ export default function ClinicalStudyHub({
         </div>
         </>
         )}
+        </div>
 
       </div>
     </div>
   );
+
+  return isModal && typeof document !== 'undefined'
+    ? createPortal(hubContent, document.body)
+    : hubContent;
 }

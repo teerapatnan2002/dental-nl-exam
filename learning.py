@@ -3,7 +3,7 @@ import math
 import random
 import re
 import time
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session, selectinload
 
@@ -710,12 +710,331 @@ def _parse_explanation(exp_raw: Optional[str]) -> Dict[str, Any]:
 
 
 _NUM_RULE_REGEX = re.compile(
-    r"(?:มาตรา\s*\d+(?:\s*/\s*\d+)?|พ\.ร\.บ\.[^,\.\n]{2,35}พ\.ศ\.\s*\d{4}|"
-    r"[<>≤≥≈]?\s*\d+(?:[.,–\-]\d+)?(?:/\d+)?\s*(?:mg/kg|mg/dL|mg/L|mg|g|mL|mmHg|mm|cm|µm|ppm|%|°|องศา|สัปดาห์|วัน|เดือน|ปี|ขวบ|นาที|ชั่วโมง|ชม\.|บาท|ซี่|คู่สบ|เท่า|INR|RDT|Stage\s*[I|V]+|Grade\s*[A-C]|Class\s*[I|V]+))",
+    r"(?:"
+    r"(?:มาตรา|ม\.)\s*\d+(?:\s*/\s*\d+)?(?:\s*\(\d+\))?"
+    r"|หมวด\s*\d+(?:\s*ข้อ\s*\d+)?"
+    r"|พ\.ร\.บ\.[^,\.\n()]{2,38}?พ\.ศ\.\s*\d{4}"
+    r"|(?<![A-Za-z0-9])CN\s*(?:XII|XI|IX|X|VIII|VII|VI|IV|V|III|II|I)(?![A-Za-z0-9])"
+    r"|(?<![A-Za-z0-9])1\s*:\s*(?:50|80|100|200),000(?:\s*epinephrine)?(?![A-Za-z0-9])"
+    r"|(?:[<>≤≥≈]\s*)?\d+(?:,\d{3})*(?:\.\d+)?(?:\s*(?:[–\-~]|ถึง)\s*\d+(?:,\d{3})*(?:\.\d+)?)?"
+    r"(?:\s*(?:mg\s*F/kg|mg/kg/dose|mg/kg/day|mg/kg|mL/min|ml/min|mg/dL|mg/L|mm/yr|mcg|µg|mg|g|kg|mL|ml|mmHg|mm|มม\.|cm|ซม\.|µm|ppm|%|°|องศา|สัปดาห์|อาทิตย์|วัน|เดือน|ปี|ขวบ|นาที|ชั่วโมง|ชม\.|บาท|ซี่|คู่สบ|เท่า|สถาน|หน่วยกิต|รอบ|INR|RDT)"
+    r"(?:/\s*(?:\d+(?:\.\d+)?\s*)?(?:ml|mL|cc|day|dose|hr|วัน|ชม\.))?)"
+    r"|(?<![A-Za-z0-9])(?:Stage\s*(?:IV|III|II|I|[1-4])|Grade\s*[A-D]|Class\s*(?:IV|III|II|I|[1-5]))(?![A-Za-z0-9])"
+    r")",
     re.IGNORECASE,
 )
 
-_EN_TERM_REGEX = re.compile(r"\b([A-Z][A-Za-z0-9\-/]{2,}(?:\s+[A-Z]?[a-z0-9\-/]{2,}){0,2})\b")
+_EN_TERM_REGEX = re.compile(
+    r"(?<![A-Za-z0-9])"
+    r"([A-Z][A-Za-z0-9'\-/]{1,}"
+    r"(?:\s+(?:[A-Z][A-Za-z0-9'\-/]*|[a-z]{2,}(?:-[a-z]+)?)){0,4})"
+    r"(?![A-Za-z0-9])"
+)
+
+_CLOZE_SKIP_EN_TERMS = {
+    "The", "And", "For", "With", "This", "That", "From", "Into", "Only", "Most",
+    "More", "Less", "High", "Low", "Normal", "Common", "Severe", "Mild", "Moderate",
+    "Acute", "Chronic", "Primary", "Secondary", "Type", "Stage", "Class", "Grade",
+    "Group", "Step", "Note", "Case", "Stem", "Patient", "Dental", "Dentist",
+    "Treatment", "Management", "Diagnosis", "Clinical", "Oral", "Tooth", "Teeth",
+    "Root", "Bone", "Pain", "Risk", "Care", "Time", "Day", "Days", "Week", "Weeks",
+    "Month", "Months", "Year", "Years", "Age", "Old", "Male", "Female", "Right",
+    "Left", "Upper", "Lower", "Before", "After", "First", "Second", "Third",
+    "However", "Therefore", "Because", "Although", "Often", "Usually", "Always",
+    "Never", "Should", "Must", "Could", "Would", "Might", "Likely", "Unknown",
+    "Other", "Another", "Both", "Each", "Every", "All", "None", "Some", "Many",
+    "Very", "Much", "Well", "Good", "Best", "Bad", "Poor", "True", "False",
+    "Correct", "Incorrect", "Wrong", "Answer", "Option", "Choice", "Question",
+    "Check", "Test", "Exam", "Rule", "Law", "Act", "Section", "Code", "Standard",
+    "Level", "Rate", "Score", "Index", "Value", "Area", "Zone", "Point", "Side",
+    "Part", "Line", "Form", "Size", "Shape", "Color", "Red", "White", "Blue",
+    "Black", "Yellow", "Green", "Dark", "Light", "Soft", "Hard", "Deep", "Shallow",
+    "Small", "Large", "Long", "Short", "Fast", "Slow", "Early", "Late", "New",
+    "Same", "Different", "Similar", "Specific", "General", "Direct", "Indirect",
+    "Active", "Passive", "Local", "Systemic", "Routine", "Emergency", "Urgent",
+    "Elective", "Immediate", "Delayed", "Complete", "Partial", "Total", "Single",
+    "Double", "Multiple", "Simple", "Complex", "Major", "Minor", "Main", "Basic",
+    "Key", "Core", "Real", "High-Yield", "Pearl", "Takeaway", "Pitfall",
+    "NL", "NL2", "Stem", "Figure", "Image", "Table", "Example", "History",
+    "Finding", "Findings", "Symptom", "Symptoms", "Sign", "Signs", "Lesion",
+    "Lesions", "Disease", "Condition", "Disorder", "Procedure", "Therapy",
+    "Method", "Technique", "Factor", "Factors", "Cause", "Causes", "Effect",
+    "Effects", "Result", "Results", "Outcome", "Option", "Options", "Study",
+    "Studies", "Report", "Data", "Level", "Levels", "Dose", "Dosage", "Amount",
+    "Number", "Range", "Mean", "Average", "Limit", "Max", "Min", "Normal range",
+    "Primary stress", "Lower complete", "Upper complete", "Known complication",
+}
+
+_CLOZE_EN_TRAILING_NOISE = {
+    "is", "are", "was", "were", "be", "been", "being", "has", "have", "had",
+    "can", "could", "may", "might", "must", "should", "will", "would", "do", "does",
+    "and", "or", "for", "with", "from", "into", "that", "which", "who", "whom",
+    "when", "where", "while", "during", "after", "before", "under", "over",
+    "between", "among", "through", "about", "against", "without", "within",
+    "also", "very", "more", "most", "often", "usually", "always", "never",
+    "typically", "commonly", "frequently", "primarily", "mainly", "especially",
+    "drastically", "significantly", "reduces", "increases", "causes", "leads",
+    "prevents", "protects", "helps", "shows", "indicates", "suggests", "requires",
+}
+
+_RULE_THRESHOLD_CUE_RE = re.compile(
+    r"(?:[<>≤≥≈]|ไม่เกิน|อย่างน้อย|ตั้งแต่|เกินอายุ|หลังอายุ|ก่อนอายุ|จนถึงอายุ|จนกระทั่งอายุ|"
+    r"อายุความ|ต่ออายุ|กำหนดเวลา|ครบรอบ|1\s*รอบ|ภายใน|พ้นกำหนด|ระวางโทษ|"
+    r"จำคุก|ปรับ|พักใช้|เพิกถอน|ช่วงอายุ|เกณฑ์|ค่าปกติ|ตัดยอด|จุดตัด|เพดาน|"
+    r"(?<![ก-์])เป้าหมาย|(?<![ก-์])ปลอดภัย|สูงสุด|ต่ำสุด|เฉลี่ย|cut[\s\-]?off|threshold|target|limit|normal|ptd|mrd|cltd|std|"
+    r"ใบอนุญาต|สัญญา|ฟ้อง|บังคับ|ขึ้นไป|ต่ำกว่า|สูงกว่า|น้อยกว่า|มากกว่า|เท่ากับ)",
+    re.IGNORECASE,
+)
+_AGE_PATIENT_CUE_RE = re.compile(r"(?:อายุ|วัย|ขวบ|เด็ก|ทารก|ผู้ป่วย|ชาย|หญิง|คนไข้|นักเรียน|สามเณร|ประถม)")
+_VIGNETTE_HISTORY_CUE_RE = re.compile(
+    r"(?:เมื่อ\s*$|เมื่อ\s+\S+\s*$|มานาน|เป็นเวลา|นาน\s*$|มาแล้ว\s*$|มาตรวจ|มาหา|มาด้วย|มา\s*$|"
+    r"ผ่าหัวใจ|ผ่าตัด.{0,12}เมื่อ|ถอนฟัน.{0,12}เมื่อ|ใส่ฟัน.{0,12}เมื่อ|ทำครอบ.{0,8}มา|ล้ม.{0,18}ใน\s*$)"
+)
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.\n!?])\s+|\n+|(?<=ครับ)\s+|(?<=ค่ะ)\s+")
+
+
+def _split_clean_sentences(text: str) -> List[str]:
+    """Split explanation text into clean, readable sentences without breaking decimals or Thai abbreviations."""
+    clean = re.sub(r"\s+", " ", (text or "")).strip()
+    if not clean:
+        return []
+    # Protect common Thai legal & metric abbreviations and decimal numbers from splitting on '.'
+    protected = re.sub(r"(?i)(พ\.ร\.บ\.|พ\.ร\.ฎ\.|พ\.ศ\.|ค\.ศ\.|ป\.พ\.พ\.|ป\.วิ\.พ\.|ป\.วิ\.อ\.|ป\.อ\.|พ\.ร\.ก\.|สสจ\.|สบส\.|สปสช\.|รพ\.สต\.|รพ\.|กทม\.|สธ\.|อย\.|etc\.|e\.g\.|i\.e\.|vs\.|approx\.|มม\.|ซม\.|ชม\.|กก\.|ม\.|ด\.ร\.|ผศ\.|รศ\.|ศ\.|นพ\.|ทพ\.|ทพญ\.|อสม\.|ฯลฯ)", lambda m: m.group(0).replace(".", "\u0000"), clean)
+    protected = re.sub(r"(?<=\d)\.(?=\d)", "\u0000", protected)
+    raw_parts = re.split(r"(?<=[.!?])\s+|\s+(?=ดังนั้น|สรุป|สรุปคือ|หลักการคือ|กล่าวคือ|โดยมีเกณฑ์|หาก\s|ในกรณีที่)", protected)
+    out = [p.replace("\u0000", ".").strip() for p in raw_parts if len(p.strip()) >= 12]
+    return out if out else [clean]
+
+
+def _trim_to_sentence_window(sentence: str, blank_start: int, blank_end: int, max_len: int = 285) -> str:
+    """Keep a complete, grammatical sentence or word-boundary window around the blank—never slice mid-word."""
+    s = re.sub(r"\s+", " ", sentence).strip()
+    if len(s) <= max_len:
+        return s
+
+    center = (blank_start + blank_end) // 2
+    half = (max_len - 12) // 2
+    win_start = max(0, min(center - half, blank_start - 35))
+    win_end = min(len(s), max(win_start + max_len, blank_end + 35))
+    if win_end - win_start > max_len:
+        win_start = max(0, blank_end + 40 - max_len) if blank_end > max_len - 40 else 0
+        win_end = min(len(s), win_start + max_len)
+
+    prefix = ""
+    suffix = ""
+    if win_start > 0:
+        # Snap forward to the next space so we never start mid-word
+        sp = s.find(" ", win_start)
+        if sp != -1 and sp < blank_start - 4:
+            win_start = sp + 1
+        prefix = "..."
+    if win_end < len(s):
+        # Snap backward to the previous space so we never end mid-word
+        sp = s.rfind(" ", max(blank_end + 1, win_start), win_end)
+        if sp != -1 and sp >= blank_end:
+            win_end = sp
+        suffix = "..."
+
+    return f"{prefix}{s[win_start:win_end].strip()}{suffix}"
+
+
+_CLOZE_EN_MID_BREAK = {
+    "is", "are", "was", "were", "be", "been", "being", "has", "have", "had",
+    "can", "could", "may", "might", "must", "should", "will", "would", "do", "does",
+    "that", "which", "who", "whom", "when", "where", "while", "because", "although",
+    "often", "usually", "always", "never", "typically", "commonly", "frequently",
+    "primarily", "mainly", "especially", "drastically", "significantly",
+    "reduces", "increases", "causes", "leads", "prevents", "protects", "helps",
+    "shows", "indicates", "suggests", "requires", "remains", "occurs", "presents",
+    "predisposes", "resulting", "including",
+}
+
+
+def _clean_en_term(text: str, start: int, end: int) -> Tuple[int, int, str]:
+    """Truncate at prose verbs/adverbs and strip trailing prepositions so clinical phrases stay intact."""
+    raw = text[start:end].strip()
+    parts = raw.split()
+    for idx in range(1, len(parts)):
+        if parts[idx].lower().rstrip(",.;:") in _CLOZE_EN_MID_BREAK:
+            parts = parts[:idx]
+            break
+    while len(parts) > 1 and parts[-1].lower().rstrip(",.;:") in _CLOZE_EN_TRAILING_NOISE:
+        parts.pop()
+    while len(parts) > 1 and parts[0].lower() in _CLOZE_EN_TRAILING_NOISE:
+        parts.pop(0)
+    raw = " ".join(parts).strip()
+    if not raw:
+        return start, end, ""
+    new_start = text.find(raw, max(0, start - 2), end + 2)
+    if new_start == -1:
+        return start, end, raw
+    return new_start, new_start + len(raw), raw
+
+
+def _is_vignette_number(text: str, start: int, end: int, match_str: str) -> bool:
+    """Return True if a matched number is non-memorable vignette/patient data (age, weight, BP, history)."""
+    ms = (match_str or "").strip()
+    if len(ms) < 2:
+        return True
+    before = text[max(0, start - 36):start]
+    after = text[end:min(len(text), end + 28)]
+    combined_ctx = f"{before} {ms} {after}"
+
+    has_threshold_cue = bool(_RULE_THRESHOLD_CUE_RE.search(before[-28:])) or bool(
+        re.search(r"^(?:\s*(?:ขึ้นไป|ต่อรอบ|ต่อปี|ต่อวัน|ต่อสัปดาห์|ก่อนทำหัตถการ|อย่างน้อย|ไม่เกิน))", after)
+    ) or bool(re.match(r"^[<>≤≥≈]", ms))
+
+    # 1. Patient-specific vitals/labs measured with '=' or ':' without threshold operator (e.g., "eGFR = 88 ml/min", "BP 140/96 mmHg")
+    if re.search(r"(?:BP|ความดัน|ชีพจร|eGFR|CrCl|FBS|HbA1c|Hb|INR)\s*(?:ได้|คือ)?\s*[=:]?\s*$", before[-24:], re.IGNORECASE) and not has_threshold_cue:
+        return True
+    if "=" in before[-8:] and not has_threshold_cue:
+        return True
+
+    # 2. Explicit legal statutes/sections & cranial nerves/classes/doses per kg are always rules
+    if re.search(r"^(?:มาตรา|ม\.|หมวด|พ\.ร\.บ\.|CN\s*[IVX]+|1\s*:|Stage|Grade|Class)", ms, re.IGNORECASE):
+        return False
+    if re.search(r"(?:mg/kg|mg\s*F/kg|mL/min|ml/min|mg/dL|mg/L|mm/yr|ppm|หน่วยกิต|สถาน|INR|RDT|epinephrine)", ms, re.IGNORECASE):
+        return False
+
+    # 3. Reject bare unit counts for teeth lost/affected ("2 ซี่", "1 ซี่") unless total dentition ("20 ซี่", "32 ซี่")
+    if re.search(r"ซี่$", ms):
+        num_m = re.match(r"(\d+)", ms)
+        if num_m and int(num_m.group(1)) not in (20, 28, 32):
+            return True
+
+    # 4. Patient weight ("เด็กหนัก 8 kg", "น้ำหนัก 50 kg", "20 kg") is vignette data, never drug dosing
+    if re.search(r"(?:^|\d\s*)kg$", ms, re.IGNORECASE):
+        if re.search(r"(?:น้ำหนัก|หนัก|เด็ก|ผู้ป่วย)", before[-22:]) or not has_threshold_cue:
+            return True
+
+    # 5. Patient/cohort age ("ผู้ป่วยหญิงอายุ 60 ปี", "เด็กอายุ 12 ปี", "วัย 15 เดือน", "เด็กประถม... มีอายุ 11-12 ปี")
+    if re.search(r"(?:ปี|ขวบ|เดือน)$", ms):
+        is_license_age = "ใบอนุญาต" in combined_ctx and re.search(r"(?:อายุ|ต่ออายุ|ปี)", combined_ctx)
+        if is_license_age:
+            return False
+        if _AGE_PATIENT_CUE_RE.search(before[-34:]) and not has_threshold_cue:
+            return True
+        if re.search(r"^(?:\s*ก่อน)", after):
+            return True
+        if _VIGNETTE_HISTORY_CUE_RE.search(before[-28:]) and not has_threshold_cue:
+            return True
+
+    # 6. Case symptom durations ("2-3 วัน", "มา 3 วัน", "30 นาทีก่อน") without rule framing
+    if re.search(r"(?:วัน|สัปดาห์|อาทิตย์|นาที|ชั่วโมง|ชม\.)$", ms):
+        if _VIGNETTE_HISTORY_CUE_RE.search(before[-28:]) and not has_threshold_cue:
+            return True
+        if re.search(r"^(?:\s*ก่อน)", after) and "ก่อนทำหัตถการ" not in after and "ก่อนนอน" not in after:
+            return True
+
+    # 7. Case-specific lesion/gap measurements ("ช่องว่างฟันหน้า 2 มม.", "ขนาด 2 mm")
+    if re.search(r"(?:mmHg|mm|มม\.|cm|ซม\.|ml|mL|บาท)$", ms, re.IGNORECASE):
+        if re.search(r"(?:วัดได้|ขนาด|ช่องว่าง|แผล|ก้อน|ร่องลึก|ลึก\s*=|กว้าง)\s*[=:]?\s*$", before[-28:], re.IGNORECASE) and not has_threshold_cue:
+            return True
+
+    return False
+
+
+_KNOWN_SHORT_CLINICAL_TERMS = {
+    "RMGIC", "GIC", "MTA", "NaOCl", "EDTA", "CHX", "MRONJ", "CBCT",
+    "ANUG", "DMFT", "ICDAS", "PRGF", "PRF", "DNA", "BOP", "CEJ", "CAL",
+}
+
+
+def _score_en_candidate(text: str, start: int, end: int, term: str) -> int:
+    """Score pedagogical value of an English clinical term, heavily penalizing parenthetical gloss leaks."""
+    t_clean = term.strip()
+    t_low = t_clean.lower()
+    if t_clean in _CLOZE_SKIP_EN_TERMS or t_low in {s.lower() for s in _CLOZE_SKIP_EN_TERMS}:
+        return -100
+
+    before_all = text[:start]
+    last_open = before_all.rfind("(")
+    last_close = before_all.rfind(")")
+    in_parens = last_open > last_close and ")" in text[end:min(len(text), end + 30)]
+
+    is_known_short = t_clean in _KNOWN_SHORT_CLINICAL_TERMS or t_clean.upper() in _KNOWN_SHORT_CLINICAL_TERMS
+    if len(t_clean) < 5 and (in_parens or not is_known_short):
+        return -100
+    if " " not in t_clean and len(t_clean) < 6 and not is_known_short and not re.search(r"(?:oma|itis|osis|cillin|azole|farin|mg|pulp|cyst|nerve|duct|apex|root|gland)$", t_low):
+        return -50
+
+    before = text[max(0, start - 35):start]
+    after = text[end:min(len(text), end + 20)]
+
+    score = 22
+    if is_known_short:
+        score += 18
+    if " " in t_clean:
+        score += 12  # Multi-word named conditions/nerves/pathogens
+    if len(t_clean) >= 12:
+        score += 8
+
+    # High-yield clinical/anatomic/pharmacologic morphology bonus
+    if re.search(
+        r"(?:itis|osis|oma|pathy|algia|penia|emia|plasia|necrosis|stomatitis|candid|"
+        r"neuralgia|caries|hypoplasia|dysplasia|hypertrophy|atrophy|keratosis|leukoplakia|"
+        r"erythroplakia|ameloblastoma|osteomyelitis|osteoradionecrosis|abscess|cyst|ulcer|"
+        r"syndrome|nerve|artery|vein|muscle|gland|duct|sinus|foramen|fossa|ligament|suture|"
+        r"cillin|mycin|azole|zepine|profen|statin|farin|caine|prednisolone|paracetamol|"
+        r"amoxicillin|chlorhexidine|fluoride|calcium|epinephrine|lidocaine|mepivacaine|"
+        r"rmgic|gic|mta|biodentine|zirconia|amalgam|composite|sealant|varnish|prognosis|"
+        r"candida|streptococcus|staphylococcus|actinomyces|porphyromonas|herpetic|viral|fungal|"
+        r"denture|pulpitis|periodontitis|gingivitis|periapical|apical|condylar|hemorrhage|thromb)",
+        t_low,
+    ):
+        score += 22
+
+    # Diagnostic/causal Thai cue immediately preceding the term
+    if re.search(
+        r"(?:เกิดจาก|สาเหตุ|ติดเชื้อ|เชื้อรา|แบคทีเรีย|ไวรัส|วินิจฉัย|เข้าได้กับ|สงสัย|"
+        r"ลักษณะของ|ภาวะ|โรค|กลุ่มอาการ|ต่อ|กดทับ|เส้นประสาท|บริเวณ|กล้ามเนื้อ|ด้วย|"
+        r"ประเมิน|ยาทางเลือก|ให้ยา|เลือกใช้|ใช้ยา|รักษาคือ|รักษาด้วย|เรียกว่า|คือ|ตามหลัก|ดัชนี)\s*$",
+        before,
+    ):
+        score += 18
+
+    # Check if term sits inside parentheses "(...)" — usually a Thai-to-English gloss or alias!
+    if in_parens:
+        pre_paren = text[max(0, last_open - 22):last_open].strip()
+        # Preceded by Thai words right outside '(' -> strong giveaway probability (e.g., "ปากแห้ง (Xerostomia)")
+        if re.search(r"[\u0E00-\u0E7F]$", pre_paren):
+            score -= 80
+        else:
+            score -= 45
+
+    # Penalize if immediately followed by a short parenthetical acronym/brand that leaks the blank ("Aspirin (ASA)")
+    if re.match(r"^\s*\([A-Za-z0-9\s\-/]{2,20}\)", after):
+        score -= 14
+
+    return score
+
+
+def _score_num_candidate(text: str, start: int, end: int, match_str: str) -> int:
+    """Score pedagogical value of a numeric/legal match."""
+    ms = match_str.strip()
+    if _is_vignette_number(text, start, end, ms):
+        return -100
+
+    before = text[max(0, start - 30):start]
+    score = 32
+    if re.search(r"มาตรา|ม\.|หมวด|พ\.ร\.บ\.|หน่วยกิต|สถาน", ms):
+        score += 28
+    elif re.search(r"mg/kg|mg\s*F/kg|mL/min|ml/min|mg/dL|ppm|INR|1\s*:", ms, re.IGNORECASE):
+        score += 26
+    elif re.search(r"[–\-~]|ถึง|[<>≤≥≈]", ms):
+        score += 18
+    elif re.search(r"^(?:Stage|Grade|Class|CN)\s", ms, re.IGNORECASE):
+        score += 16
+
+    if _RULE_THRESHOLD_CUE_RE.search(before):
+        score += 12
+    # Down-rank bare % ("25%", "60%") inside quoted ad examples or non-cutoff prose
+    if re.fullmatch(r"\d+(?:\.\d+)?%", ms):
+        if re.match(r"^\s+[A-Za-z]", text[end:end + 15]):
+            score -= 16
+        elif "'" in before[-20:] or "เช่น" in before[-24:] or not re.search(r"[<>≤≥]|เกณฑ์|อย่างน้อย|ไม่เกิน", before):
+            score -= 20
+    return score
 
 
 def _extract_numeric_rules(texts: List[str]) -> List[Dict[str, Any]]:
@@ -725,26 +1044,69 @@ def _extract_numeric_rules(texts: List[str]) -> List[Dict[str, Any]]:
     for q_id, txt, ref in texts:
         if not txt:
             continue
-        # Split into crisp sentences / clauses
-        sentences = [s.strip() for s in re.split(r"(?<=[.\n])\s+|\n+", txt) if len(s.strip()) > 15]
-        for sent in sentences:
-            matches = _NUM_RULE_REGEX.findall(sent)
+        for sent in _split_clean_sentences(txt):
+            matches = [
+                m.group(0).strip()
+                for m in _NUM_RULE_REGEX.finditer(sent)
+                if not _is_vignette_number(sent, m.start(), m.end(), m.group(0))
+            ]
             if not matches:
                 continue
-            highlight_val = " | ".join(dict.fromkeys(m.strip() for m in matches[:3]))
+            highlight_val = " | ".join(dict.fromkeys(matches[:3]))
             norm_key = highlight_val.lower() + "::" + re.sub(r"\s+", " ", sent[:50]).lower()
             if norm_key in seen_vals:
                 continue
             seen_vals.add(norm_key)
+            first_m = _NUM_RULE_REGEX.search(sent)
+            b_start, b_end = (first_m.start(), first_m.end()) if first_m else (0, min(40, len(sent)))
             extracted.append({
                 "question_id": q_id,
                 "highlight_value": highlight_val,
-                "context": sent[:260] + ("..." if len(sent) > 260 else ""),
+                "context": _trim_to_sentence_window(sent, b_start, b_end, max_len=260),
                 "reference": ref,
             })
             if len(extracted) >= 35:
                 return extracted
     return extracted
+
+
+def _pick_best_cloze_span(text: str) -> Optional[Dict[str, Any]]:
+    """Pick the single highest-yield Cloze blank (start, end, target, kind, score) inside a clean sentence."""
+    candidates: List[Dict[str, Any]] = []
+
+    for m in _NUM_RULE_REGEX.finditer(text):
+        target = m.group(0).strip()
+        sc = _score_num_candidate(text, m.start(), m.end(), target)
+        if sc > 0:
+            # Map exact trimmed span inside text
+            t_start = text.find(target, m.start(), m.end() + 1)
+            if t_start != -1:
+                candidates.append({
+                    "start": t_start,
+                    "end": t_start + len(target),
+                    "target": target,
+                    "kind": "numeric_law",
+                    "score": sc,
+                })
+
+    for m in _EN_TERM_REGEX.finditer(text):
+        c_start, c_end, target = _clean_en_term(text, m.start(), m.end())
+        if not target:
+            continue
+        sc = _score_en_candidate(text, c_start, c_end, target)
+        if sc > 0:
+            candidates.append({
+                "start": c_start,
+                "end": c_end,
+                "target": target,
+                "kind": "clinical_term",
+                "score": sc,
+            })
+
+    if not candidates:
+        return None
+    candidates.sort(key=lambda c: (c["score"], len(c["target"])), reverse=True)
+    return candidates[0]
 
 
 def _build_cloze_flashcard(
@@ -757,42 +1119,42 @@ def _build_cloze_flashcard(
     cog: str,
     task_name: str,
 ) -> Optional[Dict[str, Any]]:
-    """Build an interactive Active Recall Flashcard (Cloze deletion when high-yield terms exist, else Q->Rule)."""
+    """Build an interactive Active Recall Flashcard using high-yield Cloze logic (never blinding patient ages)."""
     clean_text = re.sub(r"\s+", " ", (source_text or "")).strip()
     if len(clean_text) < 20:
         return None
 
-    # Take first 1-2 crisp sentences so card is scannable
-    short_text = clean_text if len(clean_text) <= 260 else (clean_text[:257] + "...")
-    masked_front = short_text
+    sentences = _split_clean_sentences(clean_text)
+    chosen_sent = sentences[0] if sentences else clean_text
+    best_span: Optional[Dict[str, Any]] = None
+    for sent in sentences:
+        sp = _pick_best_cloze_span(sent)
+        if sp and (not best_span or sp["score"] > best_span["score"]):
+            best_span = sp
+            chosen_sent = sent
+
     hidden_answers: List[str] = []
-
-    # 1) Try numeric / legal article cloze first (highest retention value for exams)
-    num_matches = [m.strip() for m in _NUM_RULE_REGEX.findall(short_text)]
-    if num_matches:
-        for nm in num_matches[:2]:
-            if nm in masked_front and len(nm) >= 2:
-                masked_front = masked_front.replace(nm, "【 ____?____ 】", 1)
-                hidden_answers.append(nm)
-
-    # 2) If no numeric rule, try key clinical English terminologies
-    if not hidden_answers:
-        skip_words = {"The", "And", "For", "With", "Type", "Stage", "Class", "Grade", "High", "Low", "Normal", "NL", "NL2"}
-        en_matches = [m.strip() for m in _EN_TERM_REGEX.findall(short_text) if m.strip() not in skip_words and len(m.strip()) >= 4]
-        if en_matches:
-            # Prefer longest technical term
-            en_matches.sort(key=len, reverse=True)
-            for term in en_matches[:2]:
-                if term in masked_front:
-                    masked_front = masked_front.replace(term, "【 ____?____ 】", 1)
-                    hidden_answers.append(term)
+    if best_span:
+        window = _trim_to_sentence_window(chosen_sent, best_span["start"], best_span["end"], max_len=260)
+        target = best_span["target"]
+        if target in window:
+            masked_front = window.replace(target, "【 ____?____ 】", 1)
+            hidden_answers = [target]
+            back_text = window
+        else:
+            masked_front = window
+            back_text = window
+    else:
+        back_text = _trim_to_sentence_window(chosen_sent, 0, min(40, len(chosen_sent)), max_len=260)
+        masked_front = back_text
 
     mode = "cloze" if hidden_answers else "q_to_rule"
     if mode == "q_to_rule":
         q_clean = re.sub(r"\s+", " ", (question_prompt or "")).strip()
         if not q_clean or len(q_clean) < 10:
             return None
-        masked_front = f"❓ โจทย์ถามว่า: \"{q_clean[:180]}{'...' if len(q_clean) > 180 else ''}\"\n\n💡 จงนึกหลักการตัดสินและคำตอบก่อนเปิดดู!"
+        q_win = _trim_to_sentence_window(q_clean, 0, min(30, len(q_clean)), max_len=190)
+        masked_front = f"❓ โจทย์ถามว่า: \"{q_win}\"\n\n💡 จงนึกหลักการตัดสินและคำตอบก่อนเปิดดู!"
         hidden_answers = [correct_choice_text] if correct_choice_text else []
 
     return {
@@ -804,7 +1166,7 @@ def _build_cloze_flashcard(
         "task": task_name,
         "front": masked_front,
         "hidden_terms": hidden_answers,
-        "back": short_text,
+        "back": back_text,
         "correct_choice_text": correct_choice_text,
         "reference": ref_str,
     }
@@ -1701,23 +2063,124 @@ def _serialize_cloze_sm2_row(row: Optional[models.UserCardReview], now_ts: int) 
     }
 
 
+def _format_num_like(val: float, ref_str: str, dec_places: int) -> str:
+    """Format a number matching the decimal precision and comma style of ref_str."""
+    use_comma = "," in ref_str
+    if dec_places > 0:
+        out = f"{round(val, dec_places):.{dec_places}f}"
+    else:
+        out = str(int(round(val)))
+    if use_comma and "." not in out:
+        out = f"{int(out):,}"
+    elif use_comma and "." in out:
+        whole, frac = out.split(".")
+        out = f"{int(whole):,}.{frac}"
+    return out
+
+
 def _perturb_numeric_answer(answer: str, rng: random.Random) -> List[str]:
-    """Generate plausible numeric/legal-section distractors by shifting the embedded value."""
-    match = re.search(r"(\d+(?:\.\d+)?)", answer)
+    """Generate plausible clinical/legal distractors preserving unit, scale, and range validity."""
+    ans_clean = (answer or "").strip()
+
+    # 1. Roman numerals / dental classifications / epinephrine ratios / cranial nerves
+    ep_m = re.match(r"^1\s*:\s*(50|80|100|200),000(.*)$", ans_clean, re.IGNORECASE)
+    if ep_m:
+        orig_dil, suf = ep_m.group(1), ep_m.group(2)
+        pool = [f"1:{d},000{suf}" for d in ("50", "80", "100", "200") if d != orig_dil]
+        rng.shuffle(pool)
+        return pool[:3]
+
+    cn_m = re.match(r"^CN\s*(XII|XI|IX|X|VIII|VII|VI|IV|V|III|II|I)$", ans_clean, re.IGNORECASE)
+    if cn_m:
+        orig_cn = cn_m.group(1).upper()
+        cns = [f"CN {c}" for c in ("III", "V", "VII", "IX", "X", "XI", "XII") if c != orig_cn]
+        rng.shuffle(cns)
+        return cns[:3]
+
+    cls_m = re.match(r"^(Stage|Class|Grade)\s*(IV|III|II|I|V|[A-D]|[1-5])$", ans_clean, re.IGNORECASE)
+    if cls_m:
+        kind, val = cls_m.group(1).capitalize(), cls_m.group(2).upper()
+        if val in ("I", "II", "III", "IV", "V"):
+            choices = ["I", "II", "III", "IV"] + (["V"] if kind == "Class" else [])
+        elif val in ("A", "B", "C", "D"):
+            choices = ["A", "B", "C", "D"]
+        else:
+            choices = ["1", "2", "3", "4"] + (["5"] if kind == "Class" else [])
+        pool = [f"{kind} {c}" for c in choices if c != val]
+        rng.shuffle(pool)
+        return pool[:3]
+
+    # 2. Numeric range (e.g. "0.5–0.7 mL/min", "10-15 mg/kg/dose", "4-6 ชั่วโมง")
+    rng_m = re.match(
+        r"^(.*?)(\d+(?:,\d{3})*(?:\.\d+)?)(\s*(?:[–\-~]|ถึง)\s*)(\d+(?:,\d{3})*(?:\.\d+)?)(.*)$",
+        ans_clean,
+    )
+    if rng_m:
+        prefix, lo_s, sep, hi_s, suffix = rng_m.groups()
+        try:
+            lo = float(lo_s.replace(",", ""))
+            hi = float(hi_s.replace(",", ""))
+        except ValueError:
+            lo, hi = 0.0, 0.0
+        if hi > lo:
+            dec_lo = len(lo_s.split(".")[1]) if "." in lo_s else 0
+            dec_hi = len(hi_s.split(".")[1]) if "." in hi_s else 0
+            dec_places = max(dec_lo, dec_hi)
+            span = max(hi - lo, abs(lo) * 0.3, 0.1 if dec_places > 0 else 1.0)
+            is_percent = "%" in suffix or "เปอร์เซ็นต์" in suffix
+            shifts: List[Tuple[float, float]] = []
+            for mult in (0.5, 1.5, 2.0, 2.5):
+                shifts.append((lo * mult, hi * mult))
+            for k in (-2, -1, 1, 2, 3):
+                shifts.append((lo + k * span, hi + k * span))
+            rng.shuffle(shifts)
+            distractors: List[str] = []
+            seen = {ans_clean.lower()}
+            for n_lo, n_hi in shifts:
+                if n_lo <= 0 and lo > 0:
+                    continue
+                if n_lo < 0:
+                    continue
+                if is_percent and n_hi > 100:
+                    continue
+                f_lo = _format_num_like(n_lo, lo_s, dec_places)
+                f_hi = _format_num_like(n_hi, hi_s, dec_places)
+                if float(f_hi.replace(",", "")) <= float(f_lo.replace(",", "")):
+                    continue
+                cand = f"{prefix}{f_lo}{sep}{f_hi}{suffix}".strip()
+                if cand.lower() not in seen:
+                    seen.add(cand.lower())
+                    distractors.append(cand)
+                if len(distractors) >= 3:
+                    return distractors
+            if distractors:
+                return distractors
+
+    # 3. Single scalar numeric value (or year / section)
+    match = re.search(r"(\d+(?:,\d{3})*(?:\.\d+)?)", ans_clean)
     if not match:
         return []
-    prefix = answer[: match.start()]
+    prefix = ans_clean[: match.start()]
     num_str = match.group(1)
-    suffix = answer[match.end() :]
+    suffix = ans_clean[match.end() :]
     is_percent = "%" in suffix or "เปอร์เซ็นต์" in suffix
+    is_thai_year = "พ.ศ." in prefix or "พ.ศ." in ans_clean or (2470 <= float(num_str.replace(",", "")) <= 2580 and "/" not in suffix)
+    is_section = "มาตรา" in prefix or "ม." in prefix or "หมวด" in prefix
     dec_places = len(num_str.split(".")[1]) if "." in num_str else 0
     try:
-        orig_val = float(num_str)
+        orig_val = float(num_str.replace(",", ""))
     except ValueError:
         return []
 
     raw_candidates: List[float] = []
-    if dec_places > 0:
+    if is_thai_year:
+        for delta in (-10, -5, -3, -2, 2, 3, 5, 10, 12):
+            raw_candidates.append(orig_val + delta)
+    elif is_section:
+        deltas = (-3, -2, -1, 1, 2, 3, 5, 10)
+        for d in deltas:
+            raw_candidates.append(orig_val + d)
+    elif dec_places > 0:
         for mult in (0.5, 1.5, 2.0, 0.25, 2.5):
             raw_candidates.append(orig_val * mult)
         for delta in (-1.0, 1.0, -0.5, 0.5, 2.0):
@@ -1733,77 +2196,196 @@ def _perturb_numeric_answer(answer: str, rng: random.Random) -> List[str]:
             raw_candidates.append(orig_val + delta)
 
     rng.shuffle(raw_candidates)
-    distractors: List[str] = []
-    seen_vals = {num_str}
+    distractors = []
+    seen_vals = {num_str.replace(",", "")}
     for cand_val in raw_candidates:
         if cand_val <= 0 and orig_val > 0:
             continue
         if is_percent and cand_val > 100:
             continue
-        if dec_places > 0:
-            formatted_num = f"{round(cand_val, dec_places):.{dec_places}f}"
-        else:
-            int_val = int(round(cand_val))
-            if int_val <= 0 and orig_val > 0:
-                continue
-            formatted_num = str(int_val)
-        if formatted_num in seen_vals:
+        if is_thai_year and (cand_val < 2475 or cand_val > 2569):
             continue
-        seen_vals.add(formatted_num)
+        formatted_num = _format_num_like(cand_val, num_str, dec_places)
+        if dec_places == 0 and int(round(cand_val)) <= 0 and orig_val > 0:
+            continue
+        norm_cmp = formatted_num.replace(",", "")
+        if norm_cmp in seen_vals:
+            continue
+        seen_vals.add(norm_cmp)
         cand_full = f"{prefix}{formatted_num}{suffix}".strip()
-        if cand_full and cand_full.lower() != answer.lower():
+        if cand_full and cand_full.lower() != ans_clean.lower():
             distractors.append(cand_full)
         if len(distractors) >= 3:
             break
     return distractors
 
 
-_CLOZE_SKIP_EN_TERMS = {
-    "The", "And", "For", "With", "Type", "Stage", "Class", "Grade",
-    "High", "Low", "Normal", "NL", "NL2", "Dental", "Treatment", "Patient",
-}
+_THAI_KEY_CONCEPT_REGEX = re.compile(
+    r"(?:ความรับผิดทางแพ่ง|ความรับผิดทางอาญา|ความรับผิดทางวินัย|จรรยาบรรณแห่งวิชาชีพทันตกรรม|"
+    r"จรรยาบรรณวิชาชีพ|นิยามวิชาชีพทันตกรรม|หนังสือให้ความยินยอม|สิทธิของผู้ป่วย|สิทธิผู้ป่วย|"
+    r"ความลับของผู้ป่วย|พ\.ร\.บ\.\s*วิชาชีพทันตกรรม|พ\.ร\.บ\.\s*สถานพยาบาล|"
+    r"พ\.ร\.บ\.\s*สุขภาพแห่งชาติ|พ\.ร\.บ\.\s*ข้อมูลข่าวสารของราชการ|พ\.ร\.บ\.\s*ยา|"
+    r"ประมาทเลินเล่ออย่างร้ายแรง|การกล่าวโทษต่อทันตแพทยสภา|ใบอนุญาตประกอบวิชาชีพ|"
+    r"หน่วยกิตการศึกษาต่อเนื่อง|ว่ากล่าวตักเตือน|พักใช้ใบอนุญาต|เพิกถอนใบอนุญาต|ภาคทัณฑ์|"
+    r"สำเนาเวชระเบียน|การส่งต่อผู้ป่วย|ยาสีฟันผสมฟลูออไรด์|ท่าเข่าชนเข่า|"
+    r"น้ำตาลอิสระ|คาร์โบไฮเดรตเหนียวติดฟัน|ทันตกรรมป้องกัน|การขูดหินปูนและเกลารากฟัน|"
+    r"ภาวะปากแห้งจากรังสี|ภาวะเยื่อเมือกช่องปากอักเสบ|สุขอนามัยช่องปาก|การควบคุมคราบจุลินทรีย์)"
+)
+
+_THAI_FALLBACK_CONCEPTS = [
+    "ว่ากล่าวตักเตือน",
+    "ภาคทัณฑ์",
+    "พักใช้ใบอนุญาต",
+    "เพิกถอนใบอนุญาต",
+    "ความรับผิดทางแพ่ง",
+    "ความรับผิดทางอาญา",
+    "ความรับผิดทางวินัย",
+    "หนังสือให้ความยินยอม",
+    "สิทธิผู้ป่วย",
+    "ความลับของผู้ป่วย",
+    "นิยามวิชาชีพทันตกรรม",
+    "สำเนาเวชระเบียน",
+    "การส่งต่อผู้ป่วย",
+    "ประมาทเลินเล่ออย่างร้ายแรง",
+    "ยาสีฟันผสมฟลูออไรด์",
+    "น้ำตาลอิสระ",
+    "ท่าเข่าชนเข่า",
+    "ทันตกรรมป้องกัน",
+]
+
+_VIGNETTE_SENTENCE_START_RE = re.compile(
+    r"^(?:จากประวัติ|จาก\s*(?:case|เคส|โจทย์)|ผู้ป่วย(?:ชาย|หญิง|เด็ก|สูงอายุ)?|"
+    r"คนไข้(?:เพศ)?(?:ชาย|หญิง)?|เด็ก(?:ชาย|หญิง|เล็ก|วัย|อายุ)?|ในกรณีตัวอย่างนี้|stem\b)",
+    re.IGNORECASE,
+)
+_RULE_SENTENCE_BOOST_RE = re.compile(
+    r"(?:สรุป|ดังนั้น|หลักการ|เกณฑ์|มาตรฐาน|ตาม\s*พ\.ร\.บ\.|มาตรา\s*\d+|คำตอบ|"
+    r"เกิดจาก|สาเหตุหลัก|กลไก|รักษาคือ|ควรเลือก|ข้อห้าม|ห้ามทำ|วินิจฉัย|เข้าได้กับ|สงสัย)"
+)
+
+
+def _trim_core_excerpt(core_text: str, max_len: int = 260) -> str:
+    """Return the first non-vignette rule sentence from core_principle for post-answer context."""
+    sents = _split_clean_sentences(core_text)
+    if not sents:
+        return ""
+    for sent in sents:
+        if not _VIGNETTE_SENTENCE_START_RE.match(sent):
+            return _trim_to_sentence_window(sent, 0, min(40, len(sent)), max_len=max_len)
+    last_s = sents[-1]
+    return _trim_to_sentence_window(last_s, 0, min(40, len(last_s)), max_len=max_len)
 
 
 def _extract_cloze_candidate(q: models.Question, exp: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    """Extract 1 crisp Cloze blank (preferring numeric dosages/cutoffs/Thai laws, then EN terms)."""
-    candidate_texts = [
-        (exp.get("core_principle") or "").strip(),
-        (exp.get("key_takeaway") or "").strip(),
-        (exp.get("clinical_pearl") or "").strip(),
+    """Select the single highest-yield Cloze deletion span across explanation fields without leaking hints."""
+    source_specs: List[Tuple[str, int, str]] = [
+        ("key_takeaway", 38, (exp.get("key_takeaway") or "").strip()),
+        ("why_correct", 24, (exp.get("why_correct") or "").strip()),
+        ("core_principle", 20, (exp.get("core_principle") or "").strip()),
+        ("clinical_pearl", 14, (exp.get("clinical_pearl") or "").strip()),
     ]
-    for raw in candidate_texts:
-        clean = re.sub(r"\s+", " ", raw).strip()
-        if len(clean) < 28:
+
+    best_choice: Optional[Dict[str, Any]] = None
+
+    for src_name, base_bonus, raw in source_specs:
+        if len(raw) < 24:
             continue
-        snippet = clean if len(clean) <= 280 else (clean[:277] + "...")
+        sentences = _split_clean_sentences(raw)
+        for idx, sent in enumerate(sentences):
+            if len(sent) < 24:
+                continue
+            sent_bonus = base_bonus
+            # Penalize vignette recap sentences in core_principle unless they carry strong rules
+            if src_name == "core_principle" and (
+                idx == 0 and _VIGNETTE_SENTENCE_START_RE.match(sent)
+            ):
+                sent_bonus -= 24
+            if _RULE_SENTENCE_BOOST_RE.search(sent):
+                sent_bonus += 8
+            # Slightly down-weight pure English pearls when clean Thai+EN bilingual rules exist
+            if src_name == "clinical_pearl" and not re.search(r"[\u0E00-\u0E7F]", sent):
+                sent_bonus -= 12
 
-        num_matches = [m.strip() for m in _NUM_RULE_REGEX.findall(snippet) if len(m.strip()) >= 2]
-        if num_matches:
-            target = num_matches[0]
-            if target in snippet:
-                return {
-                    "prompt_masked": snippet.replace(target, "【 ____?____ 】", 1),
-                    "missing_answer": target,
-                    "blank_kind": "numeric_law",
-                    "full_explanation": snippet,
+            # Try high-yield numeric/legal or clinical EN term first
+            span = _pick_best_cloze_span(sent)
+            if not span:
+                # Fallback to structured Thai legal/clinical concepts only for Thai-only rules
+                tm = _THAI_KEY_CONCEPT_REGEX.search(sent)
+                if tm:
+                    span = {
+                        "start": tm.start(),
+                        "end": tm.end(),
+                        "target": tm.group(0).strip(),
+                        "kind": "thai_rule",
+                        "score": 18,
+                    }
+
+            if not span:
+                continue
+
+            b_start, b_end = span["start"], span["end"]
+            target = span["target"]
+
+            # If target is an EN term immediately followed by a parenthetical acronym/brand like "(Tegretol)" or "(ASA)",
+            # mask the full span so the acronym doesn't leak the hidden drug/condition!
+            if span["kind"] == "clinical_term":
+                alias_m = re.match(r"^\s*\([A-Za-z0-9\s.\-/]{2,22}\)", sent[b_end:])
+                if alias_m:
+                    cand_end = b_end + alias_m.end()
+                    combined = sent[b_start:cand_end].strip()
+                    if len(combined) <= 46:
+                        b_end = cand_end
+                        target = combined
+
+            total_score = span["score"] + sent_bonus
+            if best_choice is None or total_score > best_choice["total_score"]:
+                best_choice = {
+                    "sent": sent,
+                    "b_start": b_start,
+                    "b_end": b_end,
+                    "target": target,
+                    "kind": span["kind"],
+                    "total_score": total_score,
+                    "src_name": src_name,
                 }
 
-        en_matches = [
-            m.strip()
-            for m in _EN_TERM_REGEX.findall(snippet)
-            if m.strip() not in _CLOZE_SKIP_EN_TERMS and len(m.strip()) >= 6
-        ]
-        if en_matches:
-            en_matches.sort(key=len, reverse=True)
-            target = en_matches[0]
-            if target in snippet:
-                return {
-                    "prompt_masked": snippet.replace(target, "【 ____?____ 】", 1),
-                    "missing_answer": target,
-                    "blank_kind": "clinical_term",
-                    "full_explanation": snippet,
-                }
-    return None
+    if not best_choice or best_choice["total_score"] < 26:
+        return None
+
+    sent = best_choice["sent"]
+    b_start = best_choice["b_start"]
+    b_end = best_choice["b_end"]
+    target = best_choice["target"]
+
+    # Trim around the chosen span strictly on sentence/word boundaries (zero mid-word cuts)
+    full_clean = re.sub(r"\s+", " ", sent).strip()
+    if len(full_clean) <= 285:
+        window = full_clean
+        local_start = b_start
+        local_end = b_end
+    else:
+        window = _trim_to_sentence_window(full_clean, b_start, b_end, max_len=285)
+        t_pos = window.find(target)
+        if t_pos == -1:
+            return None
+        local_start = t_pos
+        local_end = t_pos + len(target)
+
+    if window[local_start:local_end] != target:
+        t_pos = window.find(target)
+        if t_pos == -1:
+            return None
+        local_start, local_end = t_pos, t_pos + len(target)
+
+    prompt_masked = f"{window[:local_start]}【 ____?____ 】{window[local_end:]}"
+    return {
+        "prompt_masked": prompt_masked,
+        "missing_answer": target,
+        "blank_kind": best_choice["kind"],
+        "full_explanation": window,
+        "source_field": best_choice["src_name"],
+        "extra_insight": _trim_core_excerpt(exp.get("core_principle") or ""),
+    }
 
 
 @router.get("/cloze-arena")
@@ -1852,6 +2434,7 @@ def get_cloze_pitfall_arena(
     unlocked_rows: List[models.Question] = []
     term_pool_by_cat: Dict[str, List[str]] = {}
     num_pool_by_cat: Dict[str, List[str]] = {}
+    thai_pool_by_cat: Dict[str, List[str]] = {}
 
     for q in rows:
         if locked and q.source_exam and "2570" in q.source_exam:
@@ -1863,22 +2446,28 @@ def get_cloze_pitfall_arena(
         exp = _parse_explanation(q.explanation)
         blob = " ".join(
             [
-                (exp.get("core_principle") or ""),
                 (exp.get("key_takeaway") or ""),
+                (exp.get("core_principle") or ""),
+                (exp.get("clinical_pearl") or ""),
             ]
         )
-        for nm in _NUM_RULE_REGEX.findall(blob):
-            nm_clean = nm.strip()
-            if len(nm_clean) >= 2:
+        for nm_m in _NUM_RULE_REGEX.finditer(blob):
+            nm_clean = nm_m.group(0).strip()
+            if not _is_vignette_number(blob, nm_m.start(), nm_m.end(), nm_clean):
                 bucket = num_pool_by_cat.setdefault(cat, [])
-                if nm_clean not in bucket and len(bucket) < 80:
+                if nm_clean not in bucket and len(bucket) < 100:
                     bucket.append(nm_clean)
-        for en in _EN_TERM_REGEX.findall(blob):
-            en_clean = en.strip()
-            if en_clean not in _CLOZE_SKIP_EN_TERMS and len(en_clean) >= 6:
+        for en_m in _EN_TERM_REGEX.finditer(blob):
+            c_start, c_end, en_clean = _clean_en_term(blob, en_m.start(), en_m.end())
+            if en_clean and _score_en_candidate(blob, c_start, c_end, en_clean) >= 18:
                 bucket = term_pool_by_cat.setdefault(cat, [])
-                if en_clean not in bucket and len(bucket) < 100:
+                if en_clean not in bucket and len(bucket) < 120:
                     bucket.append(en_clean)
+        for th_m in _THAI_KEY_CONCEPT_REGEX.finditer(blob):
+            th_clean = th_m.group(0).strip()
+            bucket = thai_pool_by_cat.setdefault(cat, [])
+            if th_clean not in bucket and len(bucket) < 80:
+                bucket.append(th_clean)
 
     global_fallback_terms = [
         "Irreversible pulpitis",
@@ -1916,31 +2505,74 @@ def get_cloze_pitfall_arena(
             if cloze_data:
                 rng = random.Random(f"cloze-arena-{q.id}")
                 ans = cloze_data["missing_answer"]
-                distractors: List[str] = []
-                if cloze_data["blank_kind"] == "numeric_law":
-                    distractors.extend(_perturb_numeric_answer(ans, rng))
-
-                pool = (
-                    list(num_pool_by_cat.get(cat, []))
-                    if cloze_data["blank_kind"] == "numeric_law"
-                    else list(term_pool_by_cat.get(cat, []))
-                )
-                rng.shuffle(pool)
+                ans_low = ans.lower()
+                bkind = cloze_data["blank_kind"]
                 full_lower = cloze_data["full_explanation"].lower()
-                for cand in pool + global_fallback_terms:
-                    if len(distractors) >= 3:
-                        break
-                    if (
-                        cand.lower() != ans.lower()
-                        and cand.lower() not in full_lower
-                        and cand not in distractors
-                    ):
-                        distractors.append(cand)
+                distractors: List[str] = []
 
+                if bkind == "numeric_law":
+                    cat_nums = list(num_pool_by_cat.get(cat, []))
+                    rng.shuffle(cat_nums)
+                    if ans.startswith("พ.ร.บ."):
+                        same_acts = [c for c in cat_nums if c.startswith("พ.ร.บ.")]
+                        for cand in same_acts:
+                            if len(distractors) >= 2:
+                                break
+                            c_low = cand.lower()
+                            if c_low != ans_low and c_low not in full_lower and cand not in distractors:
+                                distractors.append(cand)
+                        distractors.extend(_perturb_numeric_answer(ans, rng))
+                    else:
+                        distractors.extend(_perturb_numeric_answer(ans, rng))
+                    pool_nums = [c for c in cat_nums if not c.startswith("พ.ร.บ.")] if not ans.startswith("พ.ร.บ.") else cat_nums
+                    for cand in pool_nums:
+                        if len(distractors) >= 3:
+                            break
+                        c_low = cand.lower()
+                        if c_low != ans_low and c_low not in full_lower and cand not in distractors:
+                            distractors.append(cand)
+                elif bkind == "thai_rule":
+                    pool_th = list(thai_pool_by_cat.get(cat, []))
+                    rng.shuffle(pool_th)
+                    for cand in pool_th + _THAI_FALLBACK_CONCEPTS:
+                        if len(distractors) >= 3:
+                            break
+                        c_low = cand.lower()
+                        if (
+                            c_low != ans_low
+                            and c_low not in ans_low
+                            and ans_low not in c_low
+                            and c_low not in full_lower
+                            and cand not in distractors
+                        ):
+                            distractors.append(cand)
+                else:
+                    pool_en = list(term_pool_by_cat.get(cat, []))
+                    rng.shuffle(pool_en)
+                    for cand in pool_en + global_fallback_terms:
+                        if len(distractors) >= 3:
+                            break
+                        c_low = cand.lower()
+                        if (
+                            c_low != ans_low
+                            and c_low not in ans_low
+                            and ans_low not in c_low
+                            and c_low not in full_lower
+                            and cand not in distractors
+                        ):
+                            distractors.append(cand)
+
+                distractors = distractors[:3]
                 if len(distractors) >= 3:
-                    options = [ans] + distractors[:3]
+                    options = [ans] + distractors
                     rng.shuffle(options)
                     ckey = f"cloze-{q.id}"
+                    kt_clean = (exp.get("key_takeaway") or "").strip()
+                    wc_clean = (exp.get("why_correct") or "").strip()
+                    pearl_clean = (exp.get("clinical_pearl") or "").strip()
+                    extra_insight = cloze_data.get("extra_insight") or ""
+                    if not wc_clean and extra_insight and extra_insight != kt_clean:
+                        wc_clean = extra_insight
                     cloze_items.append(
                         {
                             "item_type": "cloze",
@@ -1952,12 +2584,13 @@ def get_cloze_pitfall_arena(
                             "cognitive_level": q.cognitive_level or "A",
                             "prompt_masked": cloze_data["prompt_masked"],
                             "missing_answer": ans,
-                            "blank_kind": cloze_data["blank_kind"],
+                            "blank_kind": bkind,
                             "options": options,
                             "full_explanation": cloze_data["full_explanation"],
-                            "why_correct": (exp.get("why_correct") or "").strip(),
+                            "why_correct": wc_clean,
+                            "clinical_pearl": pearl_clean,
                             "common_pitfall": (exp.get("common_pitfall") or "").strip(),
-                            "key_takeaway": (exp.get("key_takeaway") or "").strip(),
+                            "key_takeaway": kt_clean,
                             "reference": ref_str,
                             "prioritized_wrong": is_wrong,
                             "sm2_state": _serialize_cloze_sm2_row(sm2_map.get(ckey), now_ts),

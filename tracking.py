@@ -414,13 +414,51 @@ def submit_exam_session(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    # Deduplicate answers by question_id (max 500 per session) and verify correctness server-side
+    dedup_answers = []
+    seen_qids = set()
+    for ans in (session.answers or [])[:500]:
+        if ans.question_id not in seen_qids:
+            seen_qids.add(ans.question_id)
+            dedup_answers.append(ans)
+
+    qids = [ans.question_id for ans in dedup_answers]
+    db_questions = (
+        db.query(models.Question.id, models.Question.correct_answer)
+        .filter(models.Question.id.in_(qids))
+        .all()
+        if qids
+        else []
+    )
+    correct_by_qid = {qid: corr for qid, corr in db_questions}
+
+    verified_records = []
+    verified_correct_count = 0
+    for ans in dedup_answers:
+        if ans.question_id not in correct_by_qid:
+            continue
+        db_corr = correct_by_qid[ans.question_id]
+        if db_corr is not None and str(db_corr).strip() != "":
+            is_corr_bool = bool(
+                ans.selected_choice is not None
+                and str(ans.selected_choice).strip() == str(db_corr).strip()
+            )
+        else:
+            is_corr_bool = bool(ans.is_correct)
+        if is_corr_bool:
+            verified_correct_count += 1
+        verified_records.append((ans, is_corr_bool))
+
+    verified_total = len(verified_records) if verified_records else max(0, min(int(session.total_questions or 0), 500))
+    verified_score = verified_correct_count if verified_records else max(0, min(int(session.score or 0), verified_total))
+
     db_session = models.ExamSession(
         user_id=current_user.id,
         start_time=session.start_time,
         end_time=session.end_time,
         exam_type=session.exam_type,
-        score=session.score,
-        total_questions=session.total_questions,
+        score=verified_score,
+        total_questions=verified_total,
         time_limit_seconds=session.time_limit_seconds,
         time_spent_seconds=session.time_spent_seconds,
     )
@@ -431,26 +469,26 @@ def submit_exam_session(
     now_ts = int(time.time())
 
     # Batch-load existing SM-2 stats for questions in this submission to avoid N+1 queries
-    qids = [ans.question_id for ans in session.answers]
+    valid_qids = [ans.question_id for ans, _ in verified_records]
     existing_stats = (
         db.query(models.UserQuestionStat)
         .filter(
             models.UserQuestionStat.user_id == current_user.id,
-            models.UserQuestionStat.question_id.in_(qids),
+            models.UserQuestionStat.question_id.in_(valid_qids),
         )
         .all()
-        if qids
+        if valid_qids
         else []
     )
     stat_by_qid = {s.question_id: s for s in existing_stats}
 
-    for ans in session.answers:
+    for ans, is_corr_bool in verified_records:
         conf = ans.confidence if ans.confidence in _VALID_CONFIDENCE else None
         db_ans = models.UserAnswer(
             session_id=db_session.id,
             question_id=ans.question_id,
             selected_choice=ans.selected_choice,
-            is_correct=1 if ans.is_correct else 0,
+            is_correct=1 if is_corr_bool else 0,
             time_spent_seconds=ans.time_spent_seconds,
             confidence=conf,
         )
@@ -470,7 +508,7 @@ def submit_exam_session(
             db.add(stat)
             stat_by_qid[ans.question_id] = stat
 
-        q_score = _question_sm2_quality(ans.is_correct, conf, ans.time_spent_seconds)
+        q_score = _question_sm2_quality(is_corr_bool, conf, ans.time_spent_seconds)
         stat.last_confidence = conf
         stat.last_reviewed_at = now_ts
         _apply_sm2(stat, q_score, now_ts)
@@ -756,6 +794,27 @@ def sync_local_cards_to_db(
         "inserted": inserted,
         "cards": [_serialize_card_review(c, now_ts) for c in all_rows],
     }
+
+
+@router.delete("/cards/review")
+def delete_card_review(
+    card_key: str = Query(..., min_length=1, max_length=200),
+    card_type: str = Query(default="topic", pattern="^(flashcard|topic|cloze)$"),
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Remove a saved mastery/SM-2 state when the user toggles a rating off."""
+    deleted_count = (
+        db.query(models.UserCardReview)
+        .filter(
+            models.UserCardReview.user_id == current_user.id,
+            models.UserCardReview.card_key == card_key,
+            models.UserCardReview.card_type == card_type,
+        )
+        .delete(synchronize_session=False)
+    )
+    db.commit()
+    return {"deleted": int(deleted_count or 0), "card_key": card_key, "card_type": card_type}
 
 
 @router.get("/my-readiness")

@@ -42,7 +42,7 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
       }}
     >
       <div
-        className="glass-panel animate-scale-up"
+        className="glass-panel schedule-modal-panel animate-scale-up"
         onClick={e => e.stopPropagation()}
         style={{
           width: '100%',
@@ -59,13 +59,14 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
       >
         {/* ── Modal Header ─────────────────────────────────── */}
         <div style={{
-          padding: '1rem clamp(1rem, 3vw, 1.5rem)',
+          padding: '0.85rem clamp(1rem, 3vw, 1.5rem)',
           borderBottom: '1px solid var(--border)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           gap: '0.75rem',
-          background: 'var(--bg-panel)'
+          background: 'var(--bg-panel)',
+          flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
             <div style={{
@@ -110,6 +111,15 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
           </button>
         </div>
 
+        {/* ── Unified Scrollable Body (Tabs + Schedule Details) ── */}
+        <div style={{
+          overflowY: 'auto',
+          flex: '1 1 0%',
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          WebkitOverflowScrolling: 'touch',
+        }}>
         {/* ── Chronological Wrapping Tabs (Closest First + Past Expandable) ── */}
         <div style={{
           display: 'flex',
@@ -118,6 +128,7 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
           padding: '0.7rem clamp(1rem, 3vw, 1.5rem)',
           background: 'var(--surface-subtle)',
           borderBottom: '1px solid var(--border)',
+          flexShrink: 0,
         }}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', alignItems: 'center' }}>
             {upcomingExams.map(exam => {
@@ -237,13 +248,12 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
           )}
         </div>
 
-        {/* ── Modal Body Content (Scrollable) ────────────────── */}
+        {/* ── Modal Body Content ────────────────────────────── */}
         <div style={{
-          padding: '1.35rem 1.5rem',
-          overflowY: 'auto',
+          padding: 'clamp(1rem, 3vw, 1.35rem) clamp(1rem, 3vw, 1.5rem)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '1.2rem'
+          gap: '1.15rem'
         }}>
           {/* Main Exam Title Banner */}
           <div style={{
@@ -412,6 +422,24 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
                 {currentExam.fee}
               </div>
             </div>
+
+            <div className="glass-panel" style={{ padding: '0.9rem 1rem', borderRadius: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--primary-light)', fontSize: '0.8rem', marginBottom: '0.25rem' }}>
+                <Calendar size={14} /> <strong>วันรับสมัครสอบ</strong>
+              </div>
+              <div style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text)' }}>
+                {currentExam.regPeriodText}
+              </div>
+            </div>
+
+            <div className="glass-panel" style={{ padding: '0.9rem 1rem', borderRadius: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent)', fontSize: '0.8rem', marginBottom: '0.25rem' }}>
+                <CheckCircle size={14} /> <strong>ประกาศผลสอบ</strong>
+              </div>
+              <div style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text)' }}>
+                {currentExam.announcementDateText}
+              </div>
+            </div>
           </div>
 
           {/* Detailed Breakdown: Subjects or Parts */}
@@ -471,11 +499,11 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
             </div>
           )}
 
-          {/* Test Centers Table (For Law 3/2569) */}
+          {/* Test Centers Table */}
           {currentExam.centers && (
             <div>
               <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <MapPin size={15} color="var(--danger)" /> สนามสอบและจำนวนที่นั่งสอบที่เปิดรับ (13 สถาบัน)
+                <MapPin size={15} color="var(--danger)" /> สนามสอบและจำนวนที่นั่งสอบที่เปิดรับ ({currentExam.centers.length} สถาบัน)
               </h4>
               <div style={{
                 maxHeight: '190px',
@@ -524,18 +552,36 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
             ผู้เข้าสอบสัญชาติไทยต้องนำ <strong>บัตรประจำตัวประชาชนที่ยังไม่หมดอายุ</strong> มาแสดงตนก่อนเข้าห้องสอบ หากไม่มีบัตรประชาชนให้ใช้บัตรประจำตัวผู้เข้าสอบหรือหนังสือเดินทางที่ยังไม่หมดอายุแทน ไม่อนุญาตให้ใช้เอกสารหรือบัตรอื่น
           </div>
         </div>
+        </div>
 
         {/* ── Modal Footer ─────────────────────────────────── */}
         <div style={{
-          padding: '0.9rem 1.5rem',
+          padding: '0.75rem clamp(1rem, 3vw, 1.5rem)',
           borderTop: '1px solid var(--border)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          background: 'var(--surface-subtle)'
+          gap: '0.75rem',
+          flexWrap: 'wrap',
+          background: 'var(--surface-subtle)',
+          flexShrink: 0,
         }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            แหล่งข้อมูล: ศูนย์ประเมินและรับรองความรู้ความสามารถฯ (ศ.ป.ท.) ทันตแพทยสภา
+            {currentExam.categoryGroup === 'mock' ? (
+              'Mock Exam บนเว็บไซต์ NL Dental Treasury (ไม่ใช่รอบสอบของ ศ.ป.ท.)'
+            ) : (
+              <>
+                แหล่งข้อมูล: ศูนย์ประเมินและรับรองความรู้ความสามารถฯ (ศ.ป.ท.) ทันตแพทยสภา ·{' '}
+                <a
+                  href={currentExam.officialUrl || 'https://cda.or.th'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'var(--primary-light)', fontWeight: 600, textDecoration: 'underline' }}
+                >
+                  ดูประกาศ cda.or.th
+                </a>
+              </>
+            )}
           </span>
           <button
             className="btn btn-secondary btn-sm"

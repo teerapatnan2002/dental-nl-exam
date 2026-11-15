@@ -1104,7 +1104,7 @@ export default function CalcSimulator({
 
         {/* Answer Input Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.65rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: '1 1 260px', maxWidth: '400px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: '1 1 220px', minWidth: 0, maxWidth: '100%' }}>
             <input
               type="number"
               step="any"
@@ -1114,6 +1114,8 @@ export default function CalcSimulator({
               placeholder="พิมพ์คำตอบตัวเลข..."
               style={{
                 flex: 1,
+                minWidth: 0,
+                width: '100%',
                 padding: '0.7rem 0.9rem',
                 borderRadius: '10px',
                 border: '1.5px solid var(--border)',
