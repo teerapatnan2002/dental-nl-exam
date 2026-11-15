@@ -101,12 +101,12 @@ TOPIC_METADATA: Dict[str, Dict[str, str]] = {
 
     # ปริทันตวิทยา (Periodontology)
     "Perio-Classification-2017": {
-        "title_th": "ระบบจำแนกโรคปริทันต์และเนื้อเยื่อรอบรากเทียม 2017 (Staging & Grading)",
-        "title_en": "2017 AAP/EFP World Workshop Classification of Periodontal Diseases",
+        "title_th": "ระบบจำแนกโรคปริทันต์และเนื้อเยื่อรอบรากเทียม (AAP/EFP 2018 & TAP E-book 2023)",
+        "title_en": "AAP/EFP 2018 Classification, TAP E-book 2023 & TAP Prognosis 2025",
     },
     "Perio-Examination-Indices": {
-        "title_th": "การตรวจประเมินสภาวะปริทันต์ ค่า CAL และพยากรณ์โรค (TAP 2025)",
-        "title_en": "Periodontal Probing, CAL & TAP Guideline 2025 Prognosis (Kwok & Caton)",
+        "title_th": "การตรวจประเมินสภาวะปริทันต์ ค่า CAL, %RBL (2 mm ใต้ CEJ) และพยากรณ์โรค (TAP 2025)",
+        "title_en": "Periodontal Probing, CAL, %RBL & TAP Guideline 2025 Prognosis",
     },
     "Perio-Etiology-Microbiology": {
         "title_th": "คราบจุลินทรีย์ แบคทีเรียก่อโรคปริทันต์ และภูมิคุ้มกัน",
@@ -441,25 +441,25 @@ CANONICAL_TEXTBOOKS = [
     },
     {
         "id": "carranza-lindhe-perio",
-        "title": "Newman & Carranza's Periodontology, AAP/EFP 2018 & สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP Guideline 2025)",
+        "title": "Newman & Carranza's Periodontology, AAP/EFP 2018 (TAP E-book 2023) & พยากรณ์โรค (TAP Guideline 2025)",
         "specialty": "ปริทันตวิทยา",
         "icon": "🌿",
         "color": "#10b981",
-        "patterns": ["carranza", "newman", "takei", "klokkevold", "lindhe", "lang", "caton", "kwok", "2017 world workshop", "tonetti", "papapanou", "chapple", "herrera", "hamp", "mcguire", "gargiulo", "tap", "2025", "unfavorable", "favorable", "prognosis shifter", "สมาคมปริทันตวิทยา"],
-        "description": "ตำราอ้างอิงหลัก ฉันทามติโลก AAP/EFP 2018 และแนวทางพยากรณ์โรคปริทันต์ฉบับปรับปรุงล่าสุดของสมาคมปริทันตวิทยาแห่งประเทศไทย (TAP Guideline 2025 / พ.ศ. 2568) ครอบคลุม Staging & Grading, Tooth-level Prognosis (Kwok & Caton 2007), Patient-level Prognosis & Prognosis Shifters, Supracrestal Tissue Attachment และศัลยกรรมปริทันต์",
+        "patterns": ["carranza", "newman", "takei", "klokkevold", "lindhe", "lang", "caton", "kwok", "2017 world workshop", "tonetti", "papapanou", "chapple", "herrera", "hamp", "mcguire", "gargiulo", "tap", "2023", "2025", "unfavorable", "favorable", "prognosis shifter", "สมาคมปริทันตวิทยา"],
+        "description": "องค์ความรู้บูรณาการระหว่างเอกสารฉันทามติของสมาคมปริทันตวิทยาแห่งประเทศไทยทั้ง 2 ฉบับล่าสุด: (1) Workshop E-book 2023 (การวินิจฉัยและจำแนกโรคปริทันต์/รอบรากเทียม AAP/EFP 2018 พร้อม 5 ข้อยกเว้น CAL) และ (2) TAP Guideline 2025 (พยากรณ์โรคปริทันต์ระดับซี่ฟัน 4 ระดับ และระดับผู้ป่วย 3 ระดับ + 4 Shifters) ร่วมกับตำรา Newman & Carranza / Lindhe",
         "thai_association": "สมาคมปริทันตวิทยาแห่งประเทศไทย (Thai Association of Periodontology — TAP) & ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย",
         "thai_references": [
             "Thai Association of Periodontology Guideline 2025: \"An Update in Periodontal Prognosis 2025\" สมาคมปริทันตวิทยาแห่งประเทศไทย (พ.ศ. 2568)",
-            "แนวทางการวินิจฉัยและจำแนกโรคปริทันต์ตามเกณฑ์ AAP/EFP 2018 สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP)",
+            "Workshop: Update on New Classification of Periodontal Diseases and Conditions (E-book 2023 / พ.ศ. 2562) สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP)",
             "ตำราปริทันตวิทยา คณะทันตแพทยศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย / มหาวิทยาลัยมหิดล / มหาวิทยาลัยเชียงใหม่",
             "Newman and Carranza's Clinical Periodontology (13th ed.) & Lindhe's Clinical Periodontology and Implant Dentistry"
         ],
         "thai_protocol_highlights": [
-            "แนวทางพยากรณ์โรคปริทันต์ใหม่ พ.ศ. 2568 (TAP Guideline 2025 — An Update in Periodontal Prognosis 2025): เปลี่ยนชื่อจาก Individual tooth prognosis (ระบบเดิม 5 ระดับ พ.ศ. 2550–2557) มาเป็น Tooth-level prognosis (อ้างอิง Kwok & Caton 2007) จำแนกเป็น 4 ระดับที่คำนึงถึง Periodontal stability ได้แก่ Favorable (Mobility 0–1, Bone loss Coronal third <33%, PD ≤5 mm, Hamp Furcation 0–1, Restorable, ไม่มี Endo-perio), Questionable (Mobility 1–2, Bone loss Middle third 33–66% หรือ >66% ที่มี vertical component ≥3 mm ที่ทำ regeneration ได้, PD ≥6 mm, Hamp Furcation 2, Endo-perio without root damage), Unfavorable (Mobility 2–3, Bone loss Apical third >66%, PD ≥6 mm, Hamp Furcation 3, Compromised restorability, Endo-perio with root damage ที่ต้องตรวจ/ปรึกษาเฉพาะทาง) และ Hopeless (Mobility 3, Bone loss ถึง tooth apex, Unrestorable หรือ Endo-perio with root damage แนะนำถอน; ระดับกระดูกปกติ 100% วัดจาก CEJ ลงมา 2 mm)",
-            "กฎการปรับระดับและปัจจัยร่วม Tooth-level Prognosis (TAP 2025): 1) หากผู้ป่วยเป็นเบาหวานที่ควบคุมไม่ดี (HbA1C ≥ 7.0%) และ/หรือ สูบบุหรี่หนัก (≥ 10 cigarettes/day) ฟันที่ประเมินได้ Questionable ให้ปรับเป็น Unfavorable ทันที 2) กรณีมี Traumatic occlusal force ให้ประเมินด้วยว่าสามารถแก้ไขควบคุมแรงสบก่อบาดเจ็บได้หรือไม่ 3) พยากรณ์โรคอาจเปลี่ยนแปลงได้ตามสภาวะของผู้ป่วยจึงต้องประเมินซ้ำ (re-prognosis) ทุกครั้งที่ผู้ป่วยเข้ารับการรักษา",
-            "Patient-level Prognosis (แทนคำว่า Overall prognosis เดิม; ปรับจาก TAP 2013 เชื่อม AAP/EFP 2018) แบ่งเป็น 3 ระดับ ได้แก่ Good (Periodontal health, Gingivitis, Periodontitis Stage I–II), Fair (Periodontitis Stage III) และ Poor (Periodontitis Stage IV หรือ Molar-incisor pattern) โดยหากมี Prognosis Shifters เชิงลบ (1. ระบบร่างกาย: สูบบุหรี่ ≥10 มวน/วัน, HbA1C ≥7.0%, โรคระบบอื่นตาม Jepsen et al. 2018; 2. ความร่วมมือ: สุขอนามัยช่องปาก/ซอกฟัน และความสม่ำเสมอในการนัด SPT; 3. Parafunctional habits และการรักษา; 4. Occlusal stability: ฟันเหลือน้อยกว่า 20 ซี่ หรือ <10 คู่สบ นับรวมรากฟันเทียม, สูญเสีย VD) ให้ปรับแย่ลง 1 ระดับ; ข้อยกเว้น: Health/Gingivitis อย่างน้อยไม่ต่ำกว่า Fair และ 'รากฟันเทียมไม่มีผลต่อ Patient-level prognosis' แต่นับรวมเป็นฟันคู่สบได้หากยังใช้งานได้",
-            "สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP) และข้อสอบ ศ.ท.ส. ใช้ระบบจำแนกโรคปริทันต์ AAP/EFP 2018 (Stage I–IV, Grade A–C) แทนคำว่า Chronic/Aggressive Periodontitis เดิม โดยมีเกณฑ์ Gingivitis เมื่อมี BOP ≥ 10% และแยก Gingivitis on an intact periodontium ออกจาก Gingivitis on a reduced periodontium",
-            "เกณฑ์มาตรฐานคลินิกปริทันต์ในโรงเรียนทันตแพทย์ไทย: นัดประเมินผลซ้ำ (Re-evaluation) หลังเสร็จสิ้นการขูดหินน้ำลายและเกลารากฟัน (SRP) ที่ระยะเวลา 4–6 สัปดาห์, ควบคุมค่า O'Leary Plaque Score ≤ 10–20% ก่อนผ่าตัดปริทันต์ และในการทำ Crown Lengthening ต้องกรอกระดูกให้ห่างจากขอบครอบฟันอย่างน้อย 3 mm (Supracrestal Tissue Attachment ~2 mm + Sulcus ~1 mm)"
+            "เกณฑ์วินิจฉัยและจำแนกโรคปริทันต์ (TAP E-book 2023 — AAP/EFP 2018): Periodontitis Case Definition ต้องพบ Interdental CAL ≥ 2 ซี่ที่ไม่ติดกัน หรือ Buccal/Oral CAL ≥ 3 mm + PD > 3 mm ≥ 2 ซี่ โดยต้องไม่อยู่ใน 5 ข้อยกเว้น (Traumatic recession, Cervical caries, CAL ด้าน Distal ฟันกรามซี่ 2 จากฟันคุดซี่ 3 เช่น 37D จาก 38, Endo lesion drainage, VRF); Gingivitis มี BOP ≥ 10% แยก Intact vs Reduced periodontium ส่วน Health on a stable reduced periodontium มี BOP < 10% และ PD ≤ 4 mm (โดยไม่มีจุด PD = 4 mm ที่ BOP+)",
+            "จุดเชื่อมโยงสำคัญระหว่าง TAP 2023 กับ TAP 2025: (1) ทั้งสองฉบับยึดระดับกระดูกปกติ (Normal bone level = 100%) ที่ตำแหน่ง 2 mm ใต้ CEJ เพื่อคำนวณ %RBL = A/B × 100, (2) ใช้ตัวปรับเสี่ยงร่วมกันคือ สูบบุหรี่ ≥ 10 มวน/วัน และเบาหวาน HbA1C ≥ 7.0% (Grade C ใน 2023 / ปรับ Questionable → Unfavorable ใน 2025), (3) Vertical defect ≥ 3 mm ที่ทำ Regeneration ได้ เป็นข้อยกเว้นสำคัญทั้งในการคง Stage และการคงระดับ Questionable แม้ RBL > 66%, (4) ขอบเขต Stage IV (<20 ซี่) เชื่อมตรงสู่ 1 ใน 4 Prognosis Shifters ระดับผู้ป่วย",
+            "จุดปรับปรุงล่าสุดของ TAP Guideline 2025 เหนือ E-book 2023: 1) Tooth-level Prognosis (Kwok & Caton 2007 เน้น Periodontal Stability) ใช้ 4 ระดับเท่านั้นคือ Favorable, Questionable, Unfavorable, Hopeless (ยกเลิกคำว่า Fair/Poor ในระดับซี่ฟัน และปรับปรุงคำพยากรณ์ Endo-perio จาก 'hopeless, poor หรือ favorable' ใน TAP 2023 หน้า 25 เป็น: ไม่มี Root damage = Questionable; มี Root damage = Unfavorable [ตรวจเพิ่ม/ส่งต่อ] หรือ Hopeless [ถอน]), 2) Stage (2023) คงที่ตลอดชีวิตไม่ลดขั้น แต่ Prognosis (2025) ต้องประเมิน Re-prognosis ทุกครั้งที่รักษา",
+            "Patient-level Prognosis (TAP 2025 — แทน Overall prognosis เดิม พ.ศ. 2556 เชื่อมตรง AAP/EFP 2018) แบ่ง 3 ระดับ: Good (Health, Gingivitis, Stage I–II), Fair (Stage III), Poor (Stage IV หรือ Molar-Incisor pattern) พร้อม 4 Prognosis Shifters (Systemic, Compliance/SPT, Parafunction, Occlusal stability <20 ซี่/<10 คู่สบ) ลดระดับลง 1 ขั้น (Health/Gingivitis คง ≥ Fair; รากเทียมไม่ลด Patient-level prognosis แต่นับรวมเป็นคู่สบได้)",
+            "เกณฑ์มาตรฐานคลินิกปริทันต์ในโรงเรียนทันตแพทย์ไทย: Re-evaluation หลัง SRP ที่ 4–6 สัปดาห์, O'Leary Plaque Score ≤ 10–20% ก่อนผ่าตัดปริทันต์, ใช้ Cairo Recession Type (RT1–RT3) ร่วมกับ Gingival Phenotype และ Supracrestal Tissue Attachment (STA ~2 mm, Crown lengthening ≥ 3 mm จากขอบครอบฟันถึง Alveolar crest)"
         ]
     },
     {

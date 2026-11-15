@@ -267,15 +267,15 @@ PATHWAYS_PART1: Dict[str, List[Dict[str, Any]]] = {
     "Perio-Mucogingival-Root-Coverage": [
         {
             "id": "perio-cairo-recession-graft",
-            "title": "Classification & Root Coverage Decision: Cairo Recession (RT1–RT3) & Soft Tissue Grafts",
+            "title": "Classification & Root Coverage Decision: Cairo RT1–RT3, Phenotype & Soft Tissue Grafts",
             "pathway_type": "decision",
-            "subtitle": "ประเมิน Interproximal CAL (Cairo 2011) ➔ เลือก Coronally Advanced Flap (CAF) + CTG vs Free Gingival Graft",
-            "reference": "Cairo et al. / AAP 2017 Mucogingival Deformities & Carranza's 13th ed.",
+            "subtitle": "เกณฑ์ AAP/EFP 2018 (TAP E-book 2023): ประเมิน Cairo RT1–RT3 + Gingival Phenotype + KTW ➔ เลือก CAF + CTG vs FGG",
+            "reference": "Cairo et al. / AAP 2018 Mucogingival Deformities, สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP E-book 2023 & TAP 2025) & Carranza's 13th ed.",
             "steps": [
-                _node(1, "จำแนกระดับเหงือกร่น (Cairo 2011)", "ตรวจความสูญเสีย Interproximal Attachment (CAL) ด้าน Mesial/Distal เทียบ Facial recession", "พยากรณ์ความเป็นไปได้ของการปิดคลุมราก 100% (Complete Root Coverage)", "decision", [
+                _node(1, "จำแนกระดับเหงือกร่น (Cairo RT) & Gingival Phenotype (TAP 2023)", "ตรวจ Interproximal CAL (Mesial/Distal) เทียบ Buccal Recession + ประเมินความหนาเหงือก (Thick/Thin) และ KTW", "ประเมินโอกาส Complete Root Coverage และวางแผนควบคุม Local factor ร่วมกับเกณฑ์ TAP 2025", "decision", [
                     {"condition": "RT1: ไม่สูญเสีย Interproximal CAL", "outcome": "Complete Root Coverage 100% เป็นไปได้สูง ➔ CAF + Subepithelial Connective Tissue Graft (CTG = Gold Standard)", "color": "#10b981"},
                     {"condition": "RT2: Interproximal CAL loss ≤ Buccal recession", "outcome": "ปิดคลุมได้บางส่วนถึงใกล้เคียงระดับ Interproximal bone", "color": "#f59e0b"},
-                    {"condition": "RT3: Interproximal CAL loss > Buccal recession", "outcome": "ไม่คาดหวัง Complete Root Coverage ➔ เน้นเพิ่ม Attached gingiva หรือปรับพฤติกรรม", "color": "#ef4444"},
+                    {"condition": "RT3: Interproximal CAL loss > Buccal recession", "outcome": "ไม่คาดหวัง Complete Root Coverage ➔ เน้นเพิ่ม Attached gingiva หรือปรับพฤติกรรม (Local factor → Surgical/Interdisciplinary)", "color": "#ef4444"},
                 ]),
                 _node(2, "วัตถุประสงค์เฉพาะของ FGG vs CTG", "FGG (Free Gingival Graft): เน้นเพิ่ม Keratinized / Attached Gingiva (ไม่สวยงาม สีต่าง)", "CTG (Subepithelial Connective Tissue Graft): Dual blood supply ปิดรากฟันสวยงามที่สุดและแผลเพดานปากหายแบบ Primary closure", "outcome"),
             ],
@@ -284,17 +284,18 @@ PATHWAYS_PART1: Dict[str, List[Dict[str, Any]]] = {
     "Perio-Acute-Conditions-Abscess": [
         {
             "id": "perio-nug-abscess-pathway",
-            "title": "Differential & Emergency Management: Periodontal Abscess vs Periapical Abscess vs NUG",
+            "title": "Acute Periodontal Conditions & Endo-Perio Prognosis (TAP 2023 + TAP 2025)",
             "pathway_type": "decision",
-            "subtitle": "ทดสอบ Pulp Vitality ➔ แยกฝีปริทันต์จากฝีปลายราก & จัดการ NUG (Punched-out Papillae)",
-            "reference": "AAP 2017 Acute Periodontal Conditions & สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP)",
+            "subtitle": "แยกฝีปริทันต์ vs ฝีปลายราก • NPD (NG/NP/NS) • Endo-Periodontal Lesions (Herrera 2018 → TAP 2025 Tooth-level Prognosis)",
+            "reference": "AAP/EFP 2018 (Herrera et al.), สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP E-book 2023 & TAP Guideline 2025, พ.ศ. 2568)",
             "steps": [
-                _node(1, "ผู้ป่วยมาด้วยอาการบวม-ปวดเหงือกเฉียบพลัน", "ตรวจ Cold test / EPT + วัด Pocket รอบซี่ฟัน + ประวัติไข้/ภูมิคุ้มกัน", "แยกต้นกำเนิดเชื้อจากคลองรากฟัน vs ร่องลึกปริทันต์", "decision", [
-                    {"condition": "ฟันมีชีวิต (Vital) + ร่องลึกปริทันต์กว้างลึกถึงก้อนบวมด้านข้างตัวฟัน", "outcome": "Periodontal Abscess ➔ ระบายหนองผ่าน Pocket (Gentle drainage) + Debridement + (ATB เฉพาะมีอาการระบบไข้/ต่อมน้ำเหลืองโต)", "color": "#f59e0b"},
-                    {"condition": "ฟันตาย (Non-vital) + เงาดำปลายราก", "outcome": "Periapical (Endodontic) Abscess ➔ รักษารากฟัน + I&D", "color": "#38bdf8"},
-                    {"condition": "Punched-out interdental papillae + Pseudomembrane + Fetid odor + ปวดมาก", "outcome": "Necrotizing Ulcerative Gingivitis (NUG: Fusobacteria & Spirochetes) ➔ Debridement เบาๆ + H2O2 / 0.12% CHX + Metronidazole ถ้ามีไข้ (ตรวจคัดกรอง HIV หากเป็นซ้ำ/รุนแรง)", "color": "#ef4444"},
+                _node(1, "คัดกรองภาวะเฉียบพลัน & Endo-Perio (Root Damage Check)", "ตรวจ Cold test/EPT + Pocket + ภาพรังสีแยกรอยโรคมี Root damage (ร้าว/ทะลุ/ละลาย) vs ไม่มี Root damage", "TAP 2025 ปรับใช้ 4 ระดับ (Questionable / Unfavorable / Hopeless) แทนคำว่า poor/favorable เดิมใน E-book 2023", "decision", [
+                    {"condition": "ฟันมีชีวิต (Vital) + ร่องลึกปริทันต์เฉพาะจุด → Periodontal Abscess", "outcome": "ระบายหนองผ่าน Pocket (Gentle drainage) + Debridement + (ATB เฉพาะมีอาการระบบ)", "color": "#f59e0b"},
+                    {"condition": "ฟันตาย (Non-vital) / Endo-Perio ไม่มี Root damage (Grade 1–3)", "outcome": "Endodontic Abscess / Endo-Perio (TAP 2025 = Questionable) ➔ รักษารากฟันก่อน แล้วประเมิน Re-prognosis ใน 2–3 เดือน", "color": "#38bdf8"},
+                    {"condition": "Endo-Perio มี Root damage (VRF / Perforation / Resorption)", "outcome": "TAP 2025: Unfavorable (ตรวจเพิ่ม/ปรึกษาเฉพาะทาง) หรือ Hopeless (แนะนำถอนฟัน)", "color": "#f97316"},
+                    {"condition": "Punched-out papillae + Pseudomembrane + Fetid odor (NPD: NG/NP/NS)", "outcome": "Debridement เบาๆ + H2O2 / 0.12% CHX + Metronidazole ถ้ามีไข้ (ตรวจคัดกรอง HIV หากเป็นซ้ำ/รุนแรง)", "color": "#ef4444"},
                 ]),
-                _node(2, "Endo-Perio Sequence & RDU", "ห้ามจ่ายยาปฏิชีวนะเดี่ยวโดยไม่ระบายหนอง | กรณี Combined Endo-Perio ให้ทำ Endo ก่อน", "เมื่อฟันตายร่วมกับมีร่องลึกปริทันต์ (Primary Endo with Secondary Perio) ให้รักษารากฟันให้เสร็จก่อน แล้วประเมินการหายของร่องลึกใน 2–3 เดือน", "outcome"),
+                _node(2, "หลัก RDU และ Re-prognosis ใน Endo-Perio", "ห้ามจ่ายยาปฏิชีวนะเดี่ยวโดยไม่ระบายหนอง | กรณี Combined ไม่มี Root damage ให้ทำ Endo ก่อน", "หลัง RCT และ Phase I ให้ทำ Re-evaluation & Re-prognosis ซ้ำก่อนตัดสินใจผ่าตัดปริทันต์ (GTR/Open flap) หรือถอนฟัน", "outcome"),
             ],
         }
     ],

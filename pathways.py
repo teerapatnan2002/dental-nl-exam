@@ -188,17 +188,17 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
     "Perio-Classification-2017": [
         {
             "id": "perio-2017-pathway",
-            "title": "AAP/EFP 2017 Diagnostic Pathway & TAP Guideline 2025 Prognosis Linkage",
+            "title": "AAP/EFP 2018 (TAP E-book 2023) Diagnostic Pathway & TAP Guideline 2025 Prognosis Linkage",
             "pathway_type": "decision",
-            "subtitle": "แนวทางวินิจฉัยโรคปริทันต์ AAP/EFP 2017 เชื่อมโยง Patient-level Prognosis ของสมาคมปริทันตวิทยาแห่งประเทศไทย (TAP 2025)",
-            "reference": "AAP/EFP 2017 World Workshop & สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP Guideline 2025, พ.ศ. 2568)",
+            "subtitle": "แนวทางวินิจฉัยโรคปริทันต์ (TAP E-book 2023) รวม 5 ข้อยกเว้น CAL เชื่อมโยงระบบพยากรณ์โรค 2 ชั้นล่าสุด (TAP Guideline 2025)",
+            "reference": "AAP/EFP 2018 World Workshop; สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP E-book 2023 & TAP Guideline 2025, พ.ศ. 2568)",
             "steps": [
-                _node(1, "คัดกรองเบื้องต้น (Intact vs CAL)", "ตรวจ BOP %, Clinical Attachment Loss (CAL) และ Radiographic Bone Loss", "แยก Gingivitis vs Periodontitis ก่อนลงลึก Stage/Grade", "decision", [
-                    {"condition": "ไม่มี CAL / ไม่มี RBL (หรือ CAL จาก Non-periodontitis)", "outcome": "BOP ≥ 10% = Gingivitis (แบ่ง Localized 10–30% vs Generalized >30%); BOP < 10% = Periodontal Health", "color": "#10b981"},
-                    {"condition": "พบ Interdental CAL ≥ 2 ซี่ที่ไม่ติดกัน หรือ Buccal/Oral CAL ≥ 3 mm + PD > 3 mm ใน ≥ 2 ซี่", "outcome": "วินิจฉัย Periodontitis ➔ ไปขั้นกำหนด Stage & Grade", "color": "#f59e0b"},
+                _node(1, "คัดกรองเบื้องต้น (Periodontitis Case Definition & 5 ข้อยกเว้น)", "ตรวจ BOP %, PD และ CAL พร้อมแยก 5 สาเหตุที่ CAL ไม่ใช่ Periodontitis", "Periodontitis ต้องพบ (1) Interdental CAL ≥ 2 ซี่ที่ไม่ติดกัน หรือ (2) Buccal/Oral CAL ≥ 3 mm + PD > 3 mm ≥ 2 ซี่ และไม่ใช่จาก 5 ข้อยกเว้น (Traumatic recession, Cervical caries, 37D จากฟันคุดซี่ 38, Endo drainage, VRF)", "decision", [
+                    {"condition": "ไม่เข้าเกณฑ์ Periodontitis (ไม่มี CAL หรือเป็น 1 ใน 5 ข้อยกเว้น)", "outcome": "BOP ≥ 10% = Gingivitis (Localized 10–30%, Generalized >30%); BOP < 10% = Health (Intact: PD ≤ 3 mm; Reduced stable: PD ≤ 4 mm และไม่มี PD = 4 mm ที่ BOP+)", "color": "#10b981"},
+                    {"condition": "เข้าเกณฑ์ Periodontitis Case Definition", "outcome": "วินิจฉัย Periodontitis ➔ กำหนด Stage (I–IV ตลอดชีวิต) + Grade (A–C) + Extent (<30%, ≥30%, Molar-Incisor)", "color": "#f59e0b"},
                 ]),
-                _node(2, "กำหนด Stage (ความรุนแรง & ความซับซ้อน)", "ยึดซี่ที่แย่ที่สุด: CAL (1–2 / 3–4 / ≥5 mm) + RBL + Tooth Loss", "Stage I (CAL 1–2 mm) • Stage II (CAL 3–4 mm) • Stage III (CAL ≥5 mm, สูญเสียฟัน ≤4 ซี่) • Stage IV (CAL ≥5 mm, สูญเสียฟัน ≥5 ซี่ / ขาดการสบฟัน <10 คู่สบ)", "mechanism"),
-                _node(3, "กำหนด Grade & เชื่อม Patient-level Prognosis (TAP 2025)", "เริ่มที่ Grade B ปรับตาม %Bone Loss/Age (<0.25 / 0.25–1.0 / >1.0), บุหรี่, HbA1c แล้วจัดระดับ Patient-level (Good / Fair / Poor)", "Grade A/B/C และ Stage 1–4 ใช้กำหนด Patient-level Prognosis: Good (Health/Gingivitis/Stage I–II) • Fair (Stage III) • Poor (Stage IV / Molar-Incisor); ปัจจัยลบ (บุหรี่ ≥10 มวน, DM HbA1c ≥7%, Compliance ต่ำ, Parafunction, <20 ซี่/<10 คู่สบ) ลดระดับลง 1 ขั้น (ยกเว้น Health/Gingivitis ≥ Fair)", "outcome"),
+                _node(2, "กำหนด Stage & Grade (ระดับกระดูกปกติ = 2 mm ใต้ CEJ)", "Severity & Complexity: CAL (1–2 / 3–4 / ≥5 mm) + %RBL + Tooth Loss + Complexity-shifters", "Stage I–II (CAL 1–4 mm, RBL ≤33%, PD ≤5 mm) • Stage III (CAL ≥5 mm, สูญเสีย ≤4 ซี่, PD ≥6 mm, Vertical ≥3 mm, Hamp Furc II/III) • Stage IV (สูญเสีย ≥5 ซี่ / เหลือ <20 ซี่ <10 คู่สบ / Secondary occlusal trauma); Grade ปรับจาก %Bone Loss/Age (<0.25, 0.25–1.0, >1.0) และบุหรี่ ≥10 มวน หรือ HbA1c ≥7.0% → Grade C", "mechanism"),
+                _node(3, "เชื่อมสู่ TAP 2025 Prognosis (2 ชั้น) & Re-prognosis รายครั้ง", "Tooth-level 4 ระดับ (Favorable / Questionable / Unfavorable / Hopeless) + Patient-level 3 ระดับ (Good / Fair / Poor)", "Tooth-level ยกเลิกคำว่า Fair/Poor แล้ว (หาก Questionable + บุหรี่ ≥10 มวน หรือ HbA1c ≥7% → Unfavorable); Patient-level เชื่อม Stage (Good: Health/Gingivitis/Stage I–II • Fair: Stage III • Poor: Stage IV/Molar-Incisor) ปรับลด 1 ขั้นเมื่อมี 4 Shifters (Systemic, Compliance/SPT, Parafunction, <20 ซี่/<10 คู่สบ; รากเทียมไม่ลดระดับแต่นับเป็นคู่สบได้) และประเมิน Re-prognosis ทุกครั้งที่รักษา", "outcome"),
             ],
         }
     ],

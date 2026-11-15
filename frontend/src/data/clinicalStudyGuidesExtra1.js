@@ -525,8 +525,8 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
       "Lateral / Coronally Positioned Flap",
       "Tension Test & Adequate Width of Attached Gingiva"
     ],
-    overview: "การประเมินความผิดปกติของเยื่อเมือก-เหงือก (Mucogingival Deformities) การพยากรณ์ความสำเร็จของการปิดรากฟันจากระดับกระดูกและเหงือกซอกฟัน (Interdental attachment)",
-    core_mechanism: "ปัจจัยชี้ขาดว่าเหงือกที่ปลูกถ่ายปิดรากฟันจะรอดและได้ Root coverage 100% หรือไม่ ไม่ได้อยู่ที่ความลึกด้านแก้ม แต่อยู่ที่ ‘Interproximal attachment loss (ระดับ Papilla และกระดูกซอกฟัน)’ เป็นตัวส่งเลือดเลี้ยงแผ่นเหงือก หาก Interproximal ไม่สูญเสียเลย (Miller I/II หรือ Cairo RT1) สามารถคาดหวัง Root coverage ได้ 100%",
+    overview: "การประเมินความผิดปกติของเยื่อเมือก-เหงือก (Mucogingival Deformities) ตามเกณฑ์ AAP/EFP 2018 & TAP E-book 2023 (Cairo Recession Type RT1–RT3, Gingival Phenotype) และการพยากรณ์ความสำเร็จของการปิดรากฟัน รวมถึงการเชื่อมโยงเป็น Local Factor ใน TAP Prognosis 2025",
+    core_mechanism: "ระบบใหม่ AAP/EFP 2018 (TAP E-book 2023) ใช้ **Cairo Recession Type (RT1–RT3)** แทน Miller I–IV เพื่อชี้ขาดพยากรณ์การปิดรากฟัน (Complete Root Coverage) โดยเทียบ Interproximal CAL กับ Buccal Recession: **RT1** = ไม่สูญเสีย Interproximal CAL (ปิดรากได้ 100%); **RT2** = Interproximal CAL loss ≤ Buccal recession (ปิดได้บางส่วน); **RT3** = Interproximal CAL loss > Buccal recession (ไม่สามารถปิดรากได้เต็มที่) พร้อมประเมิน **Gingival Phenotype** (Thick vs Thin) และปริมาณ Keratinized Tissue Width (KTW) ทั้งนี้ใน TAP 2025 หากมีความผิดปกติของเยื่อเมือก-เหงือกที่เป็น Local factor ต้องคุมร่วมด้วย (Non-surgical → Questionable/Surgical)",
     matrix_headers: ["การจำแนกเหงือกร่น / ศัลยกรรม", "คำจำกัดความ (Criteria)", "พยากรณ์การปิดราก & วิธีผ่าตัดเลือกใช้"],
     matrix_rows: [
       ["Cairo RT1 (เดิม Miller Class I & II)", "เหงือกร่นด้าน Buccal/Lingual โดย ‘ไม่มี’ Interproximal CAL loss (ขอบ Papilla สมบูรณ์)", "Root coverage คาดหวังได้ ~100% (Gold Standard: SCTG + Coronally Advanced Flap)"],
@@ -539,7 +539,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
       "วางตำแหน่งตัดเหงือกบริจาคเพดาน (Palatal donor) ลึกใกล้ Greater Palatine Artery (อยู่ที่รอยต่อเพดานแนวดิ่งกับแนวนอน — แนวฟันกรามบน)"
     ],
     pearl: "กุญแจปิดรากฟัน = Interproximal Bone/CAL! RT1 (ไม่เสียซอกฟัน) ปิดได้ 100% | เพิ่ม Keratinized = FGG | ปิดรากสวย = SCTG + CAF!",
-    reference: "Cairo et al. (2011/2018 World Workshop) & Carranza 13th ed."
+    reference: "Cairo et al. (2011/2018 World Workshop), สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP E-book 2023 & TAP Prognosis 2025) & Carranza 13th ed."
   },
 
   "Perio-Biologic-Width-Crown-Lengthening": {
@@ -567,7 +567,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
       "ทำ Gingivectomy อย่างเดียวโดยไม่ตัดกระดูก (Ostectomy) ในเคสผุใกล้ขอบกระดูก (< 3 mm) ➔ เหงือกจะงอกคืนมาและอักเสบเรื้อรังเพราะ STA ไม่พอ"
     ],
     pearl: "STA = JE (0.97) + CT (1.07) ≈ 2.04 mm (ไม่รวม Sulcus) | Crown Lengthening ต้องเหลือจาก Sound tooth margin ถึง Crest ≥ 3 mm + รอความงามนิ่ง 3–6 เดือน!",
-    reference: "Gargiulo et al. (1961) / 2017 World Workshop (STA) & Carranza 13th ed."
+    reference: "Gargiulo et al. (1961), 2017 World Workshop (STA), สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP E-book 2023) & Carranza 13th ed."
   },
 
   "Perio-Acute-Conditions-Abscess": {
@@ -581,8 +581,8 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
       "Endo-Perio Lesion Classification (Primary Endo vs Primary Perio)",
       "Emergency Drainage + Debridement + RDU Antibiotics"
     ],
-    overview: "การแยกแยะฝีปริทันต์ออกจากฝีปลายรากฟันอย่างรวดเร็ว การวินิจฉัยโรคเหงือกอักเสบเนื้อตายเฉียบพลัน (NUG/NUP) และลำดับการรักษาภาวะติดเชื้อร่วมระหว่างคลองรากและปริทันต์",
-    core_mechanism: "Periodontal Abscess เกิดจากการอุดตันทางระบายของ Deep periodontal pocket หรือสิ่งแปลกปลอมติดเหงือก (เช่น เมล็ดข้าวโพด หินน้ำลายหลุด) ทำให้เกิดหนองในร่องลึกเหงือกโดยที่ฟันมักยัง ‘มีชีวิต (Vital!)’ ขณะที่ Endodontic Abscess เกิดจากฟันตาย (Non-vital!) และมีเงาดำที่ปลายราก ส่วน NUG เกิดในคนเครียด อดนอน สูบบุหรี่ ขาดสารอาหาร เชื้อ Spirochetes ลุกลามเกิดแผลยอดเหงือกแหว่งเป็นปล่อง (Punched-out craters)",
+    overview: "การแยกแยะฝีปริทันต์ออกจากฝีปลายรากฟัน โรคเหงือกเนื้อตาย (NPD: NG/NP/NS) และเกณฑ์วินิจฉัย-พยากรณ์โรค Endo-Periodontal Lesions ตามฉันทามติ AAP/EFP 2018 (Herrera et al. / TAP E-book 2023) เชื่อมโยงกับเกณฑ์ Tooth-level Prognosis ของ TAP Guideline 2025",
+    core_mechanism: "1) **Periodontal Abscess** เกิดจากการอุดตันของร่องลึกปริทันต์หรือสิ่งแปลกปลอม ฟันมักยัง ‘มีชีวิต (Vital!)’ ขณะที่ **Endodontic Abscess** เกิดจากฟันตาย (Non-vital!) และมีรอยโรคปลายราก | 2) **NPD (เดิม NUG/NUP → NG/NP/NS)** พบ Punched-out necrotic papillae + ปวดรุนแรง + Pseudomembrane | 3) **Endo-Periodontal Lesions (Herrera 2018 & TAP 2023/2025)**: แบ่งตาม Root damage — หาก **ไม่มี Root damage** (Grade 1–3 ในผู้ป่วยปริทันต์/ไม่เป็นปริทันต์) พยากรณ์ TAP 2025 = **Questionable** (ทำ RCT ก่อนประเมินซ้ำ); หาก **มี Root damage** (รากร้าว/ทะลุ/ละลายรุนแรง) TAP 2025 ปรับแทนคำว่า poor/favorable เดิมใน E-book 2023 เป็น **Unfavorable** (ตรวจเพิ่ม/ปรึกษาเฉพาะทาง) หรือ **Hopeless** (แนะนำถอน)",
     matrix_headers: ["ภาวะเฉียบพลัน", "อาการสำคัญและการแยกโรค", "การรักษาเร่งด่วน (Acute Phase)"],
     matrix_rows: [
       ["Periodontal Abscess", "ฟันมัก ‘Vital’, บวมค่อนไปทางขอบเหงือก (Lateral root), Deep broad pocket, ปวดเวลาเคาะข้าง/ไม่รุนแรงเท่า Endo", "ระบายหนองผ่าน Pocket ด้วย Curette (SRP เบาๆ) หรือผ่ากรีด + ล้างน้ำเกลือ; จ่ายยาปฏิชีวนะเฉพาะเมื่อมีไข้/ต่อมน้ำเหลืองโต"],
@@ -595,7 +595,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
       "ทำ Scaling & Root Planing รุนแรงในวันแรกของ NUG ขณะเจ็บจัดและมีแผลเปิดลึก — ให้ทำ Ultrasonic/Debridement เบาที่สุดในวันแรกเพื่อลด Bacteremia และความเจ็บ"
     ],
     pearl: "ฝีปริทันต์ = ฟันยังมีชีวิต (Vital!) + Pocket กว้าง | NUG = ยอด Papilla แหว่ง (Punched-out) + ปวดมาก + Metronidazole (ถ้ามีไข้) | Endo-Perio = ทำ Endo ก่อนเสมอ!",
-    reference: "2017 AAP/EFP Periodontal Classification & Carranza 13th ed."
+    reference: "AAP/EFP 2018 (Herrera et al.), สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP E-book 2023 & TAP Prognosis 2025) & Carranza 13th ed."
   },
 
   "Perio-Regeneration-GTR": {
