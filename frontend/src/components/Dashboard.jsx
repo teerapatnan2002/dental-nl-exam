@@ -88,7 +88,7 @@ export default function Dashboard({
   const [studyHubLaunch, setStudyHubLaunch] = useState({
     topicId: null,
     classroomTab: 'synthesized',
-    hubMode: 'exam_topics',
+    hubMode: 'by_specialty',
   });
   const [expandedCategories, setExpandedCategories] = useState({});
   const [activeCategoryModal, setActiveCategoryModal] = useState(null);

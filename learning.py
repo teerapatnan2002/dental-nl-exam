@@ -105,8 +105,8 @@ TOPIC_METADATA: Dict[str, Dict[str, str]] = {
         "title_en": "2017 AAP/EFP World Workshop Classification of Periodontal Diseases",
     },
     "Perio-Examination-Indices": {
-        "title_th": "การตรวจประเมินสภาวะปริทันต์ ค่า CAL และพยากรณ์โรค",
-        "title_en": "Periodontal Probing, Clinical Attachment Loss (CAL) & Prognosis",
+        "title_th": "การตรวจประเมินสภาวะปริทันต์ ค่า CAL และพยากรณ์โรค (TAP 2025)",
+        "title_en": "Periodontal Probing, CAL & TAP Guideline 2025 Prognosis (Kwok & Caton)",
     },
     "Perio-Etiology-Microbiology": {
         "title_th": "คราบจุลินทรีย์ แบคทีเรียก่อโรคปริทันต์ และภูมิคุ้มกัน",
@@ -441,22 +441,25 @@ CANONICAL_TEXTBOOKS = [
     },
     {
         "id": "carranza-lindhe-perio",
-        "title": "Newman & Carranza's Periodontology, AAP/EFP 2017 & สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP)",
+        "title": "Newman & Carranza's Periodontology, AAP/EFP 2018 & สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP Guideline 2025)",
         "specialty": "ปริทันตวิทยา",
         "icon": "🌿",
         "color": "#10b981",
-        "patterns": ["carranza", "newman", "takei", "klokkevold", "lindhe", "lang", "caton", "2017 world workshop", "tonetti", "papapanou", "mcguire", "gargiulo", "สมาคมปริทันตวิทยา"],
-        "description": "ตำราอ้างอิงหลักและฉันทามติโลก AAP/EFP 2017 ร่วมกับแนวทางเวชปฏิบัติของสมาคมปริทันตวิทยาแห่งประเทศไทย (TAP) ครอบคลุม Staging & Grading, Red Complex, Supracrestal Tissue Attachment และศัลยกรรมปริทันต์",
+        "patterns": ["carranza", "newman", "takei", "klokkevold", "lindhe", "lang", "caton", "kwok", "2017 world workshop", "tonetti", "papapanou", "chapple", "herrera", "hamp", "mcguire", "gargiulo", "tap", "2025", "unfavorable", "favorable", "prognosis shifter", "สมาคมปริทันตวิทยา"],
+        "description": "ตำราอ้างอิงหลัก ฉันทามติโลก AAP/EFP 2018 และแนวทางพยากรณ์โรคปริทันต์ฉบับปรับปรุงล่าสุดของสมาคมปริทันตวิทยาแห่งประเทศไทย (TAP Guideline 2025 / พ.ศ. 2568) ครอบคลุม Staging & Grading, Tooth-level Prognosis (Kwok & Caton 2007), Patient-level Prognosis & Prognosis Shifters, Supracrestal Tissue Attachment และศัลยกรรมปริทันต์",
         "thai_association": "สมาคมปริทันตวิทยาแห่งประเทศไทย (Thai Association of Periodontology — TAP) & ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย",
         "thai_references": [
-            "แนวทางการวินิจฉัยและจำแนกโรคปริทันต์ตามเกณฑ์ AAP/EFP 2017 สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP)",
+            "Thai Association of Periodontology Guideline 2025: \"An Update in Periodontal Prognosis 2025\" สมาคมปริทันตวิทยาแห่งประเทศไทย (พ.ศ. 2568)",
+            "แนวทางการวินิจฉัยและจำแนกโรคปริทันต์ตามเกณฑ์ AAP/EFP 2018 สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP)",
             "ตำราปริทันตวิทยา คณะทันตแพทยศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย / มหาวิทยาลัยมหิดล / มหาวิทยาลัยเชียงใหม่",
             "Newman and Carranza's Clinical Periodontology (13th ed.) & Lindhe's Clinical Periodontology and Implant Dentistry"
         ],
         "thai_protocol_highlights": [
-            "สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP) และข้อสอบ ศ.ท.ส. ใช้ระบบจำแนกโรคปริทันต์ AAP/EFP 2017 (Stage I–IV, Grade A–C) แทนคำว่า Chronic/Aggressive Periodontitis เดิม โดยมีเกณฑ์ Gingivitis เมื่อมี BOP ≥ 10% และแยก Gingivitis on an intact periodontium ออกจาก Gingivitis on a reduced periodontium",
-            "เกณฑ์มาตรฐานคลินิกปริทันต์ในโรงเรียนทันตแพทย์ไทย: นัดประเมินผลซ้ำ (Re-evaluation) หลังเสร็จสิ้นการขูดหินน้ำลายและเกลารากฟัน (SRP) ที่ระยะเวลา 4–6 สัปดาห์ และก่อนเข้าสู่ระยะศัลยกรรมปริทันต์ ผู้ป่วยควรมีค่า O'Leary Plaque Score ≤ 10–20%",
-            "คำศัพท์ Supracrestal Tissue Attachment (ประมาณ 2 mm: Junctional Epithelium ~0.97 mm + Connective Tissue Attachment ~1.07 mm) มาแทนคำว่า Biologic Width เดิมตาม AAP/EFP 2017 โดยในการทำ Crown Lengthening ต้องกรอกระดูกให้ห่างจากขอบครอบฟันอย่างน้อย 3 mm"
+            "แนวทางพยากรณ์โรคปริทันต์ใหม่ พ.ศ. 2568 (TAP Guideline 2025 — An Update in Periodontal Prognosis 2025): เปลี่ยนชื่อจาก Individual tooth prognosis (ระบบเดิม 5 ระดับ พ.ศ. 2550–2557) มาเป็น Tooth-level prognosis (อ้างอิง Kwok & Caton 2007) จำแนกเป็น 4 ระดับที่คำนึงถึง Periodontal stability ได้แก่ Favorable (Mobility 0–1, Bone loss Coronal third <33%, PD ≤5 mm, Hamp Furcation 0–1, Restorable, ไม่มี Endo-perio), Questionable (Mobility 1–2, Bone loss Middle third 33–66% หรือ >66% ที่มี vertical component ≥3 mm ที่ทำ regeneration ได้, PD ≥6 mm, Hamp Furcation 2, Endo-perio without root damage), Unfavorable (Mobility 2–3, Bone loss Apical third >66%, PD ≥6 mm, Hamp Furcation 3, Compromised restorability, Endo-perio with root damage ที่ต้องตรวจ/ปรึกษาเฉพาะทาง) และ Hopeless (Mobility 3, Bone loss ถึง tooth apex, Unrestorable หรือ Endo-perio with root damage แนะนำถอน; ระดับกระดูกปกติ 100% วัดจาก CEJ ลงมา 2 mm)",
+            "กฎการปรับระดับและปัจจัยร่วม Tooth-level Prognosis (TAP 2025): 1) หากผู้ป่วยเป็นเบาหวานที่ควบคุมไม่ดี (HbA1C ≥ 7.0%) และ/หรือ สูบบุหรี่หนัก (≥ 10 cigarettes/day) ฟันที่ประเมินได้ Questionable ให้ปรับเป็น Unfavorable ทันที 2) กรณีมี Traumatic occlusal force ให้ประเมินด้วยว่าสามารถแก้ไขควบคุมแรงสบก่อบาดเจ็บได้หรือไม่ 3) พยากรณ์โรคอาจเปลี่ยนแปลงได้ตามสภาวะของผู้ป่วยจึงต้องประเมินซ้ำ (re-prognosis) ทุกครั้งที่ผู้ป่วยเข้ารับการรักษา",
+            "Patient-level Prognosis (แทนคำว่า Overall prognosis เดิม; ปรับจาก TAP 2013 เชื่อม AAP/EFP 2018) แบ่งเป็น 3 ระดับ ได้แก่ Good (Periodontal health, Gingivitis, Periodontitis Stage I–II), Fair (Periodontitis Stage III) และ Poor (Periodontitis Stage IV หรือ Molar-incisor pattern) โดยหากมี Prognosis Shifters เชิงลบ (1. ระบบร่างกาย: สูบบุหรี่ ≥10 มวน/วัน, HbA1C ≥7.0%, โรคระบบอื่นตาม Jepsen et al. 2018; 2. ความร่วมมือ: สุขอนามัยช่องปาก/ซอกฟัน และความสม่ำเสมอในการนัด SPT; 3. Parafunctional habits และการรักษา; 4. Occlusal stability: ฟันเหลือน้อยกว่า 20 ซี่ หรือ <10 คู่สบ นับรวมรากฟันเทียม, สูญเสีย VD) ให้ปรับแย่ลง 1 ระดับ; ข้อยกเว้น: Health/Gingivitis อย่างน้อยไม่ต่ำกว่า Fair และ 'รากฟันเทียมไม่มีผลต่อ Patient-level prognosis' แต่นับรวมเป็นฟันคู่สบได้หากยังใช้งานได้",
+            "สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP) และข้อสอบ ศ.ท.ส. ใช้ระบบจำแนกโรคปริทันต์ AAP/EFP 2018 (Stage I–IV, Grade A–C) แทนคำว่า Chronic/Aggressive Periodontitis เดิม โดยมีเกณฑ์ Gingivitis เมื่อมี BOP ≥ 10% และแยก Gingivitis on an intact periodontium ออกจาก Gingivitis on a reduced periodontium",
+            "เกณฑ์มาตรฐานคลินิกปริทันต์ในโรงเรียนทันตแพทย์ไทย: นัดประเมินผลซ้ำ (Re-evaluation) หลังเสร็จสิ้นการขูดหินน้ำลายและเกลารากฟัน (SRP) ที่ระยะเวลา 4–6 สัปดาห์, ควบคุมค่า O'Leary Plaque Score ≤ 10–20% ก่อนผ่าตัดปริทันต์ และในการทำ Crown Lengthening ต้องกรอกระดูกให้ห่างจากขอบครอบฟันอย่างน้อย 3 mm (Supracrestal Tissue Attachment ~2 mm + Sulcus ~1 mm)"
         ]
     },
     {

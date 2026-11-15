@@ -203,7 +203,7 @@ const THAI_ASSOCIATION_BY_CATEGORY = {
   },
   'ปริทันตวิทยา': {
     org: 'สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP) & ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย',
-    protocol: 'อ้างอิงเกณฑ์จำแนกโรคปริทันต์ AAP/EFP 2017 (Stage I–IV, Grade A–C; Gingivitis BOP ≥ 10%), นัด Re-evaluation หลัง SRP ที่ 4–6 สัปดาห์ และควบคุม O\'Leary Plaque Index ≤ 10–20% ก่อนผ่าตัดปริทันต์'
+    protocol: 'อ้างอิงเกณฑ์จำแนกโรคปริทันต์ AAP/EFP 2017 (Stage I–IV, Grade A–C; Gingivitis BOP ≥ 10%), เกณฑ์พยากรณ์โรค TAP Guideline 2025 (Tooth-level 4 ระดับ: Favorable/Questionable/Unfavorable/Hopeless พร้อมเงื่อนไข DM HbA1c ≥ 7.0% หรือสูบบุหรี่ ≥ 10 มวน ปรับ Questionable → Unfavorable; Patient-level 3 ระดับ: Good/Fair/Poor + 4 Shifters), นัด Re-evaluation หลัง SRP ที่ 4–6 สัปดาห์ และควบคุม O\'Leary Plaque Index ≤ 10–20% ก่อนผ่าตัดปริทันต์'
   },
   'ทันตกรรมบูรณะ/หัตถการ': {
     org: 'สมาคมทันตกรรมหัตถการแห่งประเทศไทย (TODS) & แนวทางอนุสัญญามินามาตะ กรมอนามัย',

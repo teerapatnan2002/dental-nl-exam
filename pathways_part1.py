@@ -199,19 +199,36 @@ PATHWAYS_PART1: Dict[str, List[Dict[str, Any]]] = {
     "Perio-Examination-Indices": [
         {
             "id": "perio-cal-furcation-prognosis",
-            "title": "Periodontal Assessment Pathway: CAL Calculation, Furcation & Prognosis",
+            "title": "Periodontal Assessment Pathway: CAL Calculation & Furcation Examination",
             "pathway_type": "procedure",
-            "subtitle": "สูตรคำนวณ Clinical Attachment Level (CAL) ➔ Glickman / Hamp Furcation & McGuire Prognosis",
-            "reference": "Carranza's Clinical Periodontology 13th ed. & สมาคมปริทันตวิทยาแห่งประเทศไทย (TASP)",
+            "subtitle": "สูตรคำนวณ Clinical Attachment Level (CAL) ➔ Glickman / Hamp Furcation & TAP Guideline 2025",
+            "reference": "Newman and Carranza's Clinical Periodontology & สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP Guideline 2025, พ.ศ. 2568)",
             "steps": [
-                _node(1, "วัดค่า PD และ ตำแหน่ง Gingival Margin เทียบ CEJ", "วัดจากขอบเหงือกถึง CEJ และ Probing Depth 6 ตำแหน่ง/ซี่", "ร่องลึกปริทันต์ (PPD) เพียงอย่างเดียวบอกระดับการสูญเสียอวัยวะยึดฟันได้ไม่ตรง หากเหงือกบวม (False pocket) หรือเหงือกร่น", "action"),
+                _node(1, "วัดค่า PD และ ตำแหน่ง Gingival Margin เทียบ CEJ", "วัดจากขอบเหงือกถึง CEJ และ Probing Depth 6 ตำแหน่ง/ซี่ (แรง 20–25 g)", "ร่องลึกปริทันต์ (PPD) เพียงอย่างเดียวบอกระดับการสูญเสียอวัยวะยึดฟันได้ไม่ตรง หากเหงือกบวม (False pocket) หรือเหงือกร่น", "action"),
                 _node(2, "คำนวณ Clinical Attachment Level (CAL)", "พิจารณาตำแหน่ง Gingival Margin (GM) เทียบกับ CEJ", "ใช้ค่า CAL วัดความรุนแรงของโรคปริทันต์ตามเกณฑ์ AAP/EFP 2017 (Stage I: 1–2 mm, II: 3–4 mm, III/IV: ≥5 mm)", "decision", [
                     {"condition": "เหงือกร่นต่ำกว่า CEJ (GM อยู่ Apical ต่อ CEJ)", "outcome": "CAL = PPD + ระยะเหงือกร่น (Recession)", "color": "#f59e0b"},
                     {"condition": "เหงือกบวมคลุมเลย CEJ (GM อยู่ Coronal ต่อ CEJ)", "outcome": "CAL = PPD − ระยะที่เหงือกคลุมเกิน CEJ", "color": "#38bdf8"},
                 ]),
-                _node(3, "ตรวจ Furcation (Nabers Probe) & Mobility", "Glickman Grade I–IV (IV = ทะลุจากด้านหนึ่งไปอีกด้านชัดเจน + เหงือกคลุมร่นมองเห็นได้)", "Class I–III (Hamp) แยกความลึกแนวนอน 3 mm สำหรับประกอบแผนรักษา Tunneling / Hemisection / GTR", "outcome"),
+                _node(3, "ตรวจ Furcation (Nabers Probe) & Mobility", "Glickman Grade I–IV vs Hamp Class I–III & Miller Mobility 0–3", "TAP 2025 ใช้ Hamp Furcation (0–1=Favorable, 2=Questionable, 3=Unfavorable) และ Mobility (0–1=Favorable, 1–2=Questionable, 2–3=Unfavorable, 3=Hopeless) ประกอบการพยากรณ์โรคระดับซี่ฟัน", "outcome"),
             ],
-        }
+        },
+        {
+            "id": "tap-2025-prognosis-pathway",
+            "title": "TAP Guideline 2025 Pathway: Tooth-level & Patient-level Periodontal Prognosis",
+            "pathway_type": "decision",
+            "subtitle": "แนวทางพยากรณ์โรคปริทันต์ฉบับปรับปรุง พ.ศ. 2568 (สมาคมปริทันตวิทยาแห่งประเทศไทย): ปรับจาก 5 ระดับเดิมสู่ 2 ชั้น",
+            "reference": "Thai Association of Periodontology (TAP Guideline 2025: An Update in Periodontal Prognosis, พ.ศ. 2568), Kwok & Caton (2007), Tonetti & Chapple (2018)",
+            "steps": [
+                _node(1, "Step 1: ประเมิน Tooth-level Prognosis (4 ระดับ)", "ประเมินโอกาสคง Periodontal Stability หลังรักษาด้วย Primary Factors (Mobility, % Bone Loss เทียบ 2 mm จาก CEJ, PD, Hamp Furcation) + Secondary Factors (Local factors, Restorability, Endo-perio)", "⚠️ ระบบใหม่ 2025 ใช้ 4 คำนี้เท่านั้น: Favorable / Questionable / Unfavorable / Hopeless (ไม่มี Fair และ Poor ในระดับซี่ฟันแล้ว!)", "decision", [
+                    {"condition": "Favorable (ดี / พยากรณ์ดี)", "outcome": "Mob 0–1, RBL <33% (Coronal 1/3), PD ≤5 mm, Hamp 0–1, Local factor คุมด้วย Non-surgical, Restorable, ไม่มี Endo-perio", "color": "#10b981"},
+                    {"condition": "Questionable (ก้ำกึ่ง)", "outcome": "Mob 1–2, RBL 33–66% (Middle 1/3) หรือ >66% ที่มี Vertical defect ≥3 mm ที่ทำ Regeneration ได้, PD ≥6 mm, Hamp 2, คุม Local factor ด้วย Surgical/Occlusal trauma, Restorable, Endo-perio ไม่มี Root damage", "color": "#f59e0b"},
+                    {"condition": "Unfavorable (ไม่ดี)", "outcome": "Mob 2–3, RBL >66% (Apical 1/3), PD ≥6 mm, Hamp 3, Local factor ต้องทำ Interdisciplinary, Restorability compromised, Endo-perio มี Root damage ต้องตรวจเพิ่ม/ส่งต่อ", "color": "#f97316"},
+                    {"condition": "Hopeless (สิ้นหวัง/ถอน)", "outcome": "Mob 3, RBL ถึง Apex, Unrestorable หรือ Endo-perio มี Root damage ที่แนะนำให้ถอนฟัน", "color": "#ef4444"},
+                ]),
+                _node(2, "Step 2: ตรวจสอบ Systemic Modifier ระดับซี่ฟัน", "ตรวจประวัติเบาหวาน (HbA1c) และพฤติกรรมการสูบบุหรี่ต่อซี่ฟันที่อยู่ในเกณฑ์ Questionable", "หากมี DM HbA1C ≥ 7.0% และ/หรือ สูบบุหรี่ ≥ 10 มวน/วัน ➔ ปรับซี่ฟันจาก Questionable เป็น Unfavorable ทันที! (และทำ Re-prognosis ซ้ำทุกครั้งที่มารับการรักษา)", "action"),
+                _node(3, "Step 3: ประเมิน Patient-level Prognosis (3 ระดับ) & 4 Shifters", "เชื่อมตรงกับ AAP/EFP 2018 Classification แล้วคัดกรอง Shifters 4 กลุ่ม (Systemic, Compliance/SPT, Parafunction, Occlusal stability <20 ซี่ / <10 คู่สบ)", "Good (Health/Gingivitis/Stage I–II) • Fair (Stage III) • Poor (Stage IV / Molar-Incisor) — หากมี Shifter เชิงลบ ปรับลดลง 1 ขั้น (Good→Fair, Fair→Poor) ยกเว้น Health/Gingivitis มักไม่ต่ำกว่า Fair และ Dental Implant ไม่ลด Patient-level prognosis (แต่นับเป็นคู่สบได้หากใช้งานได้)", "outcome"),
+            ],
+        },
     ],
     "Perio-Non-Surgical-Instrumentation": [
         {
@@ -270,7 +287,7 @@ PATHWAYS_PART1: Dict[str, List[Dict[str, Any]]] = {
             "title": "Differential & Emergency Management: Periodontal Abscess vs Periapical Abscess vs NUG",
             "pathway_type": "decision",
             "subtitle": "ทดสอบ Pulp Vitality ➔ แยกฝีปริทันต์จากฝีปลายราก & จัดการ NUG (Punched-out Papillae)",
-            "reference": "AAP 2017 Acute Periodontal Conditions & สมาคมปริทันตวิทยาแห่งประเทศไทย (TASP)",
+            "reference": "AAP 2017 Acute Periodontal Conditions & สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP)",
             "steps": [
                 _node(1, "ผู้ป่วยมาด้วยอาการบวม-ปวดเหงือกเฉียบพลัน", "ตรวจ Cold test / EPT + วัด Pocket รอบซี่ฟัน + ประวัติไข้/ภูมิคุ้มกัน", "แยกต้นกำเนิดเชื้อจากคลองรากฟัน vs ร่องลึกปริทันต์", "decision", [
                     {"condition": "ฟันมีชีวิต (Vital) + ร่องลึกปริทันต์กว้างลึกถึงก้อนบวมด้านข้างตัวฟัน", "outcome": "Periodontal Abscess ➔ ระบายหนองผ่าน Pocket (Gentle drainage) + Debridement + (ATB เฉพาะมีอาการระบบไข้/ต่อมน้ำเหลืองโต)", "color": "#f59e0b"},

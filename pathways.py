@@ -188,17 +188,17 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
     "Perio-Classification-2017": [
         {
             "id": "perio-2017-pathway",
-            "title": "AAP/EFP 2017 Diagnostic Pathway: Gingivitis vs Periodontitis Staging & Grading",
+            "title": "AAP/EFP 2017 Diagnostic Pathway & TAP Guideline 2025 Prognosis Linkage",
             "pathway_type": "decision",
-            "subtitle": "แนวทางวินิจฉัยโรคปริทันต์มาตรฐานโลกที่ใช้ในสมาคมปริทันตวิทยาแห่งประเทศไทย (TAP)",
-            "reference": "AAP/EFP 2017 World Workshop & สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP)",
+            "subtitle": "แนวทางวินิจฉัยโรคปริทันต์ AAP/EFP 2017 เชื่อมโยง Patient-level Prognosis ของสมาคมปริทันตวิทยาแห่งประเทศไทย (TAP 2025)",
+            "reference": "AAP/EFP 2017 World Workshop & สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP Guideline 2025, พ.ศ. 2568)",
             "steps": [
                 _node(1, "คัดกรองเบื้องต้น (Intact vs CAL)", "ตรวจ BOP %, Clinical Attachment Loss (CAL) และ Radiographic Bone Loss", "แยก Gingivitis vs Periodontitis ก่อนลงลึก Stage/Grade", "decision", [
                     {"condition": "ไม่มี CAL / ไม่มี RBL (หรือ CAL จาก Non-periodontitis)", "outcome": "BOP ≥ 10% = Gingivitis (แบ่ง Localized 10–30% vs Generalized >30%); BOP < 10% = Periodontal Health", "color": "#10b981"},
                     {"condition": "พบ Interdental CAL ≥ 2 ซี่ที่ไม่ติดกัน หรือ Buccal/Oral CAL ≥ 3 mm + PD > 3 mm ใน ≥ 2 ซี่", "outcome": "วินิจฉัย Periodontitis ➔ ไปขั้นกำหนด Stage & Grade", "color": "#f59e0b"},
                 ]),
                 _node(2, "กำหนด Stage (ความรุนแรง & ความซับซ้อน)", "ยึดซี่ที่แย่ที่สุด: CAL (1–2 / 3–4 / ≥5 mm) + RBL + Tooth Loss", "Stage I (CAL 1–2 mm) • Stage II (CAL 3–4 mm) • Stage III (CAL ≥5 mm, สูญเสียฟัน ≤4 ซี่) • Stage IV (CAL ≥5 mm, สูญเสียฟัน ≥5 ซี่ / ขาดการสบฟัน <10 คู่สบ)", "mechanism"),
-                _node(3, "กำหนด Grade (อัตราการลุกลาม & ปัจจัยเสี่ยง)", "เริ่มที่ Grade B ก่อน แล้วปรับขึ้น-ลงตาม %Bone Loss/Age, เบาหวาน, บุหรี่", "Grade A (%RBL/Age <0.25, ไม่สูบบุหรี่, ไม่มี DM) • Grade B (0.25–1.0, <10 มวน/วัน, HbA1c <7%) • Grade C (>1.0, ≥10 มวน/วัน, HbA1c ≥7%)", "outcome"),
+                _node(3, "กำหนด Grade & เชื่อม Patient-level Prognosis (TAP 2025)", "เริ่มที่ Grade B ปรับตาม %Bone Loss/Age (<0.25 / 0.25–1.0 / >1.0), บุหรี่, HbA1c แล้วจัดระดับ Patient-level (Good / Fair / Poor)", "Grade A/B/C และ Stage 1–4 ใช้กำหนด Patient-level Prognosis: Good (Health/Gingivitis/Stage I–II) • Fair (Stage III) • Poor (Stage IV / Molar-Incisor); ปัจจัยลบ (บุหรี่ ≥10 มวน, DM HbA1c ≥7%, Compliance ต่ำ, Parafunction, <20 ซี่/<10 คู่สบ) ลดระดับลง 1 ขั้น (ยกเว้น Health/Gingivitis ≥ Fair)", "outcome"),
             ],
         }
     ],

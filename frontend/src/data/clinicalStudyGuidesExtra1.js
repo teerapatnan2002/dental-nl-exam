@@ -399,31 +399,35 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
 
   // ── PERIODONTOLOGY (9) ────────────────────────────────────────────────────
   "Perio-Examination-Indices": {
-    title: "การตรวจประเมินสภาวะปริทันต์ ค่า CAL และพยากรณ์โรค (Examination & Indices)",
+    title: "การตรวจประเมินสภาวะปริทันต์ ค่า CAL และพยากรณ์โรค (TAP Guideline 2025)",
     specialty: "ปริทันตวิทยา",
     category: "ปริทันตวิทยา",
     badgeColor: "#10b981",
     must_know_topics: [
       "สูตรคำนวณ Clinical Attachment Loss (CAL) จาก CEJ",
-      "Miller Mobility & Glickman vs Hamp Furcation",
-      "Fremitus & Periodontal Probing Force (20–25 g)",
-      "McGuire & Nunn / Kwok & Caton Prognosis"
+      "Miller Mobility, Hamp vs Glickman Furcation & Probing Force (20–25 g)",
+      "Tooth-level Prognosis 4 ระดับ (TAP Guideline 2025 / Kwok & Caton)",
+      "Patient-level Prognosis 3 ระดับ & 4 Prognosis Shifters (TAP 2025)"
     ],
-    overview: "การคำนวณความสูญเสียยึดเกาะปริทันต์ที่แท้จริง (CAL) ซึ่งแยกภาวะเหงือกบวม (Pseudopocket) และเหงือกร่น (Gingival recession) ออกจากกันอย่างแม่นยำ ร่วมกับดัชนี Furcation และ Mobility",
-    core_mechanism: "Probing Depth (PD) วัดจากขอบเหงือกถึงก้นร่องลึกเหงือกจึงเปลี่ยนตามการบวมหรือร่นของเหงือก แต่ CAL วัดจากจุดอ้างอิงถาวรคือ CEJ ถึงก้นร่องลึกเหงือก: หากขอบเหงือกคลุมเหนือ CEJ (Gingival enlargement) ให้เอา PD ลบระยะคลุม CEJ; หากเหงือกร่นต่ำกว่า CEJ ให้เอา PD บวกระยะร่น (Recession)",
-    matrix_headers: ["พารามิเตอร์ / ดัชนี", "เกณฑ์คำนวณและการแบ่งระดับ (Criteria)", "จุดเน้นและข้อระวังในข้อสอบ"],
+    overview: "การคำนวณความสูญเสียยึดเกาะปริทันต์ที่แท้จริง (CAL) ซึ่งแยกภาวะเหงือกบวม (Pseudopocket) และเหงือกร่น (Gingival recession) ออกจากกันอย่างแม่นยำ ร่วมกับดัชนี Furcation/Mobility และเกณฑ์พยากรณ์โรคมาตรฐานใหม่ของสมาคมปริทันตวิทยาแห่งประเทศไทย (TAP Guideline 2025, พ.ศ. 2568) ที่ปรับจากระบบ 5 ระดับเดิม (Good, Fair, Poor, Questionable, Hopeless) เป็นระบบ 2 ชั้น: Tooth-level (4 ระดับ) และ Patient-level (3 ระดับ + Shifters)",
+    core_mechanism: "1. การตรวจ PD vs CAL: Probing Depth (PD) วัดจากขอบเหงือกถึงก้นร่องลึกเหงือกจึงเปลี่ยนตามการบวมหรือร่น แต่ CAL วัดจากจุดอ้างอิงถาวรคือ CEJ ถึงก้นร่องลึกเหงือก: หากขอบเหงือกคลุมเหนือ CEJ (Gingival enlargement) ให้เอา PD ลบระยะคลุม CEJ; หากเหงือกร่นต่ำกว่า CEJ ให้เอา PD บวกระยะร่น (Recession)\n\n2. Tooth-level Prognosis (TAP Guideline 2025 — อ้างอิง Kwok & Caton 2007): ประเมินโอกาสคง periodontal stability หลังรักษา แบ่ง 4 ระดับคือ Favorable, Questionable, Unfavorable, Hopeless (ไม่มีระดับ Good/Fair/Poor ในระดับซี่ฟันแล้ว!) โดยใช้ Primary factors (Mobility, % Bone loss เทียบระดับกระดูกปกติที่ 2 mm จาก CEJ, Probing depth, Hamp Furcation) + Secondary factors (Local factors เช่น root concavity/palato-gingival groove/overhang/occlusal trauma, Restorability, Endo-perio lesion)\n- กฎ Systemic Modifier ระดับซี่ฟัน: หากผู้ป่วยเป็นเบาหวาน HbA1C ≥ 7.0% และ/หรือ สูบบุหรี่ ≥ 10 มวน/วัน ฟันที่มีพยากรณ์ระดับ Questionable ให้พิจารณาปรับเป็น Unfavorable ทันที\n- กฎ Vertical Defect > 66%: ฟันที่กระดูกละลายลามถึง Apical third (>66%) ปกติเป็น Unfavorable ยกเว้นเป็น vertical component ≥ 3 mm ที่สามารถทำ regeneration ได้ ให้จัดเป็น Questionable\n\n3. Patient-level Prognosis (TAP Guideline 2025 — เชื่อม AAP/EFP 2018): แบ่ง 3 ระดับคือ Good (Periodontal health / Gingivitis / Stage I–II), Fair (Stage III), Poor (Stage IV / Molar-Incisor Pattern) โดยมี Patient-level Prognosis Shifters 4 กลุ่ม (Systemic, Compliance/SPT, Parafunction, Occlusal stability <20 ซี่/<10 คู่สบ) ซึ่งหากมีปัจจัยลบจะปรับลดพยากรณ์ลง 1 ขั้น (Good→Fair, Fair→Poor) แต่มีข้อยกเว้นคือ Health/Gingivitis มักไม่ต่ำกว่า Fair และ Dental implants ไม่กระทบ Patient-level prognosis (นับเป็นคู่สบได้หากยังใช้งานได้) รวมถึงต้องทำ Re-prognosis ซ้ำทุกครั้งที่มารับการรักษา",
+    matrix_headers: ["พารามิเตอร์ / เกณฑ์ TAP 2025", "เกณฑ์คำนวณและการแบ่งระดับ (Criteria)", "จุดเน้นและข้อระวังในข้อสอบ"],
     matrix_rows: [
       ["CAL (Clinical Attachment Loss)", "ปกติ (FGM อยู่ใต้ CEJ/Recession): CAL = PD + Recession | เหงือกบวมเหนือ CEJ: CAL = PD − (ระยะจากขอบเหงือกถึง CEJ)", "เช่น PD 6 mm, เหงือกร่น 2 mm ➔ CAL = 8 mm; PD 5 mm, เหงือกโตคลุม CEJ 3 mm ➔ CAL = 2 mm"],
-      ["Glickman Furcation Grading", "I: สัมผัสหลุมง่ามราก (ไม่เข้า), II: แหย่เข้าบางส่วน (Cul-de-sac ไม่ทะลุ), III: ทะลุอีกด้าน (Through-and-through) มีเหงือกคลุม, IV: ทะลุมองเห็นโล่งไม่มีเหงือก", "ใช้ Nabers Probe! ตรวจฟันกรามบน 3 ตำแหน่ง (B, MP, DP) ฟันกรามล่าง 2 ตำแหน่ง (B, L)"],
-      ["Miller Mobility Index", "Grade 1: โยกแนวนอน < 1 mm | Grade 2: โยกแนวนอน ≥ 1 mm | Grade 3: โยกแนวนอน > 1 mm + กดจมลงแนวดิ่ง (Vertical/Depressible)", "ระวังแยก Mobility จริง กับ Fremitus (การสั่นของฟันบนเมื่อกัดสบฟันโดยใช้นิ้วแตะฝั่ง Labial)"],
-      ["Periodontal Probe Standard", "UNC-15 (ขีดทีละ 1 mm, แถบดำที่ 5,10,15), William (1,2,3,5,7,8,9,10 ไม่มี 4,6), WHO (ลูกกลม 0.5 mm แถบดำ 3.5–5.5 mm)", "ออกแรง Probe เพียง 20–25 กรัม ในแนวขนานแกนรากฟัน (Col area เอียงตามจุดสัมผัสเล็กน้อย)"]
+      ["Glickman vs Hamp Furcation", "Glickman: I (ไม่เข้า), II (Cul-de-sac), III (ทะลุมีเหงือกคลุม), IV (ทะลุมองเห็นโล่ง) | Hamp (ใช้ใน TAP 2025): Class I (<3 mm), II (≥3 mm ไม่ทะลุ), III (ทะลุตลอด)", "ใช้ Nabers Probe! ตรวจฟันกรามบน 3 ตำแหน่ง (B, MP, DP) ฟันกรามล่าง 2 ตำแหน่ง (B, L); TAP 2025: Hamp 0–1=Favorable, 2=Questionable, 3=Unfavorable"],
+      ["Miller Mobility & Probing Force", "Grade 1: โยกแนวนอน < 1 mm | Grade 2: โยกแนวนอน ≥ 1 mm | Grade 3: โยก > 1 mm + กดจมแนวดิ่ง | Probe (UNC-15, William, WHO) แรง 20–25 g", "TAP 2025 Primary Mobility: 0–1=Favorable, 1–2=Questionable, 2–3=Unfavorable, 3=Hopeless (ระวังแยก Mobility จริงกับ Fremitus!)"],
+      ["TAP 2025 Tooth-level: Favorable / Questionable", "Favorable: Mob 0–1, RBL <33% (Coronal 1/3), PD ≤5 mm, Hamp 0–1, คุม Local factor ด้วย non-surgical, Restorable, ไม่มี Endo-perio | Questionable: Mob 1–2, RBL 33–66% (Middle 1/3) หรือ >66% ที่มี vertical defect ≥3 mm ทำ regeneration ได้, PD ≥6 mm, Hamp 2, คุม Local factor ด้วย surgical/occlusal trauma, Restorable, Endo-perio ไม่มี root damage", "⚠️ หากผู้ป่วยมี HbA1C ≥ 7.0% หรือสูบบุหรี่ ≥ 10 มวน/วัน ต้องปรับ Questionable ➔ Unfavorable!"],
+      ["TAP 2025 Tooth-level: Unfavorable / Hopeless", "Unfavorable: Mob 2–3, RBL >66% (Apical 1/3), PD ≥6 mm, Hamp 3, Local factor ต้องทำ interdisciplinary, Restorability compromised, Endo-perio มี root damage ต้องตรวจเพิ่ม/ส่งต่อ | Hopeless: Mob 3, RBL ถึงปลายราก (Apex), Unrestorable, Endo-perio with root damage แนะนำถอน", "ข้อสอบ พ.ศ. 2568/2569 เป็นต้นไป ใช้ 4 คำนี้ระดับซี่ฟัน! คำว่า Fair/Poor เป็นเกณฑ์เก่า พ.ศ. 2550–2557 และปัจจุบันใช้ Poor เฉพาะ Patient-level"],
+      ["TAP 2025 Patient-level & 4 Shifters", "Good (Health, Gingivitis, Stage I–II) | Fair (Stage III) | Poor (Stage IV, Molar-Incisor) | ปรับลด 1 ขั้นเมื่อมี Shifters: Systemic (สูบบุหรี่ ≥10 มวน, HbA1C ≥7.0%), Compliance/SPT, Parafunction, Occlusal stability (<20 ซี่ หรือ <10 คู่สบ)", "Health/Gingivitis แม้มีปัจจัยลบอื่นมักคงที่ ≥ Fair | รากเทียม (Implant) ไม่ลด Patient-level prognosis และนับเป็นคู่สบได้หากยังใช้งานได้"]
     ],
     pitfalls: [
       "วินิจฉัยผู้ป่วยเหงือกโตจากยาที่วัด PD ได้ 5 mm ว่าเป็น Periodontitis — ต้องคำนวณ CAL ก่อน! ถ้าขอบเหงือกอยู่เหนือ CEJ 3 mm ➔ CAL = 2 mm แปลว่า Pseudopocket เท่านั้น (Gingivitis/Drug enlargement)",
-      "ตรวจ Furcation ด้าน Mesial ของฟันกรามบน (Maxillary 1st molar) ด้วยการแหย่จากฝั่ง Buccal — ไม่ได้! Mesial furcation ของฟันบนอยู่ค่อนมาทาง ‘Palatal’ ต้องแหย่จากด้าน Palatal"
+      "ตรวจ Furcation ด้าน Mesial ของฟันกรามบน (Maxillary 1st molar) ด้วยการแหย่จากฝั่ง Buccal — ไม่ได้! Mesial furcation ของฟันบนอยู่ค่อนมาทาง ‘Palatal’ ต้องแหย่จากด้าน Palatal",
+      "ยังตอบ Fair/Poor ในข้อสอบ Tooth-level prognosis ปี 2568–2569 — ตาม TAP Guideline 2025 ระดับซี่ฟันเหลือเพียง 4 ระดับ (Favorable, Questionable, Unfavorable, Hopeless) เช่น ฟันโยก 2 + RBL >66% + PD ≥6 mm ต้องตอบ Unfavorable (ไม่ใช่ Poor)",
+      "ลืมปรับ Questionable → Unfavorable ในผู้ป่วยเบาหวาน HbA1C ≥ 7.0% หรือสูบบุหรี่ ≥ 10 มวน/วัน และลืมข้อยกเว้น Vertical bone loss >66% ที่มี vertical component ≥3 mm ซึ่งทำ regeneration ได้ (ยังคงเป็น Questionable)"
     ],
-    pearl: "Recession บวก (+) | เหงือกบวมคลุม CEJ ลบ (-) | Nabers Probe ตรวจ Mesial ฟันกรามบนเข้าทาง Palatal!",
-    reference: "Newman & Carranza's Clinical Periodontology 13th ed. & สมาคมปริทันตวิทยาแห่งประเทศไทย"
+    pearl: "CAL: Recession บวก (+) | บวมคลุม CEJ ลบ (-) • TAP 2025 Tooth-level (4 ระดับ): Favorable / Questionable / Unfavorable / Hopeless (DM HbA1c ≥7% หรือบุหรี่ ≥10 มวน ปรับ Questionable➔Unfavorable!) • Patient-level (3 ระดับ): Good (I-II) / Fair (III) / Poor (IV) + 4 Shifters ลด 1 ขั้น (ยกเว้น Health/Gingivitis ≥ Fair และ Implant ไม่ลดระดับ)",
+    reference: "สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP Guideline 2025: An Update in Periodontal Prognosis, พ.ศ. 2568), Kwok & Caton (2007) & Newman and Carranza's Clinical Periodontology"
   },
 
   "Perio-Etiology-Microbiology": {

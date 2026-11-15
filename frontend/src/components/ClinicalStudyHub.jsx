@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { 
   BookOpen, Search, Sparkles, AlertTriangle, ArrowLeft, 
   CheckCircle2, XCircle, Compass, Award, Bookmark, 
-  Layers, ChevronRight, ChevronLeft, Play, BookMarked, Share2, 
+  Layers, ChevronRight, ChevronLeft, ChevronUp, ChevronDown, Play, BookMarked, Share2, 
   Lightbulb, X, GraduationCap, Brain, FileText, Eye, Check, Filter,
   RotateCcw, Zap, Stethoscope, Shuffle, Target, GitBranch
 } from 'lucide-react';
@@ -169,10 +169,13 @@ export default function ClinicalStudyHub({
   const auth = useAuth() || {};
   const { token, authFetch } = auth;
 
-  // Primary Mode: 'exam_topics' (83 DB Topics), 'textbooks' (14 Gold Standard Textbooks), 'masterclass' (25 Curated Guides), 'mistake_clinic'
-  const [hubMode, setHubMode] = useState(initialHubMode || 'exam_topics');
+  // Primary Mode: 'by_specialty' (11 Specialties Directory), 'exam_topics' (83 DB Topics), 'textbooks' (14 Gold Standard Textbooks), 'masterclass' (Curated Guides), 'mistake_clinic'
+  const [hubMode, setHubMode] = useState(
+    initialHubMode || (initialTopicId || isModal ? 'exam_topics' : 'by_specialty')
+  );
   const [selectedSpecialty, setSelectedSpecialty] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [collapsedSidebarSpecs, setCollapsedSidebarSpecs] = useState({});
 
   // Overview data from /api/learning/overview
   const [overviewData, setOverviewData] = useState(null);
@@ -604,6 +607,155 @@ export default function ClinicalStudyHub({
     );
   }, [allStudyGuides, selectedSpecialty, searchQuery]);
 
+  // All 11 Specialties structured with their topics, textbooks, and masterclass guides
+  const specialtySections = useMemo(() => {
+    const rawTopics = overviewData?.topics?.length
+      ? overviewData.topics
+      : Object.entries(allStudyGuides).map(([id, g]) => ({
+          id,
+          title_th: g.title,
+          title_en: (g.must_know_topics || []).join(' • '),
+          category: g.category || g.specialty || 'อื่นๆ',
+          question_count: 0,
+          cognitive_counts: { R: 0, A: 0, P: 0 },
+        }));
+    const rawTextbooks = overviewData?.textbooks || [];
+    const allGuidesList = Object.entries(allStudyGuides).map(([id, g]) => ({ id, ...g }));
+
+    return SPECIALTY_CATEGORIES.filter(cat => cat.id !== 'all').map((cat, idx) => {
+      const color = SPECIALTY_COLOR_MAP[cat.id] || cat.color || '#2563eb';
+      const topics = rawTopics.filter(t => t.category === cat.id);
+      const guides = allGuidesList.filter(g => (g.category || g.specialty) === cat.id);
+      const textbooks = rawTextbooks.filter(tb => tb.specialty === cat.id);
+      const totalQuestions = topics.reduce((sum, t) => sum + (t.question_count || 0), 0);
+      const masteryCounts = {
+        green: topics.filter(t => topicMastery[t.id] === 'green').length,
+        yellow: topics.filter(t => topicMastery[t.id] === 'yellow').length,
+        red: topics.filter(t => topicMastery[t.id] === 'red').length,
+      };
+      return {
+        ...cat,
+        index: idx + 1,
+        color,
+        topics,
+        guides,
+        textbooks,
+        totalQuestions,
+        masteryCounts,
+      };
+    });
+  }, [overviewData, allStudyGuides, topicMastery]);
+
+  const visibleSpecialtySections = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return specialtySections
+      .filter(sec => selectedSpecialty === 'all' || sec.id === selectedSpecialty)
+      .map(sec => {
+        if (!q) return sec;
+        const matchSpec = sec.name.toLowerCase().includes(q) || sec.id.toLowerCase().includes(q);
+        if (matchSpec) return sec;
+        const matchedTopics = sec.topics.filter(t =>
+          t.id.toLowerCase().includes(q) ||
+          (t.title_th || '').toLowerCase().includes(q) ||
+          (t.title_en || '').toLowerCase().includes(q) ||
+          (allStudyGuides[t.id]?.overview || '').toLowerCase().includes(q)
+        );
+        return { ...sec, topics: matchedTopics };
+      })
+      .filter(sec => sec.topics.length > 0 || sec.guides.length > 0);
+  }, [specialtySections, selectedSpecialty, searchQuery, allStudyGuides]);
+
+  const groupedTopicsBySpecialty = useMemo(() => {
+    const groups = [];
+    SPECIALTY_CATEGORIES.filter(c => c.id !== 'all').forEach((cat, idx) => {
+      const items = filteredTopics.filter(t => t.category === cat.id);
+      if (items.length > 0) {
+        groups.push({
+          ...cat,
+          index: idx + 1,
+          color: SPECIALTY_COLOR_MAP[cat.id] || cat.color || '#2563eb',
+          items,
+          totalQuestions: items.reduce((s, t) => s + (t.question_count || 0), 0),
+        });
+      }
+    });
+    return groups;
+  }, [filteredTopics]);
+
+  const groupedMasterclassBySpecialty = useMemo(() => {
+    const groups = [];
+    SPECIALTY_CATEGORIES.filter(c => c.id !== 'all').forEach((cat, idx) => {
+      const items = filteredMasterclass.filter(g => (g.category || g.specialty) === cat.id);
+      if (items.length > 0) {
+        groups.push({
+          ...cat,
+          index: idx + 1,
+          color: SPECIALTY_COLOR_MAP[cat.id] || cat.color || '#2563eb',
+          items,
+        });
+      }
+    });
+    return groups;
+  }, [filteredMasterclass]);
+
+  const handleSelectSpecialty = useCallback((specId) => {
+    setSelectedSpecialty(specId);
+    if (specId && specId !== 'all') {
+      const specSec = specialtySections.find(s => s.id === specId);
+      if (specSec) {
+        if (specSec.topics.length > 0 && !specSec.topics.some(t => t.id === selectedTopicId)) {
+          setSelectedTopicId(specSec.topics[0].id);
+        }
+        if (specSec.textbooks.length > 0 && !specSec.textbooks.some(tb => tb.id === selectedTextbookId)) {
+          setSelectedTextbookId(specSec.textbooks[0].id);
+        }
+        if (specSec.guides.length > 0 && !specSec.guides.some(g => g.id === selectedMasterclassId)) {
+          setSelectedMasterclassId(specSec.guides[0].id);
+        }
+      }
+    }
+  }, [specialtySections, selectedTopicId, selectedTextbookId, selectedMasterclassId]);
+
+  const currentSpecialtyNav = useMemo(() => {
+    if (hubMode === 'exam_topics') {
+      const currentTopicObj =
+        overviewData?.topics?.find(t => t.id === selectedTopicId) ||
+        (allStudyGuides[selectedTopicId]
+          ? {
+              id: selectedTopicId,
+              title_th: allStudyGuides[selectedTopicId].title,
+              category: allStudyGuides[selectedTopicId].category || allStudyGuides[selectedTopicId].specialty,
+            }
+          : null);
+      const specId = currentTopicObj?.category || (selectedSpecialty !== 'all' ? selectedSpecialty : null);
+      const specSec = specialtySections.find(s => s.id === specId);
+      if (!specSec || specSec.topics.length === 0) return null;
+      const idx = Math.max(0, specSec.topics.findIndex(t => t.id === selectedTopicId));
+      return {
+        specSec,
+        items: specSec.topics.map(t => ({ id: t.id, title: t.title_th, count: t.question_count })),
+        currentIndex: idx,
+        prevItem: idx > 0 ? specSec.topics[idx - 1] : null,
+        nextItem: idx < specSec.topics.length - 1 ? specSec.topics[idx + 1] : null,
+      };
+    }
+    if (hubMode === 'masterclass') {
+      const g = allStudyGuides[selectedMasterclassId];
+      const specId = g?.category || g?.specialty || (selectedSpecialty !== 'all' ? selectedSpecialty : null);
+      const specSec = specialtySections.find(s => s.id === specId);
+      if (!specSec || specSec.guides.length === 0) return null;
+      const idx = Math.max(0, specSec.guides.findIndex(item => item.id === selectedMasterclassId));
+      return {
+        specSec,
+        items: specSec.guides.map(item => ({ id: item.id, title: item.title, count: null })),
+        currentIndex: idx,
+        prevItem: idx > 0 ? specSec.guides[idx - 1] : null,
+        nextItem: idx < specSec.guides.length - 1 ? specSec.guides[idx + 1] : null,
+      };
+    }
+    return null;
+  }, [hubMode, overviewData, allStudyGuides, selectedTopicId, selectedMasterclassId, selectedSpecialty, specialtySections]);
+
   // Filtered Guided Cases for Step-by-Step Teacher
   const filteredGuidedCases = useMemo(() => {
     if (!moduleData?.guided_cases) return [];
@@ -845,6 +997,171 @@ export default function ClinicalStudyHub({
     boxShadow: 'var(--shadow-elevated)',
   } : {};
 
+  const toggleSidebarSpecGroup = useCallback((specId) => {
+    setCollapsedSidebarSpecs(prev => ({ ...prev, [specId]: !prev[specId] }));
+  }, []);
+
+  const handleSelectNavChapter = useCallback((itemId, specId) => {
+    if (specId) {
+      setSelectedSpecialty(specId);
+    }
+    if (hubMode === 'masterclass') {
+      setSelectedMasterclassId(itemId);
+      if (overviewData?.topics?.some(t => t.id === itemId)) {
+        setSelectedTopicId(itemId);
+      }
+    } else {
+      setSelectedTopicId(itemId);
+      if (allStudyGuides[itemId]) {
+        setSelectedMasterclassId(itemId);
+      }
+    }
+  }, [hubMode, overviewData, allStudyGuides]);
+
+  const renderSpecialtyChapterBar = () => {
+    if (!currentSpecialtyNav) return null;
+    const { specSec, items, currentIndex, prevItem, nextItem } = currentSpecialtyNav;
+    return (
+      <div
+        className="specialty-chapter-nav-bar"
+        style={{
+          marginBottom: '1.15rem',
+          padding: '0.85rem 1.1rem',
+          borderRadius: '14px',
+          background: 'var(--surface-card)',
+          border: `1px solid ${specSec.color}40`,
+          borderLeft: `5px solid ${specSec.color}`,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.65rem',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', flexWrap: 'wrap' }}>
+            <span style={{
+              fontSize: '0.73rem',
+              fontWeight: 800,
+              padding: '0.2rem 0.65rem',
+              borderRadius: '999px',
+              background: `${specSec.color}18`,
+              color: specSec.color,
+              border: `1px solid ${specSec.color}45`,
+            }}>
+              สาขาที่ {specSec.index}: {specSec.name}
+            </span>
+            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text)' }}>
+              บทที่ {currentIndex + 1} จาก {items.length} บทเรียนในสาขานี้
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => setHubMode('by_specialty')}
+              className="btn btn-secondary btn-sm"
+              style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.28rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+            >
+              <Layers size={13} /> สารบัญ 11 สาขา
+            </button>
+            <button
+              type="button"
+              disabled={!prevItem}
+              onClick={() => prevItem && handleSelectNavChapter(prevItem.id, specSec.id)}
+              className="btn btn-secondary btn-sm"
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                padding: '0.28rem 0.65rem',
+                opacity: prevItem ? 1 : 0.45,
+                cursor: prevItem ? 'pointer' : 'not-allowed',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '3px',
+              }}
+              title={prevItem ? `บทก่อนหน้า: ${prevItem.title_th || prevItem.title}` : 'อยู่บทแรกของสาขานี้แล้ว'}
+            >
+              <ChevronLeft size={14} /> บทก่อนหน้า
+            </button>
+            <button
+              type="button"
+              disabled={!nextItem}
+              onClick={() => nextItem && handleSelectNavChapter(nextItem.id, specSec.id)}
+              className="btn btn-primary btn-sm"
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                padding: '0.28rem 0.7rem',
+                background: specSec.color,
+                border: 'none',
+                opacity: nextItem ? 1 : 0.45,
+                cursor: nextItem ? 'pointer' : 'not-allowed',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '3px',
+              }}
+              title={nextItem ? `บทถัดไป: ${nextItem.title_th || nextItem.title}` : 'อยู่บทสุดท้ายของสาขานี้แล้ว'}
+            >
+              บทถัดไปในสาขา <ChevronRight size={14} />
+            </button>
+          </div>
+        </div>
+
+        {/* Horizontal Chapter Pills for this Specialty */}
+        <div style={{
+          display: 'flex',
+          gap: '0.38rem',
+          overflowX: 'auto',
+          paddingBottom: '2px',
+          scrollbarWidth: 'thin',
+        }}>
+          {items.map((chap, cIdx) => {
+            const isCurr = cIdx === currentIndex;
+            const mLvl = topicMastery[chap.id];
+            return (
+              <button
+                key={chap.id}
+                type="button"
+                onClick={() => handleSelectNavChapter(chap.id, specSec.id)}
+                style={{
+                  padding: '0.3rem 0.68rem',
+                  borderRadius: '8px',
+                  fontSize: '0.75rem',
+                  fontWeight: isCurr ? 800 : 600,
+                  whiteSpace: 'nowrap',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  background: isCurr ? specSec.color : 'var(--surface-subtle)',
+                  color: isCurr ? '#ffffff' : 'var(--text-sub)',
+                  border: isCurr ? `1px solid ${specSec.color}` : '1px solid var(--border)',
+                  maxWidth: '240px',
+                }}
+                title={`บทที่ ${cIdx + 1}: ${chap.title}`}
+              >
+                <span style={{ opacity: isCurr ? 0.95 : 0.75, fontWeight: 800 }}>บทที่ {cIdx + 1}</span>
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {chap.title}
+                </span>
+                {mLvl && MASTERY_META[mLvl] && (
+                  <span
+                    style={{
+                      width: '7px',
+                      height: '7px',
+                      borderRadius: '50%',
+                      backgroundColor: isCurr ? '#ffffff' : MASTERY_META[mLvl].dotColor,
+                      flexShrink: 0,
+                    }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   const hubContent = (
     <div
       style={containerStyle}
@@ -936,7 +1253,7 @@ export default function ClinicalStudyHub({
             outline: 'none',
           } : undefined}
         >
-          {/* 3-Mode Switcher Pills */}
+          {/* Mode Switcher Pills */}
           <div
             className="study-mode-tabs"
             style={{
@@ -945,6 +1262,25 @@ export default function ClinicalStudyHub({
               background: 'var(--bg-panel)',
             }}
           >
+            <button
+              onClick={() => setHubMode('by_specialty')}
+              style={{
+                padding: '0.45rem 0.95rem',
+                borderRadius: '10px',
+                fontSize: '0.82rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: hubMode === 'by_specialty' ? 'var(--primary)' : 'var(--surface-card)',
+                color: hubMode === 'by_specialty' ? '#fff' : 'var(--text-sub)',
+                border: hubMode === 'by_specialty' ? '1px solid var(--primary)' : '1px solid var(--border)',
+              }}
+            >
+              <Layers size={15} /> แยกตามสาขาวิชา (11 สาขา)
+            </button>
+
             <button
               onClick={() => setHubMode('exam_topics')}
               style={{
@@ -1167,12 +1503,13 @@ export default function ClinicalStudyHub({
           }}>
             {SPECIALTY_CATEGORIES.map(cat => {
               const isActive = selectedSpecialty === cat.id;
+              const specSec = cat.id !== 'all' ? specialtySections.find(s => s.id === cat.id) : null;
               return (
                 <button
                   key={cat.id}
-                  onClick={() => setSelectedSpecialty(cat.id)}
+                  onClick={() => handleSelectSpecialty(cat.id)}
                   style={{
-                    padding: '0.32rem 0.75rem',
+                    padding: '0.32rem 0.78rem',
                     borderRadius: '20px',
                     fontSize: '0.78rem',
                     fontWeight: isActive ? 700 : 500,
@@ -1180,7 +1517,7 @@ export default function ClinicalStudyHub({
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '5px',
+                    gap: '6px',
                     transition: 'all 0.15s ease',
                     background: isActive ? cat.color : 'var(--surface-subtle)',
                     color: isActive ? '#ffffff' : 'var(--text-sub)',
@@ -1189,6 +1526,18 @@ export default function ClinicalStudyHub({
                 >
                   {cat.icon ? <span>{cat.icon}</span> : null}
                   <span>{cat.name}</span>
+                  {specSec && specSec.topics.length > 0 && (
+                    <span style={{
+                      fontSize: '0.68rem',
+                      fontWeight: 800,
+                      padding: '0.05rem 0.42rem',
+                      borderRadius: '999px',
+                      background: isActive ? 'rgba(255,255,255,0.22)' : 'var(--surface-card)',
+                      color: isActive ? '#ffffff' : specSec.color,
+                    }}>
+                      {specSec.topics.length} บท
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -1198,7 +1547,392 @@ export default function ClinicalStudyHub({
         {/* ══════════════════════════════════════════════════════════════════
             3. MAIN SPLIT LAYOUT OR INTERACTIVE FULL-WIDTH LABS
         ══════════════════════════════════════════════════════════════════ */}
-        {hubMode === 'visual_atlas' ? (
+        {hubMode === 'by_specialty' ? (
+          <div style={{ padding: 'clamp(1rem, 2.5vw, 1.75rem)', background: 'var(--bg-surface)' }}>
+            <div style={{ maxWidth: '1220px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
+              {/* Top Directory Intro Banner */}
+              <div style={{
+                padding: '1.15rem 1.35rem',
+                borderRadius: '14px',
+                background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(2, 132, 199, 0.04))',
+                border: '1px solid rgba(37, 99, 235, 0.22)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '0.85rem',
+              }}>
+                <div>
+                  <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1.1rem', fontWeight: 800, color: 'var(--text)' }}>
+                    📚 สารบัญเลกเชอร์แยกตามสาขาวิชาทันตแพทยศาสตร์ (11 สาขาวิชา)
+                  </h3>
+                  <div style={{ fontSize: '0.84rem', color: 'var(--text-sub)', lineHeight: 1.5 }}>
+                    แยกบทเรียน ทฤษฎี กลไกพยาธิสรีรวิทยา และตารางเปรียบเทียบออกเป็นแต่ละสาขา เรียงลำดับบทที่ 1 ➔ บทสุดท้ายตามสัดส่วนข้อสอบจริง เพื่อให้อ่านเข้าใจจบเป็นรายวิชา
+                  </div>
+                </div>
+                {selectedSpecialty !== 'all' && (
+                  <button
+                    type="button"
+                    onClick={() => handleSelectSpecialty('all')}
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontWeight: 700 }}
+                  >
+                    แสดงครบทั้ง 11 สาขาวิชา
+                  </button>
+                )}
+              </div>
+
+              {/* Quick Specialty Jump Cards Row when viewing all */}
+              {selectedSpecialty === 'all' && !searchQuery.trim() && (
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))',
+                  gap: '0.65rem',
+                }}>
+                  {specialtySections.map((sec) => (
+                    <button
+                      key={`jump-${sec.id}`}
+                      type="button"
+                      onClick={() => {
+                        const el = document.getElementById(`specialty-section-${sec.index}`);
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }}
+                      style={{
+                        textAlign: 'left',
+                        padding: '0.7rem 0.85rem',
+                        borderRadius: '12px',
+                        background: 'var(--surface-card)',
+                        border: '1px solid var(--border)',
+                        borderLeft: `4px solid ${sec.color}`,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.25rem',
+                        transition: 'transform 0.15s ease, border-color 0.15s ease',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
+                        <span style={{ fontSize: '0.68rem', fontWeight: 800, color: sec.color }}>
+                          สาขาที่ {sec.index}
+                        </span>
+                        <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+                          {sec.topics.length} บท • {sec.totalQuestions} ข้อ
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '0.83rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.35, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {sec.id}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* 11 Specialty Curriculum Sections */}
+              {visibleSpecialtySections.length === 0 ? (
+                <div style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  ไม่พบหัวข้อบทเรียนที่ตรงกับคำค้นหา "{searchQuery}"
+                </div>
+              ) : (
+                visibleSpecialtySections.map((sec) => (
+                  <section
+                    key={sec.id}
+                    id={`specialty-section-${sec.index}`}
+                    style={{
+                      borderRadius: '16px',
+                      background: 'var(--surface-card)',
+                      border: `1px solid ${sec.color}38`,
+                      borderTop: `4px solid ${sec.color}`,
+                      overflow: 'hidden',
+                      boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
+                    }}
+                  >
+                    {/* Specialty Section Header */}
+                    <div style={{
+                      padding: '1.15rem 1.35rem',
+                      background: `linear-gradient(135deg, ${sec.color}14, transparent)`,
+                      borderBottom: '1px solid var(--border)',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: '0.85rem',
+                    }}>
+                      <div style={{ minWidth: 0, flex: '1 1 320px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.35rem' }}>
+                          <span style={{
+                            fontSize: '0.72rem',
+                            fontWeight: 800,
+                            padding: '0.18rem 0.6rem',
+                            borderRadius: '999px',
+                            background: sec.color,
+                            color: '#ffffff',
+                          }}>
+                            สาขาที่ {sec.index} / 11
+                          </span>
+                          <span style={{
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            padding: '0.18rem 0.6rem',
+                            borderRadius: '999px',
+                            background: `${sec.color}18`,
+                            color: sec.color,
+                          }}>
+                            {sec.topics.length} บทเรียนหลัก
+                          </span>
+                          {sec.totalQuestions > 0 && (
+                            <span style={{
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              padding: '0.18rem 0.6rem',
+                              borderRadius: '999px',
+                              background: 'var(--surface-subtle)',
+                              color: 'var(--text-sub)',
+                              border: '1px solid var(--border)',
+                            }}>
+                              ออกสอบจริงรวม {sec.totalQuestions} ข้อ
+                            </span>
+                          )}
+                          {sec.masteryCounts.green > 0 && (
+                            <span style={{
+                              fontSize: '0.73rem',
+                              fontWeight: 700,
+                              padding: '0.18rem 0.6rem',
+                              borderRadius: '999px',
+                              background: MASTERY_META.green.bg,
+                              color: MASTERY_META.green.color,
+                              border: `1px solid ${MASTERY_META.green.border}`,
+                            }}>
+                              ✓ พร้อมสอบ {sec.masteryCounts.green}/{sec.topics.length} บท
+                            </span>
+                          )}
+                        </div>
+
+                        <h3 style={{ margin: '0 0 0.35rem 0', fontSize: '1.22rem', fontWeight: 800, color: 'var(--text)', lineHeight: 1.35 }}>
+                          {sec.name}
+                        </h3>
+
+                        {sec.textbooks.length > 0 && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.35rem' }}>
+                            <span style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+                              📖 ตำราหลักประจำสาขา:
+                            </span>
+                            {sec.textbooks.map(tb => (
+                              <button
+                                key={tb.id}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedSpecialty(sec.id);
+                                  setSelectedTextbookId(tb.id);
+                                  setHubMode('textbooks');
+                                }}
+                                style={{
+                                  fontSize: '0.73rem',
+                                  fontWeight: 600,
+                                  padding: '0.15rem 0.55rem',
+                                  borderRadius: '6px',
+                                  background: 'var(--surface-subtle)',
+                                  border: '1px solid var(--border)',
+                                  color: 'var(--text-sub)',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                {tb.icon} {tb.title}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        {sec.topics.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedSpecialty(sec.id);
+                              setSelectedTopicId(sec.topics[0].id);
+                              if (allStudyGuides[sec.topics[0].id]) {
+                                setSelectedMasterclassId(sec.topics[0].id);
+                              }
+                              setHubMode('exam_topics');
+                              setClassroomTab('synthesized');
+                            }}
+                            className="btn btn-primary btn-sm"
+                            style={{
+                              background: sec.color,
+                              border: 'none',
+                              fontWeight: 800,
+                              padding: '0.48rem 0.95rem',
+                              borderRadius: '10px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                            }}
+                          >
+                            <BookOpen size={15} /> เริ่มอ่านสาขานี้ (บทที่ 1 ➔ {sec.topics.length})
+                          </button>
+                        )}
+                        {sec.guides.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedSpecialty(sec.id);
+                              setSelectedMasterclassId(sec.guides[0].id);
+                              setHubMode('masterclass');
+                            }}
+                            className="btn btn-secondary btn-sm"
+                            style={{
+                              fontWeight: 700,
+                              padding: '0.45rem 0.85rem',
+                              borderRadius: '10px',
+                            }}
+                          >
+                            ตารางสรุป Masterclass ({sec.guides.length})
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Numbered Chapters Grid inside this Specialty */}
+                    <div style={{
+                      padding: '1rem 1.25rem 1.25rem',
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 340px), 1fr))',
+                      gap: '0.75rem',
+                    }}>
+                      {sec.topics.map((topic, tIdx) => {
+                        const guide = allStudyGuides[topic.id];
+                        const mLvl = topicMastery[topic.id];
+                        return (
+                          <div
+                            key={topic.id}
+                            onClick={() => {
+                              setSelectedSpecialty(sec.id);
+                              setSelectedTopicId(topic.id);
+                              if (guide) setSelectedMasterclassId(topic.id);
+                              setHubMode('exam_topics');
+                              setClassroomTab('synthesized');
+                            }}
+                            style={{
+                              padding: '0.85rem 1rem',
+                              borderRadius: '12px',
+                              background: 'var(--surface-subtle)',
+                              border: '1px solid var(--border)',
+                              borderLeft: `4px solid ${sec.color}`,
+                              cursor: 'pointer',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              justifyContent: 'space-between',
+                              gap: '0.5rem',
+                              transition: 'all 0.15s ease',
+                            }}
+                          >
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', marginBottom: '0.35rem' }}>
+                                <span style={{
+                                  fontSize: '0.7rem',
+                                  fontWeight: 800,
+                                  padding: '0.12rem 0.5rem',
+                                  borderRadius: '6px',
+                                  background: `${sec.color}18`,
+                                  color: sec.color,
+                                }}>
+                                  บทที่ {tIdx + 1}
+                                </span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                  {mLvl && MASTERY_META[mLvl] && (
+                                    <span style={{
+                                      fontSize: '0.66rem',
+                                      fontWeight: 700,
+                                      padding: '0.08rem 0.42rem',
+                                      borderRadius: '6px',
+                                      background: MASTERY_META[mLvl].bg,
+                                      color: MASTERY_META[mLvl].color,
+                                      border: `1px solid ${MASTERY_META[mLvl].border}`,
+                                    }}>
+                                      {MASTERY_META[mLvl].label}
+                                    </span>
+                                  )}
+                                  {topic.question_count > 0 && (
+                                    <span style={{
+                                      fontSize: '0.7rem',
+                                      fontWeight: 800,
+                                      color: 'var(--text-muted)',
+                                      background: 'var(--surface-card)',
+                                      padding: '0.1rem 0.45rem',
+                                      borderRadius: '8px',
+                                      border: '1px solid var(--border)',
+                                    }}>
+                                      {topic.question_count} ข้อ
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.4, marginBottom: '0.2rem' }}>
+                                {topic.title_th}
+                              </div>
+                              <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginBottom: guide?.overview ? '0.35rem' : 0 }}>
+                                {topic.title_en || topic.id}
+                              </div>
+
+                              {guide?.overview && (
+                                <div style={{
+                                  fontSize: '0.78rem',
+                                  color: 'var(--text-sub)',
+                                  lineHeight: 1.45,
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden',
+                                }}>
+                                  {guide.overview}
+                                </div>
+                              )}
+                            </div>
+
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              gap: '6px',
+                              paddingTop: '0.4rem',
+                              borderTop: '1px dashed var(--border)',
+                              marginTop: '0.15rem',
+                            }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                                {topic.cognitive_counts && (topic.cognitive_counts.R + topic.cognitive_counts.A + topic.cognitive_counts.P > 0) && (
+                                  <>
+                                    <span style={{ fontSize: '0.64rem', padding: '0.04rem 0.32rem', borderRadius: '4px', background: 'rgba(16,185,129,0.12)', color: 'var(--ink-emerald)' }}>
+                                      R:{topic.cognitive_counts.R || 0}
+                                    </span>
+                                    <span style={{ fontSize: '0.64rem', padding: '0.04rem 0.32rem', borderRadius: '4px', background: 'rgba(59,130,246,0.12)', color: '#60a5fa' }}>
+                                      A:{topic.cognitive_counts.A || 0}
+                                    </span>
+                                    <span style={{ fontSize: '0.64rem', padding: '0.04rem 0.32rem', borderRadius: '4px', background: 'rgba(239,68,68,0.12)', color: 'var(--ink-rose)' }}>
+                                      P:{topic.cognitive_counts.P || 0}
+                                    </span>
+                                  </>
+                                )}
+                                {guide?.matrix_rows && (
+                                  <span style={{ fontSize: '0.65rem', padding: '0.04rem 0.38rem', borderRadius: '4px', background: 'rgba(37, 99, 235, 0.12)', color: 'var(--primary-light)', fontWeight: 700 }}>
+                                    มีตารางเปรียบเทียบ
+                                  </span>
+                                )}
+                              </div>
+                              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: sec.color, display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                                อ่านบทนี้ <ChevronRight size={14} />
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </section>
+                ))
+              )}
+            </div>
+          </div>
+        ) : hubMode === 'visual_atlas' ? (
           <div>
           <VisualAtlas
             selectedSpecialty={selectedSpecialty}
@@ -1331,98 +2065,152 @@ export default function ClinicalStudyHub({
                     ไม่พบหัวข้อที่ตรงกับคำค้นหา
                   </div>
                 ) : (
-                  filteredTopics.map(topic => {
-                    const isSelected = topic.id === selectedTopicId;
-                    const badgeColor = SPECIALTY_COLOR_MAP[topic.category] || '#2563eb';
-                    const hasMasterclass = Boolean(allStudyGuides[topic.id]);
+                  groupedTopicsBySpecialty.map(group => {
+                    const isGroupCollapsed = Boolean(collapsedSidebarSpecs[group.id]);
+                    const hasActiveInGroup = group.items.some(t => t.id === selectedTopicId);
                     return (
                       <div
-                        key={topic.id}
-                        onClick={() => { setSelectedTopicId(topic.id); setMobileSidebarOpen(false); }}
+                        key={group.id}
                         style={{
-                          padding: '0.75rem 0.85rem',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '0.4rem',
+                          marginBottom: '0.45rem',
                           borderRadius: '10px',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s ease',
-                          background: isSelected ? 'rgba(37, 99, 235, 0.12)' : 'var(--surface-card)',
-                          border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border)',
-                          borderLeft: isSelected ? `4px solid ${badgeColor}` : `4px solid ${badgeColor}50`,
+                          background: hasActiveInGroup ? 'rgba(37, 99, 235, 0.04)' : 'transparent'
                         }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px', marginBottom: '0.3rem' }}>
-                          <span style={{
-                            fontSize: '0.68rem',
-                            fontWeight: 700,
-                            padding: '0.1rem 0.45rem',
-                            borderRadius: '6px',
-                            background: `${badgeColor}20`,
-                            color: badgeColor,
-                          }}>
-                            {topic.category}
+                        <button
+                          type="button"
+                          onClick={() => toggleSidebarSpecGroup(group.id)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: '6px',
+                            padding: '0.5rem 0.65rem',
+                            borderRadius: '8px',
+                            background: 'var(--surface-card)',
+                            border: hasActiveInGroup ? `1px solid ${group.color}65` : '1px solid var(--border)',
+                            borderLeft: `4px solid ${group.color}`,
+                            cursor: 'pointer',
+                            textAlign: 'left',
+                            width: '100%'
+                          }}
+                        >
+                          <span style={{ fontSize: '0.77rem', fontWeight: 800, color: 'var(--text)', lineHeight: 1.35 }}>
+                            {group.index ? `สาขาที่ ${group.index}: ` : ''}{group.id}
                           </span>
-                          <span style={{
-                            fontSize: '0.72rem',
-                            fontWeight: 800,
-                            color: isSelected ? 'var(--primary-light)' : 'var(--text-muted)',
-                            background: 'rgba(255,255,255,0.05)',
-                            padding: '0.1rem 0.45rem',
-                            borderRadius: '10px'
-                          }}>
-                            {topic.question_count} ข้อ
-                          </span>
-                        </div>
-
-                        <div style={{
-                          fontSize: '0.86rem',
-                          fontWeight: isSelected ? 700 : 600,
-                          color: isSelected ? 'var(--text)' : 'var(--text-sub)',
-                          lineHeight: 1.4,
-                          marginBottom: '0.25rem'
-                        }}>
-                          {topic.title_th}
-                        </div>
-
-                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
-                          {topic.id}
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: '0.65rem', padding: '0.05rem 0.35rem', borderRadius: '4px', background: 'rgba(16,185,129,0.12)', color: 'var(--ink-emerald)' }}>
-                            R:{topic.cognitive_counts?.R || 0}
-                          </span>
-                          <span style={{ fontSize: '0.65rem', padding: '0.05rem 0.35rem', borderRadius: '4px', background: 'rgba(59,130,246,0.12)', color: '#60a5fa' }}>
-                            A:{topic.cognitive_counts?.A || 0}
-                          </span>
-                          <span style={{ fontSize: '0.65rem', padding: '0.05rem 0.35rem', borderRadius: '4px', background: 'rgba(239,68,68,0.12)', color: 'var(--ink-rose)' }}>
-                            P:{topic.cognitive_counts?.P || 0}
-                          </span>
-                          {hasMasterclass && (
-                            <span style={{ fontSize: '0.65rem', padding: '0.05rem 0.4rem', borderRadius: '4px', background: 'rgba(37, 99, 235, 0.14)', color: 'var(--primary-light)', fontWeight: 700 }}>
-                              ตาราง Masterclass
-                            </span>
-                          )}
-                          {topicMastery[topic.id] && MASTERY_META[topicMastery[topic.id]] && (
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
                             <span style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                              fontSize: '0.67rem',
-                              padding: '0.1rem 0.45rem',
-                              borderRadius: '6px',
-                              background: MASTERY_META[topicMastery[topic.id]].bg,
-                              color: MASTERY_META[topicMastery[topic.id]].color,
-                              border: `1px solid ${MASTERY_META[topicMastery[topic.id]].border}`,
-                              fontWeight: 700,
-                              marginLeft: 'auto'
+                              fontSize: '0.68rem',
+                              fontWeight: 800,
+                              padding: '0.1rem 0.42rem',
+                              borderRadius: '8px',
+                              background: `${group.color}20`,
+                              color: group.color
                             }}>
-                              <span
-                                className="topic-mastery-dot"
-                                style={{ backgroundColor: MASTERY_META[topicMastery[topic.id]].dotColor, width: '6px', height: '6px' }}
-                              />
-                              {MASTERY_META[topicMastery[topic.id]].label}
+                              {group.items.length} บท
                             </span>
-                          )}
-                        </div>
+                            {isGroupCollapsed ? <ChevronDown size={13} color="var(--text-muted)" /> : <ChevronUp size={13} color="var(--text-muted)" />}
+                          </span>
+                        </button>
+
+                        {!isGroupCollapsed && group.items.map((topic, chapterIdx) => {
+                          const isSelected = topic.id === selectedTopicId;
+                          const badgeColor = SPECIALTY_COLOR_MAP[topic.category] || group.color || '#2563eb';
+                          const hasMasterclass = Boolean(allStudyGuides[topic.id]);
+                          return (
+                            <div
+                              key={topic.id}
+                              onClick={() => { setSelectedTopicId(topic.id); setMobileSidebarOpen(false); }}
+                              style={{
+                                padding: '0.7rem 0.85rem',
+                                borderRadius: '10px',
+                                cursor: 'pointer',
+                                transition: 'all 0.15s ease',
+                                background: isSelected ? 'rgba(37, 99, 235, 0.12)' : 'var(--surface-card)',
+                                border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border)',
+                                borderLeft: isSelected ? `4px solid ${badgeColor}` : `4px solid ${badgeColor}50`,
+                              }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px', marginBottom: '0.3rem' }}>
+                                <span style={{
+                                  fontSize: '0.68rem',
+                                  fontWeight: 800,
+                                  padding: '0.1rem 0.45rem',
+                                  borderRadius: '6px',
+                                  background: `${badgeColor}20`,
+                                  color: badgeColor,
+                                }}>
+                                  บทที่ {chapterIdx + 1} • {topic.category}
+                                </span>
+                                <span style={{
+                                  fontSize: '0.72rem',
+                                  fontWeight: 800,
+                                  color: isSelected ? 'var(--primary-light)' : 'var(--text-muted)',
+                                  background: 'rgba(255,255,255,0.05)',
+                                  padding: '0.1rem 0.45rem',
+                                  borderRadius: '10px'
+                                }}>
+                                  {topic.question_count} ข้อ
+                                </span>
+                              </div>
+
+                              <div style={{
+                                fontSize: '0.86rem',
+                                fontWeight: isSelected ? 700 : 600,
+                                color: isSelected ? 'var(--text)' : 'var(--text-sub)',
+                                lineHeight: 1.4,
+                                marginBottom: '0.25rem'
+                              }}>
+                                {topic.title_th}
+                              </div>
+
+                              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
+                                {topic.id}
+                              </div>
+
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                                <span style={{ fontSize: '0.65rem', padding: '0.05rem 0.35rem', borderRadius: '4px', background: 'rgba(16,185,129,0.12)', color: 'var(--ink-emerald)' }}>
+                                  R:{topic.cognitive_counts?.R || 0}
+                                </span>
+                                <span style={{ fontSize: '0.65rem', padding: '0.05rem 0.35rem', borderRadius: '4px', background: 'rgba(59,130,246,0.12)', color: '#60a5fa' }}>
+                                  A:{topic.cognitive_counts?.A || 0}
+                                </span>
+                                <span style={{ fontSize: '0.65rem', padding: '0.05rem 0.35rem', borderRadius: '4px', background: 'rgba(239,68,68,0.12)', color: 'var(--ink-rose)' }}>
+                                  P:{topic.cognitive_counts?.P || 0}
+                                </span>
+                                {hasMasterclass && (
+                                  <span style={{ fontSize: '0.65rem', padding: '0.05rem 0.4rem', borderRadius: '4px', background: 'rgba(37, 99, 235, 0.14)', color: 'var(--primary-light)', fontWeight: 700 }}>
+                                    ตาราง Masterclass
+                                  </span>
+                                )}
+                                {topicMastery[topic.id] && MASTERY_META[topicMastery[topic.id]] && (
+                                  <span style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    fontSize: '0.67rem',
+                                    padding: '0.1rem 0.45rem',
+                                    borderRadius: '6px',
+                                    background: MASTERY_META[topicMastery[topic.id]].bg,
+                                    color: MASTERY_META[topicMastery[topic.id]].color,
+                                    border: `1px solid ${MASTERY_META[topicMastery[topic.id]].border}`,
+                                    fontWeight: 700,
+                                    marginLeft: 'auto'
+                                  }}>
+                                    <span
+                                      className="topic-mastery-dot"
+                                      style={{ backgroundColor: MASTERY_META[topicMastery[topic.id]].dotColor, width: '6px', height: '6px' }}
+                                    />
+                                    {MASTERY_META[topicMastery[topic.id]].label}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     );
                   })
@@ -1490,33 +2278,87 @@ export default function ClinicalStudyHub({
               </>
             )}
 
-            {/* MODE 3 SIDEBAR: 25 CURATED MASTERCLASS GUIDES */}
+            {/* MODE 3 SIDEBAR: 89 CURATED MASTERCLASS GUIDES GROUPED BY SPECIALTY */}
             {hubMode === 'masterclass' && (
               <>
                 <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', padding: '0.25rem 0.5rem' }}>
                   คัมภีร์สรุป Masterclass ({filteredMasterclass.length} บทเรียน)
                 </div>
-                {filteredMasterclass.map(guide => {
-                  const isSelected = guide.id === selectedMasterclassId;
+                {groupedMasterclassBySpecialty.map(group => {
+                  const isGroupCollapsed = Boolean(collapsedSidebarSpecs[`mc_${group.id}`]);
+                  const hasActiveInGroup = group.items.some(g => g.id === selectedMasterclassId);
                   return (
                     <div
-                      key={guide.id}
-                      onClick={() => { setSelectedMasterclassId(guide.id); setMobileSidebarOpen(false); }}
+                      key={group.id}
                       style={{
-                        padding: '0.75rem 0.9rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.4rem',
+                        marginBottom: '0.45rem',
                         borderRadius: '10px',
-                        cursor: 'pointer',
-                        background: isSelected ? 'rgba(37, 99, 235, 0.12)' : 'var(--surface-card)',
-                        border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border)',
-                        borderLeft: `4px solid ${guide.badgeColor || 'var(--primary)'}`,
+                        background: hasActiveInGroup ? 'rgba(37, 99, 235, 0.04)' : 'transparent'
                       }}
                     >
-                      <div style={{ fontSize: '0.7rem', fontWeight: 700, color: guide.badgeColor, marginBottom: '0.25rem' }}>
-                        {guide.specialty}
-                      </div>
-                      <div style={{ fontSize: '0.86rem', fontWeight: isSelected ? 700 : 600, color: 'var(--text)', lineHeight: 1.4 }}>
-                        {guide.title}
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => toggleSidebarSpecGroup(`mc_${group.id}`)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '6px',
+                          padding: '0.5rem 0.65rem',
+                          borderRadius: '8px',
+                          background: 'var(--surface-card)',
+                          border: hasActiveInGroup ? `1px solid ${group.color}65` : '1px solid var(--border)',
+                          borderLeft: `4px solid ${group.color}`,
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          width: '100%'
+                        }}
+                      >
+                        <span style={{ fontSize: '0.77rem', fontWeight: 800, color: 'var(--text)', lineHeight: 1.35 }}>
+                          {group.index ? `สาขาที่ ${group.index}: ` : ''}{group.id}
+                        </span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+                          <span style={{
+                            fontSize: '0.68rem',
+                            fontWeight: 800,
+                            padding: '0.1rem 0.42rem',
+                            borderRadius: '8px',
+                            background: `${group.color}20`,
+                            color: group.color
+                          }}>
+                            {group.items.length} บท
+                          </span>
+                          {isGroupCollapsed ? <ChevronDown size={13} color="var(--text-muted)" /> : <ChevronUp size={13} color="var(--text-muted)" />}
+                        </span>
+                      </button>
+
+                      {!isGroupCollapsed && group.items.map((guide, chapterIdx) => {
+                        const isSelected = guide.id === selectedMasterclassId;
+                        return (
+                          <div
+                            key={guide.id}
+                            onClick={() => { setSelectedMasterclassId(guide.id); setMobileSidebarOpen(false); }}
+                            style={{
+                              padding: '0.7rem 0.85rem',
+                              borderRadius: '10px',
+                              cursor: 'pointer',
+                              background: isSelected ? 'rgba(37, 99, 235, 0.12)' : 'var(--surface-card)',
+                              border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border)',
+                              borderLeft: `4px solid ${guide.badgeColor || group.color || 'var(--primary)'}`,
+                            }}
+                          >
+                            <div style={{ fontSize: '0.68rem', fontWeight: 800, color: guide.badgeColor || group.color, marginBottom: '0.25rem' }}>
+                              บทที่ {chapterIdx + 1} • {guide.specialty}
+                            </div>
+                            <div style={{ fontSize: '0.86rem', fontWeight: isSelected ? 700 : 600, color: 'var(--text)', lineHeight: 1.4 }}>
+                              {guide.title}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   );
                 })}
@@ -1617,6 +2459,7 @@ export default function ClinicalStudyHub({
                 </div>
               ) : moduleData ? (
                 <div style={{ maxWidth: '960px', margin: '0 auto' }}>
+                  {hubMode === 'exam_topics' && renderSpecialtyChapterBar()}
                   
                   {/* ── Classroom Topic/Textbook Header Banner ── */}
                   <div style={{
@@ -1923,6 +2766,11 @@ export default function ClinicalStudyHub({
                                   ))}
                                 </tbody>
                               </table>
+                            </div>
+                          )}
+                          {matchingMasterclass.reference && (
+                            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.9rem', lineHeight: 1.5 }}>
+                              📚 <strong style={{ color: 'var(--text)' }}>แหล่งอ้างอิง:</strong> {matchingMasterclass.reference}
                             </div>
                           )}
                         </div>
@@ -3408,24 +4256,149 @@ export default function ClinicalStudyHub({
 
                 </div>
               ) : (authRequiredModule || !token) ? (
-                <div style={{ textAlign: 'center', padding: '4rem 1.5rem', maxWidth: '520px', margin: '0 auto' }}>
-                  <div style={{ fontSize: '2.2rem', marginBottom: '0.75rem' }}>🔐</div>
-                  <div style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--text)', marginBottom: '0.5rem' }}>
-                    กรุณาเข้าสู่ระบบเพื่อเปิดอ่านบทเรียนเจาะลึกและเคสฝึกจากคลังข้อสอบ
-                  </div>
-                  <div style={{ fontSize: '0.88rem', color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: '1.25rem' }}>
-                    เพื่อความปลอดภัยของเฉลยและเนื้อหาคลังข้อสอบ ระบบสงวนสิทธิ์บทเรียนสังเคราะห์ Flashcards และเคสฝึกวิเคราะห์เฉพาะผู้ใช้งานที่เข้าสู่ระบบแล้ว
-                  </div>
-                  {onOpenAuthModal && (
-                    <button
-                      type="button"
-                      onClick={onOpenAuthModal}
-                      className="btn btn-primary"
-                      style={{ fontWeight: 700, padding: '0.65rem 1.4rem', borderRadius: '10px' }}
-                    >
-                      เข้าสู่ระบบ / สมัครสมาชิก
-                    </button>
+                <div style={{ maxWidth: '960px', margin: '0 auto' }}>
+                  {hubMode === 'exam_topics' && renderSpecialtyChapterBar()}
+
+                  {hubMode === 'exam_topics' && matchingMasterclass && (
+                    <div style={{
+                      marginBottom: '1.5rem',
+                      padding: '1.35rem 1.5rem',
+                      borderRadius: '14px',
+                      background: 'var(--surface-card)',
+                      border: `1px solid ${matchingMasterclass.badgeColor || '#2563eb'}35`,
+                      borderTop: `4px solid ${matchingMasterclass.badgeColor || '#2563eb'}`
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.6rem' }}>
+                        <span style={{
+                          fontSize: '0.76rem',
+                          fontWeight: 800,
+                          padding: '0.2rem 0.65rem',
+                          borderRadius: '12px',
+                          background: `${matchingMasterclass.badgeColor || '#2563eb'}22`,
+                          color: matchingMasterclass.badgeColor || '#2563eb',
+                        }}>
+                          {matchingMasterclass.specialty}
+                        </span>
+                        <span style={{ fontSize: '0.74rem', color: 'var(--ink-emerald)', fontWeight: 700 }}>
+                          📖 เลกเชอร์สรุปทฤษฎีประจำบทเรียน (อ่านได้ทันทีตามลำดับสาขา)
+                        </span>
+                      </div>
+
+                      <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text)', margin: '0 0 0.75rem 0', lineHeight: 1.35 }}>
+                        {matchingMasterclass.title}
+                      </h2>
+
+                      <div style={{
+                        background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(2, 132, 199, 0.04))',
+                        borderLeft: `4px solid ${matchingMasterclass.badgeColor || 'var(--primary)'}`,
+                        borderRadius: '8px',
+                        padding: '0.9rem 1.1rem',
+                        color: 'var(--text)',
+                        fontSize: '0.9rem',
+                        lineHeight: 1.65,
+                        marginBottom: '1.1rem'
+                      }}>
+                        <strong>Clinical Overview:</strong> {matchingMasterclass.overview}
+                      </div>
+
+                      {matchingMasterclass.core_mechanism && (
+                        <div style={{ marginBottom: '1.15rem' }}>
+                          <div style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--primary-light)', marginBottom: '0.45rem' }}>
+                            1. กลไกพยาธิสรีรวิทยาและหลักการคิดเชิงลึก (Core Mechanism)
+                          </div>
+                          <div style={{
+                            color: 'var(--text-sub)',
+                            fontSize: '0.88rem',
+                            lineHeight: 1.75,
+                            whiteSpace: 'pre-wrap',
+                            background: 'var(--surface-subtle)',
+                            border: '1px solid var(--border)',
+                            borderRadius: '10px',
+                            padding: '1rem 1.15rem'
+                          }}>
+                            {matchingMasterclass.core_mechanism}
+                          </div>
+                        </div>
+                      )}
+
+                      {matchingMasterclass.matrix_headers && matchingMasterclass.matrix_rows && (
+                        <div style={{ marginBottom: '1.15rem' }}>
+                          <div style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--accent)', marginBottom: '0.45rem' }}>
+                            2. ตารางเปรียบเทียบการวินิจฉัยและการรักษา (Clinical Decision Matrix)
+                          </div>
+                          <div style={{ overflowX: 'auto', border: '1px solid var(--border)', borderRadius: '10px' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.83rem', textAlign: 'left' }}>
+                              <thead>
+                                <tr style={{ background: 'var(--surface-subtle)', borderBottom: '1px solid var(--border)' }}>
+                                  {matchingMasterclass.matrix_headers.map((h, i) => (
+                                    <th key={i} style={{ padding: '0.65rem 0.85rem', color: 'var(--text)', fontWeight: 700 }}>{h}</th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {matchingMasterclass.matrix_rows.map((row, rIdx) => (
+                                  <tr key={rIdx} style={{ borderBottom: '1px solid var(--border)' }}>
+                                    {row.map((cell, cIdx) => (
+                                      <td key={cIdx} style={{ padding: '0.65rem 0.85rem', color: cIdx === 0 ? 'var(--text)' : 'var(--text-sub)', fontWeight: cIdx === 0 ? 700 : 400 }}>
+                                        {cell}
+                                      </td>
+                                    ))}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      )}
+
+                      {(matchingMasterclass.high_yield_pearl || matchingMasterclass.pearl) && (
+                        <div style={{
+                          padding: '0.85rem 1.1rem',
+                          borderRadius: '10px',
+                          background: 'rgba(16, 185, 129, 0.08)',
+                          border: '1px solid rgba(16, 185, 129, 0.28)',
+                          fontSize: '0.86rem',
+                          color: 'var(--text)',
+                          lineHeight: 1.6
+                        }}>
+                          <strong style={{ color: 'var(--ink-emerald)' }}>💎 High-Yield Exam Pearl:</strong> {matchingMasterclass.high_yield_pearl || matchingMasterclass.pearl}
+                        </div>
+                      )}
+                      {matchingMasterclass.reference && (
+                        <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', paddingTop: '0.25rem' }}>
+                          📚 <strong style={{ color: 'var(--text)' }}>แหล่งอ้างอิง:</strong> {matchingMasterclass.reference}
+                        </div>
+                      )}
+                    </div>
                   )}
+
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '2.25rem 1.5rem',
+                    maxWidth: '620px',
+                    margin: '0 auto',
+                    borderRadius: '14px',
+                    background: 'var(--surface-subtle)',
+                    border: '1px solid var(--border)'
+                  }}>
+                    <div style={{ fontSize: '1.9rem', marginBottom: '0.5rem' }}>🔐</div>
+                    <div style={{ fontWeight: 800, fontSize: '1.02rem', color: 'var(--text)', marginBottom: '0.4rem' }}>
+                      เข้าสู่ระบบเพื่อปลดล็อกเคสฝึกวิเคราะห์จากข้อสอบจริงและ Flashcards ในบทเรียนนี้
+                    </div>
+                    <div style={{ fontSize: '0.84rem', color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: '1rem' }}>
+                      เข้าสู่ระบบเพื่อดูโจทย์จำลองคลินิก เฉลยละเอียดรายตัวเลือก (Choice Discrimination) และตารางสรุปตัวเลขสำคัญของบทเรียนนี้ครบทุกข้อ
+                    </div>
+                    {onOpenAuthModal && (
+                      <button
+                        type="button"
+                        onClick={onOpenAuthModal}
+                        className="btn btn-primary"
+                        style={{ fontWeight: 700, padding: '0.6rem 1.35rem', borderRadius: '10px' }}
+                      >
+                        เข้าสู่ระบบ / สมัครสมาชิก
+                      </button>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--text-muted)' }}>
@@ -3435,10 +4408,11 @@ export default function ClinicalStudyHub({
             )}
 
             {/* ══════════════════════════════════════════════════════════════
-                MODE 3: 25 CURATED MASTERCLASS GUIDES & DECISION MATRICES
+                MODE 3: CURATED MASTERCLASS GUIDES & DECISION MATRICES
             ══════════════════════════════════════════════════════════════ */}
             {hubMode === 'masterclass' && matchingMasterclass && (
               <div style={{ maxWidth: '920px', margin: '0 auto' }}>
+                {renderSpecialtyChapterBar()}
                 <div style={{ marginBottom: '1.75rem', paddingBottom: '1.25rem', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
                     <span style={{
@@ -3581,20 +4555,34 @@ export default function ClinicalStudyHub({
                   </div>
                 )}
 
-                {matchingMasterclass.pearl && (
+                {(matchingMasterclass.pearl || matchingMasterclass.high_yield_pearl) && (
                   <div style={{
                     background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.09), rgba(2, 132, 199, 0.06))',
                     border: '1px solid rgba(37, 99, 235, 0.28)',
                     borderRadius: '12px',
                     padding: '1.25rem',
-                    marginBottom: '1.5rem'
+                    marginBottom: matchingMasterclass.reference ? '1rem' : '1.5rem'
                   }}>
                     <strong style={{ color: 'var(--primary-light)', display: 'block', marginBottom: '0.35rem' }}>
                       ✨ Clinical Board Pearl:
                     </strong>
                     <div style={{ color: 'var(--text)', fontWeight: 600, lineHeight: 1.65 }}>
-                      {matchingMasterclass.pearl}
+                      {matchingMasterclass.pearl || matchingMasterclass.high_yield_pearl}
                     </div>
+                  </div>
+                )}
+                {matchingMasterclass.reference && (
+                  <div style={{
+                    fontSize: '0.82rem',
+                    color: 'var(--text-muted)',
+                    padding: '0.75rem 1rem',
+                    borderRadius: '10px',
+                    background: 'rgba(255, 255, 255, 0.02)',
+                    border: '1px solid rgba(148, 163, 184, 0.16)',
+                    marginBottom: '1.5rem',
+                    lineHeight: 1.55
+                  }}>
+                    📚 <strong style={{ color: 'var(--text)' }}>แหล่งอ้างอิงหลักฐานเชิงประจักษ์:</strong> {matchingMasterclass.reference}
                   </div>
                 )}
               </div>
