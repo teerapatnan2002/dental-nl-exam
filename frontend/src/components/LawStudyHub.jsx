@@ -1512,10 +1512,10 @@ export default function LawStudyHub({ onBack, onStartExam }) {
         <div className="animate-fade-in">
           <div style={{ marginBottom: '1.25rem' }}>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.4rem' }}>
-              คลังข้อสอบกฎหมายและจรรยาบรรณทันตกรรม (133 ข้อ ผ่านการตรวจทานแล้ว)
+              คลังข้อสอบกฎหมายและจรรยาบรรณจริง ศ.ป.ท. (133 ข้อ · แยกออกจากชุด Mock)
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-              ข้อสอบทุกข้อได้รับการตรวจสอบความถูกต้องตาม พ.ร.บ. วิชาชีพทันตกรรม, พ.ร.บ. สถานพยาบาล, กฎกระทรวง และ Interpol DVI อย่างละเอียด
+              รวมเฉพาะข้อสอบจริง พ.ศ. 2565–2569 (ไม่รวม DSAT Mock 90 ข้อ และ Mock สร้างเสริม 60 ข้อ ซึ่งแยกไว้ในแท็บสนามสอบจำลอง)
             </p>
           </div>
 
@@ -1598,9 +1598,15 @@ export default function LawStudyHub({ onBack, onStartExam }) {
                 </thead>
                 <tbody>
                   <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ padding: '0.75rem 0.8rem', fontWeight: 600, color: 'var(--text)' }}>NL กฎหมาย 2026</td>
-                    <td style={{ padding: '0.75rem 0.8rem' }}>10 ข้อ</td>
+                    <td style={{ padding: '0.75rem 0.8rem', fontWeight: 600, color: 'var(--text)' }}>NL กฎหมาย 2026 (ครั้งที่ 1/2569)</td>
+                    <td style={{ padding: '0.75rem 0.8rem' }}>10 ข้อ (ไฟล์จริงมี 10 ข้อ)</td>
                     <td style={{ padding: '0.75rem 0.8rem', color: 'var(--text-sub)' }}>การทำร้ายร่างกาย, สิทธิผู้ป่วย, ผู้ดำเนินการสถานพยาบาล</td>
+                    <td style={{ padding: '0.75rem 0.8rem', color: '#10b981' }}>✓ ผ่านการตรวจทาน 100%</td>
+                  </tr>
+                  <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '0.75rem 0.8rem', fontWeight: 600, color: 'var(--text)' }}>NL กฎหมาย รอบ 3_2568</td>
+                    <td style={{ padding: '0.75rem 0.8rem' }}>30 ข้อ (10 STEM)</td>
+                    <td style={{ padding: '0.75rem 0.8rem', color: 'var(--text-sub)' }}>นิติเวชทันตวิทยา DVI, ศพไฟไหม้, วันหมดอายุใบอนุญาตคลินิก</td>
                     <td style={{ padding: '0.75rem 0.8rem', color: '#10b981' }}>✓ ผ่านการตรวจทาน 100%</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid var(--border)' }}>
@@ -1610,22 +1616,16 @@ export default function LawStudyHub({ onBack, onStartExam }) {
                     <td style={{ padding: '0.75rem 0.8rem', color: '#10b981' }}>✓ ตรวจทานและแก้ไขข้อ 2303 & 2305</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ padding: '0.75rem 0.8rem', fontWeight: 600, color: 'var(--text)' }}>NL กฎหมาย รอบ 3_2568</td>
-                    <td style={{ padding: '0.75rem 0.8rem' }}>30 ข้อ</td>
-                    <td style={{ padding: '0.75rem 0.8rem', color: 'var(--text-sub)' }}>นิติเวชทันตวิทยา DVI, ศพไฟไหม้, วันหมดอายุใบอนุญาตคลินิก</td>
-                    <td style={{ padding: '0.75rem 0.8rem', color: '#10b981' }}>✓ ผ่านการตรวจทาน 100%</td>
-                  </tr>
-                  <tr style={{ borderBottom: '1px solid var(--border)' }}>
                     <td style={{ padding: '0.75rem 0.8rem', fontWeight: 600, color: 'var(--text)' }}>NL2 2566 กฎหมาย</td>
                     <td style={{ padding: '0.75rem 0.8rem' }}>30 ข้อ</td>
                     <td style={{ padding: '0.75rem 0.8rem', color: 'var(--text-sub)' }}>การประเมินอายุกระดูก/ฟัน, นศ.ทันตแพทย์, การโฆษณาสถานพยาบาล</td>
                     <td style={{ padding: '0.75rem 0.8rem', color: '#10b981' }}>✓ ผ่านการตรวจทาน 100%</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '0.75rem 0.8rem', fontWeight: 600, color: 'var(--text)' }}>NL2 2020 กฎหมายรอบแรก</td>
+                    <td style={{ padding: '0.75rem 0.8rem', fontWeight: 600, color: 'var(--text)' }}>NL2 2565 กฎหมาย (NL Law 65)</td>
                     <td style={{ padding: '0.75rem 0.8rem' }}>30 ข้อ</td>
                     <td style={{ padding: '0.75rem 0.8rem', color: 'var(--text-sub)' }}>Root transparency, Pink tooth, กระดูกไหปลาร้า (Clavicle)</td>
-                    <td style={{ padding: '0.75rem 0.8rem', color: '#10b981' }}>✓ ผ่านการตรวจทาน 100%</td>
+                    <td style={{ padding: '0.75rem 0.8rem', color: '#10b981' }}>✓ ผ่านการตรวจทาน 100% (แยกชุดซ้ำ NL2 2025 ออกแล้ว)</td>
                   </tr>
                 </tbody>
               </table>

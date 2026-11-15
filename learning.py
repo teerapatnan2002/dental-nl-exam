@@ -1178,16 +1178,20 @@ def _build_cloze_flashcard(
 
 @router.get("/overview")
 def get_learning_overview(db: Session = Depends(get_db)):
-    """Return all 83 Must-Know Topics and Gold-Standard Textbooks extracted from the 2,443 exam questions."""
-    questions = db.query(
-        models.Question.id,
-        models.Question.category,
-        models.Question.task,
-        models.Question.must_know_topic,
-        models.Question.cognitive_level,
-        models.Question.explanation,
-        models.Question.source_exam,
-    ).all()
+    """Return all 83 Must-Know Topics and Gold-Standard Textbooks extracted from the real NL exam questions."""
+    questions = (
+        db.query(
+            models.Question.id,
+            models.Question.category,
+            models.Question.task,
+            models.Question.must_know_topic,
+            models.Question.cognitive_level,
+            models.Question.explanation,
+            models.Question.source_exam,
+        )
+        .filter(models.Question.exam_origin == "real_exam")
+        .all()
+    )
 
     topics_map: Dict[str, Dict[str, Any]] = {}
     textbooks_map: Dict[str, Dict[str, Any]] = {
@@ -1625,7 +1629,10 @@ def get_mistake_clinic(
         db.query(models.UserAnswer, models.Question)
         .join(models.ExamSession, models.ExamSession.id == models.UserAnswer.session_id)
         .join(models.Question, models.Question.id == models.UserAnswer.question_id)
-        .filter(models.ExamSession.user_id == current_user.id)
+        .filter(
+            models.ExamSession.user_id == current_user.id,
+            models.Question.exam_origin != "duplicate_archive",
+        )
         .order_by(models.UserAnswer.id.desc())
         .all()
     )
@@ -1705,7 +1712,10 @@ def get_mistake_clinic(
         candidates = (
             db.query(models.Question)
             .options(selectinload(models.Question.choices))
-            .filter(models.Question.must_know_topic.in_(top_weak_ids))
+            .filter(
+                models.Question.must_know_topic.in_(top_weak_ids),
+                models.Question.exam_origin == "real_exam",
+            )
             .limit(40)
             .all()
         )
@@ -1759,7 +1769,10 @@ def get_topic_learning_module(
     questions = (
         db.query(models.Question)
         .options(selectinload(models.Question.choices))
-        .filter(models.Question.must_know_topic == topic_id)
+        .filter(
+            models.Question.must_know_topic == topic_id,
+            models.Question.exam_origin == "real_exam",
+        )
         .all()
     )
 
@@ -1789,7 +1802,11 @@ def get_textbook_learning_module(
     if not tb_meta:
         raise HTTPException(status_code=404, detail=f"Textbook '{textbook_id}' not found")
 
-    query = db.query(models.Question).options(selectinload(models.Question.choices))
+    query = (
+        db.query(models.Question)
+        .options(selectinload(models.Question.choices))
+        .filter(models.Question.exam_origin == "real_exam")
+    )
     if topic:
         query = query.filter(models.Question.must_know_topic == topic)
 
@@ -1832,7 +1849,10 @@ def get_topic_pathway_endpoint(
 
     questions = (
         db.query(models.Question)
-        .filter(models.Question.must_know_topic == topic_id)
+        .filter(
+            models.Question.must_know_topic == topic_id,
+            models.Question.exam_origin == "real_exam",
+        )
         .limit(12)
         .all()
     )
@@ -1934,6 +1954,7 @@ def get_visual_atlas(
     query = (
         db.query(models.Question)
         .options(selectinload(models.Question.choices))
+        .filter(models.Question.exam_origin == "real_exam")
         .filter(models.Question.image_path.isnot(None))
         .filter(models.Question.image_path != "")
     )
@@ -2426,6 +2447,7 @@ def get_cloze_pitfall_arena(
     rows = (
         db.query(models.Question)
         .options(selectinload(models.Question.choices))
+        .filter(models.Question.exam_origin == "real_exam")
         .order_by(models.Question.id.asc())
         .all()
     )

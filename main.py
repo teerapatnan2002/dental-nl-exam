@@ -147,6 +147,7 @@ class QuestionResponse(BaseModel):
     correct_answer: Optional[str] = None
     explanation: Optional[str] = None
     source_exam: Optional[str] = None
+    exam_origin: Optional[str] = "real_exam"
     image_path: Optional[str] = None
     cognitive_level: Optional[str] = None
     must_know_topic: Optional[str] = None
@@ -170,6 +171,7 @@ def _serialize_question(q: models.Question) -> dict:
         "correct_answer": q.correct_answer,
         "explanation": q.explanation,
         "source_exam": q.source_exam,
+        "exam_origin": getattr(q, "exam_origin", None) or "real_exam",
         "image_path": q.image_path,
         "cognitive_level": q.cognitive_level,
         "must_know_topic": q.must_know_topic,
@@ -204,19 +206,23 @@ def get_categories():
 
 @app.get("/api/stats")
 def get_stats(db: Session = Depends(get_db)):
+    real_filter = (models.Question.exam_origin == "real_exam")
     cat_stats = (
         db.query(models.Question.category, func.count(models.Question.id))
+        .filter(real_filter)
         .group_by(models.Question.category)
         .all()
     )
     task_stats = (
         db.query(models.Question.task, func.count(models.Question.id))
+        .filter(real_filter)
         .group_by(models.Question.task)
         .all()
     )
-    # Breakdown of tasks per category
+    # Breakdown of tasks per category (Real NL Exams only)
     cat_task_rows = (
         db.query(models.Question.category, models.Question.task, func.count(models.Question.id))
+        .filter(real_filter)
         .group_by(models.Question.category, models.Question.task)
         .all()
     )
@@ -232,10 +238,53 @@ def get_stats(db: Session = Depends(get_db)):
     for cat in category_tasks:
         category_tasks[cat].sort(key=lambda x: x["count"], reverse=True)
 
+    # Separated summary of Mock sets (excluded from Real Exam stats)
+    mock_rows = (
+        db.query(
+            models.Question.exam_origin,
+            models.Question.source_exam,
+            models.Question.category,
+            func.count(models.Question.id),
+        )
+        .filter(models.Question.exam_origin.in_(["dsat_mock", "ai_mock"]))
+        .group_by(models.Question.exam_origin, models.Question.source_exam, models.Question.category)
+        .all()
+    )
+    dsat_total = 0
+    ai_total = 0
+    mock_sets_map = {}
+    for origin, src, cat, cnt in mock_rows:
+        if origin == "dsat_mock":
+            dsat_total += cnt
+        else:
+            ai_total += cnt
+        key = (origin, src or "")
+        entry = mock_sets_map.setdefault(
+            key,
+            {
+                "source_exam": src or "",
+                "exam_origin": origin,
+                "is_law": cat == "กฎหมายและจรรยาบรรณ",
+                "count": 0,
+            },
+        )
+        entry["count"] += cnt
+
+    mock_sets = sorted(
+        mock_sets_map.values(),
+        key=lambda x: (0 if x["exam_origin"] == "dsat_mock" else 1, x["source_exam"]),
+    )
+
     return {
         "categories": [{"category": c, "count": count} for c, count in cat_stats],
         "tasks": [{"task": t, "count": count} for t, count in task_stats],
         "category_tasks": category_tasks,
+        "mock_summary": {
+            "total_mock": dsat_total + ai_total,
+            "dsat_mock_total": dsat_total,
+            "ai_mock_total": ai_total,
+            "sets": mock_sets,
+        },
     }
 
 
@@ -255,13 +304,17 @@ def get_tos_analytics(db: Session = Depends(get_db)):
     tos_tasks = TOS_TASKS
     tos_cognitive = TOS_COGNITIVE
 
-    all_q = db.query(
-        models.Question.id,
-        models.Question.category,
-        models.Question.task,
-        models.Question.cognitive_level,
-        models.Question.must_know_topic
-    ).all()
+    all_q = (
+        db.query(
+            models.Question.id,
+            models.Question.category,
+            models.Question.task,
+            models.Question.cognitive_level,
+            models.Question.must_know_topic,
+        )
+        .filter(models.Question.exam_origin == "real_exam")
+        .all()
+    )
     total_q = len(all_q)
     clinical_q = [q for q in all_q if q.category != "กฎหมายและจรรยาบรรณ"]
     clinical_total = len(clinical_q)
@@ -381,14 +434,18 @@ def get_tos_analytics(db: Session = Depends(get_db)):
 
 @app.get("/api/years")
 def get_years(db: Session = Depends(get_db)):
-    questions = db.query(
-        models.Question.id,
-        models.Question.source_exam,
-        models.Question.category,
-        models.Question.task,
-        models.Question.stem,
-        models.Question.question_text
-    ).all()
+    questions = (
+        db.query(
+            models.Question.id,
+            models.Question.source_exam,
+            models.Question.category,
+            models.Question.task,
+            models.Question.stem,
+            models.Question.question_text,
+        )
+        .filter(models.Question.exam_origin == "real_exam")
+        .all()
+    )
 
     year_stats = {}
     for qid, exam, cat, task, stem, qtxt in questions:
@@ -483,11 +540,21 @@ def get_years(db: Session = Depends(get_db)):
 def get_questions(
     category: Optional[str] = None,
     task: Optional[str] = None,
+    exam_origin: Optional[str] = "real_exam",
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
 ):
     query = db.query(models.Question).options(selectinload(models.Question.choices))
+    if exam_origin == "mock":
+        query = query.filter(models.Question.exam_origin.in_(["dsat_mock", "ai_mock"]))
+    elif exam_origin == "all":
+        query = query.filter(models.Question.exam_origin != "duplicate_archive")
+    elif exam_origin:
+        query = query.filter(models.Question.exam_origin == exam_origin)
+    else:
+        query = query.filter(models.Question.exam_origin == "real_exam")
+
     if category:
         query = query.filter(models.Question.category == category)
     if task:
@@ -530,11 +597,18 @@ def search_questions(
     limit: int = Query(30, gt=0, le=100),
     db: Session = Depends(get_db),
 ):
-    """Full-text search over question text/stem/proposition via SQLite FTS5.
-    Falls back to LIKE matching if the FTS table is unavailable."""
-    fts_available = db.execute(
-        text("SELECT name FROM sqlite_master WHERE type='table' AND name='questions_fts'")
-    ).first()
+    """Full-text search over real exam question text/stem/proposition via SQLite FTS5.
+    Falls back to LIKE matching if the FTS table is unavailable (e.g. Postgres)."""
+    fts_available = None
+    is_sqlite = bool(db.bind and db.bind.dialect.name == "sqlite")
+    if is_sqlite:
+        try:
+            fts_available = db.execute(
+                text("SELECT name FROM sqlite_master WHERE type='table' AND name='questions_fts'")
+            ).first()
+        except Exception:
+            db.rollback()
+            fts_available = None
 
     # The trigram tokenizer needs terms of >= 3 characters; use LIKE for shorter input
     use_fts = bool(fts_available) and len(q.strip()) >= 3
@@ -547,11 +621,15 @@ def search_questions(
             text(
                 "SELECT rowid FROM questions_fts WHERE questions_fts MATCH :match LIMIT :lim"
             ),
-            {"match": safe_q, "lim": limit},
+            {"match": safe_q, "lim": min(limit * 3, 300)},
         ).fetchall()
         question_ids = [r[0] for r in rows]
 
-    query = db.query(models.Question).options(selectinload(models.Question.choices))
+    query = (
+        db.query(models.Question)
+        .options(selectinload(models.Question.choices))
+        .filter(models.Question.exam_origin == "real_exam")
+    )
     if is_mock_70_locked():
         query = query.filter(~models.Question.source_exam.like("%2570%"))
 
@@ -561,18 +639,18 @@ def search_questions(
         like = f"%{q}%"
         query = query.filter(
             or_(
-                models.Question.question_text.like(like),
-                models.Question.stem.like(like),
-                models.Question.proposition.like(like),
+                models.Question.question_text.ilike(like),
+                models.Question.stem.ilike(like),
+                models.Question.proposition.ilike(like),
             )
-        ).limit(limit)
+        )
     else:
         return []  # FTS available but no matches
 
     if category:
         query = query.filter(models.Question.category == category)
 
-    questions = query.all()
+    questions = query.limit(limit).all()
     return [_serialize_question(qs) for qs in questions]
 
 
@@ -585,11 +663,34 @@ def generate_random_exam(
     year: Optional[str] = None,
     part: Optional[str] = None,
     source_exam: Optional[str] = None,
+    exam_origin: Optional[str] = None,
+    include_mock: bool = False,
     ordered: bool = False,
     clinical_only: bool = False,
     db: Session = Depends(get_db),
 ):
-    query = db.query(models.Question).options(selectinload(models.Question.choices))
+    query = (
+        db.query(models.Question)
+        .options(selectinload(models.Question.choices))
+        .filter(models.Question.exam_origin != "duplicate_archive")
+    )
+
+    # Strictly separate Mock sets from Real National License questions unless explicitly requested
+    src_lower = (source_exam or "").lower()
+    is_explicit_mock_source = any(kw in src_lower for kw in ("mock", "dsat", "ai_mock"))
+    if exam_origin:
+        origin_norm = exam_origin.strip().lower()
+        if origin_norm == "mock":
+            query = query.filter(models.Question.exam_origin.in_(["dsat_mock", "ai_mock"]))
+        elif origin_norm == "all":
+            pass
+        else:
+            query = query.filter(models.Question.exam_origin == origin_norm)
+    elif include_mock or is_explicit_mock_source:
+        if is_explicit_mock_source:
+            query = query.filter(models.Question.exam_origin.in_(["dsat_mock", "ai_mock"]))
+    else:
+        query = query.filter(models.Question.exam_origin == "real_exam")
     if category:
         query = query.filter(models.Question.category == category)
     if must_know_topic:
@@ -833,6 +934,7 @@ async def get_prediction(
     _check_rate_limit(f"ai-prediction:{current_user.id}", max_attempts=10, window_seconds=300)
     stats = (
         db.query(models.Question.category, models.Question.task, func.count(models.Question.id))
+        .filter(models.Question.exam_origin == "real_exam")
         .group_by(models.Question.category, models.Question.task)
         .all()
     )
@@ -865,6 +967,7 @@ async def generate_mock_exam(
     examples = (
         db.query(models.Question)
         .filter(
+            models.Question.exam_origin == "real_exam",
             models.Question.category == req.category,
             models.Question.task == req.task,
         )
@@ -875,13 +978,31 @@ async def generate_mock_exam(
 
     if not examples:
         # Fallback 1: match just the category
-        examples = db.query(models.Question).filter(models.Question.category == req.category).order_by(func.random()).limit(3).all()
+        examples = (
+            db.query(models.Question)
+            .filter(models.Question.exam_origin == "real_exam", models.Question.category == req.category)
+            .order_by(func.random())
+            .limit(3)
+            .all()
+        )
     if not examples:
         # Fallback 2: match just the task
-        examples = db.query(models.Question).filter(models.Question.task == req.task).order_by(func.random()).limit(3).all()
+        examples = (
+            db.query(models.Question)
+            .filter(models.Question.exam_origin == "real_exam", models.Question.task == req.task)
+            .order_by(func.random())
+            .limit(3)
+            .all()
+        )
     if not examples:
         # Fallback 3: any 3 questions for format
-        examples = db.query(models.Question).order_by(func.random()).limit(3).all()
+        examples = (
+            db.query(models.Question)
+            .filter(models.Question.exam_origin == "real_exam")
+            .order_by(func.random())
+            .limit(3)
+            .all()
+        )
         
     if not examples:
         raise HTTPException(
@@ -923,6 +1044,7 @@ async def generate_mock_exam(
                 correct_answer=gq.get("correct_answer"),
                 explanation=gq.get("explanation"),
                 source_exam="AI_MOCK_TEST",
+                exam_origin="ai_mock",
             )
             db.add(new_q)
             db.commit()
@@ -951,6 +1073,7 @@ async def generate_mock_exam(
                     "correct_answer": new_q.correct_answer,
                     "explanation": new_q.explanation,
                     "source_exam": new_q.source_exam,
+                    "exam_origin": "ai_mock",
                     "image_path": new_q.image_path,
                     "choices": choices,
                 }
@@ -971,6 +1094,7 @@ async def generate_mock_exam(
                     "correct_answer": gq.get("correct_answer"),
                     "explanation": gq.get("explanation"),
                     "source_exam": "AI_MOCK_TEST",
+                    "exam_origin": "ai_mock",
                     "image_path": None,
                     "choices": choices,
                 }
@@ -1073,34 +1197,23 @@ def get_cache_status(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Return cache coverage stats (requires auth)."""
-    total = db.query(models.Question).count()
-    has_ans = (
-        db.query(models.Question)
-        .filter(
-            models.Question.correct_answer.isnot(None),
-            models.Question.correct_answer != "",
-        )
-        .count()
-    )
-    has_expl = (
-        db.query(models.Question)
-        .filter(
-            models.Question.explanation.isnot(None),
-            models.Question.explanation != "",
-        )
-        .count()
-    )
-    full_cache = (
-        db.query(models.Question)
-        .filter(
-            models.Question.correct_answer.isnot(None),
-            models.Question.correct_answer != "",
-            models.Question.explanation.isnot(None),
-            models.Question.explanation != "",
-        )
-        .count()
-    )
+    """Return cache coverage stats for Real NL Exam bank (requires auth)."""
+    real_q = db.query(models.Question).filter(models.Question.exam_origin == "real_exam")
+    total = real_q.count()
+    has_ans = real_q.filter(
+        models.Question.correct_answer.isnot(None),
+        models.Question.correct_answer != "",
+    ).count()
+    has_expl = real_q.filter(
+        models.Question.explanation.isnot(None),
+        models.Question.explanation != "",
+    ).count()
+    full_cache = real_q.filter(
+        models.Question.correct_answer.isnot(None),
+        models.Question.correct_answer != "",
+        models.Question.explanation.isnot(None),
+        models.Question.explanation != "",
+    ).count()
     return {
         "total": total,
         "has_answer": has_ans,

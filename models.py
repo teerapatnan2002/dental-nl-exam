@@ -15,6 +15,7 @@ class Question(Base):
     task = Column(String, index=True, nullable=False)
     explanation = Column(Text, nullable=True)
     source_exam = Column(String, nullable=True)
+    exam_origin = Column(String, default="real_exam", index=True, nullable=False)
     image_path = Column(String, nullable=True)
     cognitive_level = Column(String, index=True, nullable=True)
     must_know_topic = Column(String, index=True, nullable=True)

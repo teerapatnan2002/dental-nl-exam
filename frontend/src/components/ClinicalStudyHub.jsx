@@ -880,7 +880,7 @@ export default function ClinicalStudyHub({
                     ระบบการเรียนรู้จากข้อสอบด้วย Textbook & Evidence (Exam-Driven Academy)
                   </h2>
                   <span className="clinical-header-subtitle" style={{ fontSize: '0.8rem', color: 'var(--text-sub)', display: 'block', marginTop: '0.15rem' }}>
-                    สกัดเนื้อหา ทฤษฎี และกลไกจากข้อสอบจริง {overviewData?.summary?.total_questions?.toLocaleString() || '2,443'} ข้อ ครบ {overviewData?.summary?.total_topics || 83} หัวข้อ มาสอนตามตำราอ้างอิงมาตรฐาน
+                    สกัดเนื้อหา ทฤษฎี และกลไกจากข้อสอบจริง {overviewData?.summary?.total_questions?.toLocaleString() || '2,249'} ข้อ ครบ {overviewData?.summary?.total_topics || 83} หัวข้อ มาสอนตามตำราอ้างอิงมาตรฐาน
                   </span>
                 </div>
               </div>

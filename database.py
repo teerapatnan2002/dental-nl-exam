@@ -106,15 +106,67 @@ _COLUMN_MIGRATIONS = {
         "topic_id": "ALTER TABLE user_notes ADD COLUMN topic_id VARCHAR",
         "mistake_tag": "ALTER TABLE user_notes ADD COLUMN mistake_tag VARCHAR",
     },
+    "questions": {
+        "exam_origin": "ALTER TABLE questions ADD COLUMN exam_origin VARCHAR NOT NULL DEFAULT 'real_exam'",
+    },
 }
 
 _INDEX_MIGRATIONS = [
+    "CREATE INDEX IF NOT EXISTS ix_questions_exam_origin ON questions (exam_origin)",
     "CREATE INDEX IF NOT EXISTS ix_user_qstat_user_due ON user_question_stats (user_id, next_review_date)",
     "CREATE INDEX IF NOT EXISTS ix_user_card_reviews_user_due ON user_card_reviews (user_id, card_type, next_review_date)",
     "CREATE INDEX IF NOT EXISTS ix_user_notes_tag ON user_notes (user_id, mistake_tag)",
     "CREATE INDEX IF NOT EXISTS ix_user_topic_notes_user_updated ON user_topic_notes (user_id, updated_at)",
     "CREATE INDEX IF NOT EXISTS ix_active_presence_last_seen ON active_presence (last_seen_at)",
 ]
+
+
+def _backfill_question_origins(conn):
+    """Ensure mock and duplicate-archived exams are separated from real_exam rows."""
+    conn.execute(
+        text(
+            """
+            UPDATE questions
+            SET exam_origin = 'duplicate_archive',
+                category = 'กฎหมายและจรรยาบรรณ'
+            WHERE source_exam = 'NL 2 2025 Part กฎหมาย.pdf'
+              AND (exam_origin != 'duplicate_archive' OR category != 'กฎหมายและจรรยาบรรณ')
+            """
+        )
+    )
+    conn.execute(
+        text(
+            """
+            UPDATE questions
+            SET exam_origin = 'dsat_mock'
+            WHERE source_exam IN (
+                'DSAT Mock Law ชุดที่ 1 (2569)',
+                'DSAT Mock Law ชุดที่ 2 (2569)',
+                'DSAT Mock Law ชุดที่ 3 (2569)'
+            )
+              AND exam_origin != 'dsat_mock'
+            """
+        )
+    )
+    conn.execute(
+        text(
+            """
+            UPDATE questions
+            SET exam_origin = 'ai_mock'
+            WHERE (
+                source_exam IN (
+                    'NL Law 2570 (Mock Test 70).pdf',
+                    'DSAT Mock Law ชุดที่ 4 (2570)',
+                    'AI Mock Test 2569',
+                    'AI_MOCK_TEST'
+                )
+                OR source_exam LIKE '%AI_MOCK%'
+                OR source_exam LIKE '%Mock Test 70%'
+            )
+              AND exam_origin != 'ai_mock'
+            """
+        )
+    )
 
 
 def run_migrations():
@@ -136,6 +188,8 @@ def run_migrations():
                 conn.execute(text(idx_ddl))
             except Exception as exc:
                 logger.warning("Index migration skipped (%s): %s", idx_ddl, exc)
+        if "questions" in existing_tables:
+            _backfill_question_origins(conn)
         if not SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
             for rls_table in (
                 "users",

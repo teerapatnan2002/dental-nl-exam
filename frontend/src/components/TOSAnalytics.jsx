@@ -93,7 +93,7 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
       <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center' }}>
         <div className="spinner" style={{ margin: '0 auto 1.5rem', width: 40, height: 40, border: '3px solid var(--surface-subtle)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
         <h3 style={{ marginBottom: '0.5rem' }}>กำลังประมวลผลข้อมูล TOS Analytics...</h3>
-        <p style={{ color: 'var(--text-sub)' }}>วิเคราะห์พิมพ์เขียวเกณฑ์มาตรฐาน ศ.ป.ท. 2563 เทียบกับคลังข้อสอบ 2,443 ข้อ</p>
+        <p style={{ color: 'var(--text-sub)' }}>วิเคราะห์พิมพ์เขียวเกณฑ์มาตรฐาน ศ.ป.ท. 2563 เทียบกับคลังข้อสอบจริง 2,249 ข้อ</p>
       </div>
     );
   }
@@ -161,7 +161,7 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
               <span>TOS Analytics &amp; Exam Bank Matrix</span>
             </h2>
             <p style={{ color: 'var(--text-sub)', fontSize: '0.92rem', maxWidth: '680px', margin: 0, lineHeight: 1.6 }}>
-              วิเคราะห์ความสอดคล้องระหว่างเกณฑ์มาตรฐานการประเมินความรู้ทันตแพทย์ (TOS 2563) กับคลังข้อสอบจริง 2,443 ข้อ ทั้ง 10 สาขาวิชาคลินิก, 5 สมรรถนะ และระดับพฤติกรรม R / A / P
+              วิเคราะห์ความสอดคล้องระหว่างเกณฑ์มาตรฐานการประเมินความรู้ทันตแพทย์ (TOS 2563) กับคลังข้อสอบจริง {summary.total_questions.toLocaleString()} ข้อ ทั้ง 10 สาขาวิชาคลินิก, 5 สมรรถนะ และระดับพฤติกรรม R / A / P
             </p>
           </div>
 
@@ -287,7 +287,7 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
               <Layers size={18} color="var(--primary-light)" /> ภาควิทยาคลินิก 10 สาขาวิชา: เป้าหมาย TOS vs ข้อสอบจริงในคลัง
             </h3>
             <p style={{ color: 'var(--text-sub)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
-              เปรียบเทียบโควตา 300 ข้อ (1 รอบสอบ) กับจำนวนข้อสอบสะสมในฐานข้อมูล 2,159 ข้อ
+              เปรียบเทียบโควตา 300 ข้อ (1 รอบสอบ) กับจำนวนข้อสอบคลินิกจริงในฐานข้อมูล {summary.clinical_questions.toLocaleString()} ข้อ
             </p>
 
             <div style={{ overflowX: 'auto' }}>

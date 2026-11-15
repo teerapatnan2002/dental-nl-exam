@@ -111,14 +111,18 @@ def compute_user_readiness(current_user: models.User, db: Session) -> dict:
     """Overlay personal user performance onto the Thai Dental Council TOS 2563 blueprint."""
     locked = is_mock_70_locked()
 
-    q_rows = db.query(
-        models.Question.id,
-        models.Question.category,
-        models.Question.task,
-        models.Question.cognitive_level,
-        models.Question.must_know_topic,
-        models.Question.source_exam,
-    ).all()
+    q_rows = (
+        db.query(
+            models.Question.id,
+            models.Question.category,
+            models.Question.task,
+            models.Question.cognitive_level,
+            models.Question.must_know_topic,
+            models.Question.source_exam,
+        )
+        .filter(models.Question.exam_origin == "real_exam")
+        .all()
+    )
 
     q_by_id: Dict[int, dict] = {}
     for qid, cat, task, cog, topic, src in q_rows:
@@ -619,7 +623,10 @@ def get_questions_due_for_review(
     questions = (
         db.query(models.Question)
         .options(selectinload(models.Question.choices))
-        .filter(models.Question.id.in_(review_ids))
+        .filter(
+            models.Question.id.in_(review_ids),
+            models.Question.exam_origin != "duplicate_archive",
+        )
         .all()
     )
     q_map = {q.id: q for q in questions}

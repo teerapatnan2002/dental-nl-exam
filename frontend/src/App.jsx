@@ -129,6 +129,7 @@ function AppContent() {
   const [stats, setStats] = useState([]);
   const [taskStats, setTaskStats] = useState([]);
   const [categoryTasks, setCategoryTasks] = useState({});
+  const [mockSummary, setMockSummary] = useState(null);
   const [years, setYears] = useState([]);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [accountModalState, setAccountModalState] = useState({ open: false, tab: 'profile' });
@@ -232,6 +233,7 @@ function AppContent() {
         setStats(statsData.categories || statsData);
         setTaskStats(statsData.tasks || []);
         setCategoryTasks(statsData.category_tasks || {});
+        setMockSummary(statsData.mock_summary || null);
         setYears(yearsData.years_data || []);
       })
       .catch(err => console.error('Failed to load initial data:', err));
@@ -244,7 +246,10 @@ function AppContent() {
     }
 
     const isExam = (config.mode === 'exam' || config.examType === 'exam');
-    const isMock70 = (!config.source_exam && (config.year === '2570' || config.year === 2570)) || config.targetExamId === 'mock-law-2570';
+    const isMock70 =
+      config.targetExamId === 'mock-law-2570' ||
+      Boolean(config.source_exam && String(config.source_exam).includes('Mock Test 70')) ||
+      (!config.source_exam && (config.year === '2570' || config.year === 2570));
 
     // Strict lock: Mock 70 does not allow taking exam or practice before Saturday 13:00
     if (isMock70) {
@@ -334,6 +339,8 @@ function AppContent() {
         if (config.year)     url += '&year='     + encodeURIComponent(config.year);
         if (config.part)     url += '&part='     + encodeURIComponent(config.part);
         if (config.source_exam) url += '&source_exam=' + encodeURIComponent(config.source_exam);
+        if (config.exam_origin) url += '&exam_origin=' + encodeURIComponent(config.exam_origin);
+        if (config.include_mock) url += '&include_mock=true';
         if (config.ordered)  url += '&ordered=true';
         if (config.clinical_only) url += '&clinical_only=true';
 
@@ -687,6 +694,7 @@ function AppContent() {
             stats={stats}
             taskStats={taskStats}
             categoryTasks={categoryTasks}
+            mockSummary={mockSummary}
             years={years}
             activeTab={activeDashboardTab}
             onTabChange={setActiveDashboardTab}

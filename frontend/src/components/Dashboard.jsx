@@ -57,6 +57,7 @@ export default function Dashboard({
   stats,
   taskStats,
   categoryTasks = {},
+  mockSummary = null,
   years,
   activeTab: controlledTab,
   onTabChange,
@@ -191,15 +192,27 @@ export default function Dashboard({
     }
   }, [token]);
 
-  const handleStart = (category = '', task = '', count = 10, mode = 'exam', ordered = false, clinical_only = false, part = '', year = undefined) => {
+  const handleStart = (category = '', task = '', count = 10, mode = 'exam', ordered = false, clinical_only = false, part = '', year = undefined, source_exam = '', exam_origin = '') => {
+    const safeDefaultYear = (selectedYear === 'MOCK_DSAT' || selectedYear === 'MOCK_AI') ? '' : selectedYear;
     if (typeof category === 'object' && category !== null) {
       onStart({
-        year: selectedYear,
+        year: safeDefaultYear,
         ...category
       });
       return;
     }
-    onStart({ category, task, count, mode, year: year !== undefined ? year : selectedYear, ordered, clinical_only, part });
+    onStart({
+      category,
+      task,
+      count,
+      mode,
+      year: year !== undefined ? year : safeDefaultYear,
+      ordered,
+      clinical_only,
+      part,
+      ...(source_exam ? { source_exam } : {}),
+      ...(exam_origin ? { exam_origin } : {}),
+    });
   };
 
   const handleStartReview = () => {
@@ -307,7 +320,7 @@ export default function Dashboard({
   };
 
   const featuredYears = Array.isArray(years)
-    ? years.filter(y => ['2570', '2569', '2568'].includes(y.year)).slice(0, 3)
+    ? years.filter(y => ['2569', '2568', '2567'].includes(y.year)).slice(0, 3)
     : [];
 
   return (
@@ -324,7 +337,7 @@ export default function Dashboard({
         <section className="editorial-hero-header" aria-label="ภาพรวมคลังข้อสอบเตรียมสอบ ศ.ป.ท.">
           <div className="editorial-hero-eyebrow tabular-nums">
             <span className="live-status-dot" style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--primary-light)', flexShrink: 0 }} />
-            <span>Thai Dental National License · {animatedTotalQuestions.toLocaleString()} ข้อสอบในคลัง</span>
+            <span>Thai Dental National License · {animatedTotalQuestions.toLocaleString()} ข้อสอบจริงในคลัง</span>
           </div>
 
           <h1 className="editorial-hero-title">
@@ -334,7 +347,7 @@ export default function Dashboard({
           </h1>
 
           <p className="editorial-hero-subtitle">
-            รวมข้อสอบจริง {years ? years.length : 8} ชุด ข้อสอบจำลอง กฎหมายทันตแพทยสภา และสรุปคลินิก — นับถอยหลังวันสอบและเริ่มฝึกได้ทันทีบนทุกอุปกรณ์
+            รวมข้อสอบจริง {years ? years.length : 7} ปีการศึกษา ({totalQuestions.toLocaleString()} ข้อ) แยกส่วนกับชุดจำลอง Mock ({mockSummary?.total_mock ?? 165} ข้อ) ชัดเจน — นับถอยหลังวันสอบและเริ่มฝึกได้ทันทีบนทุกอุปกรณ์
           </p>
 
           <div className="editorial-hero-ctas">
@@ -502,7 +515,7 @@ export default function Dashboard({
                     style={{ borderRadius: '9px', minHeight: '40px' }}
                   >
                     <Layers size={15} />
-                    <span>ดูทั้ง {years ? years.length : 8} ชุดข้อสอบด้านล่าง</span>
+                    <span>ดูทั้ง {years ? years.length : 7} ปีการศึกษาจริงด้านล่าง</span>
                   </button>
                   <button
                     type="button"
@@ -519,19 +532,15 @@ export default function Dashboard({
               <div className="showcase-preview-tray">
                 <div className="showcase-preview-widget" style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
                   <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>ชุดข้อสอบยอดนิยม</span>
+                    <span>ข้อสอบจริงปีล่าสุด</span>
                     <span className="tabular-nums">{totalQuestions.toLocaleString()} ข้อ</span>
                   </div>
                   {(featuredYears.length > 0 ? featuredYears : [
-                    { year: '2570', total: 60 },
-                    { year: '2569', total: 399 },
-                    { year: '2568', total: 306 },
+                    { year: '2569', total: 294 },
+                    { year: '2568', total: 277 },
+                    { year: '2567', total: 435 },
                   ]).map(item => {
-                    const label = item.year === '2570'
-                      ? 'ศ.ป.ท. Mock Exam 2570'
-                      : item.year === '2569'
-                        ? 'DSAT Mock Law (4 ชุด)'
-                        : `ข้อสอบจริง พ.ศ. ${item.year}`;
+                    const label = `ข้อสอบจริง พ.ศ. ${item.year}`;
                     return (
                       <button
                         key={item.year}
@@ -1100,7 +1109,7 @@ export default function Dashboard({
                 </button>
               )}
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
               <button
                 type="button"
                 className={`exam-year-pill ${selectedYear === '' ? 'active' : ''}`}
@@ -1110,7 +1119,6 @@ export default function Dashboard({
               </button>
               {years && years.map(yData => {
                 const isActive = selectedYear === yData.year;
-                const YearIcon = yData.year === '2570' ? Target : yData.year === '2569' ? Scale : Calendar;
                 return (
                   <button
                     key={yData.year}
@@ -1118,19 +1126,58 @@ export default function Dashboard({
                     className={`exam-year-pill ${isActive ? 'active' : ''}`}
                     onClick={() => setSelectedYear(yData.year)}
                   >
-                    <YearIcon size={13} />
-                    <span>
-                      {yData.year === '2570' ? 'พ.ศ. 2570 (Mock 70)' : yData.year === '2569' ? 'DSAT Mock Law (4 ชุด)' : `พ.ศ. ${yData.year}`}
-                    </span>
+                    <Calendar size={13} />
+                    <span>พ.ศ. {yData.year}</span>
                   </button>
                 );
               })}
+              <span aria-hidden="true" style={{ width: '1px', height: '22px', background: 'var(--border)', margin: '0 0.25rem' }} />
+              <button
+                type="button"
+                className={`exam-year-pill ${selectedYear === 'MOCK_DSAT' ? 'active' : ''}`}
+                onClick={() => setSelectedYear('MOCK_DSAT')}
+                style={{
+                  borderColor: selectedYear === 'MOCK_DSAT' ? undefined : 'rgba(37, 99, 235, 0.35)',
+                }}
+              >
+                <Scale size={13} />
+                <span>Mock สนทท. (3 ชุด · {mockSummary?.dsat_mock_total ?? 90} ข้อ)</span>
+              </button>
+              <button
+                type="button"
+                className={`exam-year-pill ${selectedYear === 'MOCK_AI' ? 'active' : ''}`}
+                onClick={() => setSelectedYear('MOCK_AI')}
+                style={{
+                  borderColor: selectedYear === 'MOCK_AI' ? undefined : 'rgba(245, 158, 11, 0.4)',
+                }}
+              >
+                <Target size={13} />
+                <span>Mock สร้างเสริม / AI ({mockSummary?.ai_mock_total ?? 75} ข้อ)</span>
+              </button>
             </div>
           </div>
 
-          {/* Year Insights & Action Buttons */}
-          {selectedYearData ? (
-            selectedYearData.year === '2570' ? (
+          {/* Year / Mock Insights & Action Buttons */}
+          {selectedYear === 'MOCK_AI' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div style={{
+                padding: '0.9rem 1.15rem',
+                borderRadius: '10px',
+                background: 'rgba(245, 158, 11, 0.1)',
+                border: '1px solid rgba(245, 158, 11, 0.35)',
+                color: 'var(--text)',
+                fontSize: '0.86rem',
+                lineHeight: 1.55,
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '0.6rem',
+              }}>
+                <AlertTriangle size={18} color="#d97706" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <strong>ชุดข้อสอบ Mock ที่สร้างขึ้นเสริม / สร้างโดย AI (แยกออกจากคลังข้อสอบจริง 100%):</strong>{' '}
+                  ข้อสอบทั้ง {mockSummary?.ai_mock_total ?? 75} ข้อในหน้านี้ไม่ได้มาจากไฟล์ข้อสอบจริง ศ.ป.ท. หรือ สนทท. และไม่ถูกนับรวมในสถิติข้อสอบจริงรายปีหรือคะแนน readiness หลัก
+                </div>
+              </div>
               <div className="special-exam-panel animate-fade-in">
                 {/* ── Mock 70 Header ── */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.35rem' }}>
@@ -1157,7 +1204,7 @@ export default function Dashboard({
                     </div>
                     <h2 style={{ fontSize: 'clamp(1.2rem, 2.2vw, 1.45rem)', fontWeight: 700, margin: '0 0 0.35rem 0', color: 'var(--text)', letterSpacing: '-0.02em', wordBreak: 'break-word', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                       <Target size={20} color="var(--primary-light)" style={{ flexShrink: 0 }} />
-                      <span>ศ.ป.ท. Mock Exam 2570: กฎหมายและจรรยาบรรณวิชาชีพ</span>
+                      <span>Mock Exam 2570 (ชุดจำลองสร้างเสริม): กฎหมายและจรรยาบรรณวิชาชีพ</span>
                     </h2>
                     <div style={{ color: 'var(--text-sub)', fontSize: '0.88rem', maxWidth: '680px', lineHeight: 1.55, wordBreak: 'break-word' }}>
                       ชุดข้อสอบจำลองเสมือนจริง <strong>30 ข้อ (10 STEM สถานการณ์คลินิก × 3 ข้อย่อย)</strong> กำหนดสอบเดิมวันเสาร์ที่ 26 ก.ย. 69 เวลา 13:00 – 14:00 น. {mock70TimeLeft.isPassed ? 'ปัจจุบันสามารถเข้าสอบย้อนหลังและฝึกซ้อมได้ทันที' : ''}
@@ -1276,7 +1323,17 @@ export default function Dashboard({
                   {/* 1. Real Exam Simulation Mode */}
                   <button
                     type="button"
-                    onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 30, 'exam', true, false, 'law', '2570')}
+                    onClick={() => handleStart({
+                      category: 'กฎหมายและจรรยาบรรณ',
+                      count: 30,
+                      mode: 'exam',
+                      ordered: true,
+                      part: 'law',
+                      year: '',
+                      source_exam: 'NL Law 2570 (Mock Test 70).pdf',
+                      exam_origin: 'ai_mock',
+                      targetExamId: 'mock-law-2570',
+                    })}
                     className={`mock-action-card ${mock70TimeLeft.isExpired ? 'mock-action-card--primary' : ''}`}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}>
@@ -1296,7 +1353,17 @@ export default function Dashboard({
                   {/* 2. Practice Mode */}
                   <button
                     type="button"
-                    onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 30, 'practice', true, false, 'law', '2570')}
+                    onClick={() => handleStart({
+                      category: 'กฎหมายและจรรยาบรรณ',
+                      count: 30,
+                      mode: 'practice',
+                      ordered: true,
+                      part: 'law',
+                      year: '',
+                      source_exam: 'NL Law 2570 (Mock Test 70).pdf',
+                      exam_origin: 'ai_mock',
+                      targetExamId: 'mock-law-2570',
+                    })}
                     className="mock-action-card"
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}>
@@ -1396,28 +1463,140 @@ export default function Dashboard({
                   </div>
                 </div>
               </div>
-            ) : (
-              <div>
-                {selectedYearData.year === '2569' && (
-                  <div className="special-exam-panel animate-fade-in" style={{ marginBottom: '1.5rem' }}>
+
+              {/* ── AI/Self-Made Mock Card 2: Mock Law ชุดที่ 4 (30 ข้อ) & AI Mock Clinical (15 ข้อ) ── */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '1.25rem' }}>
+                <div className="glass-panel" style={{ padding: '1.35rem', borderLeft: '4px solid #b45309', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '1rem' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <span style={{ background: 'rgba(180, 83, 9, 0.14)', color: '#d97706', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.73rem', fontWeight: 700 }}>
+                        Mock เสริม • ไม่รวมใน สนทท./ข้อสอบจริง
+                      </span>
+                      <span className="tabular-nums" style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                        30 ข้อ (10 STEMs) • IDs 2490-2519
+                      </span>
+                    </div>
+                    <h3 style={{ fontSize: '1.12rem', fontWeight: 700, margin: '0 0 0.35rem 0', color: 'var(--text)' }}>
+                      Mock กฎหมายเสริม ชุดที่ 4 (จำลอง 2570)
+                    </h3>
+                    <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', margin: 0, lineHeight: 1.55 }}>
+                      ข้อสอบจำลองกฎหมายวิชาชีพที่สร้างเพิ่มเติมจากแนวข้อสอบ (สถานพยาบาล CDEC สิทธิผู้ป่วย PDPA & DVI) — แยกออกจากชุด DSAT ของ สนทท. เนื่องจากไม่มีไฟล์ PDF ต้นฉบับ สนทท.
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      style={{ flex: 1 }}
+                      onClick={() => handleStart({
+                        category: 'กฎหมายและจรรยาบรรณ',
+                        count: 30,
+                        mode: 'exam',
+                        ordered: true,
+                        part: 'law',
+                        year: '',
+                        source_exam: 'DSAT Mock Law ชุดที่ 4 (2570)',
+                        exam_origin: 'ai_mock',
+                      })}
+                    >
+                      <PlayCircle size={14} /> สอบจับเวลา 30 ข้อ
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      style={{ flex: 1 }}
+                      onClick={() => handleStart({
+                        category: 'กฎหมายและจรรยาบรรณ',
+                        count: 30,
+                        mode: 'practice',
+                        ordered: true,
+                        part: 'law',
+                        year: '',
+                        source_exam: 'DSAT Mock Law ชุดที่ 4 (2570)',
+                        exam_origin: 'ai_mock',
+                      })}
+                    >
+                      <BookOpen size={14} /> ฝึกซ้อม
+                    </button>
+                  </div>
+                </div>
+
+                <div className="glass-panel" style={{ padding: '1.35rem', borderLeft: '4px solid var(--primary)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '1rem' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <span style={{ background: 'rgba(37, 99, 235, 0.14)', color: 'var(--primary-light)', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.73rem', fontWeight: 700 }}>
+                        AI Mock Clinical • ไม่รวมในข้อสอบจริงปี 2569
+                      </span>
+                      <span className="tabular-nums" style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                        15 ข้อ • IDs 2355-2369
+                      </span>
+                    </div>
+                    <h3 style={{ fontSize: '1.12rem', fontWeight: 700, margin: '0 0 0.35rem 0', color: 'var(--text)' }}>
+                      AI Mock ทฤษฎีคลินิก (2569)
+                    </h3>
+                    <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', margin: 0, lineHeight: 1.55 }}>
+                      ข้อสอบคลินิกที่สร้างโดย AI (ศัลยศาสตร์, เอ็นโด, ปริทันต์, ทันตกรรมสำหรับเด็ก ฯลฯ) — แยกออกจากสถิติปี 2569 ของ ศ.ป.ท. แล้ว เพื่อให้ปี 2569 มีเฉพาะข้อสอบจริง 284 ข้อ
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      style={{ flex: 1 }}
+                      onClick={() => handleStart({
+                        category: '',
+                        count: 15,
+                        mode: 'exam',
+                        ordered: true,
+                        clinical_only: true,
+                        year: '',
+                        source_exam: 'AI Mock Test 2569',
+                        exam_origin: 'ai_mock',
+                      })}
+                    >
+                      <PlayCircle size={14} /> สอบจับเวลา 15 ข้อ
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      style={{ flex: 1 }}
+                      onClick={() => handleStart({
+                        category: '',
+                        count: 15,
+                        mode: 'practice',
+                        ordered: true,
+                        clinical_only: true,
+                        year: '',
+                        source_exam: 'AI Mock Test 2569',
+                        exam_origin: 'ai_mock',
+                      })}
+                    >
+                      <BookOpen size={14} /> ฝึกซ้อม
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : selectedYear === 'MOCK_DSAT' ? (
+            <div className="special-exam-panel animate-fade-in">
                 {/* ── DSAT Mock Header ── */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.35rem' }}>
                   <div style={{ minWidth: 0, flex: 1 }}>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.26rem 0.65rem', borderRadius: '6px', background: 'rgba(37, 99, 235, 0.12)', border: '1px solid rgba(37, 99, 235, 0.28)', color: 'var(--primary-light)', fontSize: '0.76rem', fontWeight: 600, marginBottom: '0.55rem' }}>
-                      <ShieldCheck size={13} /> ข้อสอบจำลองมาตรฐาน สโมสรนิสิตนักศึกษาทันตแพทย์แห่งประเทศไทย (สนทท.)
+                      <ShieldCheck size={13} /> ข้อสอบจำลองมาตรฐาน สโมสรนิสิตนักศึกษาทันตแพทย์แห่งประเทศไทย (สนทท.) — แยกจากข้อสอบจริง ศ.ป.ท.
                     </div>
                     <h2 style={{ fontSize: 'clamp(1.2rem, 2.2vw, 1.45rem)', fontWeight: 700, margin: '0 0 0.35rem 0', color: 'var(--text)', letterSpacing: '-0.02em', wordBreak: 'break-word', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                       <Scale size={20} color="var(--primary-light)" style={{ flexShrink: 0 }} />
-                      <span>DSAT Mock Exam นิติทันตวิทยาและกฎหมาย (ฉบับจำลอง 4 ชุด)</span>
+                      <span>DSAT Mock Exam นิติทันตวิทยาและกฎหมาย (ฉบับจำลอง 3 ชุด)</span>
                     </h2>
                     <div style={{ color: 'var(--text-sub)', fontSize: '0.88rem', maxWidth: '720px', lineHeight: 1.55, wordBreak: 'break-word' }}>
-                      ชุดข้อสอบจำลองเสมือนจริง <strong>4 ฉบับเต็ม รวม 120 ข้อ (40 STEM สถานการณ์คลินิก)</strong> อิงโครงสร้าง Table of Specifications (TOS) กฎหมายวิชาชีพ 24 ข้อ และนิติทันตวิทยา 6 ข้อต่อชุด พร้อมเฉลยละเอียดทุกตัวเลือกและการวิเคราะห์ Cognitive Domain
+                      ชุดข้อสอบจำลองจากเอกสาร สนทท. จริง <strong>3 ฉบับเต็ม รวม 90 ข้อ (30 STEM สถานการณ์คลินิก)</strong> อิงโครงสร้าง TOS กฎหมายวิชาชีพ 24 ข้อ และนิติทันตวิทยา 6 ข้อต่อชุด (แยกออกจากข้อสอบจริงปี 2569 และแยกจากชุดที่สร้างเสริมแล้ว)
                     </div>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.35rem', flexShrink: 0 }}>
                     <span className="tabular-nums" style={{ fontSize: '0.8rem', padding: '0.32rem 0.7rem', borderRadius: '6px', background: 'var(--primary)', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                      4 ฉบับ • 120 ข้อเต็ม
+                      3 ฉบับ • 90 ข้อเต็ม
                     </span>
                     <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                       เกณฑ์ผ่าน ศ.ป.ท.: 60% (18/30 ข้อ)
@@ -1478,26 +1657,26 @@ export default function Dashboard({
                 }}>
                   <div>
                     <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: '0.96rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                      <Zap size={15} color="var(--primary-light)" /> สอบรวม 4 ฉบับรวด (DSAT Grand Marathon 120 ข้อ)
+                      <Zap size={15} color="var(--primary-light)" /> สอบรวม 3 ฉบับรวด (DSAT Marathon 90 ข้อ)
                     </div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>
-                      ทดสอบความอึดและความแม่นยำทางกฎหมายทันตกรรมต่อเนื่อง 120 ข้อเต็ม (240 นาที) หรือฝึกซ้อม 4 ฉบับรวด
+                      ทดสอบความอึดและความแม่นยำทางกฎหมายทันตกรรมต่อเนื่อง 90 ข้อเต็ม (180 นาที) หรือฝึกซ้อม 3 ฉบับรวด
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '0.55rem', flexWrap: 'wrap' }}>
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"
-                      onClick={() => handleStart({ category: 'กฎหมายและจรรยาบรรณ', count: 120, mode: 'exam', ordered: true, part: 'law', source_exam: 'DSAT Mock Law' })}
+                      onClick={() => handleStart({ category: 'กฎหมายและจรรยาบรรณ', count: 90, mode: 'exam', ordered: true, part: 'law', year: '', source_exam: 'DSAT Mock Law', exam_origin: 'dsat_mock' })}
                     >
-                      <PlayCircle size={14} /> เริ่มสอบมาราธอน 120 ข้อ
+                      <PlayCircle size={14} /> เริ่มสอบมาราธอน 90 ข้อ
                     </button>
                     <button
                       type="button"
                       className="btn btn-secondary btn-sm"
-                      onClick={() => handleStart({ category: 'กฎหมายและจรรยาบรรณ', count: 120, mode: 'practice', ordered: true, part: 'law', source_exam: 'DSAT Mock Law' })}
+                      onClick={() => handleStart({ category: 'กฎหมายและจรรยาบรรณ', count: 90, mode: 'practice', ordered: true, part: 'law', year: '', source_exam: 'DSAT Mock Law', exam_origin: 'dsat_mock' })}
                     >
-                      <BookOpen size={14} /> โหมดฝึกซ้อม 120 ข้อ
+                      <BookOpen size={14} /> โหมดฝึกซ้อม 90 ข้อ
                     </button>
                   </div>
                 </div>
@@ -1572,28 +1751,6 @@ export default function Dashboard({
                         { stem: 9, q: "25-27", title: "การตรวจชันสูตรรอยกัด (Bite Marks), ABFO No.2 & สงสัย Child Abuse" },
                         { stem: 10, q: "28-30", title: "ภัยพิบัติเครื่องบินตก 180 ราย & DVI Primary Identifiers (ฟัน, นิ้วมือ, DNA)" },
                       ]
-                    },
-                    {
-                      setNum: 4,
-                      title: "DSAT Mock Law ชุดที่ 4",
-                      subtitle: "สถานพยาบาล CDEC เวชระเบียน & DVI",
-                      desc: "ใบอนุญาตสถานพยาบาล 10 ปี/2 ปี, โฆษณากิจการ, CDEC 100 หน่วย, ขอบเขตทันตาภิบาล, ความรับผิดละเมิด & Consent, ทันตแพทยสภา 5 สถาน, สิทธิผู้ป่วย HIV, PDPA, DVI INTERPOL และอายุวัยรุ่น Clavicle",
-                      badgeColor: "#b45309",
-                      qRange: "ข้อ 1 - 30 (IDs 2490-2519)",
-                      sourceExam: "DSAT Mock Law ชุดที่ 4",
-                      year: "2570",
-                      stems: [
-                        { stem: 1, q: "1-3", title: "พ.ร.บ. สถานพยาบาล พ.ศ. 2541 (ใบอนุญาต 10 ปี / 2 ปี, ผู้ดำเนินการแห่งเดียว, การปฏิบัติหน้าที่แทน)" },
-                        { stem: 2, q: "4-6", title: "การโฆษณาสถานพยาบาล & จรรยาบรรณ (Before & After, อ้างผู้เชี่ยวชาญ, รับรองผล 100% / ลดราคาจูงใจ)" },
-                        { stem: 3, q: "7-9", title: "การศึกษาต่อเนื่อง CDEC & อายุใบอนุญาต (เกณฑ์ 100 หน่วยใน 5 ปี, กฎหมาย/จริยธรรม 10 หน่วย, การรักษาเมื่อใบอนุญาตสิ้นอายุ)" },
-                        { stem: 4, q: "10-12", title: "ขอบเขตงานทันตาภิบาล & ผู้ช่วยทันตแพทย์ (ข้อห้ามใน รพ.รัฐ, ห้ามทำหัตถการในคลินิกเอกชน, ความรับผิดร่วม)" },
-                        { stem: 5, q: "13-15", title: "ภาวะแทรกซ้อน & Informed Consent (ความสมบูรณ์ของความยินยอม, Standard of Care ม.420, อายุความละเมิด 1 ปี)" },
-                        { stem: 6, q: "16-18", title: "กระบวนการจริยธรรมทันตแพทยสภา (อายุความยื่นคำกล่าวหา 1 ปี/3 ปี, การถอนคำร้องไม่ระงับคดี ม.43, อำนาจลงโทษ 5 สถานตาม ม.39)" },
-                        { stem: 7, q: "19-21", title: "สิทธิผู้ป่วย & กฎหมายสุขภาพ (ห้ามปฏิเสธผู้ป่วย HIV/ฉุกเฉิน, Living Will ม.12, ข้อยกเว้นฉุกเฉินเพื่อช่วยชีวิต)" },
-                        { stem: 8, q: "22-24", title: "เวชระเบียน & PDPA (Sensitive Data ม.26, การขอข้อมูลโดยบุคคลภายนอก/หมายศาล, เกณฑ์เก็บรักษาอย่างน้อย 5 ปี)" },
-                        { stem: 9, q: "25-27", title: "ทันตนิติเวช & DVI INTERPOL (Primary Identifiers 3 ด้าน, 4 ขั้นตอน Scene-PM-AM-Reconciliation, คุณสมบัติฟันในศพไฟไหม้)" },
-                        { stem: 10, q: "28-30", title: "การประเมินอายุ & รอยกัด Bite Mark (ประเมินอายุวัยรุ่น ซี่ 8 + Clavicle, Gustafson Root transparency, การเก็บหลักฐานรอยกัด ABFO No. 2)" },
-                      ]
                     }
                   ].map((set) => {
                     const isExpanded = expandedDsatSet === set.setNum;
@@ -1666,8 +1823,9 @@ export default function Dashboard({
                                 mode: 'exam',
                                 ordered: true,
                                 part: 'law',
-                                year: set.year || '2569',
-                                source_exam: set.sourceExam
+                                year: '',
+                                source_exam: set.sourceExam,
+                                exam_origin: 'dsat_mock'
                               })}
                               style={{ borderRadius: '8px', fontSize: '0.8rem' }}
                             >
@@ -1682,8 +1840,9 @@ export default function Dashboard({
                                 mode: 'practice',
                                 ordered: true,
                                 part: 'law',
-                                year: set.year || '2569',
-                                source_exam: set.sourceExam
+                                year: '',
+                                source_exam: set.sourceExam,
+                                exam_origin: 'dsat_mock'
                               })}
                               style={{ borderRadius: '8px', fontSize: '0.8rem' }}
                             >
@@ -1784,11 +1943,11 @@ export default function Dashboard({
                   </div>
                 </div>
               </div>
-            )}
+          ) : selectedYearData ? (
             <div className="glass-panel animate-fade-in" style={{ padding: 'clamp(1.15rem, 2.5vw, 1.75rem)' }}>
               <div style={{ marginBottom: '1.25rem' }}>
                 <h2 style={{ fontSize: '1.25rem', margin: '0 0 0.28rem 0', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <FileText size={18} color="var(--primary-light)" /> ข้อสอบปี พ.ศ. {selectedYearData.year}
+                  <FileText size={18} color="var(--primary-light)" /> ข้อสอบจริง ศ.ป.ท. ปี พ.ศ. {selectedYearData.year}
                 </h2>
                 <div className="tabular-nums" style={{ color: 'var(--text-sub)', fontSize: '0.9rem' }}>
                   จำนวนทั้งหมด <strong>{selectedYearData.total}</strong> ข้อ
@@ -2017,7 +2176,10 @@ export default function Dashboard({
                         </div>
                         <div className="part-sim-meta">
                           {selectedYearData.law_count > 0 ? (
-                            <span>{selectedYearData.law_count} ข้อ • ข้อสอบตรงปี พ.ศ. {selectedYearData.year}</span>
+                            <span>
+                              {selectedYearData.law_count} ข้อ • ข้อสอบตรงปี พ.ศ. {selectedYearData.year}
+                              {selectedYearData.year === '2569' ? ' (ไฟล์จริง 1/2569 มี 10 ข้อ)' : ''}
+                            </span>
                           ) : (
                             <span>30 ข้อ (สุ่มจากคลังรวม) • พ.ร.บ. & วิชาชีพ</span>
                           )}
@@ -2033,14 +2195,14 @@ export default function Dashboard({
                           <button
                             className="btn btn-sm"
                             style={{ background: 'rgba(239, 68, 68, 0.14)', color: 'var(--danger)', border: '1px solid rgba(239, 68, 68, 0.3)', flex: 1 }}
-                            onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 100, 'exam', true, false, 'law')}
+                            onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', selectedYearData.law_count, 'exam', true, false, 'law', undefined, '', 'real_exam')}
                           >
                             <ShieldAlert size={14} /> สอบกฎหมาย ({selectedYearData.law_count} ข้อ)
                           </button>
                           <button
                             className="btn btn-secondary btn-sm"
                             style={{ flex: 1 }}
-                            onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', 100, 'practice', true, false, 'law')}
+                            onClick={() => handleStart('กฎหมายและจรรยาบรรณ', '', selectedYearData.law_count, 'practice', true, false, 'law', undefined, '', 'real_exam')}
                           >
                             <BookOpen size={14} /> ฝึกซ้อม
                           </button>
@@ -2177,90 +2339,156 @@ export default function Dashboard({
                 </div>
               </div>
             </div>
-            </div>
-          )
-        ) : (
-            /* Quick Exam Library Grid (substantive landing overview when "ทั้งหมด" is active) */
-            <div className="glass-panel animate-fade-in" style={{ padding: 'clamp(1.15rem, 2.5vw, 1.5rem)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.1rem', paddingBottom: '0.85rem', borderBottom: '1px solid var(--border)' }}>
-                <div>
-                  <h3 style={{ margin: '0 0 0.2rem 0', color: 'var(--text)', fontSize: '1.08rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <Layers size={17} color="var(--primary-light)" /> คลังข้อสอบย้อนหลังและชุดจำลอง ศ.ป.ท.
-                  </h3>
-                  <p style={{ margin: 0, color: 'var(--text-sub)', fontSize: '0.83rem' }}>
-                    เลือกชุดข้อสอบหรือปีการศึกษาเพื่อดูโครงสร้าง 4 Parts, กฎหมายวิชาชีพ และเริ่มสอบแบบจับเวลา
-                  </p>
+          ) : (
+            /* Quick Exam Library Grid (Real Past Years separated cleanly from Mock Sets) */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div className="glass-panel animate-fade-in" style={{ padding: 'clamp(1.15rem, 2.5vw, 1.5rem)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.1rem', paddingBottom: '0.85rem', borderBottom: '1px solid var(--border)' }}>
+                  <div>
+                    <h3 style={{ margin: '0 0 0.2rem 0', color: 'var(--text)', fontSize: '1.08rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                      <Layers size={17} color="var(--primary-light)" /> คลังข้อสอบจริง ศ.ป.ท. รายปี (Real National License)
+                    </h3>
+                    <p style={{ margin: 0, color: 'var(--text-sub)', fontSize: '0.83rem' }}>
+                      คัดเฉพาะข้อสอบจริงย้อนหลัง พ.ศ. 2563–2569 ({totalQuestions.toLocaleString()} ข้อ) โดยแยกข้อสอบ Mock และข้อสอบซ้ำออกเรียบร้อยแล้ว
+                    </p>
+                  </div>
+                  <div className="tabular-nums" style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                    {years ? years.length : 0} ปีการศึกษาจริง
+                  </div>
                 </div>
-                <div className="tabular-nums" style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                  {years ? years.length : 0} ชุด / ปีการศึกษา
+
+                <div className="exam-series-grid">
+                  {years && years.map((yData, seriesIdx) => {
+                    const isLatestReal = yData.year === '2569';
+                    const isPrevReal = yData.year === '2568';
+                    const isFeatured = isLatestReal || isPrevReal;
+                    const title = `ข้อสอบจริง พ.ศ. ${yData.year}`;
+                    const tagLabel = isLatestReal
+                      ? 'ข้อสอบจริงปีล่าสุด'
+                      : isPrevReal
+                        ? 'ข้อสอบจริง 2568'
+                        : 'ข้อสอบจริงรายปี';
+
+                    return (
+                      <button
+                        key={yData.year}
+                        type="button"
+                        className={`exam-series-card ${isFeatured ? 'is-featured' : ''}`}
+                        style={{ '--stagger-idx': seriesIdx }}
+                        onClick={() => setSelectedYear(yData.year)}
+                      >
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.55rem' }}>
+                            <span style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.35rem',
+                              fontSize: '0.72rem',
+                              fontWeight: 600,
+                              color: isFeatured ? 'var(--primary-light)' : 'var(--text-muted)',
+                              background: isFeatured ? 'rgba(37, 99, 235, 0.12)' : 'var(--surface-subtle)',
+                              border: `1px solid ${isFeatured ? 'rgba(37, 99, 235, 0.25)' : 'var(--border)'}`,
+                              padding: '0.16rem 0.5rem',
+                              borderRadius: '6px'
+                            }}>
+                              <Calendar size={12} className="series-card-icon" /> {tagLabel}
+                            </span>
+                            <span className="tabular-nums" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text)' }}>
+                              {yData.total} ข้อ
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.3rem' }}>
+                            {title}
+                          </div>
+                          <div className="tabular-nums" style={{ fontSize: '0.77rem', color: 'var(--text-muted)', display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                            <span>คลินิก {yData.clinical_count}</span>
+                            <span>•</span>
+                            <span>กฎหมาย {yData.law_count}</span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.55rem', borderTop: '1px solid var(--border)', fontSize: '0.78rem', fontWeight: 600, color: 'var(--primary-light)' }}>
+                          <span>เปิดชุดข้อสอบจริง</span>
+                          <ArrowRight size={14} className="series-card-arrow" />
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
-              <div className="exam-series-grid">
-                {years && years.map((yData, seriesIdx) => {
-                  const isMock70 = yData.year === '2570';
-                  const isDsat = yData.year === '2569';
-                  const isLatestReal = yData.year === '2568';
-                  const isFeatured = isMock70 || isDsat || isLatestReal;
-                  const SeriesIcon = isMock70 ? Target : isDsat ? Scale : Calendar;
-                  const title = isMock70
-                    ? 'ศ.ป.ท. Mock Exam 2570'
-                    : isDsat
-                      ? 'DSAT Mock Law (4 ชุด)'
-                      : `ข้อสอบจริง พ.ศ. ${yData.year}`;
-                  const tagLabel = isMock70
-                    ? 'Mock 70 ล่าสุด'
-                    : isDsat
-                      ? 'กฎหมาย • 4 ฉบับ'
-                      : isLatestReal
-                        ? 'ข้อสอบจริงปีล่าสุด'
-                        : 'ข้อสอบรายปี';
+              {/* Separated Mock Exam Section */}
+              <div className="glass-panel animate-fade-in" style={{ padding: 'clamp(1.15rem, 2.5vw, 1.5rem)', borderTop: '3px solid rgba(245, 158, 11, 0.5)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.1rem', paddingBottom: '0.85rem', borderBottom: '1px solid var(--border)' }}>
+                  <div>
+                    <h3 style={{ margin: '0 0 0.2rem 0', color: 'var(--text)', fontSize: '1.08rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                      <Target size={17} color="#d97706" /> ข้อสอบจำลอง / Mock Exams (แยกส่วนต่างหาก ไม่รวมในข้อสอบจริง)
+                    </h3>
+                    <p style={{ margin: 0, color: 'var(--text-sub)', fontSize: '0.83rem' }}>
+                      แยกชุดจำลอง สนทท. และชุด Mock ที่สร้างเสริม/AI ออกจากคลังข้อสอบจริง 2,249 ข้อ เพื่อความแม่นยำในการวัดผล
+                    </p>
+                  </div>
+                  <div className="tabular-nums" style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                    รวม {mockSummary?.total_mock ?? 165} ข้อ Mock
+                  </div>
+                </div>
 
-                  return (
-                    <button
-                      key={yData.year}
-                      type="button"
-                      className={`exam-series-card ${isFeatured ? 'is-featured' : ''}`}
-                      style={{ '--stagger-idx': seriesIdx }}
-                      onClick={() => setSelectedYear(yData.year)}
-                    >
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.55rem' }}>
-                          <span style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.35rem',
-                            fontSize: '0.72rem',
-                            fontWeight: 600,
-                            color: isFeatured ? 'var(--primary-light)' : 'var(--text-muted)',
-                            background: isFeatured ? 'rgba(37, 99, 235, 0.12)' : 'var(--surface-subtle)',
-                            border: `1px solid ${isFeatured ? 'rgba(37, 99, 235, 0.25)' : 'var(--border)'}`,
-                            padding: '0.16rem 0.5rem',
-                            borderRadius: '6px'
-                          }}>
-                            <SeriesIcon size={12} className="series-card-icon" /> {tagLabel}
-                          </span>
-                          <span className="tabular-nums" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text)' }}>
-                            {yData.total} ข้อ
-                          </span>
-                        </div>
-                        <div style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.3rem' }}>
-                          {title}
-                        </div>
-                        <div className="tabular-nums" style={{ fontSize: '0.77rem', color: 'var(--text-muted)', display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-                          <span>คลินิก {yData.clinical_count}</span>
-                          <span>•</span>
-                          <span>กฎหมาย {yData.law_count}</span>
-                        </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 290px), 1fr))', gap: '1rem' }}>
+                  <button
+                    type="button"
+                    className="exam-series-card is-featured"
+                    onClick={() => setSelectedYear('MOCK_DSAT')}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.55rem' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.72rem', fontWeight: 600, color: 'var(--primary-light)', background: 'rgba(37, 99, 235, 0.12)', border: '1px solid rgba(37, 99, 235, 0.25)', padding: '0.16rem 0.5rem', borderRadius: '6px' }}>
+                          <Scale size={12} /> เอกสารจำลอง สนทท. (3 ชุด)
+                        </span>
+                        <span className="tabular-nums" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text)' }}>
+                          {mockSummary?.dsat_mock_total ?? 90} ข้อ
+                        </span>
                       </div>
+                      <div style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.3rem' }}>
+                        DSAT Mock Law สนทท. (ชุดที่ 1–3)
+                      </div>
+                      <div style={{ fontSize: '0.77rem', color: 'var(--text-muted)' }}>
+                        กฎหมายและนิติทันตวิทยาจากไฟล์ Mock สนทท. จริง (30 ข้อ × 3 ชุด)
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.55rem', borderTop: '1px solid var(--border)', fontSize: '0.78rem', fontWeight: 600, color: 'var(--primary-light)' }}>
+                      <span>เปิดคลัง DSAT Mock</span>
+                      <ArrowRight size={14} className="series-card-arrow" />
+                    </div>
+                  </button>
 
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.55rem', borderTop: '1px solid var(--border)', fontSize: '0.78rem', fontWeight: 600, color: 'var(--primary-light)' }}>
-                        <span>เปิดชุดข้อสอบ</span>
-                        <ArrowRight size={14} className="series-card-arrow" />
+                  <button
+                    type="button"
+                    className="exam-series-card"
+                    style={{ borderColor: 'rgba(245, 158, 11, 0.35)' }}
+                    onClick={() => setSelectedYear('MOCK_AI')}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.55rem' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.72rem', fontWeight: 600, color: '#d97706', background: 'rgba(245, 158, 11, 0.14)', border: '1px solid rgba(245, 158, 11, 0.3)', padding: '0.16rem 0.5rem', borderRadius: '6px' }}>
+                          <Target size={12} /> Mock สร้างเสริม / AI (3 ชุด)
+                        </span>
+                        <span className="tabular-nums" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text)' }}>
+                          {mockSummary?.ai_mock_total ?? 75} ข้อ
+                        </span>
                       </div>
-                    </button>
-                  );
-                })}
+                      <div style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.3rem' }}>
+                        Mock 70 + Mock Law ชุด 4 + AI คลินิก 2569
+                      </div>
+                      <div style={{ fontSize: '0.77rem', color: 'var(--text-muted)' }}>
+                        ข้อสอบจำลองที่จัดทำเสริม (กฎหมาย 60 ข้อ + คลินิก AI 15 ข้อ)
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.55rem', borderTop: '1px solid var(--border)', fontSize: '0.78rem', fontWeight: 600, color: '#d97706' }}>
+                      <span>เปิดคลัง Mock สร้างเสริม</span>
+                      <ArrowRight size={14} className="series-card-arrow" />
+                    </div>
+                  </button>
+                </div>
               </div>
             </div>
           )}

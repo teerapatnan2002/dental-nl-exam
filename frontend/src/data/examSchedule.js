@@ -39,7 +39,8 @@ export const EXAM_SCHEDULES = [
       label: 'เข้าสอบ Mock Law 70 (30 ข้อ)',
       actionType: 'exam_law_70',
       category: 'กฎหมายและจรรยาบรรณ',
-      year: '2570',
+      source_exam: 'NL Law 2570 (Mock Test 70).pdf',
+      exam_origin: 'ai_mock',
       count: 30
     }
   },
@@ -72,7 +73,7 @@ export const EXAM_SCHEDULES = [
       actionType: 'exam_dsat_1',
       category: 'กฎหมายและจรรยาบรรณ',
       source_exam: 'DSAT Mock Law ชุดที่ 1',
-      year: '2569',
+      exam_origin: 'dsat_mock',
       count: 30
     }
   },
@@ -105,7 +106,7 @@ export const EXAM_SCHEDULES = [
       actionType: 'exam_dsat_2',
       category: 'กฎหมายและจรรยาบรรณ',
       source_exam: 'DSAT Mock Law ชุดที่ 2',
-      year: '2569',
+      exam_origin: 'dsat_mock',
       count: 30
     }
   },
@@ -138,19 +139,19 @@ export const EXAM_SCHEDULES = [
       actionType: 'exam_dsat_3',
       category: 'กฎหมายและจรรยาบรรณ',
       source_exam: 'DSAT Mock Law ชุดที่ 3',
-      year: '2569',
+      exam_origin: 'dsat_mock',
       count: 30
     }
   },
   {
     id: 'dsat-mock-4',
-    title: 'DSAT Mock Exam นิติทันตวิทยาและกฎหมาย ชุดที่ 4 (2570)',
-    series: 'DSAT ชุดที่ 4',
-    shortLabel: 'DSAT ชุด 4',
+    title: 'AI / Mock Exam กฎหมายเสริม ชุดที่ 4 (จำลอง 2570)',
+    series: 'Mock เสริม ชุดที่ 4',
+    shortLabel: 'Mock เสริม ชุด 4',
     categoryGroup: 'mock',
     type: 'law',
     icon: '📝',
-    badge: '✨ สโมสรนิสิตฯ สนทท. (2570)',
+    badge: '✨ Mock สร้างเสริม (แยกจากข้อสอบจริง)',
     targetDate: '2026-10-02T13:00:00+07:00',
     endDate: '2026-10-02T14:00:00+07:00',
     examDateText: 'เปิดชุดฝึก 2 ตุลาคม 2569 (ทำย้อนหลังได้)',
@@ -161,17 +162,17 @@ export const EXAM_SCHEDULES = [
     regStatusText: 'พร้อมเข้าสอบย้อนหลังได้ทันที',
     announcementDateText: 'เฉลยและวิเคราะห์ Cognitive Level ทันทีหลังส่ง',
     fee: 'ฟรีสำหรับสมาชิก',
-    description: 'ข้อสอบมาตรฐาน สนทท. ชุดที่ 4 (30 ข้อ 10 STEMs) เจาะลึกสถานพยาบาล กฎหมาย CDEC สิทธิผู้ป่วย เวชระเบียน & PDPA ทันตนิติเวช DVI และการประเมินอายุ',
+    description: 'ข้อสอบจำลองที่จัดทำขึ้นเสริม (30 ข้อ 10 STEMs) แยกจากคลังข้อสอบจริง ศ.ป.ท. และ สนทท. เจาะลึกสถานพยาบาล กฎหมาย CDEC สิทธิผู้ป่วย เวชระเบียน & PDPA ทันตนิติเวช DVI และการประเมินอายุ',
     subjects: [
       { name: 'พ.ร.บ. วิชาชีพทันตกรรม สถานพยาบาล & จรรยาบรรณ (STEM 1–8)', items: '24 ข้อ (ใบอนุญาต 10 ปี/2 ปี, โฆษณา, CDEC 100 หน่วย, สิทธิผู้ป่วย, PDPA)' },
       { name: 'นิติทันตวิทยา Forensic Odontology (STEM 9–10)', items: '6 ข้อ (DVI INTERPOL Primary Identifiers, การประเมินอายุ & ABFO Bite Marks)' },
     ],
     quickAction: {
-      label: 'เริ่มสอบ DSAT ชุดที่ 4 (30 ข้อ)',
+      label: 'เริ่มสอบ Mock เสริม ชุดที่ 4 (30 ข้อ)',
       actionType: 'exam_dsat_4',
       category: 'กฎหมายและจรรยาบรรณ',
-      source_exam: 'DSAT Mock Law ชุดที่ 4',
-      year: '2570',
+      source_exam: 'DSAT Mock Law ชุดที่ 4 (2570)',
+      exam_origin: 'ai_mock',
       count: 30
     }
   },
