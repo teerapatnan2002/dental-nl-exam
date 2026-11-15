@@ -289,7 +289,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_2 = {
     title: "การประเมินและจัดการพฤติกรรมเด็กในคลินิก (Frankl & AAPD Guidance)",
     specialty: "ทันตกรรมสำหรับเด็ก",
     category: "ทันตกรรมสำหรับเด็ก",
-    badgeColor: "#8b5cf6",
+    badgeColor: "#0284c7",
     must_know_topics: [
       "Frankl Behavior Rating Scale (Rating 1 Definitely Negative ถึง 4 Definitely Positive)",
       "Basic Guidance: Tell-Show-Do, Ask-Tell-Ask, Voice Control, Positive Reinforcement",
@@ -317,7 +317,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_2 = {
     title: "เภสัชวิทยาของฟลูออไรด์ ขนาดยาเสริม และพิษวิทยา (Optimal F & PTD 5 mg/kg)",
     specialty: "ทันตกรรมสำหรับเด็ก",
     category: "ทันตกรรมสำหรับเด็ก",
-    badgeColor: "#8b5cf6",
+    badgeColor: "#0284c7",
     must_know_topics: [
       "Topical Action Dominance (Inhibition of Demineralization, Enhance Remin, Enolase Block)",
       "AAPD Fluoride Supplementation Schedule (< 0.3 / 0.3–0.6 / > 0.6 ppm Water)",
@@ -345,7 +345,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_2 = {
     title: "การบูรณะฟันน้ำนม ครอบฟัน SSC, Hall Technique และ SDF",
     specialty: "ทันตกรรมสำหรับเด็ก",
     category: "ทันตกรรมสำหรับเด็ก",
-    badgeColor: "#8b5cf6",
+    badgeColor: "#0284c7",
     must_know_topics: [
       "Stainless Steel Crown (SSC) Prep: Occlusal 1–1.5 mm & No Ledge Bucco-Lingual",
       "Hall Technique (No LA, No Caries Removal SSC)",
@@ -373,7 +373,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_2 = {
     title: "การดูแลฟันแท้ซี่แรกขึ้นผิดที่ (Ectopic Eruption), MIH และ Trauma เด็ก",
     specialty: "ทันตกรรมสำหรับเด็ก",
     category: "ทันตกรรมสำหรับเด็ก",
-    badgeColor: "#8b5cf6",
+    badgeColor: "#0284c7",
     must_know_topics: [
       "Molar-Incisor Hypomineralization (MIH): Demarcated Opacities & Post-Eruptive Breakdown",
       "Ectopic Eruption of Permanent 1st Molar (Jump vs Hold Type)",
@@ -402,7 +402,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_2 = {
     title: "ฟิสิกส์รังสีวิทยาช่องปาก คุณภาพภาพ และการป้องกันรังสี (kVp, mAs, ALARA & SLOB)",
     specialty: "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
     category: "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
-    badgeColor: "#a855f7",
+    badgeColor: "#14b8a6",
     must_know_topics: [
       "kVp (Beam Quality / Penetrability / Contrast) vs mAs (Quantity / Density)",
       "Stochastic (No Threshold: Cancer/Genetic) vs Deterministic (Threshold: Cataract/Mucositis)",
@@ -430,7 +430,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_2 = {
     title: "รอยโรคแผลถลอกและตุ่มพองจากภูมิคุ้มกันและไวรัส (Pemphigus, MMP, OLP, HSV)",
     specialty: "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
     category: "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
-    badgeColor: "#a855f7",
+    badgeColor: "#14b8a6",
     must_know_topics: [
       "Pemphigus Vulgaris (Intraepithelial/Suprabasal + Fish-net IgG + Desmoglein 3)",
       "Mucous Membrane Pemphigoid (Subepithelial + Linear IgG/C3 + Eye Symblepharon)",
@@ -458,7 +458,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_2 = {
     title: "การจัดการผู้ป่วยโรคเบาหวาน ไทรอยด์ ไตวาย และสเตียรอยด์ (Endocrine & Renal)",
     specialty: "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
     category: "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
-    badgeColor: "#a855f7",
+    badgeColor: "#14b8a6",
     must_know_topics: [
       "Diabetes Mellitus (HbA1c < 7%, Hypoglycemia Rule of 15, Epinephrine Safe if Controlled)",
       "Hyperthyroidism / Thyrotoxicosis (Avoid Epinephrine & Atropine!)",
@@ -486,7 +486,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_2 = {
     title: "พยาธิวิทยาของต่อมน้ำลาย ถุงน้ำเมือก เนื้องอก และภาวะปากแห้ง (Salivary Disorders)",
     specialty: "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
     category: "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
-    badgeColor: "#a855f7",
+    badgeColor: "#14b8a6",
     must_know_topics: [
       "Mucocele (Extravasation — No Epithelial Lining) vs Ranula (Floor of Mouth / Sublingual)",
       "Sialolithiasis (Wharton's Submandibular Duct > 80% — Mandibular Occlusal Film)",
@@ -514,7 +514,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_2 = {
     title: "ความผิดปกติของการแข็งตัวของเลือด ยาต้านเกล็ดเลือด/ละลายลิ่มเลือด (Hemostasis)",
     specialty: "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
     category: "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
-    badgeColor: "#a855f7",
+    badgeColor: "#14b8a6",
     must_know_topics: [
       "Coagulation Tests: PT/INR (Extrinsic/Warfarin), aPTT (Intrinsic/Heparin/Hemophilia), Platelet/PFA-100",
       "Safe Warfarin Dental Window: INR ≤ 3.5 (ไม่หยุดยา! ใช้ Local Hemostatic Measures)",

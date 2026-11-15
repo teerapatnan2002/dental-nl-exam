@@ -141,25 +141,25 @@ export default function TutorChat({
   const quickPrompts = [
     ...(questionId && userAnswer && correctAnswer && String(userAnswer) !== String(correctAnswer)
       ? [{
-          label: `⚖️ เทียบข้อ ${userAnswer} (ที่ฉันตอบ) vs ${correctAnswer}`,
+          label: `เทียบข้อ ${userAnswer} (ที่ตอบ) vs ${correctAnswer}`,
           prompt: `ฉันเลือกตอบตัวเลือก ${userAnswer} แต่เฉลยคือ ${correctAnswer} ช่วยเปรียบเทียบจุดตัดสำคัญว่าทำไมฉันถึงพลาดและมีวิธีแยกสองตัวเลือกนี้อย่างไรไม่ให้สับสนอีก`,
         }]
       : []),
     {
-      label: '⚖️ แยกจากตัวลวงข้ออื่นยังไง?',
+      label: 'แยกจากตัวลวงข้ออื่นยังไง?',
       prompt: 'แยกจากตัวลวงข้ออื่นยังไง? ช่วยสรุปจุดตัดสำคัญที่ใช้ตัดตัวเลือกหลอกให้ชัดเจนหน่อยครับ',
     },
     {
-      label: '🪜 สรุปเป็นกฎ 3 ข้อก่อนเข้าห้องสอบ',
+      label: 'สรุปเป็นกฎ 3 ข้อก่อนเข้าห้องสอบ',
       prompt: 'ช่วยสรุปเป็นกฎ 3 ข้อสั้นๆ และ Mnemonic สำหรับนำไปจำใช้ในห้องสอบหน่อยครับ',
     },
     {
-      label: '🇹🇭 แนวทางทันตแพทย์ไทยต่างจาก Textbook ไหม?',
+      label: 'แนวทางทันตแพทย์ไทยต่างจาก Textbook ไหม?',
       prompt: 'แนวทางปฏิบัติของทันตแพทยสภา/สมาคมทันตแพทย์ไทยในหัวข้อนี้เหมือนหรือแตกต่างจาก Textbook สากลอย่างไรบ้าง?',
     },
     ...(questionId
       ? [{
-          label: '🔄 ถ้าโจทย์พลิกแพลงจะตอบอะไร?',
+          label: 'ถ้าโจทย์พลิกแพลงจะตอบอะไร?',
           prompt: 'หากกรรมการออกสอบพลิกแพลงเงื่อนไขของเคสนี้ (เช่น เปลี่ยนอายุ อาการ หรือค่าผลตรวจ) คำตอบจะเปลี่ยนเป็นตัวเลือกใดบ้าง?',
         }]
       : []),
@@ -187,7 +187,7 @@ export default function TutorChat({
         </div>
         {topicTitle && (
           <span style={{ fontSize: '0.74rem', color: 'var(--ink-indigo)', fontWeight: 600 }}>
-            📚 {topicTitle}
+            {topicTitle}
           </span>
         )}
       </div>
@@ -267,7 +267,7 @@ export default function TutorChat({
                     ) : (
                       <>
                         <BookmarkPlus size={12} />
-                        {savingIdx === i ? 'กำลังบันทึก...' : '📌 บันทึกคำตอบนี้เป็นโน้ตส่วนตัว'}
+                        {savingIdx === i ? 'กำลังบันทึก...' : 'บันทึกคำตอบนี้เป็นโน้ตส่วนตัว'}
                       </>
                     )}
                   </button>
@@ -309,8 +309,8 @@ export default function TutorChat({
               fontWeight: 600,
               padding: '0.32rem 0.7rem',
               borderRadius: '14px',
-              background: 'rgba(124, 58, 237, 0.12)',
-              border: '1px solid rgba(124, 58, 237, 0.35)',
+              background: 'rgba(13, 148, 136, 0.1)',
+              border: '1px solid rgba(13, 148, 136, 0.3)',
               color: 'var(--primary-light)',
               cursor: loading ? 'not-allowed' : 'pointer',
               transition: 'all 0.15s ease'

@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, PlayCircle, BookOpen, Layers, Sparkles } from 'lucide-react';
+import {
+  X, PlayCircle, BookOpen, Layers, Sparkles, Stethoscope, ClipboardList,
+  Wrench, Microscope, ShieldCheck, ScrollText, Scale, Building2, FileText,
+  Target, CircleDot
+} from 'lucide-react';
 
 export default function CategoryDetailModal({
   category,
@@ -28,24 +32,25 @@ export default function CategoryDetailModal({
   const totalQuestions = category.count || tasks.reduce((sum, t) => sum + t.count, 0);
   const fullCategoryCount = selectedCount === 'all' ? totalQuestions : Math.min(totalQuestions, selectedCount);
 
-  // Icon mapping for tasks
+  // Clean clinical Lucide icon mapping for competency tasks
   const getTaskIcon = (taskName) => {
-    if (taskName.includes('วินิจฉัย')) return '🩺';
-    if (taskName.includes('จัดการ') || taskName.includes('รักษาผู้ป่วย')) return '📋';
-    if (taskName.includes('ขั้นตอน') || taskName.includes('วิธีการรักษา')) return '🛠️';
-    if (taskName.includes('การเกิด') || taskName.includes('ดำเนินโรค')) return '🔬';
-    if (taskName.includes('ป้องกัน') || taskName.includes('สร้างเสริม')) return '🛡️';
-    if (taskName.includes('พ.ร.บ. วิชาชีพ')) return '📜';
-    if (taskName.includes('จรรยาบรรณ')) return '⚖️';
-    if (taskName.includes('พ.ร.บ. สถานพยาบาล')) return '🏥';
-    if (taskName.includes('กฎหมายอื่นๆ')) return '📑';
-    return '📌';
+    const props = { size: 16, color: 'var(--primary-light)' };
+    if (taskName.includes('วินิจฉัย')) return <Stethoscope {...props} />;
+    if (taskName.includes('จัดการ') || taskName.includes('รักษาผู้ป่วย')) return <ClipboardList {...props} />;
+    if (taskName.includes('ขั้นตอน') || taskName.includes('วิธีการรักษา')) return <Wrench {...props} />;
+    if (taskName.includes('การเกิด') || taskName.includes('ดำเนินโรค')) return <Microscope {...props} />;
+    if (taskName.includes('ป้องกัน') || taskName.includes('สร้างเสริม')) return <ShieldCheck {...props} />;
+    if (taskName.includes('พ.ร.บ. วิชาชีพ')) return <ScrollText {...props} />;
+    if (taskName.includes('จรรยาบรรณ')) return <Scale {...props} />;
+    if (taskName.includes('พ.ร.บ. สถานพยาบาล')) return <Building2 {...props} />;
+    if (taskName.includes('กฎหมายอื่นๆ')) return <FileText {...props} />;
+    return <CircleDot {...props} />;
   };
 
-  // Task color palette for distribution bar
+  // Clinical Editorial semantic bar palette
   const taskColors = [
-    '#06b6d4', '#8b5cf6', '#10b981', '#f59e0b', '#ec4899',
-    '#3b82f6', '#14b8a6', '#f43f5e', '#a855f7'
+    '#0d9488', '#0284c7', '#10b981', '#d97706',
+    '#e11d48', '#14b8a6', '#0369a1', '#64748b'
   ];
 
   return createPortal(
@@ -55,7 +60,7 @@ export default function CategoryDetailModal({
         inset: 0,
         width: '100vw',
         height: '100vh',
-        background: 'rgba(0, 0, 0, 0.78)',
+        background: 'rgba(9, 9, 11, 0.72)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
         display: 'flex',
@@ -78,12 +83,13 @@ export default function CategoryDetailModal({
           maxHeight: 'min(88vh, 760px)',
           display: 'flex',
           flexDirection: 'column',
-          padding: '2rem',
+          padding: 'clamp(1.25rem, 3.5vw, 2rem)',
           position: 'relative',
           margin: 'auto',
-          borderRadius: '16px',
+          borderRadius: '18px',
+          background: 'var(--bg-panel)',
           border: `1px solid ${category.borderColor || 'var(--border)'}`,
-          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.65)',
+          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.35)',
           animation: 'slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
           overflow: 'hidden'
         }}
@@ -94,13 +100,13 @@ export default function CategoryDetailModal({
           aria-label="Close modal"
           style={{
             position: 'absolute',
-            top: '1.25rem',
-            right: '1.25rem',
-            background: 'rgba(255, 255, 255, 0.06)',
+            top: '1.15rem',
+            right: '1.15rem',
+            background: 'var(--surface-subtle)',
             border: '1px solid var(--border)',
             borderRadius: '50%',
-            width: '34px',
-            height: '34px',
+            width: '36px',
+            height: '36px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -110,53 +116,54 @@ export default function CategoryDetailModal({
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = 'var(--text)';
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)';
+            e.currentTarget.style.background = 'var(--surface-hover)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.color = 'var(--text-muted)';
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
+            e.currentTarget.style.background = 'var(--surface-subtle)';
           }}
         >
           <X size={18} />
         </button>
 
         {/* Modal Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem', paddingRight: '2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem', paddingRight: '2.5rem' }}>
           <div
             style={{
               width: '46px',
               height: '46px',
               borderRadius: '12px',
-              background: category.bg || 'rgba(124, 58, 237, 0.12)',
-              border: `1px solid ${category.borderColor || 'rgba(124, 58, 237, 0.3)'}`,
+              background: category.bg || 'rgba(13, 148, 136, 0.12)',
+              border: `1px solid ${category.borderColor || 'rgba(13, 148, 136, 0.28)'}`,
+              color: category.color || 'var(--primary-light)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.5rem',
               flexShrink: 0
             }}
           >
-            {category.icon || '📚'}
+            {category.icon || <BookOpen size={20} />}
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-              <h2 style={{ fontSize: '1.25rem', margin: 0, color: 'var(--text)', fontWeight: 700 }}>
+              <h2 style={{ fontSize: '1.22rem', margin: 0, color: 'var(--text)', fontWeight: 700 }}>
                 {category.name}
               </h2>
               <span
                 className="badge"
                 style={{
-                  background: category.bg || 'rgba(124, 58, 237, 0.15)',
+                  background: category.bg || 'rgba(13, 148, 136, 0.12)',
                   color: category.color || 'var(--primary-light)',
-                  border: `1px solid ${category.borderColor || 'rgba(124, 58, 237, 0.3)'}`,
-                  fontSize: '0.82rem',
-                  fontWeight: 600
+                  border: `1px solid ${category.borderColor || 'rgba(13, 148, 136, 0.28)'}`,
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  fontVariantNumeric: 'tabular-nums'
                 }}
               >
                 {totalQuestions.toLocaleString()} ข้อ
               </span>
             </div>
-            <p style={{ margin: '0.2rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+            <p style={{ margin: '0.2rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.84rem' }}>
               {category.isLaw
                 ? 'ข้อสอบกฎหมาย พระราชบัญญัติ และจรรยาบรรณแห่งวิชาชีพทันตกรรม'
                 : 'เลือกฝึกซ้อมตามสมรรถนะวิชาชีพ (Tasks) หรือทำข้อสอบรวมทั้งวิชา'}
@@ -167,11 +174,11 @@ export default function CategoryDetailModal({
         {/* Quick Full-Category Banner */}
         <div
           style={{
-            background: 'rgba(255, 255, 255, 0.03)',
+            background: 'var(--surface-subtle)',
             border: '1px solid var(--border)',
             borderRadius: '12px',
-            padding: '1rem 1.25rem',
-            marginBottom: '1.5rem',
+            padding: '1rem 1.15rem',
+            marginBottom: '1.25rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -180,7 +187,7 @@ export default function CategoryDetailModal({
           }}
         >
           <div>
-            <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Sparkles size={15} color={category.color || 'var(--primary-light)'} />
               ข้อสอบรวมทั้งสาขาวิชา
             </div>
@@ -200,7 +207,6 @@ export default function CategoryDetailModal({
             </button>
             <button
               className="btn btn-primary btn-sm"
-              style={{ background: category.bg, color: category.color, border: `1px solid ${category.borderColor}` }}
               onClick={() => {
                 onStart(category.name, '', fullCategoryCount, 'practice');
                 onClose();
@@ -210,22 +216,13 @@ export default function CategoryDetailModal({
             </button>
             {category.isLaw && onOpenLawHub && (
               <button
-                className="btn btn-sm"
+                className="btn btn-secondary btn-sm"
                 onClick={() => {
                   onClose();
                   onOpenLawHub();
                 }}
-                style={{
-                  background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
-                  color: '#fff',
-                  border: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  fontWeight: 600
-                }}
               >
-                🎴 Flashcards
+                <Layers size={14} /> Flashcards กฎหมาย
               </button>
             )}
           </div>
@@ -233,12 +230,12 @@ export default function CategoryDetailModal({
 
         {/* Task Distribution Bar */}
         {tasks.length > 0 && totalQuestions > 0 && (
-          <div style={{ marginBottom: '1.25rem' }}>
+          <div style={{ marginBottom: '1.15rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
               <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <Layers size={13} /> สัดส่วนเนื้อหาในสาขาวิชานี้
               </span>
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontVariantNumeric: 'tabular-nums' }}>
                 {tasks.length} หัวข้อย่อย
               </span>
             </div>
@@ -248,7 +245,7 @@ export default function CategoryDetailModal({
                 borderRadius: '999px',
                 display: 'flex',
                 overflow: 'hidden',
-                background: 'rgba(255, 255, 255, 0.06)'
+                background: 'var(--surface-subtle)'
               }}
             >
               {tasks.map((t, idx) => {
@@ -273,10 +270,18 @@ export default function CategoryDetailModal({
 
         {/* Header with Question Count Selector */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-          <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)' }}>
-            {category.isLaw ? '⚖️ เลือกฝึกซ้อมตามหมวดกฎหมาย:' : '🎯 เลือกฝึกซ้อมตามสมรรถนะ / หัวข้อเล็ก:'}
+          <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+            {category.isLaw ? (
+              <>
+                <Scale size={15} color="var(--primary-light)" /> เลือกฝึกซ้อมตามหมวดกฎหมาย
+              </>
+            ) : (
+              <>
+                <Target size={15} color="var(--primary-light)" /> เลือกฝึกซ้อมตามสมรรถนะ / หัวข้อเล็ก
+              </>
+            )}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             <span>จำนวนข้อ:</span>
             {[
               { val: 10, label: '10' },
@@ -289,13 +294,13 @@ export default function CategoryDetailModal({
                 type="button"
                 onClick={() => setSelectedCount(opt.val)}
                 style={{
-                  background: selectedCount === opt.val ? 'var(--primary)' : 'rgba(255, 255, 255, 0.05)',
+                  background: selectedCount === opt.val ? 'var(--primary)' : 'var(--surface-subtle)',
                   color: selectedCount === opt.val ? '#fff' : 'var(--text-muted)',
                   border: `1px solid ${selectedCount === opt.val ? 'var(--primary)' : 'var(--border)'}`,
-                  borderRadius: '4px',
-                  padding: '0.15rem 0.5rem',
-                  fontSize: '0.75rem',
-                  fontWeight: selectedCount === opt.val ? 600 : 400,
+                  borderRadius: '6px',
+                  padding: '0.2rem 0.55rem',
+                  fontSize: '0.76rem',
+                  fontWeight: selectedCount === opt.val ? 600 : 500,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease'
                 }}
@@ -317,10 +322,10 @@ export default function CategoryDetailModal({
               <div
                 key={t.task}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.07)',
+                  background: 'var(--surface-card)',
+                  border: '1px solid var(--border)',
                   borderRadius: '10px',
-                  padding: '0.75rem 1rem',
+                  padding: '0.75rem 0.95rem',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -329,22 +334,34 @@ export default function CategoryDetailModal({
                   transition: 'background 0.15s ease, border-color 0.15s ease'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                  e.currentTarget.style.background = 'var(--surface-hover)';
+                  e.currentTarget.style.borderColor = 'var(--border-hover)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.07)';
+                  e.currentTarget.style.background = 'var(--surface-card)';
+                  e.currentTarget.style.borderColor = 'var(--border)';
                 }}
               >
                 {/* Task Info */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flex: 1, minWidth: '220px' }}>
-                  <span style={{ fontSize: '1.2rem' }}>{getTaskIcon(t.task)}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flex: 1, minWidth: '210px' }}>
+                  <div style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '8px',
+                    background: 'var(--surface-subtle)',
+                    border: '1px solid var(--border)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}>
+                    {getTaskIcon(t.task)}
+                  </div>
                   <div>
                     <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text)' }}>
                       {t.task}
                     </div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', gap: '0.4rem', alignItems: 'center', fontVariantNumeric: 'tabular-nums' }}>
                       <span style={{ color: taskColor, fontWeight: 600 }}>{t.count} ข้อ</span>
                       <span>•</span>
                       <span>{pct}% ของวิชานี้</span>
@@ -366,14 +383,8 @@ export default function CategoryDetailModal({
                     <PlayCircle size={13} /> สอบ {qCount} ข้อ
                   </button>
                   <button
-                    className="btn btn-sm"
-                    style={{
-                      padding: '0.35rem 0.75rem',
-                      fontSize: '0.8rem',
-                      background: category.bg,
-                      color: category.color,
-                      border: `1px solid ${category.borderColor}`
-                    }}
+                    className="btn btn-primary btn-sm"
+                    style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
                     onClick={() => {
                       onStart(category.name, t.task, qCount, 'practice');
                       onClose();

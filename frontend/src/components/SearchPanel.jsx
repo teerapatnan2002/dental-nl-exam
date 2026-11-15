@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Loader2, PlayCircle, XCircle } from 'lucide-react';
+import { Search, Loader2, PlayCircle, XCircle, Lightbulb, FileText } from 'lucide-react';
 import { API_BASE } from '../config';
 
 /**
@@ -79,14 +79,15 @@ export default function SearchPanel({ categories, onStartPractice }) {
             placeholder="พิมพ์คำค้น เช่น ปวดฟัน, ถอนฟัน, เบาหวาน..."
             style={{
               width: '100%', padding: '0.75rem 2.5rem 0.75rem 1rem',
-              background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: '10px', color: 'var(--text)', fontSize: '1rem', fontFamily: 'inherit',
+              background: 'var(--surface-input)', border: '1px solid var(--border)',
+              borderRadius: '10px', color: 'var(--text)', fontSize: 'max(16px, 0.96rem)', fontFamily: 'inherit',
             }}
           />
           {query && (
             <button
               onClick={() => { setQuery(''); setResults(null); }}
-              style={{ position: 'absolute', right: '0.6rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+              aria-label="ล้างคำค้นหา"
+              style={{ position: 'absolute', right: '0.6rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '32px', minHeight: '32px' }}
             >
               <XCircle size={16} />
             </button>
@@ -95,7 +96,7 @@ export default function SearchPanel({ categories, onStartPractice }) {
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          style={{ padding: '0.75rem 1rem', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', color: 'var(--text)', fontFamily: 'inherit' }}
+          style={{ padding: '0.75rem 1rem', background: 'var(--surface-input)', border: '1px solid var(--border)', borderRadius: '10px', color: 'var(--text)', fontFamily: 'inherit', fontSize: 'max(16px, 0.94rem)' }}
         >
           <option value="">ทุกหมวดวิชา</option>
           {(categories || []).map(c => <option key={c} value={c}>{c}</option>)}
@@ -108,7 +109,7 @@ export default function SearchPanel({ categories, onStartPractice }) {
         </div>
       )}
 
-      {error && <div style={{ color: '#fb7185', padding: '1rem' }}>{error}</div>}
+      {error && <div style={{ color: 'var(--ink-rose)', padding: '1rem' }}>{error}</div>}
 
       {results && !loading && (
         <>
@@ -128,11 +129,15 @@ export default function SearchPanel({ categories, onStartPractice }) {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {results.map(q => (
-              <div key={q.id} style={{ padding: '1rem 1.15rem', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div key={q.id} style={{ padding: '1rem 1.15rem', background: 'var(--surface-card)', borderRadius: '10px', border: '1px solid var(--border)' }}>
                 <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
                   <span className="badge badge-primary">Q{q.id}</span>
                   <span className="badge">{q.category}</span>
-                  {q.source_exam && <span className="badge" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>📝 {q.source_exam}</span>}
+                  {q.source_exam && (
+                    <span className="badge" style={{ background: 'var(--surface-subtle)', border: '1px solid var(--border)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <FileText size={11} /> {q.source_exam}
+                    </span>
+                  )}
                 </div>
                 <div style={{ lineHeight: 1.65, fontSize: '0.95rem', color: 'var(--text-sub)' }}>
                   {highlight(q.question_text)}
@@ -149,8 +154,9 @@ export default function SearchPanel({ categories, onStartPractice }) {
       )}
 
       {!results && !loading && (
-        <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2.5rem 1rem', fontSize: '0.92rem' }}>
-          💡 ค้นหาจากเนื้อคำถาม โจทย์ หรือหมวดวิชา — รองรับภาษาไทย (ค้นจากบางส่วนของคำได้)
+        <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2.25rem 1rem', fontSize: '0.92rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+          <Lightbulb size={16} color="var(--primary-light)" />
+          <span>ค้นหาจากเนื้อคำถาม โจทย์ หรือหมวดวิชา — รองรับภาษาไทย (ค้นจากบางส่วนของคำได้)</span>
         </div>
       )}
     </div>

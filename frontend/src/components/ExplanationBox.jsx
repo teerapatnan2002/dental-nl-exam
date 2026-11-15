@@ -1,14 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import {
   Lightbulb, AlertTriangle, BookOpen, Sparkles,
-  CheckCircle2, XCircle, Eye, EyeOff, Bot, Target, Layers, GitBranch
+  CheckCircle2, XCircle, Eye, EyeOff, Target, Layers, GitBranch,
+  BookmarkCheck, Hash, ShieldCheck, FileText, ChevronDown, ChevronUp, Loader2
 } from 'lucide-react';
 import { API_BASE } from '../config';
 import { findGuideForQuestion } from '../data/clinicalStudyGuides';
 import { buildDynamicPathwayFromText } from '../utils/pathwayBuilder';
 import ClinicalPathwayDiagram from './ClinicalPathwayDiagram';
 import ClinicalStudyHub from './ClinicalStudyHub';
-import TutorChat from './TutorChat';
 
 const topicPathwayCache = new Map();
 
@@ -78,15 +78,15 @@ function normalizeCogBadge(raw) {
   if (!raw) return null;
   const val = String(raw).trim().toUpperCase();
   if (val === 'P' || val.includes('PROBLEM')) {
-    return { code: 'P', label: 'P: วิเคราะห์แก้ปัญหา (Problem Solving)', bg: 'rgba(239, 68, 68, 0.15)', color: '#f87171', border: 'rgba(239, 68, 68, 0.3)' };
+    return { code: 'P', label: 'P: วิเคราะห์แก้ปัญหา (Problem Solving)', bg: 'rgba(239, 68, 68, 0.12)', color: 'var(--ink-rose)', border: 'rgba(239, 68, 68, 0.28)' };
   }
   if (val === 'A' || val.includes('APP')) {
-    return { code: 'A', label: 'A: ประยุกต์คลินิก (Application)', bg: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', border: 'rgba(59, 130, 246, 0.3)' };
+    return { code: 'A', label: 'A: ประยุกต์คลินิก (Application)', bg: 'rgba(56, 189, 248, 0.12)', color: 'var(--ink-sky)', border: 'rgba(56, 189, 248, 0.28)' };
   }
   if (val === 'R' || val.includes('RECALL')) {
-    return { code: 'R', label: 'R: ความจำความเข้าใจ (Recall)', bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.3)' };
+    return { code: 'R', label: 'R: ความจำความเข้าใจ (Recall)', bg: 'rgba(16, 185, 129, 0.12)', color: 'var(--ink-emerald)', border: 'rgba(16, 185, 129, 0.28)' };
   }
-  return { code: raw, label: `ระดับ ${raw}`, bg: 'rgba(99, 102, 241, 0.15)', color: 'var(--primary-light)', border: 'rgba(99, 102, 241, 0.3)' };
+  return { code: raw, label: `ระดับ ${raw}`, bg: 'rgba(13, 148, 136, 0.12)', color: 'var(--primary-light)', border: 'rgba(13, 148, 136, 0.28)' };
 }
 
 const THAI_ASSOCIATION_BY_CATEGORY = {
@@ -146,8 +146,7 @@ export default function ExplanationBox({
 }) {
   const [studyModalGuideId, setStudyModalGuideId] = useState(null);
   const [selfTestMask, setSelfTestMask] = useState(false);
-  const [showInlineTutor, setShowInlineTutor] = useState(false);
-  const [showAllChoices, setShowAllChoices] = useState(true);
+  const [showAllChoices, setShowAllChoices] = useState(false);
   const [principleViewMode, setPrincipleViewMode] = useState('pathway'); // 'pathway' | 'text'
   const [showTopicPathway, setShowTopicPathway] = useState(false);
   const [topicPathways, setTopicPathways] = useState(null);
@@ -261,36 +260,24 @@ export default function ExplanationBox({
   // Plain text fallback
   if (!isJsonExplanation) {
     return (
-      <div className="explanation-box" style={{ marginTop: '1.25rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', gap: '0.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+      <div className="explanation-box">
+        <div className="expl-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             <Lightbulb size={16} color="var(--primary-light)" />
-            <strong style={{ fontSize: '0.9rem', color: 'var(--primary-light)' }}>เฉลยและคำอธิบาย</strong>
+            <strong style={{ fontSize: '0.92rem', color: 'var(--text)' }}>เฉลยและคำอธิบาย</strong>
+            {correctAnswer && (
+              <span className="expl-status-chip expl-status-chip--correct">
+                เฉลย {correctAnswer}
+              </span>
+            )}
           </div>
-          {correctAnswer && (
-            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--success)' }}>
-              คำตอบที่ถูกต้อง: {correctAnswer}
-            </span>
-          )}
           {targetTopicId && (
             <button
               type="button"
+              className="expl-study-btn"
               onClick={() => setStudyModalGuideId(targetTopicId)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(139, 92, 246, 0.15))',
-                border: '1px solid rgba(236, 72, 153, 0.4)',
-                color: '#f43f5e',
-                borderRadius: '20px',
-                padding: '0.25rem 0.75rem',
-                fontSize: '0.78rem',
-                fontWeight: 700,
-                cursor: 'pointer'
-              }}
             >
-              <BookOpen size={13} /> 📖 เรียนหัวข้อนี้จาก Textbook & Evidence
+              <BookOpen size={14} /> บทเรียน & Textbook
             </button>
           )}
         </div>
@@ -333,137 +320,80 @@ export default function ExplanationBox({
     : '';
 
   return (
-    <div className="explanation-box" style={{ marginTop: '1.25rem' }}>
+    <div className="explanation-box">
       
-      {/* ── Header: Personalized Diagnosis + Badges + Deep Study Link ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.6rem', marginBottom: '1rem', paddingBottom: '0.85rem', borderBottom: '1px solid var(--border)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>เฉลยที่ถูกต้อง:</span>
-          <span style={{ color: 'var(--success)', fontWeight: 800, fontSize: '1.3rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-            {actualCorrect}
+      {/* ── Header: Diagnosis + Metadata + Study Hub Link ── */}
+      <div className="expl-header">
+        <div style={{ minWidth: 0, flex: '1 1 280px' }}>
+          <div className="expl-answer-headline">
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.84rem', fontWeight: 500 }}>เฉลยที่ถูกต้อง</span>
+            <span className="expl-answer-letter">{actualCorrect}</span>
             {choiceTextMap[actualCorrect.toUpperCase()] && (
-              <span style={{ fontSize: '0.86rem', fontWeight: 600, color: 'var(--text)', marginLeft: '4px' }}>
-                ({choiceTextMap[actualCorrect.toUpperCase()].slice(0, 65)}{choiceTextMap[actualCorrect.toUpperCase()].length > 65 ? '...' : ''})
+              <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text)' }}>
+                {choiceTextMap[actualCorrect.toUpperCase()].slice(0, 72)}{choiceTextMap[actualCorrect.toUpperCase()].length > 72 ? '...' : ''}
               </span>
             )}
-          </span>
-          {userAnsClean && (
-            <span style={{
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              padding: '0.18rem 0.6rem',
-              borderRadius: '12px',
-              background: isUserCorrect ? 'rgba(16, 185, 129, 0.16)' : 'rgba(244, 63, 94, 0.16)',
-              color: isUserCorrect ? 'var(--success)' : 'var(--danger)',
-              border: `1px solid ${isUserCorrect ? 'rgba(16, 185, 129, 0.35)' : 'rgba(244, 63, 94, 0.35)'}`,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
-              {isUserCorrect ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
-              {isUserCorrect ? 'คุณตอบถูกข้อนี้' : `คุณเลือกข้อ ${userAnsClean} (พลาด)`}
-            </span>
-          )}
-          {cogBadge && (
-            <span style={{
-              fontSize: '0.72rem',
-              fontWeight: 700,
-              padding: '0.15rem 0.55rem',
-              borderRadius: '12px',
-              background: cogBadge.bg,
-              color: cogBadge.color,
-              border: `1px solid ${cogBadge.border}`
-            }}>
-              🎯 {cogBadge.label}
-            </span>
-          )}
-          {tos_code && (
-            <span style={{
-              fontSize: '0.72rem',
-              fontWeight: 600,
-              padding: '0.15rem 0.55rem',
-              borderRadius: '12px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              color: 'var(--text-sub)',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}>
-              📋 {tos_code}
-            </span>
-          )}
-          {isCached && <span className="badge badge-primary" style={{ fontSize: '0.7rem', padding: '0.15rem 0.5rem' }}>คลังข้อสอบ</span>}
+          </div>
+          <div className="expl-meta-chips">
+            {userAnsClean && (
+              <span className={`expl-status-chip ${isUserCorrect ? 'expl-status-chip--correct' : 'expl-status-chip--wrong'}`}>
+                {isUserCorrect ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
+                {isUserCorrect ? 'คุณตอบถูกข้อนี้' : `คุณเลือกข้อ ${userAnsClean} (พลาด)`}
+              </span>
+            )}
+            {cogBadge && (
+              <span style={{
+                fontSize: '0.73rem',
+                fontWeight: 600,
+                padding: '0.16rem 0.55rem',
+                borderRadius: '999px',
+                background: cogBadge.bg,
+                color: cogBadge.color,
+                border: `1px solid ${cogBadge.border}`
+              }}>
+                {cogBadge.label}
+              </span>
+            )}
+            {tos_code && (
+              <span className="badge" style={{ fontSize: '0.72rem', gap: '4px' }}>
+                <FileText size={11} /> {tos_code}
+              </span>
+            )}
+            {isCached && <span className="badge badge-primary" style={{ fontSize: '0.7rem' }}>คลังข้อสอบ</span>}
+          </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-          {/* Deep Clinical Study Guide Button */}
-          {targetTopicId && (
-            <button
-              type="button"
-              onClick={() => setStudyModalGuideId(targetTopicId)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.18), rgba(139, 92, 246, 0.18))',
-                border: '1px solid rgba(236, 72, 153, 0.45)',
-                color: '#f43f5e',
-                borderRadius: '20px',
-                padding: '0.3rem 0.85rem',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                boxShadow: '0 2px 8px rgba(236, 72, 153, 0.2)'
-              }}
-              title="คลิกเพื่อเปิดห้องเรียน Textbook & Evidence เจาะลึกหัวข้อนี้"
-            >
-              <BookOpen size={13} /> 📖 เรียนหัวข้อนี้จาก Textbook & Evidence
-            </button>
-          )}
-        </div>
+        {targetTopicId && (
+          <button
+            type="button"
+            className="expl-study-btn"
+            onClick={() => setStudyModalGuideId(targetTopicId)}
+            title="คลิกเพื่อเปิดห้องเรียน Textbook & Evidence เจาะลึกหัวข้อนี้"
+          >
+            <BookOpen size={14} /> <span>บทเรียน & Textbook</span>
+          </button>
+        )}
       </div>
 
       {/* ── 0. Head-to-Head Comparison when User Missed the Question ── */}
       {hasUserWrong && (userWrongExplanation || correctExplanation) && (
-        <div style={{
-          marginBottom: '1rem',
-          padding: '0.9rem 1rem',
-          borderRadius: '10px',
-          background: 'rgba(244, 63, 94, 0.05)',
-          border: '1px solid rgba(244, 63, 94, 0.25)',
-        }}>
-          <div style={{ fontSize: '0.84rem', fontWeight: 800, color: 'var(--ink-rose)', marginBottom: '0.65rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            ⚔️ เทียบชัดๆ ทำไมข้อที่คุณเลือกถึงพลาด & ทำไมเฉลยจึงถูก:
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '0.75rem' }}>
-            <div style={{
-              background: 'rgba(244, 63, 94, 0.09)',
-              border: '1px solid rgba(244, 63, 94, 0.28)',
-              borderLeft: '4px solid var(--danger)',
-              borderRadius: '8px',
-              padding: '0.75rem 0.9rem',
-              fontSize: '0.85rem'
-            }}>
-              <div style={{ fontWeight: 800, color: 'var(--danger)', marginBottom: '0.25rem' }}>
-                ✗ ตัวเลือกที่คุณตอบ ({userAnsClean}){choiceTextMap[userAnsClean.toUpperCase()] ? `: ${choiceTextMap[userAnsClean.toUpperCase()]}` : ''}
-              </div>
-              <div style={{ color: 'var(--text-sub)', lineHeight: 1.55 }}>
-                {userWrongExplanation || 'ไม่ตรงกับเกณฑ์วินิจฉัยหรือแนวทางการรักษาหลักของเคสนี้'}
-              </div>
+        <div className="expl-compare-grid">
+          <div className="expl-compare-card expl-compare-card--wrong">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, color: 'var(--ink-rose)', marginBottom: '0.35rem' }}>
+              <XCircle size={15} />
+              <span>ตัวเลือกที่คุณตอบ ({userAnsClean}){choiceTextMap[userAnsClean.toUpperCase()] ? `: ${choiceTextMap[userAnsClean.toUpperCase()]}` : ''}</span>
             </div>
-            <div style={{
-              background: 'rgba(16, 185, 129, 0.09)',
-              border: '1px solid rgba(16, 185, 129, 0.28)',
-              borderLeft: '4px solid var(--success)',
-              borderRadius: '8px',
-              padding: '0.75rem 0.9rem',
-              fontSize: '0.85rem'
-            }}>
-              <div style={{ fontWeight: 800, color: 'var(--success)', marginBottom: '0.25rem' }}>
-                ✓ คำตอบที่ถูกต้อง ({actualCorrect}){choiceTextMap[actualCorrect.toUpperCase()] ? `: ${choiceTextMap[actualCorrect.toUpperCase()]}` : ''}
-              </div>
-              <div style={{ color: 'var(--text)', lineHeight: 1.55 }}>
-                {correctExplanation || key_takeaway}
-              </div>
+            <div style={{ color: 'var(--text-sub)', lineHeight: 1.6 }}>
+              {userWrongExplanation || 'ไม่ตรงกับเกณฑ์วินิจฉัยหรือแนวทางการรักษาหลักของเคสนี้'}
+            </div>
+          </div>
+          <div className="expl-compare-card expl-compare-card--right">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, color: 'var(--ink-emerald)', marginBottom: '0.35rem' }}>
+              <CheckCircle2 size={15} />
+              <span>คำตอบที่ถูกต้อง ({actualCorrect}){choiceTextMap[actualCorrect.toUpperCase()] ? `: ${choiceTextMap[actualCorrect.toUpperCase()]}` : ''}</span>
+            </div>
+            <div style={{ color: 'var(--text)', lineHeight: 1.6 }}>
+              {correctExplanation || key_takeaway}
             </div>
           </div>
         </div>
@@ -471,16 +401,11 @@ export default function ExplanationBox({
 
       {/* ── 1. Key Takeaway (with Active Recall Self-Test Masking) ── */}
       {key_takeaway && (
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.12) 0%, rgba(124, 58, 237, 0.1) 100%)',
-          borderLeft: '4px solid var(--accent)',
-          borderRadius: '8px',
-          padding: '0.9rem 1rem',
-          marginBottom: '1rem',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.4rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent)', fontWeight: 700, fontSize: '0.88rem' }}>
-              <span>📌</span> {parsed.why_correct && !parsed.key_takeaway ? 'เหตุผลที่ตอบข้อนี้ (Why Correct)' : 'Key Takeaway (หัวใจสำคัญจำไปสอบ)'}
+        <div className="expl-takeaway">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.45rem' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--primary-light)', fontWeight: 700, fontSize: '0.86rem' }}>
+              <BookmarkCheck size={15} />
+              <span>{parsed.why_correct && !parsed.key_takeaway ? 'เหตุผลที่ตอบข้อนี้ (Why Correct)' : 'Key Takeaway (หัวใจสำคัญจำไปสอบ)'}</span>
             </div>
             <button
               type="button"
@@ -489,36 +414,31 @@ export default function ExplanationBox({
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '5px',
-                fontSize: '0.74rem',
-                fontWeight: 700,
-                padding: '0.2rem 0.65rem',
-                borderRadius: '14px',
-                background: selfTestMask ? 'var(--primary)' : 'rgba(255,255,255,0.06)',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                padding: '0.24rem 0.65rem',
+                borderRadius: 'var(--radius-pill)',
+                background: selfTestMask ? 'var(--primary)' : 'var(--surface-card)',
                 color: selfTestMask ? '#fff' : 'var(--text-sub)',
-                border: '1px solid var(--border)',
-                cursor: 'pointer'
+                border: `1px solid ${selfTestMask ? 'var(--primary)' : 'var(--border)'}`,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
               }}
               title="ปิดคำสำคัญไว้ชั่วคราวเพื่อฝึกสมองทวนความจำแบบ Active Recall"
             >
               {selfTestMask ? <><Eye size={13} /> เฉลยคำสำคัญ</> : <><EyeOff size={13} /> ปิดคำสำคัญทดสอบจำ</>}
             </button>
           </div>
-          <div style={{ color: 'var(--text)', fontSize: '0.93rem', fontWeight: 600, lineHeight: 1.65 }}>
+          <div style={{ color: 'var(--text)', fontSize: '0.94rem', fontWeight: 600, lineHeight: 1.65 }}>
             {selfTestMask ? maskKeyTerms(key_takeaway) : key_takeaway}
           </div>
           {highYieldTokens.length > 0 && !selfTestMask && (
             <div style={{ marginTop: '0.65rem', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.73rem', fontWeight: 700, color: 'var(--text-muted)' }}>🔢 ตัวเลข/เกณฑ์ต้องจำในข้อนี้:</span>
+              <span style={{ fontSize: '0.73rem', fontWeight: 600, color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <Hash size={12} /> ตัวเลข/เกณฑ์ต้องจำ:
+              </span>
               {highYieldTokens.map((tok, i) => (
-                <span key={i} style={{
-                  fontSize: '0.74rem',
-                  fontWeight: 700,
-                  padding: '0.12rem 0.5rem',
-                  borderRadius: '6px',
-                  background: 'rgba(6, 182, 212, 0.14)',
-                  border: '1px solid rgba(6, 182, 212, 0.3)',
-                  color: 'var(--accent)'
-                }}>
+                <span key={i} className="expl-token-chip">
                   {tok}
                 </span>
               ))}
@@ -529,18 +449,11 @@ export default function ExplanationBox({
 
       {/* ── 2. Common Pitfall & Traps (หลุมพรางข้อสอบ) ── */}
       {common_pitfall && (
-        <div style={{
-          background: 'rgba(245, 158, 11, 0.08)',
-          border: '1px solid rgba(245, 158, 11, 0.25)',
-          borderLeft: '4px solid var(--warning)',
-          borderRadius: '8px',
-          padding: '0.85rem 1rem',
-          marginBottom: '1rem',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--warning)', fontWeight: 700, fontSize: '0.88rem', marginBottom: '0.3rem' }}>
+        <div className="expl-callout expl-callout--warning">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--ink-amber)', fontWeight: 700, fontSize: '0.86rem', marginBottom: '0.3rem' }}>
             <AlertTriangle size={15} /> ข้อควรระวัง & กับดักข้อสอบ (Common Trap)
           </div>
-          <div style={{ color: 'var(--text-sub)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+          <div style={{ color: 'var(--text-sub)', fontSize: '0.89rem', lineHeight: 1.6 }}>
             {common_pitfall}
           </div>
         </div>
@@ -548,10 +461,10 @@ export default function ExplanationBox({
 
       {/* ── 3. Core Principle: Visual Pathway Flowchart <-> Text Toggle + Topic Master Protocol ── */}
       {core_principle && (
-        <div style={{ marginBottom: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.6rem' }}>
-            <h4 style={{ color: 'var(--primary-light)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.92rem' }}>
-              <Lightbulb size={16} /> {parsed.legal_citation && !parsed.reference ? 'กลไก & กระบวนการทางกฎหมาย (Pathway & Steps)' : 'กลไกการเกิด & แนวทางคลินิก (Pathway & Mechanism)'}
+        <div style={{ marginBottom: '1.1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.65rem' }}>
+            <h4 style={{ color: 'var(--text)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem' }}>
+              <Lightbulb size={16} color="var(--primary-light)" /> {parsed.legal_citation && !parsed.reference ? 'กลไก & กระบวนการทางกฎหมาย (Pathway & Steps)' : 'กลไกการเกิด & แนวทางคลินิก (Pathway & Mechanism)'}
             </h4>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
@@ -559,19 +472,20 @@ export default function ExplanationBox({
                 <div style={{
                   display: 'inline-flex',
                   padding: '2px',
-                  borderRadius: '9px',
-                  background: 'var(--surface)',
+                  borderRadius: 'var(--radius-inner)',
+                  background: 'var(--surface-subtle)',
                   border: '1px solid var(--border)',
                 }}>
                   <button
                     type="button"
                     onClick={() => setPrincipleViewMode('pathway')}
                     style={{
-                      padding: '0.2rem 0.6rem',
-                      borderRadius: '7px',
+                      padding: '0.25rem 0.65rem',
+                      borderRadius: '6px',
                       border: 'none',
-                      fontSize: '0.73rem',
-                      fontWeight: 700,
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      fontFamily: 'inherit',
                       cursor: 'pointer',
                       background: principleViewMode === 'pathway' ? 'var(--primary)' : 'transparent',
                       color: principleViewMode === 'pathway' ? '#fff' : 'var(--text-sub)',
@@ -586,17 +500,21 @@ export default function ExplanationBox({
                     type="button"
                     onClick={() => setPrincipleViewMode('text')}
                     style={{
-                      padding: '0.2rem 0.6rem',
-                      borderRadius: '7px',
+                      padding: '0.25rem 0.65rem',
+                      borderRadius: '6px',
                       border: 'none',
-                      fontSize: '0.73rem',
-                      fontWeight: 700,
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      fontFamily: 'inherit',
                       cursor: 'pointer',
-                      background: principleViewMode === 'text' ? 'var(--accent)' : 'transparent',
-                      color: principleViewMode === 'text' ? '#0f172a' : 'var(--text-sub)',
+                      background: principleViewMode === 'text' ? 'var(--primary)' : 'transparent',
+                      color: principleViewMode === 'text' ? '#fff' : 'var(--text-sub)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
                     }}
                   >
-                    📄 ข้อความ
+                    <FileText size={12} /> ข้อความ
                   </button>
                 </div>
               )}
@@ -606,20 +524,21 @@ export default function ExplanationBox({
                   type="button"
                   onClick={handleToggleTopicPathway}
                   style={{
-                    padding: '0.24rem 0.68rem',
-                    borderRadius: '9px',
-                    fontSize: '0.73rem',
-                    fontWeight: 700,
+                    padding: '0.28rem 0.7rem',
+                    borderRadius: 'var(--radius-inner)',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    fontFamily: 'inherit',
                     cursor: 'pointer',
-                    background: showTopicPathway ? 'rgba(16, 185, 129, 0.22)' : 'rgba(6, 182, 212, 0.12)',
-                    border: showTopicPathway ? '1px solid #10b981' : '1px solid rgba(6, 182, 212, 0.35)',
-                    color: showTopicPathway ? '#34d399' : '#22d3ee',
+                    background: showTopicPathway ? 'rgba(13, 148, 136, 0.16)' : 'var(--surface-card)',
+                    border: `1px solid ${showTopicPathway ? 'var(--primary)' : 'var(--border)'}`,
+                    color: showTopicPathway ? 'var(--primary-light)' : 'var(--text-sub)',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '4px',
                   }}
                 >
-                  <GitBranch size={12} /> {showTopicPathway ? 'ซ่อน Master Protocol หัวข้อนี้' : '🧭 ดู Master Protocol หัวข้อนี้'}
+                  <GitBranch size={12} /> {showTopicPathway ? 'ซ่อน Master Protocol' : 'ดู Master Protocol'}
                 </button>
               )}
             </div>
@@ -634,29 +553,15 @@ export default function ExplanationBox({
                   display: 'flex',
                   gap: '0.65rem',
                   alignItems: 'flex-start',
-                  background: 'rgba(255, 255, 255, 0.02)',
-                  border: '1px solid rgba(255, 255, 255, 0.06)',
-                  borderRadius: '8px',
-                  padding: '0.6rem 0.85rem',
+                  background: 'var(--surface-subtle)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-inner)',
+                  padding: '0.65rem 0.85rem',
                   lineHeight: 1.65,
                   color: 'var(--text-sub)',
                   fontSize: '0.9rem'
                 }}>
-                  <span style={{
-                    minWidth: '22px',
-                    height: '22px',
-                    borderRadius: '50%',
-                    background: 'rgba(124, 58, 237, 0.2)',
-                    color: 'var(--primary-light)',
-                    fontSize: '0.75rem',
-                    fontWeight: 800,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginTop: '2px'
-                  }}>
-                    {sIdx + 1}
-                  </span>
+                  <span className="expl-step-num">{sIdx + 1}</span>
                   <div style={{ flex: 1, whiteSpace: 'pre-wrap' }}>{stepTxt}</div>
                 </div>
               ))}
@@ -668,10 +573,10 @@ export default function ExplanationBox({
           )}
 
           {showTopicPathway && (
-            <div style={{ marginTop: '0.85rem' }}>
+            <div style={{ marginTop: '0.75rem' }}>
               {loadingTopicPathway ? (
-                <div style={{ padding: '0.9rem', borderRadius: '10px', background: 'rgba(6, 182, 212, 0.08)', color: 'var(--text-sub)', fontSize: '0.84rem', textAlign: 'center' }}>
-                  ⏳ กำลังโหลดแผนผัง Master Protocol & Pathogenesis ประจำหัวข้อนี้...
+                <div style={{ padding: '0.85rem', borderRadius: 'var(--radius-inner)', background: 'var(--surface-subtle)', border: '1px solid var(--border)', color: 'var(--text-sub)', fontSize: '0.84rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <Loader2 size={15} className="spin" /> กำลังโหลดแผนผัง Master Protocol & Pathogenesis...
                 </div>
               ) : topicPathways && topicPathways.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -680,7 +585,7 @@ export default function ExplanationBox({
                   ))}
                 </div>
               ) : (
-                <div style={{ padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.03)', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-inner)', background: 'var(--surface-subtle)', border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
                   ยังไม่พบแผนผัง Master Protocol สำหรับหัวข้อนี้ ลองเปิดในห้องเรียน Textbook & Evidence ด้านล่าง
                 </div>
               )}
@@ -689,23 +594,46 @@ export default function ExplanationBox({
         </div>
       )}
 
-      {/* ── 4. Choice-by-Choice Breakdown (แสดงข้อความตัวเลือกจริงคู่กับเหตุผล) ── */}
+      {/* ── 4. Choice-by-Choice Breakdown (Accordion for Scannability) ── */}
       {orderedChoiceEntries.length > 0 && (
         <div style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.6rem' }}>
-            <h4 style={{ color: 'var(--text)', margin: 0, fontSize: '0.88rem', fontWeight: 700, letterSpacing: '0.02em' }}>
-              🎯 วิเคราะห์ตัวเลือกรายข้อ (เปรียบเทียบทุกตัวเลือก)
-            </h4>
-            <button
-              type="button"
-              onClick={() => setShowAllChoices(v => !v)}
-              style={{ background: 'none', border: 'none', color: 'var(--primary-light)', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer' }}
-            >
-              {showAllChoices ? 'ย่อลง' : `ดูครบทั้ง ${orderedChoiceEntries.length} ตัวเลือก`}
-            </button>
-          </div>
+          <button
+            type="button"
+            className="expl-choice-toggle-btn"
+            onClick={() => setShowAllChoices(v => !v)}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '10px',
+              textAlign: 'left',
+              padding: '0.65rem 0.9rem',
+              borderRadius: 'var(--radius-inner)',
+              background: 'var(--surface-subtle)',
+              border: '1px solid var(--border)',
+              color: 'var(--text)',
+              fontFamily: 'inherit',
+              fontSize: '0.86rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              marginBottom: showAllChoices ? '0.6rem' : 0,
+            }}
+          >
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', flex: 1, minWidth: 0, textAlign: 'left' }}>
+              <Target size={15} color="var(--primary-light)" style={{ flexShrink: 0 }} />
+              <span>วิเคราะห์ตัวเลือกรายข้อ (เปรียบเทียบทั้ง {orderedChoiceEntries.length} ตัวเลือก)</span>
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--primary-light)', fontSize: '0.78rem', fontWeight: 600, flexShrink: 0, whiteSpace: 'nowrap' }}>
+              {showAllChoices ? (
+                <>ซ่อนลง <ChevronUp size={15} /></>
+              ) : (
+                <>ดูทั้ง {orderedChoiceEntries.length} ข้อ <ChevronDown size={15} /></>
+              )}
+            </span>
+          </button>
           {showAllChoices && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
               {orderedChoiceEntries.map(([label, text]) => {
                 const lblUp = String(label).trim().toUpperCase();
                 const isCorrect = lblUp === actualCorrect.toUpperCase();
@@ -714,40 +642,32 @@ export default function ExplanationBox({
                 return (
                   <div key={label} style={{
                     background: isCorrect
-                      ? 'rgba(16, 185, 129, 0.09)'
+                      ? 'rgba(16, 185, 129, 0.08)'
                       : isUserPickedWrong
-                      ? 'rgba(244, 63, 94, 0.08)'
-                      : 'rgba(255, 255, 255, 0.02)',
-                    border: isCorrect
-                      ? '1px solid rgba(16, 185, 129, 0.3)'
-                      : isUserPickedWrong
-                      ? '1px solid rgba(244, 63, 94, 0.3)'
-                      : '1px solid var(--border)',
-                    borderLeft: isCorrect
-                      ? '4px solid var(--success)'
-                      : isUserPickedWrong
-                      ? '4px solid var(--danger)'
-                      : '4px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    padding: '0.75rem 0.9rem',
-                    fontSize: '0.89rem',
+                      ? 'rgba(239, 68, 68, 0.07)'
+                      : 'var(--surface-subtle)',
+                    border: `1px solid ${isCorrect ? 'rgba(16, 185, 129, 0.3)' : isUserPickedWrong ? 'rgba(239, 68, 68, 0.28)' : 'var(--border)'}`,
+                    borderLeft: `3px solid ${isCorrect ? 'var(--success)' : isUserPickedWrong ? 'var(--danger)' : 'var(--border)'}`,
+                    borderRadius: 'var(--radius-inner)',
+                    padding: '0.7rem 0.9rem',
+                    fontSize: '0.88rem',
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '0.2rem' }}>
-                      <strong style={{ color: isCorrect ? 'var(--success)' : isUserPickedWrong ? 'var(--danger)' : 'var(--text)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '0.25rem' }}>
+                      <strong style={{ color: isCorrect ? 'var(--ink-emerald)' : isUserPickedWrong ? 'var(--ink-rose)' : 'var(--text)' }}>
                         ตัวเลือก {label}{cText ? `: ${cText}` : ''}
                       </strong>
                       {isCorrect && (
-                        <span style={{ fontSize: '0.68rem', fontWeight: 800, padding: '0.05rem 0.45rem', borderRadius: '6px', background: 'rgba(16,185,129,0.2)', color: 'var(--success)' }}>
+                        <span className="expl-status-chip expl-status-chip--correct" style={{ fontSize: '0.68rem', padding: '0.06rem 0.45rem' }}>
                           คำตอบที่ถูก
                         </span>
                       )}
                       {isUserPickedWrong && (
-                        <span style={{ fontSize: '0.68rem', fontWeight: 800, padding: '0.05rem 0.45rem', borderRadius: '6px', background: 'rgba(244,63,94,0.2)', color: 'var(--danger)' }}>
+                        <span className="expl-status-chip expl-status-chip--wrong" style={{ fontSize: '0.68rem', padding: '0.06rem 0.45rem' }}>
                           ข้อที่คุณเลือก
                         </span>
                       )}
                     </div>
-                    <div style={{ color: isCorrect ? 'var(--text)' : 'var(--text-sub)', lineHeight: 1.55 }}>
+                    <div style={{ color: isCorrect ? 'var(--text)' : 'var(--text-sub)', lineHeight: 1.58 }}>
                       {text}
                     </div>
                   </div>
@@ -758,18 +678,12 @@ export default function ExplanationBox({
         </div>
       )}
 
-      {/* ── 5. Future Prediction / Professor's Wisdom ── */}
+      {/* ── 5. Future Prediction / Clinical Pearl ── */}
       {future_prediction && (
-        <div style={{
-          marginTop: '1rem',
-          padding: '0.9rem 1rem',
-          borderRadius: '8px',
-          background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(6, 182, 212, 0.04))',
-          border: '1px solid rgba(124, 58, 237, 0.2)',
-        }}>
-          <h4 style={{ color: 'var(--primary-light)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.88rem' }}>
-            <Sparkles size={15} /> {parsed.clinical_pearl && !parsed.future_prediction ? 'Clinical Pearl / จุดเน้นและแนวทางพลิกแพลงข้อสอบ' : "Professor's Wisdom / แนวโน้มข้อสอบ"}
-          </h4>
+        <div className="expl-callout expl-callout--teal">
+          <div style={{ color: 'var(--primary-light)', fontWeight: 700, marginBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.86rem' }}>
+            <Sparkles size={14} /> {parsed.clinical_pearl && !parsed.future_prediction ? 'Clinical Pearl / จุดเน้นและแนวทางพลิกแพลงข้อสอบ' : "Professor's Wisdom / แนวโน้มข้อสอบ"}
+          </div>
           <div style={{ color: 'var(--text-sub)', fontSize: '0.88rem', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
             {future_prediction}
           </div>
@@ -778,35 +692,16 @@ export default function ExplanationBox({
 
       {/* ── 6. Textbook Reference + Thai Dental Council / Specialty Society Protocol Reference ── */}
       {legal_citation && (
-        <div style={{
-          marginTop: '0.85rem',
-          padding: '0.65rem 1rem',
-          borderRadius: '8px',
-          background: 'rgba(124, 58, 237, 0.08)',
-          border: '1px solid rgba(124, 58, 237, 0.25)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          fontSize: '0.82rem',
-          color: 'var(--primary-light)',
-          fontWeight: 600
-        }}>
-          <BookOpen size={14} style={{ flexShrink: 0 }} />
-          <span>แหล่งอ้างอิงหลักฐานทางวิชาการ (Reference): {legal_citation}</span>
+        <div className="expl-callout" style={{ display: 'flex', alignItems: 'flex-start', gap: '0.55rem', fontSize: '0.82rem', color: 'var(--text-sub)' }}>
+          <BookOpen size={14} style={{ flexShrink: 0, marginTop: '3px', color: 'var(--primary-light)' }} />
+          <span><strong style={{ color: 'var(--text)' }}>แหล่งอ้างอิง:</strong> {legal_citation}</span>
         </div>
       )}
 
       {thaiRefInfo && (
-        <div style={{
-          marginTop: '0.75rem',
-          padding: '0.8rem 1rem',
-          borderRadius: '8px',
-          background: 'rgba(16, 185, 129, 0.06)',
-          border: '1px solid rgba(16, 185, 129, 0.25)',
-          borderLeft: '4px solid #10b981'
-        }}>
-          <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#34d399', marginBottom: '0.25rem' }}>
-            🇹🇭 อ้างอิงเกณฑ์ประเทศไทย: {thaiRefInfo.org}
+        <div className="expl-callout expl-callout--thai" style={{ marginBottom: 0 }}>
+          <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--ink-emerald)', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <ShieldCheck size={14} /> เกณฑ์ประเทศไทย: {thaiRefInfo.org}
           </div>
           <div style={{ fontSize: '0.83rem', color: 'var(--text-sub)', lineHeight: 1.55 }}>
             {thaiRefInfo.protocol}
@@ -814,89 +709,29 @@ export default function ExplanationBox({
         </div>
       )}
 
-      {/* ── 7. Interactive Mentor Action Bar (Parallel Practice + Study Hub + AI Tutor) ── */}
-      <div style={{
-        marginTop: '1rem',
-        paddingTop: '0.85rem',
-        borderTop: '1px solid var(--border)',
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '0.5rem',
-        alignItems: 'center'
-      }}>
-        {targetTopicId && (
-          <button
-            type="button"
-            onClick={() => setStudyModalGuideId(targetTopicId)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              background: 'rgba(236, 72, 153, 0.14)',
-              border: '1px solid rgba(236, 72, 153, 0.35)',
-              color: '#f472b6',
-              borderRadius: '8px',
-              padding: '0.45rem 0.85rem',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              cursor: 'pointer'
-            }}
-          >
-            <Layers size={14} /> เปิดบทเรียน & Flashcards หัวข้อนี้
-          </button>
-        )}
+      {/* ── 7. Interactive Mentor Action Bar ── */}
+      {(targetTopicId || (onPracticeTopic && question?.must_know_topic)) && (
+        <div className="expl-mentor-bar">
+          {targetTopicId && (
+            <button
+              type="button"
+              className="expl-study-btn"
+              onClick={() => setStudyModalGuideId(targetTopicId)}
+            >
+              <Layers size={14} /> เปิดบทเรียน & Flashcards
+            </button>
+          )}
 
-        {onPracticeTopic && question?.must_know_topic && (
-          <button
-            type="button"
-            onClick={() => onPracticeTopic({ mode: 'practice', must_know_topic: question.must_know_topic, count: 5 })}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              background: 'rgba(16, 185, 129, 0.14)',
-              border: '1px solid rgba(16, 185, 129, 0.35)',
-              color: '#34d399',
-              borderRadius: '8px',
-              padding: '0.45rem 0.85rem',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              cursor: 'pointer'
-            }}
-          >
-            <Target size={14} /> ฝึกโจทย์คู่ขนานหัวข้อเดียวกัน (5 ข้อ)
-          </button>
-        )}
-
-        {question?.id && (
-          <button
-            type="button"
-            onClick={() => setShowInlineTutor(v => !v)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              background: showInlineTutor ? 'var(--primary)' : 'rgba(124, 58, 237, 0.14)',
-              border: '1px solid rgba(124, 58, 237, 0.38)',
-              color: showInlineTutor ? '#fff' : 'var(--primary-light)',
-              borderRadius: '8px',
-              padding: '0.45rem 0.85rem',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              cursor: 'pointer'
-            }}
-          >
-            <Bot size={14} /> {showInlineTutor ? 'ซ่อน AI Tutor' : '💬 ถามอาจารย์ AI ข้อนี้ต่อ'}
-          </button>
-        )}
-      </div>
-
-      {showInlineTutor && question?.id && (
-        <TutorChat
-          questionId={question.id}
-          userAnswer={userAnsClean}
-          correctAnswer={actualCorrect}
-        />
+          {onPracticeTopic && question?.must_know_topic && (
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={() => onPracticeTopic({ mode: 'practice', must_know_topic: question.must_know_topic, count: 5 })}
+            >
+              <Target size={14} style={{ color: 'var(--primary-light)' }} /> ฝึกโจทย์คู่ขนาน (5 ข้อ)
+            </button>
+          )}
+        </div>
       )}
 
       {/* ── 8. Standalone Deep Study Modal ── */}

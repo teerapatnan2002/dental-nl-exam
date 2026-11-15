@@ -5,18 +5,18 @@
  */
 
 export const SPECIALTY_CATEGORIES = [
-  { id: 'all', name: 'ทั้งหมด (All Disciplines)', icon: '🌟', color: '#6366f1' },
-  { id: 'วิทยาเอ็นโดดอนต์', name: 'วิทยาเอ็นโดดอนต์ (Endodontics)', icon: '🦷', color: '#ec4899' },
-  { id: 'ศัลยศาสตร์ช่องปาก', name: 'ศัลยศาสตร์ช่องปาก (Oral Surgery)', icon: '💉', color: '#f59e0b' },
-  { id: 'ทันตกรรมประดิษฐ์', name: 'ทันตกรรมประดิษฐ์ (Prosthodontics)', icon: '👑', color: '#38bdf8' },
-  { id: 'ปริทันตวิทยา', name: 'ปริทันตวิทยา (Periodontology)', icon: '🌿', color: '#10b981' },
-  { id: 'ทันตกรรมบูรณะ/หัตถการ', name: 'ทันตกรรมบูรณะ/หัตถการ (Operative)', icon: '✨', color: '#6366f1' },
-  { id: 'ทันตกรรมสำหรับเด็ก', name: 'ทันตกรรมสำหรับเด็ก (Pedodontics)', icon: '🧸', color: '#8b5cf6' },
-  { id: 'วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก', name: 'วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก (Oral Med & Diag)', icon: '🔬', color: '#a855f7' },
-  { id: 'ทันตกรรมบดเคี้ยวและอาการปวดบริเวณช่องปากและใบหน้า', name: 'บดเคี้ยวและอาการปวดใบหน้า (Occlusion & TMD)', icon: '⚡', color: '#06b6d4' },
-  { id: 'ทันตกรรมจัดฟัน', name: 'ทันตกรรมจัดฟัน (Orthodontics)', icon: '📐', color: '#ec4899' },
-  { id: 'ทันตกรรมชุมชน', name: 'ทันตกรรมชุมชน (Community & Biostat)', icon: '🌍', color: '#059669' },
-  { id: 'กฎหมายและจรรยาบรรณ', name: 'กฎหมายและจรรยาบรรณวิชาชีพ (Dental Law & Ethics)', icon: '⚖️', color: '#f43f5e' }
+  { id: 'all', name: 'ทั้งหมด (All Disciplines)', icon: '', color: '#0d9488' },
+  { id: 'วิทยาเอ็นโดดอนต์', name: 'วิทยาเอ็นโดดอนต์ (Endodontics)', icon: '', color: '#e11d48' },
+  { id: 'ศัลยศาสตร์ช่องปาก', name: 'ศัลยศาสตร์ช่องปาก (Oral Surgery)', icon: '', color: '#d97706' },
+  { id: 'ทันตกรรมประดิษฐ์', name: 'ทันตกรรมประดิษฐ์ (Prosthodontics)', icon: '', color: '#0284c7' },
+  { id: 'ปริทันตวิทยา', name: 'ปริทันตวิทยา (Periodontology)', icon: '', color: '#059669' },
+  { id: 'ทันตกรรมบูรณะ/หัตถการ', name: 'ทันตกรรมบูรณะ/หัตถการ (Operative)', icon: '', color: '#0d9488' },
+  { id: 'ทันตกรรมสำหรับเด็ก', name: 'ทันตกรรมสำหรับเด็ก (Pedodontics)', icon: '', color: '#0ea5e9' },
+  { id: 'วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก', name: 'วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก (Oral Med & Diag)', icon: '', color: '#14b8a6' },
+  { id: 'ทันตกรรมบดเคี้ยวและอาการปวดบริเวณช่องปากและใบหน้า', name: 'บดเคี้ยวและอาการปวดใบหน้า (Occlusion & TMD)', icon: '', color: '#0891b2' },
+  { id: 'ทันตกรรมจัดฟัน', name: 'ทันตกรรมจัดฟัน (Orthodontics)', icon: '', color: '#d97706' },
+  { id: 'ทันตกรรมชุมชน', name: 'ทันตกรรมชุมชน (Community & Biostat)', icon: '', color: '#059669' },
+  { id: 'กฎหมายและจรรยาบรรณ', name: 'กฎหมายและจรรยาบรรณวิชาชีพ (Dental Law & Ethics)', icon: '', color: '#e11d48' }
 ];
 
 export const CLINICAL_STUDY_GUIDES = {
@@ -24,7 +24,7 @@ export const CLINICAL_STUDY_GUIDES = {
     "title": "การตรวจวินิจฉัยโรคของโพรงประสาทฟันและเนื้อเยื่อรอบปลายราก (AAE Diagnostic Terminology)",
     "specialty": "วิทยาเอ็นโดดอนต์",
     "category": "วิทยาเอ็นโดดอนต์",
-    "badgeColor": "#ec4899",
+    "badgeColor": "#e11d48",
     "must_know_topics": [
       "AAE Diagnostic Terminology",
       "Pulpal Diagnosis",
@@ -139,7 +139,7 @@ export const CLINICAL_STUDY_GUIDES = {
     "title": "การบำบัดรักษาโพรงประสาทฟันที่มีชีวิตและการจัดการปลายรากเปิด (VPT & Apexogenesis)",
     "specialty": "วิทยาเอ็นโดดอนต์",
     "category": "วิทยาเอ็นโดดอนต์",
-    "badgeColor": "#ec4899",
+    "badgeColor": "#e11d48",
     "must_know_topics": [
       "VPT",
       "Apexogenesis",
@@ -230,7 +230,7 @@ export const CLINICAL_STUDY_GUIDES = {
     "title": "กายวิภาคคลองรากฟัน สารล้างคลองราก และอุบัติเหตุโซเดียมไฮโปคลอไรต์ (Canal Anatomy & Irrigants)",
     "specialty": "วิทยาเอ็นโดดอนต์",
     "category": "วิทยาเอ็นโดดอนต์",
-    "badgeColor": "#ec4899",
+    "badgeColor": "#e11d48",
     "must_know_topics": [
       "Root Canal Anatomy",
       "MB2 Canal",
@@ -958,7 +958,7 @@ export const CLINICAL_STUDY_GUIDES = {
     "title": "ชีววัสดุเรซินคอมโพสิต ปัจจัย C-Factor และกลไกการยึดติด (Composites, C-Factor & Adhesives)",
     "specialty": "ทันตกรรมบูรณะ/หัตถการ",
     "category": "ทันตกรรมบูรณะ/หัตถการ",
-    "badgeColor": "#6366f1",
+    "badgeColor": "#0d9488",
     "must_know_topics": [
       "C-Factor",
       "Polymerization Shrinkage",
@@ -1046,7 +1046,7 @@ export const CLINICAL_STUDY_GUIDES = {
     "title": "การปกป้องโพรงประสาทฟัน ความหนาเนื้อฟันที่เหลือ และการกรอผุแบบอนุรักษ์ (Pulp Protection & RDT)",
     "specialty": "ทันตกรรมบูรณะ/หัตถการ",
     "category": "ทันตกรรมบูรณะ/หัตถการ",
-    "badgeColor": "#6366f1",
+    "badgeColor": "#0d9488",
     "must_know_topics": [
       "Remaining Dentin Thickness",
       "Pulp Protection",
@@ -1125,7 +1125,7 @@ export const CLINICAL_STUDY_GUIDES = {
     "title": "การบำบัดรักษาโพรงประสาทฟันในฟันน้ำนม (Pulp Therapy in Primary Dentition)",
     "specialty": "ทันตกรรมสำหรับเด็ก",
     "category": "ทันตกรรมสำหรับเด็ก",
-    "badgeColor": "#8b5cf6",
+    "badgeColor": "#0284c7",
     "must_know_topics": [
       "Primary Pulp Therapy",
       "Pulpotomy in Primary Teeth",
@@ -1213,7 +1213,7 @@ export const CLINICAL_STUDY_GUIDES = {
     "title": "การจัดการช่องว่างในขากรรไกรและเครื่องมือกันที่ฟัน (Space Maintenance & Leeway Space)",
     "specialty": "ทันตกรรมสำหรับเด็ก",
     "category": "ทันตกรรมสำหรับเด็ก",
-    "badgeColor": "#8b5cf6",
+    "badgeColor": "#0284c7",
     "must_know_topics": [
       "Space Maintainer",
       "Band and Loop",
@@ -1292,7 +1292,7 @@ export const CLINICAL_STUDY_GUIDES = {
     "title": "การบาดเจ็บต่อฟันและกระดูกเบ้าฟันตามเกณฑ์สากล (Dental Traumatology & IADT Guidelines)",
     "specialty": "ทันตกรรมสำหรับเด็ก",
     "category": "ทันตกรรมสำหรับเด็ก",
-    "badgeColor": "#8b5cf6",
+    "badgeColor": "#0284c7",
     "must_know_topics": [
       "Dental Traumatology",
       "IADT Guidelines",
@@ -1371,7 +1371,7 @@ export const CLINICAL_STUDY_GUIDES = {
     "title": "รอยโรคก่อนมะเร็งและมะเร็งช่องปากชนิดสะเก็ด (OPMDs & Oral Squamous Cell Carcinoma)",
     "specialty": "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
     "category": "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
-    "badgeColor": "#a855f7",
+    "badgeColor": "#14b8a6",
     "must_know_topics": [
       "OPMDs",
       "Erythroplakia",
@@ -1462,7 +1462,7 @@ export const CLINICAL_STUDY_GUIDES = {
     "title": "การดูแลผู้ป่วยโรคหัวใจ หลอดเลือด และเกณฑ์ป้องกันเยื่อบุหัวใจอักเสบ (AHA 2021 IE Guidelines & CVD)",
     "specialty": "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
     "category": "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
-    "badgeColor": "#a855f7",
+    "badgeColor": "#14b8a6",
     "must_know_topics": [
       "AHA 2021 IE Prophylaxis",
       "Clindamycin Removed",
@@ -1541,7 +1541,7 @@ export const CLINICAL_STUDY_GUIDES = {
     "title": "ถุงน้ำและเนื้องอกที่มีกำเนิดจากเนื้อเยื่อสร้างฟัน (Odontogenic Cysts & Tumors)",
     "specialty": "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
     "category": "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
-    "badgeColor": "#a855f7",
+    "badgeColor": "#14b8a6",
     "must_know_topics": [
       "Odontogenic Keratocyst",
       "OKC PTCH1 Gene",
@@ -1699,7 +1699,7 @@ export const CLINICAL_STUDY_GUIDES = {
     "title": "ชีวกลศาสตร์การเคลื่อนฟัน อัตราส่วนโมเมนต์ต่อแรง และการตอบสนองของเนื้อเยื่อ (Ortho Biomechanics & M/F Ratio)",
     "specialty": "ทันตกรรมจัดฟัน",
     "category": "ทันตกรรมจัดฟัน",
-    "badgeColor": "#ec4899",
+    "badgeColor": "#e11d48",
     "must_know_topics": [
       "Center of Resistance",
       "Center of Rotation",

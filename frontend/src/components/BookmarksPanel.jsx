@@ -7,11 +7,11 @@ import { API_BASE } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 
 const TAG_COLORS = {
-  'สับสนนิยาม': { bg: 'rgba(56,189,248,0.16)', color: '#7dd3fc', border: 'rgba(56,189,248,0.4)' },
-  'ลืมตัวเลข': { bg: 'rgba(245,158,11,0.16)', color: '#fbbf24', border: 'rgba(245,158,11,0.4)' },
-  'พลาดแนวทางไทย': { bg: 'rgba(16,185,129,0.16)', color: '#34d399', border: 'rgba(16,185,129,0.4)' },
-  'โดนตัวลวง': { bg: 'rgba(244,63,94,0.16)', color: '#fda4af', border: 'rgba(244,63,94,0.4)' },
-  'สรุป AI Tutor': { bg: 'rgba(139,92,246,0.16)', color: '#c4b5fd', border: 'rgba(139,92,246,0.4)' },
+  'สับสนนิยาม': { bg: 'rgba(56,189,248,0.14)', color: 'var(--ink-sky)', border: 'rgba(56,189,248,0.38)' },
+  'ลืมตัวเลข': { bg: 'rgba(245,158,11,0.14)', color: 'var(--ink-amber)', border: 'rgba(245,158,11,0.38)' },
+  'พลาดแนวทางไทย': { bg: 'rgba(16,185,129,0.14)', color: 'var(--ink-emerald)', border: 'rgba(16,185,129,0.38)' },
+  'โดนตัวลวง': { bg: 'rgba(244,63,94,0.14)', color: 'var(--ink-rose)', border: 'rgba(244,63,94,0.38)' },
+  'สรุป AI Tutor': { bg: 'rgba(13,148,136,0.14)', color: 'var(--primary-light)', border: 'rgba(13,148,136,0.38)' },
 };
 
 const escapeHtml = (str) =>
@@ -208,7 +208,7 @@ export default function BookmarksPanel({ onStartPractice }) {
 <html lang="th">
 <head>
   <meta charset="utf-8" />
-  <title>NL Dental High-Yield Exam-Day Cheat Sheet</title>
+  <title>NL Dental Treasury High-Yield Exam-Day Cheat Sheet</title>
   <style>
     body { font-family: 'Sarabun', 'Noto Sans Thai', -apple-system, sans-serif; color: #0f172a; margin: 20px 28px; line-height: 1.5; font-size: 12.5px; }
     h1 { font-size: 19px; margin: 0 0 4px; color: #1e1b4b; }
@@ -225,7 +225,7 @@ export default function BookmarksPanel({ onStartPractice }) {
 <body>
   <div style="display:flex;justify-content:space-between;align-items:center;">
     <div>
-      <h1>🦷 NL Dental Exam-Day High-Yield Cheat Sheet</h1>
+      <h1>🦷 NL Dental Treasury Exam-Day High-Yield Cheat Sheet</h1>
       <div class="meta">สรุปเฉพาะโน้ตส่วนตัว, จุดผิดซ้ำ และ Pathway สำคัญ • พิมพ์เมื่อ ${new Date().toLocaleDateString('th-TH')}</div>
     </div>
     <button class="no-print" onclick="window.print()" style="padding:7px 14px;background:#4f46e5;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:700;">🖨️ พิมพ์ / Save PDF</button>
@@ -283,7 +283,7 @@ export default function BookmarksPanel({ onStartPractice }) {
   }
 
   if (error && !vault) {
-    return <div className="glass-panel" style={{ padding: '2rem', color: '#fb7185' }}>{error}</div>;
+    return <div className="glass-panel" style={{ padding: '2rem', color: 'var(--ink-rose)' }}>{error}</div>;
   }
 
   const items = vault?.items || [];
@@ -299,10 +299,10 @@ export default function BookmarksPanel({ onStartPractice }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.85rem' }}>
         <div>
           <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0, fontSize: '1.15rem' }}>
-            <BookmarkCheck size={20} style={{ color: '#a5b4fc' }} /> คลังความรู้ส่วนตัว (High-Yield Knowledge Vault)
+            <BookmarkCheck size={20} style={{ color: 'var(--primary-light)' }} /> คลังความรู้ส่วนตัว (High-Yield Knowledge Vault)
           </h3>
           <p style={{ margin: '0.25rem 0 0', fontSize: '0.82rem', color: 'var(--text-sub)' }}>
-            บุ๊กมาร์ก {summary.total_bookmarks || 0} ข้อ · โน้ตข้อสอบ {summary.total_question_notes || 0} ข้อ · โน้ตหัวข้อ/AI {summary.total_topic_notes || 0} เรื่อง · ผิดซ้ำ {summary.total_repeat_wrong || 0} ข้อ
+            บุ๊กมาร์ก {summary.total_bookmarks || 0} ข้อ · โน้ตข้อสอบ {summary.total_question_notes || 0} ข้อ · โน้ตหัวข้อ {summary.total_topic_notes || 0} เรื่อง · ผิดซ้ำ {summary.total_repeat_wrong || 0} ข้อ
           </p>
         </div>
 
@@ -313,7 +313,7 @@ export default function BookmarksPanel({ onStartPractice }) {
             className="btn btn-sm"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '5px',
-              background: 'rgba(16,185,129,0.16)', color: '#34d399', border: '1px solid rgba(16,185,129,0.4)', fontWeight: 700,
+              background: 'rgba(16,185,129,0.14)', color: 'var(--ink-emerald)', border: '1px solid rgba(16,185,129,0.38)', fontWeight: 700,
             }}
           >
             <Printer size={14} /> พิมพ์ High-Yield PDF
@@ -325,7 +325,7 @@ export default function BookmarksPanel({ onStartPractice }) {
             className="btn btn-sm"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '5px',
-              background: 'rgba(56,189,248,0.16)', color: '#7dd3fc', border: '1px solid rgba(56,189,248,0.4)', fontWeight: 700,
+              background: 'rgba(56,189,248,0.14)', color: 'var(--ink-sky)', border: '1px solid rgba(56,189,248,0.38)', fontWeight: 700,
             }}
           >
             <Download size={14} /> Export Anki (.tsv)
@@ -340,13 +340,13 @@ export default function BookmarksPanel({ onStartPractice }) {
       </div>
 
       {exportFeedback && (
-        <div style={{ padding: '0.6rem 0.9rem', borderRadius: '9px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.35)', fontSize: '0.82rem', color: '#6ee7b7' }}>
+        <div style={{ padding: '0.6rem 0.9rem', borderRadius: '9px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.35)', fontSize: '0.82rem', color: 'var(--ink-emerald)' }}>
           {exportFeedback}
         </div>
       )}
 
       {/* Search + Root-Cause Tag Filters */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', padding: '0.9rem 1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.025)', border: '1px solid var(--border)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', padding: '0.9rem 1rem', borderRadius: '12px', background: 'var(--surface-subtle)', border: '1px solid var(--border)' }}>
         <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 240px', position: 'relative' }}>
             <Search size={15} style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
@@ -357,7 +357,7 @@ export default function BookmarksPanel({ onStartPractice }) {
               placeholder="ค้นหาโน้ตส่วนตัว, คำสำคัญ, รหัสข้อ, หรือหัวข้อ Must-Know..."
               style={{
                 width: '100%', padding: '0.5rem 0.75rem 0.5rem 2.1rem', borderRadius: '9px',
-                background: 'rgba(0,0,0,0.28)', border: '1px solid var(--border)', color: 'var(--text)', fontSize: '0.86rem',
+                background: 'var(--surface-input)', border: '1px solid var(--border)', color: 'var(--text)', fontSize: 'max(16px, 0.88rem)',
               }}
             />
           </div>
@@ -389,9 +389,9 @@ export default function BookmarksPanel({ onStartPractice }) {
                 onClick={() => setSelectedTag(tg.id)}
                 style={{
                   padding: '0.28rem 0.68rem', borderRadius: '999px', fontSize: '0.76rem', fontWeight: active ? 800 : 600, cursor: 'pointer',
-                  background: active ? (palette?.bg || 'rgba(99,102,241,0.22)') : 'rgba(255,255,255,0.03)',
-                  color: active ? (palette?.color || '#c7d2fe') : 'var(--text-sub)',
-                  border: `1px solid ${active ? (palette?.border || '#6366f1') : 'var(--border)'}`,
+                  background: active ? (palette?.bg || 'rgba(13,148,136,0.16)') : 'var(--surface-card)',
+                  color: active ? (palette?.color || 'var(--primary-light)') : 'var(--text-sub)',
+                  border: `1px solid ${active ? (palette?.border || 'var(--primary)') : 'var(--border)'}`,
                 }}
               >
                 {tg.label}
@@ -404,9 +404,9 @@ export default function BookmarksPanel({ onStartPractice }) {
       {/* Sub-Tabs */}
       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', borderBottom: '1px solid var(--border)', paddingBottom: '0.65rem' }}>
         {[
-          { id: 'questions', label: `🔖 ข้อสอบ & โน้ต (${items.length})`, icon: <BookmarkCheck size={14} /> },
-          { id: 'topics', label: `📚 โน้ตหัวข้อ & AI Tutor (${topicNotes.length})`, icon: <BookOpen size={14} /> },
-          { id: 'repeat_wrong', label: `🔥 ข้อผิดซ้ำ (${repeatWrong.length})`, icon: <Flame size={14} /> },
+          { id: 'questions', label: `ข้อสอบ & โน้ต (${items.length})`, icon: <BookmarkCheck size={14} /> },
+          { id: 'topics', label: `โน้ตหัวข้อ (${topicNotes.length})`, icon: <BookOpen size={14} /> },
+          { id: 'repeat_wrong', label: `ข้อผิดซ้ำ (${repeatWrong.length})`, icon: <Flame size={14} /> },
         ].map((tab) => {
           const active = activeSubTab === tab.id;
           return (
@@ -417,7 +417,7 @@ export default function BookmarksPanel({ onStartPractice }) {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '0.45rem 0.9rem',
                 borderRadius: '10px', fontSize: '0.83rem', fontWeight: 700, cursor: 'pointer',
-                background: active ? 'var(--primary)' : 'rgba(255,255,255,0.04)',
+                background: active ? 'var(--primary)' : 'var(--surface-card)',
                 color: active ? '#fff' : 'var(--text-sub)',
                 border: active ? '1px solid var(--primary)' : '1px solid var(--border)',
               }}
@@ -433,20 +433,20 @@ export default function BookmarksPanel({ onStartPractice }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {items.length === 0 ? (
             <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem 1rem', fontSize: '0.9rem' }}>
-              🔖 ยังไม่พบข้อสอบที่บุ๊กมาร์กหรือติดโน้ตตามตัวกรองนี้ — กดบุ๊กมาร์ก จดโน้ต หรือกด "บันทึกเป็นโน้ตส่วนตัว" จาก AI Tutor เพื่อเก็บเข้าคลังได้เลยครับ
+              ยังไม่พบข้อสอบที่บุ๊กมาร์กหรือติดโน้ตตามตัวกรองนี้ — กดบุ๊กมาร์กหรือจดโน้ตส่วนตัวในข้อสอบเพื่อเก็บเข้าคลังได้เลยครับ
             </div>
           ) : (
             items.map((q) => {
               const isEditing = editingKey === `q-${q.id}`;
               const tagStyle = TAG_COLORS[q.mistake_tag];
               return (
-                <div key={q.id} style={{ padding: '1rem 1.15rem', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.07)' }}>
+                <div key={q.id} style={{ padding: '1rem 1.15rem', background: 'var(--surface-card)', borderRadius: '10px', border: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
                     <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.45rem', alignItems: 'center' }}>
                       <span className="badge badge-primary">Q{q.id}</span>
                       <span className="badge">{q.category}</span>
                       {q.topic_title_th && (
-                        <span className="badge" style={{ backgroundColor: 'rgba(99,102,241,0.14)', color: '#c7d2fe' }}>
+                        <span className="badge" style={{ backgroundColor: 'rgba(13,148,136,0.12)', color: 'var(--primary-light)' }}>
                           {q.topic_title_th}
                         </span>
                       )}
@@ -456,7 +456,7 @@ export default function BookmarksPanel({ onStartPractice }) {
                         </span>
                       )}
                       {q.wrong_count > 0 && (
-                        <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.12rem 0.5rem', borderRadius: '999px', background: 'rgba(244,63,94,0.16)', color: '#fda4af' }}>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.12rem 0.5rem', borderRadius: '999px', background: 'rgba(244,63,94,0.14)', color: 'var(--ink-rose)' }}>
                           ผิดแล้ว {q.wrong_count} ครั้ง
                         </span>
                       )}
@@ -495,7 +495,7 @@ export default function BookmarksPanel({ onStartPractice }) {
                   )}
 
                   {isEditing ? (
-                    <div style={{ marginTop: '0.7rem', padding: '0.75rem', borderRadius: '9px', background: 'rgba(2,6,23,0.55)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <div style={{ marginTop: '0.7rem', padding: '0.75rem', borderRadius: '9px', background: 'var(--surface-subtle)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
                         {tagOptions.map((tg) => (
                           <button
@@ -504,9 +504,9 @@ export default function BookmarksPanel({ onStartPractice }) {
                             onClick={() => setEditTag(editTag === tg ? '' : tg)}
                             style={{
                               padding: '0.2rem 0.55rem', borderRadius: '999px', fontSize: '0.73rem', fontWeight: 700, cursor: 'pointer',
-                              background: editTag === tg ? (TAG_COLORS[tg]?.bg || 'rgba(99,102,241,0.22)') : 'rgba(255,255,255,0.04)',
-                              color: editTag === tg ? (TAG_COLORS[tg]?.color || '#fff') : 'var(--text-sub)',
-                              border: `1px solid ${editTag === tg ? (TAG_COLORS[tg]?.border || '#6366f1') : 'var(--border)'}`,
+                              background: editTag === tg ? (TAG_COLORS[tg]?.bg || 'rgba(13,148,136,0.16)') : 'var(--surface-card)',
+                              color: editTag === tg ? (TAG_COLORS[tg]?.color || 'var(--primary-light)') : 'var(--text-sub)',
+                              border: `1px solid ${editTag === tg ? (TAG_COLORS[tg]?.border || 'var(--primary)') : 'var(--border)'}`,
                             }}
                           >
                             #{tg}
@@ -518,7 +518,7 @@ export default function BookmarksPanel({ onStartPractice }) {
                         onChange={(e) => setEditDraft(e.target.value)}
                         rows={3}
                         placeholder="พิมพ์โน้ตส่วนตัวหรือสรุปจุดต้องระวัง..."
-                        style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', color: 'var(--text)', fontSize: '0.86rem', fontFamily: 'inherit' }}
+                        style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', background: 'var(--surface-input)', border: '1px solid var(--border)', color: 'var(--text)', fontSize: '0.86rem', fontFamily: 'inherit' }}
                       />
                       <div style={{ display: 'flex', gap: '0.45rem', justifyContent: 'flex-end' }}>
                         <button type="button" className="btn btn-secondary btn-sm" onClick={() => setEditingKey(null)}>
@@ -537,7 +537,7 @@ export default function BookmarksPanel({ onStartPractice }) {
                   ) : (
                     q.note_text && (
                       <div style={{ marginTop: '0.6rem', padding: '0.6rem 0.85rem', background: 'rgba(245,158,11,0.08)', borderLeft: '3px solid rgba(245,158,11,0.55)', borderRadius: '6px', fontSize: '0.86rem', color: 'var(--text-sub)', display: 'flex', gap: '0.45rem', alignItems: 'flex-start' }}>
-                        <StickyNote size={14} style={{ flexShrink: 0, marginTop: '3px', color: 'var(--accent)' }} />
+                        <StickyNote size={14} style={{ flexShrink: 0, marginTop: '3px', color: 'var(--ink-amber)' }} />
                         <span style={{ whiteSpace: 'pre-wrap' }}>{q.note_text}</span>
                       </div>
                     )
@@ -549,19 +549,19 @@ export default function BookmarksPanel({ onStartPractice }) {
         </div>
       )}
 
-      {/* TAB 2: TOPIC & AI TUTOR NOTES */}
+      {/* TAB 2: TOPIC NOTES */}
       {activeSubTab === 'topics' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {topicNotes.length === 0 ? (
             <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem 1rem', fontSize: '0.9rem' }}>
-              📚 ยังไม่มีโน้ตระดับหัวข้อ — กดปุ่ม "💬 ถามอาจารย์ AI เรื่องนี้" ในหน้า Study Hub แล้วเลือก "📌 บันทึกคำตอบนี้เป็นโน้ตส่วนตัว" เพื่อสะสม High-Yield Notes ได้เลย!
+              ยังไม่มีโน้ตระดับหัวข้อในคลังส่วนตัวของคุณ
             </div>
           ) : (
             topicNotes.map((tn) => {
               const isEditing = editingKey === `t-${tn.topic_id}`;
               const tagStyle = TAG_COLORS[tn.mistake_tag];
               return (
-                <div key={tn.topic_id} style={{ padding: '1rem 1.15rem', background: 'rgba(139,92,246,0.05)', borderRadius: '10px', border: '1px solid rgba(139,92,246,0.25)' }}>
+                <div key={tn.topic_id} style={{ padding: '1rem 1.15rem', background: 'rgba(13,148,136,0.05)', borderRadius: '10px', border: '1px solid rgba(13,148,136,0.24)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.5rem' }}>
                     <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center' }}>
                       <span className="badge badge-primary">{tn.topic_id}</span>
@@ -583,7 +583,7 @@ export default function BookmarksPanel({ onStartPractice }) {
                   </div>
 
                   {isEditing ? (
-                    <div style={{ padding: '0.75rem', borderRadius: '9px', background: 'rgba(2,6,23,0.55)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <div style={{ padding: '0.75rem', borderRadius: '9px', background: 'var(--surface-subtle)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
                         {tagOptions.map((tg) => (
                           <button
@@ -592,9 +592,9 @@ export default function BookmarksPanel({ onStartPractice }) {
                             onClick={() => setEditTag(editTag === tg ? '' : tg)}
                             style={{
                               padding: '0.2rem 0.55rem', borderRadius: '999px', fontSize: '0.73rem', fontWeight: 700, cursor: 'pointer',
-                              background: editTag === tg ? (TAG_COLORS[tg]?.bg || 'rgba(99,102,241,0.22)') : 'rgba(255,255,255,0.04)',
-                              color: editTag === tg ? (TAG_COLORS[tg]?.color || '#fff') : 'var(--text-sub)',
-                              border: `1px solid ${editTag === tg ? (TAG_COLORS[tg]?.border || '#6366f1') : 'var(--border)'}`,
+                              background: editTag === tg ? (TAG_COLORS[tg]?.bg || 'rgba(13,148,136,0.16)') : 'var(--surface-card)',
+                              color: editTag === tg ? (TAG_COLORS[tg]?.color || 'var(--primary-light)') : 'var(--text-sub)',
+                              border: `1px solid ${editTag === tg ? (TAG_COLORS[tg]?.border || 'var(--primary)') : 'var(--border)'}`,
                             }}
                           >
                             #{tg}
@@ -605,7 +605,7 @@ export default function BookmarksPanel({ onStartPractice }) {
                         value={editDraft}
                         onChange={(e) => setEditDraft(e.target.value)}
                         rows={4}
-                        style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', color: 'var(--text)', fontSize: '0.86rem', fontFamily: 'inherit' }}
+                        style={{ width: '100%', padding: '0.55rem', borderRadius: '8px', background: 'var(--surface-input)', border: '1px solid var(--border)', color: 'var(--text)', fontSize: '0.86rem', fontFamily: 'inherit' }}
                       />
                       <div style={{ display: 'flex', gap: '0.45rem', justifyContent: 'flex-end' }}>
                         <button type="button" className="btn btn-secondary btn-sm" onClick={() => setEditingKey(null)}>ยกเลิก</button>
@@ -615,7 +615,7 @@ export default function BookmarksPanel({ onStartPractice }) {
                       </div>
                     </div>
                   ) : (
-                    <div style={{ padding: '0.65rem 0.9rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', fontSize: '0.88rem', color: 'var(--text-sub)', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+                    <div style={{ padding: '0.65rem 0.9rem', background: 'var(--surface-card)', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '0.88rem', color: 'var(--text-sub)', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
                       {tn.note_text}
                     </div>
                   )}
@@ -631,7 +631,7 @@ export default function BookmarksPanel({ onStartPractice }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {repeatWrong.length === 0 ? (
             <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem 1rem', fontSize: '0.9rem' }}>
-              🔥 ยังไม่มีประวัติข้อที่ตอบผิด ระบบจะดึงข้อที่เคยพลาดมาสรุปเป็น Checklist ก่อนเข้าห้องสอบให้อัตโนมัติครับ
+              ยังไม่มีประวัติข้อที่ตอบผิด ระบบจะดึงข้อที่เคยพลาดมาสรุปเป็น Checklist ก่อนเข้าห้องสอบให้อัตโนมัติครับ
             </div>
           ) : (
             <>
@@ -646,7 +646,7 @@ export default function BookmarksPanel({ onStartPractice }) {
                 <div key={rw.id} style={{ padding: '0.95rem 1.1rem', background: 'rgba(244,63,94,0.05)', borderRadius: '10px', border: '1px solid rgba(244,63,94,0.22)' }}>
                   <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', marginBottom: '0.4rem' }}>
                     <span className="badge badge-primary">Q{rw.id}</span>
-                    <span className="badge" style={{ background: 'rgba(244,63,94,0.2)', color: '#fda4af' }}>ผิด {rw.wrong_count} ครั้ง</span>
+                    <span className="badge" style={{ background: 'rgba(244,63,94,0.16)', color: 'var(--ink-rose)' }}>ผิด {rw.wrong_count} ครั้ง</span>
                     <span className="badge">{rw.category}</span>
                     {rw.topic_title_th && <span className="badge">{rw.topic_title_th}</span>}
                   </div>
@@ -654,8 +654,8 @@ export default function BookmarksPanel({ onStartPractice }) {
                     {rw.question_text.length > 220 ? rw.question_text.slice(0, 220) + '…' : rw.question_text}
                   </div>
                   {(rw.key_takeaway || rw.common_pitfall) && (
-                    <div style={{ marginTop: '0.45rem', fontSize: '0.81rem', color: '#fde68a' }}>
-                      💣 {rw.common_pitfall || rw.key_takeaway}
+                    <div style={{ marginTop: '0.45rem', fontSize: '0.81rem', color: 'var(--ink-amber)' }}>
+                      จุดระวัง: {rw.common_pitfall || rw.key_takeaway}
                     </div>
                   )}
                 </div>

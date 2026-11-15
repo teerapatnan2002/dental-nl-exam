@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { X, Calendar, Clock, MapPin, CheckCircle, AlertCircle, FileText, ArrowRight, BookOpen, PlayCircle, ShieldCheck, Scale, Stethoscope } from 'lucide-react';
+import { X, Calendar, Clock, MapPin, CheckCircle, AlertCircle, FileText, ArrowRight, BookOpen, PlayCircle, ShieldCheck, Scale, Stethoscope, History, ChevronDown, ChevronUp } from 'lucide-react';
 import { getOrderedExamSchedules, formatElapsedSinceExam } from '../data/examSchedule';
 
 export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpenLawHub }) {
   const orderedSchedules = getOrderedExamSchedules();
+  const upcomingExams = orderedSchedules.filter(e => !e.timing.isPassed);
+  const passedExams = orderedSchedules.filter(e => e.timing.isPassed);
   const [activeExamId, setActiveExamId] = useState(() => getOrderedExamSchedules()[0]?.id || 'nl-1-2570');
+  const [showPassedTabs, setShowPassedTabs] = useState(() => upcomingExams.length === 0);
 
   // ESC key listener
   useEffect(() => {
@@ -34,7 +37,7 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '1.25rem',
+        padding: 'clamp(0.65rem, 2.5vw, 1.25rem)',
         overflowY: 'auto'
       }}
     >
@@ -56,14 +59,15 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
       >
         {/* ── Modal Header ─────────────────────────────────── */}
         <div style={{
-          padding: '1.15rem 1.5rem',
+          padding: '1rem clamp(1rem, 3vw, 1.5rem)',
           borderBottom: '1px solid var(--border)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          gap: '0.75rem',
           background: 'var(--bg-panel)'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
             <div style={{
               width: '38px',
               height: '38px',
@@ -73,12 +77,13 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'var(--primary-light)'
+              color: 'var(--primary-light)',
+              flexShrink: 0,
             }}>
               <Calendar size={18} />
             </div>
-            <div>
-              <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0, color: 'var(--text)' }}>
+            <div style={{ minWidth: 0 }}>
+              <h2 style={{ fontSize: 'clamp(0.98rem, 2.5vw, 1.1rem)', fontWeight: 700, margin: 0, color: 'var(--text)' }}>
                 กำหนดการสอบทันตแพทยสภา (ศ.ป.ท.)
               </h2>
               <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0.12rem 0 0 0' }}>
@@ -87,72 +92,56 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
             aria-label="Close modal"
+            className="header-icon-btn"
             style={{
               background: 'var(--surface-subtle)',
               border: '1px solid var(--border)',
               borderRadius: '8px',
-              width: '34px',
-              height: '34px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              minWidth: '38px',
+              minHeight: '38px',
               color: 'var(--text-muted)',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
+              flexShrink: 0,
             }}
           >
             <X size={17} />
           </button>
         </div>
 
-        {/* ── Tabs for 4 Exam Rounds ────────────────────────── */}
+        {/* ── Chronological Wrapping Tabs (Closest First + Past Expandable) ── */}
         <div style={{
           display: 'flex',
-          gap: '0.45rem',
-          padding: '0.7rem 1.5rem',
+          flexDirection: 'column',
+          gap: '0.5rem',
+          padding: '0.7rem clamp(1rem, 3vw, 1.5rem)',
           background: 'var(--surface-subtle)',
           borderBottom: '1px solid var(--border)',
-          overflowX: 'auto'
         }}>
-          {orderedSchedules.map((exam, idx) => {
-            const isActive = exam.id === activeExamId;
-            const isPassed = exam.timing.isPassed;
-            const prevExam = idx > 0 ? orderedSchedules[idx - 1] : null;
-            const showPassedDivider = isPassed && prevExam && !prevExam.timing.isPassed;
-            const ExamIcon = exam.type === 'law' ? Scale : Stethoscope;
-            return (
-              <React.Fragment key={exam.id}>
-                {showPassedDivider && (
-                  <span style={{
-                    fontSize: '0.7rem',
-                    color: 'var(--text-muted)',
-                    padding: '0 0.25rem',
-                    whiteSpace: 'nowrap',
-                    alignSelf: 'center',
-                  }}>
-                    | ผ่านมาแล้ว:
-                  </span>
-                )}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', alignItems: 'center' }}>
+            {upcomingExams.map(exam => {
+              const isActive = exam.id === activeExamId;
+              const ExamIcon = exam.type === 'law' ? Scale : Stethoscope;
+              return (
                 <button
+                  key={exam.id}
                   type="button"
                   onClick={() => setActiveExamId(exam.id)}
                   style={{
-                    display: 'flex',
+                    display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.4rem',
-                    padding: '0.45rem 0.75rem',
+                    padding: '0.42rem 0.72rem',
                     borderRadius: '8px',
                     border: `1px solid ${isActive ? 'var(--primary)' : 'var(--border)'}`,
                     background: isActive ? 'var(--primary)' : 'var(--bg-panel)',
-                    color: isActive ? '#fff' : (isPassed ? 'var(--text-muted)' : 'var(--text)'),
+                    color: isActive ? '#fff' : 'var(--text)',
                     fontWeight: isActive ? 600 : 500,
-                    fontSize: '0.8rem',
+                    fontSize: '0.79rem',
                     fontFamily: 'inherit',
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
-                    opacity: !isActive && isPassed ? 0.78 : 1,
                     transition: 'all 0.15s ease'
                   }}
                 >
@@ -162,28 +151,90 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
                     fontSize: '0.68rem',
                     padding: '0.08rem 0.38rem',
                     borderRadius: '5px',
-                    background: isActive
-                      ? 'rgba(255, 255, 255, 0.22)'
-                      : isPassed
-                        ? 'var(--surface-subtle)'
-                        : 'rgba(13, 148, 136, 0.14)',
-                    color: isActive
-                      ? '#fff'
-                      : isPassed
-                        ? 'var(--text-muted)'
-                        : 'var(--primary-light)',
+                    background: isActive ? 'rgba(255, 255, 255, 0.22)' : 'var(--primary-surface)',
+                    color: isActive ? '#fff' : 'var(--primary-light)',
                     fontWeight: 600
                   }}>
-                    {isPassed
-                      ? 'ผ่านแล้ว'
-                      : exam.timing.isInProgress
-                        ? 'กำลังสอบ'
-                        : `อีก ${exam.timing.days} วัน`}
+                    {exam.timing.isInProgress ? 'กำลังสอบ' : `อีก ${exam.timing.days} วัน`}
                   </span>
                 </button>
-              </React.Fragment>
-            );
-          })}
+              );
+            })}
+
+            {passedExams.length > 0 && upcomingExams.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setShowPassedTabs(v => !v)}
+                aria-expanded={showPassedTabs}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  padding: '0.42rem 0.68rem',
+                  borderRadius: '8px',
+                  border: `1px solid ${currentExam.timing.isPassed ? 'var(--border-hover)' : 'var(--border)'}`,
+                  background: currentExam.timing.isPassed ? 'var(--bg-panel)' : 'transparent',
+                  color: currentExam.timing.isPassed ? 'var(--ink-amber)' : 'var(--text-muted)',
+                  fontWeight: 600,
+                  fontSize: '0.76rem',
+                  fontFamily: 'inherit',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <History size={13} />
+                <span>ผ่านกำหนดการแล้ว ({passedExams.length})</span>
+                {showPassedTabs ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+              </button>
+            )}
+          </div>
+
+          {passedExams.length > 0 && (showPassedTabs || upcomingExams.length === 0) && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', alignItems: 'center', paddingTop: '0.15rem' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, marginRight: '0.2rem' }}>
+                ผ่านกำหนดการสอบมาแล้ว:
+              </span>
+              {passedExams.map(exam => {
+                const isActive = exam.id === activeExamId;
+                const ExamIcon = exam.type === 'law' ? Scale : Stethoscope;
+                return (
+                  <button
+                    key={exam.id}
+                    type="button"
+                    onClick={() => setActiveExamId(exam.id)}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      padding: '0.32rem 0.62rem',
+                      borderRadius: '8px',
+                      border: `1px solid ${isActive ? 'var(--primary)' : 'var(--border)'}`,
+                      background: isActive ? 'var(--primary)' : 'var(--bg-panel)',
+                      color: isActive ? '#fff' : 'var(--text-sub)',
+                      fontWeight: isActive ? 600 : 500,
+                      fontSize: '0.75rem',
+                      fontFamily: 'inherit',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <ExamIcon size={12} />
+                    <span>{exam.shortLabel || exam.series}</span>
+                    <span style={{
+                      fontSize: '0.66rem',
+                      padding: '0.04rem 0.34rem',
+                      borderRadius: '4px',
+                      background: isActive ? 'rgba(255, 255, 255, 0.2)' : 'var(--surface-subtle)',
+                      color: isActive ? '#fff' : 'var(--ink-amber)',
+                      fontWeight: 600,
+                    }}>
+                      ผ่านแล้ว
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* ── Modal Body Content (Scrollable) ────────────────── */}

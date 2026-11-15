@@ -230,7 +230,7 @@ export default function AIHub({ categories, tasks, onStartMockTest, onBack }) {
                   border: '1px solid rgba(244,63,94,0.25)',
                   borderRadius: '10px',
                   marginBottom: '1.25rem',
-                  color: '#fb7185',
+                  color: 'var(--ink-rose)',
                   fontSize: '0.88rem',
                 }}>
                   <strong>เกิดข้อผิดพลาด:</strong> {genError}

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   CircleCheck, ChevronRight, ChevronLeft, Clock,
-  Sparkles, Loader2, XCircle, Lightbulb, AlertTriangle,
+  Loader2, XCircle, Lightbulb, AlertTriangle,
   Bookmark, BookmarkCheck, StickyNote, HelpCircle,
-  Flag, Strikethrough
+  Flag, Strikethrough, FileText, ZoomIn, Keyboard, Check, EyeOff
 } from 'lucide-react';
 import { API_BASE } from '../config';
 import ReportModal from './ReportModal';
@@ -76,6 +76,7 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
   const [noteSavedToast, setNoteSavedToast] = useState({}); // question_id -> bool
   const [noteEditorOpen, setNoteEditorOpen] = useState({}); // question_id -> bool
   const [confidence, setConfidence] = useState({}); // question_id -> 'confident' | 'unsure' | 'hard'
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const [lightboxImg, setLightboxImg] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -417,7 +418,7 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
         return;
       }
 
-      // Escape key to dismiss modals / lightboxes
+      // Escape key to dismiss modals / lightboxes / shortcut popover
       if (e.key === 'Escape') {
         if (lightboxImg) {
           setLightboxImg(null);
@@ -425,6 +426,10 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
         }
         if (reportingQuestionId) {
           setReportingQuestionId(null);
+          return;
+        }
+        if (showShortcuts) {
+          setShowShortcuts(false);
           return;
         }
       }
@@ -519,21 +524,13 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
       <div 
         key={q.id} 
         id={`question-card-${q.id}`}
-        className={`exam-subquestion-card ${isFocused ? 'subquestion-card-focused' : ''}`}
+        className={currentPage.stem ? `exam-subquestion-card ${isFocused ? 'subquestion-card-focused' : ''}` : 'exam-subquestion-card exam-subquestion-card--standalone'}
         onClick={() => setFocusedQuestionIndex(localIdx)}
-        style={{ 
-          padding: currentPage.stem ? '1.5rem' : '0', 
-          background: currentPage.stem ? (isFocused ? 'rgba(124,58,237,0.06)' : 'rgba(255,255,255,0.02)') : 'transparent', 
-          borderRadius: '12px', 
-          border: currentPage.stem ? (isFocused ? '1px solid rgba(124,58,237,0.45)' : '1px solid rgba(255,255,255,0.06)') : 'none',
-          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-          cursor: 'default'
-        }}
       >
         {/* Meta badges for sub-question */}
-        <div className="question-meta" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <span className="badge badge-primary">
+        <div className="question-meta">
+          <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <span className="badge badge-primary tabular-nums">
               Q{q.globalIndex + 1}
             </span>
             {q.category && (
@@ -543,74 +540,70 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
               <span className="badge">{q.task}</span>
             )}
             {q.source_exam && (
-              <span className="badge" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
-                📝 {q.source_exam}
+              <span className="badge" style={{ gap: '4px' }}>
+                <FileText size={11} strokeWidth={1.8} /> {q.source_exam}
               </span>
             )}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            {/* Flag for Review Button */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flexWrap: 'wrap' }}>
             <button
-              onClick={() => toggleFlag(q.id)}
-              style={{
-                background: isFlagged ? 'rgba(245,158,11,0.2)' : 'none',
-                border: isFlagged ? '1px solid rgba(245,158,11,0.4)' : '1px solid transparent',
-                borderRadius: '6px',
-                color: isFlagged ? '#f59e0b' : 'var(--text-muted)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                fontSize: '0.8rem',
-                cursor: 'pointer',
-                padding: '0.25rem 0.5rem',
-                fontWeight: isFlagged ? 700 : 500
-              }}
+              type="button"
+              className={`exam-tool-icon-btn ${isFlagged ? 'exam-tool-icon-btn--flagged' : ''}`}
+              onClick={(e) => { e.stopPropagation(); toggleFlag(q.id); }}
               title={isFlagged ? 'ยกเลิกการปักธง' : 'ปักธงข้อนี้เพื่อกลับมาทบทวน'}
             >
-              <Flag size={13} fill={isFlagged ? '#f59e0b' : 'none'} />
-              {isFlagged ? 'ปักธงแล้ว' : 'ปักธง'}
+              <Flag size={13} fill={isFlagged ? 'currentColor' : 'none'} />
+              <span>{isFlagged ? 'ปักธงแล้ว' : 'ปักธง'}</span>
             </button>
 
             {user && (
               <>
                 <button
-                  onClick={() => toggleBookmark(q)}
-                  style={{ background: 'none', border: 'none', color: bookmarkedIds.has(q.id) ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0.2rem' }}
+                  type="button"
+                  className={`exam-tool-icon-btn ${bookmarkedIds.has(q.id) ? 'exam-tool-icon-btn--active' : ''}`}
+                  onClick={(e) => { e.stopPropagation(); toggleBookmark(q); }}
                   title={bookmarkedIds.has(q.id) ? 'ลบบุ๊กมาร์ก' : 'บุ๊กมาร์กข้อนี้'}
                 >
-                  {bookmarkedIds.has(q.id) ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}
+                  {bookmarkedIds.has(q.id) ? <BookmarkCheck size={15} /> : <Bookmark size={15} />}
                 </button>
                 <button
-                  onClick={() => toggleNoteEditor(q)}
-                  style={{ background: 'none', border: 'none', color: noteEditorOpen[q.id] || notes[q.id] ? 'var(--primary-light)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0.2rem' }}
+                  type="button"
+                  className={`exam-tool-icon-btn ${noteEditorOpen[q.id] || notes[q.id] ? 'exam-tool-icon-btn--active' : ''}`}
+                  onClick={(e) => { e.stopPropagation(); toggleNoteEditor(q); }}
                   title="โน้ตส่วนตัว"
                 >
-                  <StickyNote size={17} />
+                  <StickyNote size={15} />
                 </button>
               </>
             )}
             <button
-              onClick={() => setReportingQuestionId(q.id)}
-              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', cursor: 'pointer', padding: '0.2rem' }}
+              type="button"
+              className="exam-tool-icon-btn"
+              onClick={(e) => { e.stopPropagation(); setReportingQuestionId(q.id); }}
               title="แจ้งข้อผิดพลาด"
             >
-              <AlertTriangle size={14} /> แจ้งปัญหา
+              <AlertTriangle size={14} /> <span>แจ้งปัญหา</span>
             </button>
           </div>
         </div>
 
         {/* Personal note editor */}
         {noteEditorOpen[q.id] && user && (
-          <div style={{ marginBottom: '1rem', padding: '0.9rem', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.45rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.4rem' }}>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ marginBottom: '1rem', padding: '0.9rem', background: 'var(--surface-subtle)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}
+          >
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.4rem' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
                 <StickyNote size={13} /> โน้ตส่วนตัวของคุณ (ติด Tag สาเหตุเพื่อรวมเข้า Cheat Sheet)
               </span>
               {noteSavedToast[q.id] && (
-                <span style={{ color: '#34d399', fontWeight: 700, fontSize: '0.76rem' }}>✓ บันทึกแล้ว!</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--ink-emerald)', fontWeight: 700, fontSize: '0.76rem' }}>
+                  <Check size={13} /> บันทึกแล้ว
+                </span>
               )}
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.55rem' }}>
               {['สับสนนิยาม', 'ลืมตัวเลข', 'พลาดแนวทางไทย', 'โดนตัวลวง'].map((tg) => {
                 const activeTag = noteTags[q.id] === tg;
                 return (
@@ -619,14 +612,15 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
                     type="button"
                     onClick={() => setNoteTags(prev => ({ ...prev, [q.id]: activeTag ? '' : tg }))}
                     style={{
-                      padding: '0.2rem 0.55rem',
+                      padding: '0.22rem 0.6rem',
                       borderRadius: '999px',
-                      fontSize: '0.73rem',
-                      fontWeight: 700,
+                      fontSize: '0.74rem',
+                      fontWeight: 600,
                       cursor: 'pointer',
-                      background: activeTag ? 'rgba(245,158,11,0.22)' : 'rgba(255,255,255,0.04)',
-                      color: activeTag ? '#fbbf24' : 'var(--text-sub)',
-                      border: `1px solid ${activeTag ? 'rgba(245,158,11,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                      fontFamily: 'inherit',
+                      background: activeTag ? 'rgba(245, 158, 11, 0.14)' : 'var(--surface-card)',
+                      color: activeTag ? 'var(--ink-amber)' : 'var(--text-sub)',
+                      border: `1px solid ${activeTag ? 'var(--warning)' : 'var(--border)'}`,
                     }}
                   >
                     #{tg}
@@ -639,9 +633,9 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
               onChange={(e) => setNotes(prev => ({ ...prev, [q.id]: e.target.value }))}
               placeholder="จดบันทึก สูตร หรือจุดที่ต้องจำสำหรับข้อนี้..."
               rows={3}
-              style={{ width: '100%', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'var(--text)', padding: '0.6rem', fontSize: '0.9rem', resize: 'vertical', fontFamily: 'inherit' }}
+              style={{ width: '100%', background: 'var(--surface-input)', border: '1px solid var(--border)', borderRadius: 'var(--radius-inner)', color: 'var(--text)', padding: '0.6rem 0.75rem', fontSize: '0.9rem', resize: 'vertical', fontFamily: 'inherit' }}
             />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.55rem' }}>
               <button className="btn btn-primary btn-sm" onClick={() => saveNote(q)}>บันทึกโน้ต</button>
             </div>
           </div>
@@ -649,14 +643,16 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
 
         {/* Image (if no stem, or if this specific sub-question has its own image) */}
         {!currentPage.stem && q.image_path && (
-          <div style={{ textAlign: 'center', margin: '1rem 0' }}>
+          <div style={{ textAlign: 'center', margin: '0.75rem 0 1rem' }}>
             <img
               src={`${API_BASE}/images/${q.image_path}`}
               alt="Question Figure"
-              style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.4)', cursor: 'pointer' }}
+              style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', cursor: 'pointer' }}
               onClick={() => { setLightboxImg(`${API_BASE}/images/${q.image_path}`); setZoom(1); setPan({x:0, y:0}); }}
             />
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>🔍 คลิกรูปภาพเพื่อซูมขยายเต็มจอ</div>
+            <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '0.35rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <ZoomIn size={13} /> คลิกรูปภาพเพื่อซูมขยายเต็มจอ
+            </div>
           </div>
         )}
 
@@ -756,24 +752,25 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
 
         {/* Practice: reveal button + explanation */}
         {mode === 'practice' && (
-          <div style={{ marginTop: '1.5rem' }}>
+          <div style={{ marginTop: '1.15rem' }}>
             <button
-              className="btn btn-accent"
+              type="button"
+              className={isRevealed ? 'btn btn-secondary' : 'btn btn-primary'}
               onClick={() => toggleReveal(q)}
               disabled={expl && expl.loading}
-              style={{ minWidth: '180px' }}
+              style={{ minWidth: '168px' }}
             >
               {expl && expl.loading ? (
-                <><Loader2 size={17} className="spin" /> กำลังโหลด...</>
+                <><Loader2 size={16} className="spin" /> กำลังโหลดเฉลย...</>
               ) : isRevealed ? (
-                <>ซ่อนเฉลย</>
+                <><EyeOff size={16} /> ซ่อนเฉลย</>
               ) : (
-                <><Sparkles size={17} /> ดูเฉลยข้อ {q.globalIndex + 1} (AI)</>
+                <><Lightbulb size={16} /> ดูเฉลยข้อ {q.globalIndex + 1}</>
               )}
             </button>
 
             {expl && expl.error && (
-              <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(244,63,94,0.1)', borderRadius: '10px', border: '1px solid rgba(244,63,94,0.2)', color: '#fb7185', fontSize: '0.9rem' }}>
+              <div style={{ marginTop: '0.85rem', padding: '0.85rem 1rem', background: 'rgba(239,68,68,0.08)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(239,68,68,0.3)', color: 'var(--ink-rose)', fontSize: '0.88rem' }}>
                 <strong>ไม่สามารถโหลดเฉลยได้:</strong> {expl.error}
               </div>
             )}
@@ -801,127 +798,140 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
       {/* ── Sticky Top Bar ──────────────────────────── */}
       <div className="exam-sticky-header">
         <div className="exam-sticky-inner">
-          {/* Exam Title / Part Badge */}
-          {(config.year || config.part) && (
-            <span className="badge badge-primary" style={{ fontSize: '0.78rem', padding: '0.25rem 0.65rem', flexShrink: 0 }}>
-              {config.year ? `พ.ศ. ${config.year}` : ''} {config.part ? (['1','2','3','4'].includes(String(config.part)) ? `Part ${config.part}` : config.part === 'law' ? 'กฎหมาย' : config.part.toUpperCase()) : ''}
-            </span>
-          )}
-
-          {/* Progress & Stem text */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
-            {currentPage.stem && (
-              <span className="badge badge-accent" style={{ fontSize: '0.8rem', fontWeight: 700, padding: '0.2rem 0.55rem', background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.3)' }}>
-                {getStemLabel(currentPage.stem, currentPageIndex)}
+          {/* Left: Exam context + Range + Mode */}
+          <div className="exam-sticky-left">
+            {(config.year || config.part) && (
+              <span className="badge badge-primary" style={{ fontSize: '0.76rem', padding: '0.2rem 0.55rem' }}>
+                {config.year ? `พ.ศ. ${config.year}` : ''} {config.part ? (['1','2','3','4'].includes(String(config.part)) ? `Part ${config.part}` : config.part === 'law' ? 'กฎหมาย' : config.part.toUpperCase()) : ''}
               </span>
             )}
-            <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text)', minWidth: '85px' }}>
-              ข้อ {currentPage.questions[0].globalIndex + 1} 
-              {currentPage.questions.length > 1 && ` - ${currentPage.questions[currentPage.questions.length - 1].globalIndex + 1}`}
-              <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}> / {questions.length}</span>
+            {currentPage.stem && (
+              <span className="badge badge-primary" style={{ fontSize: '0.76rem', fontWeight: 700, padding: '0.2rem 0.55rem', gap: '4px' }}>
+                <FileText size={12} strokeWidth={1.8} /> {getStemLabel(currentPage.stem, currentPageIndex)}
+              </span>
+            )}
+            <span className="exam-header-range">
+              ข้อ {currentPage.questions[0].globalIndex + 1}
+              {currentPage.questions.length > 1 && `–${currentPage.questions[currentPage.questions.length - 1].globalIndex + 1}`}
+              <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}> / {questions.length}</span>
+            </span>
+            <span className={`exam-mode-chip ${mode === 'practice' ? 'exam-mode-chip--practice' : ''}`}>
+              {mode === 'practice' ? 'ฝึกซ้อม' : 'สอบจับเวลา'}
             </span>
           </div>
 
-          {/* Progress bar */}
-          <div className="progress-bar" style={{ flex: 1, minWidth: '80px' }}>
-            <div className="progress-fill" style={{ width: `${progressPercentage}%` }} />
-          </div>
-
-          {/* Desktop Keyboard Hints Pill */}
-          <div className="keyboard-hints-pill" title="คีย์ลัดสำหรับคอมพิวเตอร์ (Desktop Keyboard Shortcuts)">
-            <span>⌨️ <kbd>1</kbd>-<kbd>5</kbd> ตอบ</span>
-            <span>•</span>
-            <span><kbd>←</kbd> <kbd>→</kbd> ข้อ</span>
-            <span>•</span>
-            <span><kbd>F</kbd> ธง</span>
-            {mode === 'practice' && <span>• <kbd>Space</kbd> เฉลย</span>}
-          </div>
-
-          {/* Timer + mode badge */}
-          <div style={{ display: 'flex', align: 'center', gap: '0.75rem', flexShrink: 0 }}>
+          {/* Right: Telemetry, Shortcuts, Font size, Stepper */}
+          <div className="exam-sticky-right">
             {mode === 'exam' && (
-              <span className={`timer ${isTimeRunningOut ? 'timer-warning' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: isTimeRunningOut ? 'var(--danger)' : 'var(--text-muted)', fontSize: '0.95rem', fontVariantNumeric: 'tabular-nums', fontWeight: isTimeRunningOut ? 700 : 500 }}>
-                <Clock size={15} />
+              <span className={`exam-timer-chip ${isTimeRunningOut ? 'exam-timer-chip--danger' : ''}`}>
+                <Clock size={14} />
                 {timeLimit ? formatTime(timeLeft) : formatTime(elapsed)}
               </span>
             )}
-            {mode === 'practice' && (
-              <span className="badge badge-accent">Practice</span>
-            )}
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-              ✓ {answeredCount}/{questions.length}
+            <span className="exam-mode-chip tabular-nums" title="จำนวนข้อที่ตอบแล้ว">
+              <Check size={13} strokeWidth={2.2} style={{ color: 'var(--primary-light)' }} />
+              {answeredCount}/{questions.length}
             </span>
-          </div>
 
-          {/* Text size controls */}
-          <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.06)', borderRadius: '8px', padding: '2px 4px', flexShrink: 0 }}>
-            <button
-              onClick={() => setFontSizeLevel(l => Math.max(0, l - 1))}
-              style={{ background: 'none', border: 'none', color: fontSizeLevel === 0 ? 'var(--text-muted)' : 'var(--text)', cursor: 'pointer', padding: '2px 6px', fontSize: '0.75rem', fontWeight: 700 }}
-              title="ลดขนาดตัวอักษร"
-            >
-              A-
-            </button>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)', padding: '0 4px' }}>
-              ฟอนต์
-            </span>
-            <button
-              onClick={() => setFontSizeLevel(l => Math.min(2, l + 1))}
-              style={{ background: 'none', border: 'none', color: fontSizeLevel === 2 ? 'var(--text-muted)' : 'var(--text)', cursor: 'pointer', padding: '2px 6px', fontSize: '0.85rem', fontWeight: 700 }}
-              title="เพิ่มขนาดตัวอักษร"
-            >
-              A+
-            </button>
-          </div>
+            {/* Desktop Keyboard Shortcuts Popover */}
+            <div className="exam-kbd-wrap">
+              <button
+                type="button"
+                className="exam-kbd-trigger"
+                aria-expanded={showShortcuts}
+                onClick={() => setShowShortcuts(s => !s)}
+                title="ดูคีย์ลัดสำหรับคอมพิวเตอร์"
+              >
+                <Keyboard size={14} />
+                <span>คีย์ลัด</span>
+              </button>
+              {showShortcuts && (
+                <div className="exam-kbd-popover" role="dialog" aria-label="คีย์ลัดระหว่างทำข้อสอบ">
+                  <div className="exam-kbd-row"><span>เลือกคำตอบ</span><span><kbd>1</kbd>–<kbd>5</kbd> หรือ <kbd>A</kbd>–<kbd>E</kbd></span></div>
+                  <div className="exam-kbd-row"><span>เปลี่ยนหน้า</span><span><kbd>←</kbd> <kbd>→</kbd></span></div>
+                  <div className="exam-kbd-row"><span>ปักธงทบทวน</span><kbd>F</kbd></div>
+                  {mode === 'practice' && (
+                    <div className="exam-kbd-row"><span>ดู / ซ่อนเฉลย</span><kbd>Space</kbd></div>
+                  )}
+                </div>
+              )}
+            </div>
 
-          {/* Nav arrows */}
-          <div style={{ display: 'flex', gap: '0.4rem' }}>
-            <button
-              className="btn btn-secondary btn-sm"
-              onClick={handlePrev}
-              disabled={currentPageIndex === 0}
-              style={{ padding: '0.4rem 0.65rem' }}
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <button
-              className="btn btn-secondary btn-sm"
-              onClick={handleNext}
-              disabled={currentPageIndex === pages.length - 1}
-              style={{ padding: '0.4rem 0.65rem' }}
-            >
-              <ChevronRight size={16} />
-            </button>
+            {/* Text size controls */}
+            <div className="exam-font-stepper" role="group" aria-label="ปรับขนาดตัวอักษร">
+              <button
+                type="button"
+                onClick={() => setFontSizeLevel(l => Math.max(0, l - 1))}
+                disabled={fontSizeLevel === 0}
+                title="ลดขนาดตัวอักษร"
+              >
+                A-
+              </button>
+              <span className="exam-font-stepper-divider" aria-hidden="true" />
+              <button
+                type="button"
+                onClick={() => setFontSizeLevel(l => Math.min(2, l + 1))}
+                disabled={fontSizeLevel === 2}
+                title="เพิ่มขนาดตัวอักษร"
+              >
+                A+
+              </button>
+            </div>
+
+            {/* Compact Nav arrows */}
+            <div style={{ display: 'flex', gap: '0.3rem' }}>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={handlePrev}
+                disabled={currentPageIndex === 0}
+                style={{ minWidth: '34px', minHeight: '34px', padding: '0 0.45rem' }}
+                aria-label="หน้าก่อนหน้า"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={handleNext}
+                disabled={currentPageIndex === pages.length - 1}
+                style={{ minWidth: '34px', minHeight: '34px', padding: '0 0.45rem' }}
+                aria-label="หน้าถัดไป"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
+        </div>
+        <div className="exam-header-progress">
+          <div className="exam-header-progress-fill" style={{ width: `${progressPercentage}%` }} />
         </div>
       </div>
 
       {/* ── Question Card(s) ───────────────────────────── */}
-      <div style={{ padding: '1.25rem 0' }}>
-        <div className="glass-panel question-card animate-fade-in" style={{ padding: 'clamp(1rem, 2.5vw, 2rem)' }}>
+      <div style={{ padding: '0.5rem 0 1.25rem' }}>
+        <div
+          className={`glass-panel question-card animate-fade-in${currentPage.stem ? ' question-card--split' : ''}`}
+          style={currentPage.stem ? undefined : { padding: 'clamp(1rem, 2.5vw, 1.75rem)' }}
+        >
           
           {currentPage.stem ? (
             <div className="exam-split-grid">
               {/* Left Column: Sticky Clinical Vignette / STEM + Diagnostic Imaging */}
               <div className="exam-stem-sticky-panel">
-                <div className="glass-panel" style={{ 
-                  padding: '1.5rem', 
-                  borderLeft: '4px solid var(--primary)',
-                  background: 'linear-gradient(135deg, rgba(124,58,237,0.08) 0%, rgba(18,18,30,0.8) 100%)',
-                  borderRadius: '12px'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                      <div className="badge badge-primary" style={{ background: 'rgba(124, 58, 237, 0.25)', fontSize: '0.9rem', fontWeight: 800, padding: '0.35rem 0.75rem', border: '1px solid rgba(124,58,237,0.4)' }}>
-                        📌 {getStemLabel(currentPage.stem, currentPageIndex)}
-                      </div>
-                      <span style={{ fontSize: '0.88rem', color: 'var(--text-sub)', fontWeight: 600 }}>
-                        ข้อย่อยที่ {currentPage.questions[0].globalIndex + 1} {currentPage.questions.length > 1 && `- ${currentPage.questions[currentPage.questions.length - 1].globalIndex + 1}`}
+                <div className="exam-stem-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.9rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span className="badge badge-primary" style={{ fontSize: '0.82rem', fontWeight: 700, padding: '0.28rem 0.65rem', gap: '5px' }}>
+                        <FileText size={13} strokeWidth={1.8} /> {getStemLabel(currentPage.stem, currentPageIndex)}
+                      </span>
+                      <span className="tabular-nums" style={{ fontSize: '0.84rem', color: 'var(--text-sub)', fontWeight: 600 }}>
+                        ข้อย่อย {currentPage.questions[0].globalIndex + 1}{currentPage.questions.length > 1 && `–${currentPage.questions[currentPage.questions.length - 1].globalIndex + 1}`}
                       </span>
                     </div>
-                    <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-                      Stem ที่ {currentPageIndex + 1} จาก {pages.length}
-                    </div>
+                    <span className="tabular-nums" style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+                      เคสที่ {currentPageIndex + 1} / {pages.length}
+                    </span>
                   </div>
                   
                   {/* Show image for the stem if any question in the group has it */}
@@ -929,21 +939,23 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
                     const imgQ = currentPage.questions.find(q => q.image_path);
                     if (imgQ) {
                       return (
-                        <div style={{ textAlign: 'center', margin: '1rem 0' }}>
+                        <div style={{ textAlign: 'center', margin: '0.75rem 0 1rem' }}>
                           <img
                             src={`${API_BASE}/images/${imgQ.image_path}`}
                             alt="Stem Figure"
-                            style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.4)', cursor: 'pointer' }}
+                            style={{ maxWidth: '100%', maxHeight: '360px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', cursor: 'pointer' }}
                             onClick={() => { setLightboxImg(`${API_BASE}/images/${imgQ.image_path}`); setZoom(1); setPan({x:0, y:0}); }}
                           />
-                          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>🔍 คลิกรูปภาพเพื่อซูมขยายเต็มจอ</div>
+                          <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '0.35rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <ZoomIn size={13} /> คลิกรูปภาพเพื่อซูมขยายเต็มจอ
+                          </div>
                         </div>
                       );
                     }
                     return null;
                   })()}
 
-                  <div className="question-stem" style={{ border: 'none', background: 'transparent', padding: 0 }}>
+                  <div className="question-stem" style={{ border: 'none', background: 'transparent', padding: 0, marginBottom: 0 }}>
                     {cleanStemText(currentPage.stem).split('\n').map((line, i) => (
                       <p key={i} style={{ margin: 0, lineHeight: 1.75, fontSize: fs.stem }}>{line}</p>
                     ))}
@@ -952,12 +964,12 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
               </div>
 
               {/* Right Column: Sub-questions and choices */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 {currentPage.questions.map((q, localIdx) => renderQuestion(q, localIdx))}
               </div>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               {currentPage.questions.map((q, localIdx) => renderQuestion(q, localIdx))}
             </div>
           )}
@@ -971,7 +983,7 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
           <div className="legend-item"><span className="legend-dot green"></span> มั่นใจ</div>
           <div className="legend-item"><span className="legend-dot yellow"></span> ไม่มั่นใจ</div>
           <div className="legend-item"><span className="legend-dot red"></span> ทำไม่ได้/เดา</div>
-          <div className="legend-item"><span style={{ fontSize: '0.9rem' }}>🚩</span> ปักธงทบทวน</div>
+          <div className="legend-item"><span className="legend-dot" style={{ background: 'var(--warning)', borderRadius: '50%' }}></span> ปักธงทบทวน</div>
         </div>
         <div className="question-dots">
           {questions.map((q, i) => {
@@ -998,25 +1010,26 @@ export default function ExamSession({ questions, mode = 'exam', config = {}, sta
       {/* ── Fixed Bottom Action Bar ──────────────────── */}
       <div className="exam-action-bar">
         <button
+          type="button"
           className="btn btn-secondary"
           onClick={handlePrev}
           disabled={currentPageIndex === 0}
         >
-          <ChevronLeft size={18} /> Previous
+          <ChevronLeft size={17} /> <span>ก่อนหน้า</span>
         </button>
 
-        <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center' }}>
-          {answeredCount} / {questions.length} ตอบแล้ว
+        <div className="exam-action-counter">
+          {answeredCount} / {questions.length} ข้อ
         </div>
 
         {currentPageIndex < pages.length - 1 ? (
-          <button className="btn btn-primary" onClick={handleNext}>
-            Next <ChevronRight size={18} />
+          <button type="button" className="btn btn-primary" onClick={handleNext}>
+            <span>ถัดไป</span> <ChevronRight size={17} />
           </button>
         ) : (
-          <button className="btn btn-success" onClick={handleSubmit}>
-            {mode === 'practice' ? 'Finish Practice' : 'Submit Exam'}
-            <CircleCheck size={18} />
+          <button type="button" className="btn btn-success" onClick={handleSubmit}>
+            <span>{mode === 'practice' ? 'สรุปผลการฝึก' : 'ส่งข้อสอบ'}</span>
+            <CircleCheck size={17} />
           </button>
         )}
       </div>

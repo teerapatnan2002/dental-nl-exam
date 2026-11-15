@@ -8,16 +8,16 @@ import { API_BASE } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 
 const ARENA_MODES = [
-  { id: 'mixed', label: 'ผสมท้าทาย (Cloze + Pitfall)', icon: '⚡', color: '#8b5cf6' },
-  { id: 'cloze', label: 'Cloze เติมเลข-กฎหมาย-คีย์เวิร์ด', icon: '🧠', color: '#38bdf8' },
-  { id: 'pitfall', label: 'จับผิดกับดักตัวลวง (Pitfall)', icon: '💣', color: '#f43f5e' },
+  { id: 'mixed', label: 'ผสมท้าทาย (Cloze + Pitfall)', color: '#0d9488' },
+  { id: 'cloze', label: 'Cloze เติมเลข-กฎหมาย-คีย์เวิร์ด', color: '#0284c7' },
+  { id: 'pitfall', label: 'จับผิดกับดักตัวลวง (Pitfall)', color: '#e11d48' },
 ];
 
 const SM2_BUTTONS = [
-  { rating: 1, label: 'ลืมสนิท', sub: 'ทวนซ้ำด่วน', color: '#ef4444', bg: 'rgba(239,68,68,0.14)' },
-  { rating: 2, label: 'ยังติดขัด', sub: 'ระยะสั้น', color: '#f59e0b', bg: 'rgba(245,158,11,0.14)' },
-  { rating: 3, label: 'จำได้', sub: 'มาตรฐาน', color: '#10b981', bg: 'rgba(16,185,129,0.14)' },
-  { rating: 4, label: 'แม่นเป๊ะ', sub: 'เว้นช่วงยาว', color: '#38bdf8', bg: 'rgba(56,189,248,0.14)' },
+  { rating: 1, label: 'ลืมสนิท', sub: 'ทวนซ้ำด่วน', color: 'var(--ink-rose)', borderColor: 'rgba(239,68,68,0.45)', bg: 'rgba(239,68,68,0.12)' },
+  { rating: 2, label: 'ยังติดขัด', sub: 'ระยะสั้น', color: 'var(--ink-amber)', borderColor: 'rgba(245,158,11,0.45)', bg: 'rgba(245,158,11,0.12)' },
+  { rating: 3, label: 'จำได้', sub: 'มาตรฐาน', color: 'var(--ink-emerald)', borderColor: 'rgba(16,185,129,0.45)', bg: 'rgba(16,185,129,0.12)' },
+  { rating: 4, label: 'แม่นเป๊ะ', sub: 'เว้นช่วงยาว', color: 'var(--ink-sky)', borderColor: 'rgba(56,189,248,0.45)', bg: 'rgba(56,189,248,0.12)' },
 ];
 
 const TIMED_SECONDS = 25;
@@ -256,8 +256,8 @@ export default function ClozePitfallArena({
         className="card"
         style={{
           padding: '1.05rem 1.25rem',
-          background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(244,63,94,0.08))',
-          border: '1px solid rgba(139,92,246,0.32)',
+          background: 'linear-gradient(135deg, rgba(13,148,136,0.1), rgba(2,132,199,0.06))',
+          border: '1px solid rgba(13,148,136,0.28)',
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'space-between',
@@ -271,12 +271,12 @@ export default function ClozePitfallArena({
               width: 44,
               height: 44,
               borderRadius: '12px',
-              background: 'rgba(139,92,246,0.18)',
-              border: '1px solid rgba(139,92,246,0.4)',
+              background: 'rgba(13,148,136,0.16)',
+              border: '1px solid rgba(13,148,136,0.35)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#c4b5fd',
+              color: 'var(--primary-light)',
               flexShrink: 0,
             }}
           >
@@ -284,13 +284,13 @@ export default function ClozePitfallArena({
           </div>
           <div>
             <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text)' }}>
-              ⚡ Cloze Deletion & Pitfall Elimination Arena
+              Cloze Deletion & Pitfall Elimination Arena
             </h3>
             <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: 'var(--text-sub)' }}>
               ฝึกเติมตัวเลข-กฎหมาย-คีย์เวิร์ด และจับไต๋ตัวลวงระดับตำนานจากเฉลยจริง พร้อมจัดคิวทบทวน SM-2
               {arenaData?.summary?.prioritized_wrong_count > 0 && (
-                <span style={{ color: '#fda4af', fontWeight: 700, marginLeft: '0.45rem' }}>
-                  · ดึงข้อที่เคยผิดขึ้นมาทวนก่อน {arenaData.summary.prioritized_wrong_count} ข้อ!
+                <span style={{ color: 'var(--ink-rose)', fontWeight: 700, marginLeft: '0.45rem' }}>
+                  · ดึงข้อที่เคยผิดขึ้นมาทวนก่อน {arenaData.summary.prioritized_wrong_count} ข้อ
                 </span>
               )}
             </p>
@@ -302,13 +302,14 @@ export default function ClozePitfallArena({
             style={{
               padding: '0.4rem 0.75rem',
               borderRadius: '10px',
-              background: 'rgba(255,255,255,0.04)',
+              background: 'var(--surface-card)',
               border: '1px solid var(--border)',
               fontSize: '0.8rem',
+              fontVariantNumeric: 'tabular-nums',
             }}
           >
             คะแนนชุดนี้:{' '}
-            <strong style={{ color: '#34d399' }}>
+            <strong style={{ color: 'var(--ink-emerald)' }}>
               {sessionScore.correct}/{sessionScore.total}
             </strong>
           </div>
@@ -317,16 +318,17 @@ export default function ClozePitfallArena({
             style={{
               padding: '0.4rem 0.75rem',
               borderRadius: '10px',
-              background: streak >= 3 ? 'rgba(245,158,11,0.14)' : 'rgba(255,255,255,0.04)',
+              background: streak >= 3 ? 'rgba(245,158,11,0.14)' : 'var(--surface-card)',
               border: `1px solid ${streak >= 3 ? 'rgba(245,158,11,0.4)' : 'var(--border)'}`,
               fontSize: '0.8rem',
               display: 'flex',
               alignItems: 'center',
               gap: '0.3rem',
+              fontVariantNumeric: 'tabular-nums',
             }}
           >
-            <Flame size={14} style={{ color: '#fbbf24' }} />
-            <strong style={{ color: '#fbbf24' }}>{streak}</strong>
+            <Flame size={14} style={{ color: 'var(--ink-amber)' }} />
+            <strong style={{ color: 'var(--ink-amber)' }}>{streak}</strong>
           </div>
 
           <button
@@ -341,9 +343,9 @@ export default function ClozePitfallArena({
               fontSize: '0.8rem',
               fontWeight: 700,
               cursor: 'pointer',
-              background: timedMode ? 'rgba(244,63,94,0.2)' : 'rgba(255,255,255,0.05)',
-              color: timedMode ? '#fda4af' : 'var(--text)',
-              border: `1.5px solid ${timedMode ? '#f43f5e' : 'var(--border)'}`,
+              background: timedMode ? 'rgba(244,63,94,0.16)' : 'var(--surface-card)',
+              color: timedMode ? 'var(--ink-rose)' : 'var(--text)',
+              border: `1.5px solid ${timedMode ? '#e11d48' : 'var(--border)'}`,
             }}
           >
             <Timer size={14} />
@@ -363,7 +365,7 @@ export default function ClozePitfallArena({
               fontSize: '0.8rem',
               fontWeight: 700,
               cursor: 'pointer',
-              background: 'rgba(255,255,255,0.05)',
+              background: 'var(--surface-card)',
               color: 'var(--text)',
               border: '1px solid var(--border)',
             }}
@@ -392,12 +394,11 @@ export default function ClozePitfallArena({
                   fontSize: '0.82rem',
                   fontWeight: active ? 800 : 600,
                   cursor: 'pointer',
-                  background: active ? `${m.color}22` : 'rgba(255,255,255,0.03)',
+                  background: active ? `${m.color}20` : 'var(--surface-card)',
                   color: active ? m.color : 'var(--text-sub)',
                   border: `1.5px solid ${active ? m.color : 'var(--border)'}`,
                 }}
               >
-                <span>{m.icon}</span>
                 {m.label}
               </button>
             );
@@ -405,7 +406,7 @@ export default function ClozePitfallArena({
         </div>
 
         {arenaData?.summary && (
-          <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
+          <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', fontVariantNumeric: 'tabular-nums' }}>
             คลังพร้อมดึง: <strong style={{ color: 'var(--text)' }}>{arenaData.summary.cloze_available}</strong> Cloze ·{' '}
             <strong style={{ color: 'var(--text)' }}>{arenaData.summary.pitfall_available}</strong> Pitfall
           </div>
@@ -415,13 +416,13 @@ export default function ClozePitfallArena({
       {/* Loading / Error / Empty */}
       {loading && (
         <div className="card" style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-sub)' }}>
-          ⚡ กำลังสร้างชุด Cloze & Pitfall Elimination จากคลังข้อสอบและประวัติ SM-2...
+          กำลังสร้างชุด Cloze & Pitfall Elimination จากคลังข้อสอบและประวัติ SM-2...
         </div>
       )}
 
       {!loading && error && (
-        <div className="card" style={{ padding: '1.5rem', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.4)' }}>
-          ❌ {error}
+        <div className="card" style={{ padding: '1.5rem', color: 'var(--ink-rose)', border: '1px solid rgba(239,68,68,0.4)' }}>
+          {error}
         </div>
       )}
 
@@ -470,12 +471,12 @@ export default function ClozePitfallArena({
                     fontWeight: 800,
                     padding: '0.18rem 0.55rem',
                     borderRadius: '999px',
-                    background: 'rgba(244,63,94,0.18)',
-                    color: '#fca5a5',
+                    background: 'rgba(244,63,94,0.14)',
+                    color: 'var(--ink-rose)',
                     border: '1px solid rgba(244,63,94,0.35)',
                   }}
                 >
-                  🔥 เคยทำผิด — ดึงมาซ่อม
+                  เคยทำผิด — ดึงมาซ่อม
                 </span>
               )}
 
@@ -486,11 +487,11 @@ export default function ClozePitfallArena({
                     fontWeight: 700,
                     padding: '0.18rem 0.55rem',
                     borderRadius: '999px',
-                    background: currentSm2.is_due ? 'rgba(245,158,11,0.18)' : 'rgba(16,185,129,0.16)',
-                    color: currentSm2.is_due ? '#fde68a' : '#6ee7b7',
+                    background: currentSm2.is_due ? 'rgba(245,158,11,0.14)' : 'rgba(16,185,129,0.14)',
+                    color: currentSm2.is_due ? 'var(--ink-amber)' : 'var(--ink-emerald)',
                   }}
                 >
-                  {currentSm2.is_due ? '⏰ ถึงรอบ SM-2' : `✓ ทวนอีก ${currentSm2.days_until_due} วัน`}
+                  {currentSm2.is_due ? 'ถึงรอบทวน SM-2' : `ทวนอีก ${currentSm2.days_until_due} วัน`}
                 </span>
               )}
             </div>
@@ -554,7 +555,7 @@ export default function ClozePitfallArena({
 
           {/* Topic Subtitle */}
           <div style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--ink-indigo)' }}>
-            📚 {currentItem.topic_title_th}
+            {currentItem.topic_title_th}
           </div>
 
           {/* Card Content: CLOZE vs PITFALL */}
@@ -631,7 +632,7 @@ export default function ClozePitfallArena({
                 style={{
                   padding: '1.05rem 1.15rem',
                   borderRadius: '12px',
-                  background: 'rgba(255,255,255,0.03)',
+                  background: 'var(--surface-card)',
                   border: '1px solid var(--border)',
                   fontSize: '0.96rem',
                   lineHeight: 1.7,
@@ -652,7 +653,7 @@ export default function ClozePitfallArena({
                     currentAnswer.chosen &&
                     String(currentAnswer.chosen).trim().toUpperCase() === String(ch.label).trim().toUpperCase();
 
-                  let bg = 'rgba(255,255,255,0.03)';
+                  let bg = 'var(--surface-card)';
                   let borderColor = 'var(--border)';
                   if (answered) {
                     if (isCorrectChoice) {
@@ -685,13 +686,13 @@ export default function ClozePitfallArena({
                     >
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.6rem', fontSize: '0.9rem', fontWeight: 700 }}>
                         <span>
-                          <strong style={{ color: isCorrectChoice && answered ? '#34d399' : '#94a3b8', marginRight: '0.45rem' }}>
+                          <strong style={{ color: isCorrectChoice && answered ? 'var(--ink-emerald)' : 'var(--text-muted)', marginRight: '0.45rem' }}>
                             {ch.label}.
                           </strong>
                           {ch.text}
                         </span>
-                        {answered && isCorrectChoice && <CheckCircle2 size={17} style={{ color: '#34d399', flexShrink: 0 }} />}
-                        {answered && isChosen && !isCorrectChoice && <XCircle size={17} style={{ color: '#f87171', flexShrink: 0 }} />}
+                        {answered && isCorrectChoice && <CheckCircle2 size={17} style={{ color: 'var(--ink-emerald)', flexShrink: 0 }} />}
+                        {answered && isChosen && !isCorrectChoice && <XCircle size={17} style={{ color: 'var(--ink-rose)', flexShrink: 0 }} />}
                       </div>
 
                       {answered && ch.explanation && (
@@ -699,9 +700,9 @@ export default function ClozePitfallArena({
                           style={{
                             fontSize: '0.79rem',
                             lineHeight: 1.5,
-                            color: isCorrectChoice ? '#a7f3d0' : isChosen ? '#fecaca' : 'var(--text-sub)',
+                            color: isCorrectChoice ? 'var(--ink-emerald)' : isChosen ? 'var(--ink-rose)' : 'var(--text-sub)',
                             paddingTop: '0.25rem',
-                            borderTop: '1px dashed rgba(255,255,255,0.08)',
+                            borderTop: '1px dashed var(--border)',
                           }}
                         >
                           {ch.explanation}
@@ -722,14 +723,14 @@ export default function ClozePitfallArena({
                   style={{
                     padding: '0.6rem 0.9rem',
                     borderRadius: '10px',
-                    background: 'rgba(239,68,68,0.16)',
-                    border: '1px solid rgba(239,68,68,0.45)',
-                    color: '#fca5a5',
+                    background: 'rgba(239,68,68,0.14)',
+                    border: '1px solid rgba(239,68,68,0.42)',
+                    color: 'var(--ink-rose)',
                     fontSize: '0.84rem',
                     fontWeight: 700,
                   }}
                 >
-                  ⌛ หมดเวลา {TIMED_SECONDS} วินาที! ระบบเฉลยคำตอบให้แล้ว ลองอ่านหลักการและจุดหลอกด้านล่าง
+                  หมดเวลา {TIMED_SECONDS} วินาที — ระบบเฉลยคำตอบให้แล้ว ลองอ่านหลักการและจุดหลอกด้านล่าง
                 </div>
               )}
 
@@ -738,19 +739,19 @@ export default function ClozePitfallArena({
                   style={{
                     padding: '0.8rem 1rem',
                     borderRadius: '11px',
-                    background: 'rgba(245,158,11,0.11)',
-                    border: '1px solid rgba(245,158,11,0.38)',
+                    background: 'rgba(245,158,11,0.1)',
+                    border: '1px solid rgba(245,158,11,0.35)',
                     display: 'flex',
                     alignItems: 'flex-start',
                     gap: '0.55rem',
                     fontSize: '0.84rem',
-                    color: '#fde68a',
+                    color: 'var(--ink-amber)',
                     lineHeight: 1.55,
                   }}
                 >
-                  <ShieldAlert size={17} style={{ flexShrink: 0, marginTop: '2px', color: '#fbbf24' }} />
+                  <ShieldAlert size={17} style={{ flexShrink: 0, marginTop: '2px', color: 'var(--ink-amber)' }} />
                   <div>
-                    <strong>💣 กับดักข้อสอบที่คนส่วนใหญ่พลาด (Common Pitfall):</strong> {currentItem.common_pitfall}
+                    <strong>กับดักข้อสอบที่คนส่วนใหญ่พลาด (Common Pitfall):</strong> {currentItem.common_pitfall}
                   </div>
                 </div>
               )}
@@ -767,14 +768,14 @@ export default function ClozePitfallArena({
                     lineHeight: 1.55,
                   }}
                 >
-                  <strong style={{ color: '#34d399' }}>💎 Key Takeaway:</strong>{' '}
+                  <strong style={{ color: 'var(--ink-emerald)' }}>Key Takeaway:</strong>{' '}
                   {currentItem.key_takeaway || currentItem.why_correct}
                 </div>
               )}
 
               {currentItem.reference && (
                 <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
-                  📚 อ้างอิง: {currentItem.reference}
+                  อ้างอิง: {currentItem.reference}
                 </div>
               )}
 
@@ -783,7 +784,7 @@ export default function ClozePitfallArena({
                 style={{
                   padding: '0.85rem 1rem',
                   borderRadius: '12px',
-                  background: 'rgba(2,6,23,0.45)',
+                  background: 'var(--surface-subtle)',
                   border: '1px solid var(--border)',
                   display: 'flex',
                   flexWrap: 'wrap',
@@ -795,8 +796,8 @@ export default function ClozePitfallArena({
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: '1 1 300px' }}>
                   <div style={{ fontSize: '0.77rem', fontWeight: 700, color: 'var(--text-sub)' }}>
                     {token
-                      ? '🧠 บันทึกความจำเข้าสู่คิวทบทวน SM-2 (Cloze Deck):'
-                      : '🧠 เข้าสู่ระบบเพื่อบันทึกรอบทบทวน SM-2 อัตโนมัติ:'}
+                      ? 'บันทึกความจำเข้าสู่คิวทบทวน SM-2 (Cloze Deck):'
+                      : 'เข้าสู่ระบบเพื่อบันทึกรอบทบทวน SM-2 อัตโนมัติ:'}
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                     {SM2_BUTTONS.map((b) => (
@@ -814,7 +815,7 @@ export default function ClozePitfallArena({
                           opacity: token ? 1 : 0.5,
                           background: b.bg,
                           color: b.color,
-                          border: `1px solid ${b.color}55`,
+                          border: `1px solid ${b.borderColor}`,
                         }}
                       >
                         {b.label} <span style={{ fontSize: '0.68rem', opacity: 0.85 }}>({b.sub})</span>
@@ -838,9 +839,9 @@ export default function ClozePitfallArena({
                         fontSize: '0.8rem',
                         fontWeight: 700,
                         cursor: 'pointer',
-                        background: 'rgba(16,185,129,0.16)',
-                        color: '#34d399',
-                        border: '1px solid rgba(16,185,129,0.4)',
+                        background: 'rgba(16,185,129,0.14)',
+                        color: 'var(--ink-emerald)',
+                        border: '1px solid rgba(16,185,129,0.38)',
                       }}
                     >
                       <Play size={14} /> ทำข้อสอบเต็ม Q#{currentItem.question_id}
@@ -860,9 +861,9 @@ export default function ClozePitfallArena({
                         fontSize: '0.8rem',
                         fontWeight: 700,
                         cursor: 'pointer',
-                        background: 'rgba(139,92,246,0.16)',
-                        color: '#c4b5fd',
-                        border: '1px solid rgba(139,92,246,0.4)',
+                        background: 'var(--surface-card)',
+                        color: 'var(--primary-light)',
+                        border: '1px solid rgba(13,148,136,0.38)',
                       }}
                     >
                       <BookOpen size={14} /> เปิดบทเรียนหัวข้อนี้
@@ -873,6 +874,7 @@ export default function ClozePitfallArena({
                     <button
                       type="button"
                       onClick={() => setCurrentIdx((idx) => idx + 1)}
+                      className="btn btn-primary btn-sm"
                       style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -880,11 +882,7 @@ export default function ClozePitfallArena({
                         padding: '0.48rem 0.9rem',
                         borderRadius: '9px',
                         fontSize: '0.8rem',
-                        fontWeight: 800,
-                        cursor: 'pointer',
-                        border: 'none',
-                        background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-                        color: '#fff',
+                        fontWeight: 700,
                       }}
                     >
                       <Sparkles size={14} /> ข้อถัดไป

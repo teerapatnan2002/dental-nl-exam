@@ -4,10 +4,10 @@ import { API_BASE } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 
 const STATUS_STYLES = {
-  pending:   { label: 'รอตรวจสอบ', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
-  reviewing: { label: 'กำลังตรวจสอบ', color: '#06b6d4', bg: 'rgba(6,182,212,0.12)' },
-  resolved:  { label: 'แก้ไขแล้ว', color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
-  rejected:  { label: 'ไม่รับเรื่อง', color: '#f43f5e', bg: 'rgba(244,63,94,0.12)' },
+  pending:   { label: 'รอตรวจสอบ', color: 'var(--ink-amber)', bg: 'rgba(245,158,11,0.12)' },
+  reviewing: { label: 'กำลังตรวจสอบ', color: 'var(--ink-sky)', bg: 'rgba(2,132,199,0.12)' },
+  resolved:  { label: 'แก้ไขแล้ว', color: 'var(--ink-emerald)', bg: 'rgba(16,185,129,0.12)' },
+  rejected:  { label: 'ไม่รับเรื่อง', color: 'var(--ink-rose)', bg: 'rgba(244,63,94,0.12)' },
 };
 
 const ISSUE_LABELS = {

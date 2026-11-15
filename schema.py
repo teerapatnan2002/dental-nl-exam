@@ -94,6 +94,38 @@ class UserResponse(BaseModel):
     username: str
     created_at: int
     role: str = "user"
+    display_name: Optional[str] = None
+    dental_school: Optional[str] = None
+    academic_year: Optional[str] = None
+    target_exam_session: Optional[str] = "NL 1/2570"
+    target_score_pct: Optional[int] = 75
+    daily_goal_questions: Optional[int] = 20
+    subscription_tier: str = "early_access"
+    subscription_status: str = "active"
+    subscription_expires_at: Optional[int] = None
+    access_token: Optional[str] = None
+    refresh_token: Optional[str] = None
+
+
+class UserProfileUpdate(BaseModel):
+    username: Optional[str] = Field(default=None, min_length=3, max_length=50)
+    email: Optional[EmailStr] = None
+    display_name: Optional[str] = Field(default=None, max_length=80)
+    dental_school: Optional[str] = Field(default=None, max_length=120)
+    academic_year: Optional[str] = Field(default=None, max_length=60)
+    target_exam_session: Optional[str] = Field(default=None, max_length=60)
+    target_score_pct: Optional[int] = Field(default=None, ge=50, le=100)
+    daily_goal_questions: Optional[int] = Field(default=None, ge=5, le=200)
+
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+    @field_validator('new_password')
+    @classmethod
+    def validate_new_password(cls, v):
+        return UserCreate.validate_password(v)
 
 class Token(BaseModel):
     access_token: str

@@ -133,12 +133,54 @@ export const AuthProvider = ({ children }) => {
     await login(email, password);
   };
 
+  const updateProfile = async (payload) => {
+    const res = await authFetch(`${API_BASE}/api/auth/profile`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      if (Array.isArray(data.detail)) {
+        throw new Error(data.detail.map(e => e.msg).join(', '));
+      }
+      throw new Error(data.detail || 'ไม่สามารถอัปเดตข้อมูลโปรไฟล์ได้');
+    }
+    if (data.access_token) {
+      localStorage.setItem('token', data.access_token);
+      setToken(data.access_token);
+    }
+    if (data.refresh_token) {
+      localStorage.setItem('refresh_token', data.refresh_token);
+      setRefreshToken(data.refresh_token);
+    }
+    setUser(data);
+    return data;
+  };
+
+  const changePassword = async (currentPassword, newPassword) => {
+    const res = await authFetch(`${API_BASE}/api/auth/change-password`, {
+      method: 'POST',
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      if (Array.isArray(data.detail)) {
+        throw new Error(data.detail.map(e => e.msg).join(', '));
+      }
+      throw new Error(data.detail || 'ไม่สามารถเปลี่ยนรหัสผ่านได้');
+    }
+    return data;
+  };
+
   const logout = () => {
     clearTokens();
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, authFetch }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, authFetch, updateProfile, changePassword, refreshUser: fetchCurrentUser }}>
       {children}
     </AuthContext.Provider>
   );

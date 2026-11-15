@@ -3,7 +3,7 @@ import {
   Scale, BookOpen, Brain, Sparkles, CheckCircle2, XCircle, RotateCw, 
   ChevronLeft, ChevronRight, Shuffle, AlertTriangle, ArrowLeft, Play, 
   Search, ShieldAlert, Award, FileText, Check, HelpCircle, Flame, Eye,
-  Compass, ChevronDown, ChevronUp, Clock, Bookmark
+  Compass, ChevronDown, ChevronUp, Clock, Bookmark, Layers, Target
 } from 'lucide-react';
 
 // ============================================================================
@@ -14,7 +14,7 @@ const FLASHCARDS = [
   {
     id: 1,
     category: 'วิชาชีพทันตกรรม',
-    categoryColor: '#8b5cf6',
+    categoryColor: '#0d9488',
     question: 'ใบอนุญาตประกอบวิชาชีพทันตกรรม หมดอายุเมื่อใด?',
     answer: 'หากได้รับก่อนวันที่ 25 พฤษภาคม 2559 มีอายุ "ตลอดชีพ" (ตาม ม.6 บทเฉพาะกาล พ.ร.บ.วิชาชีพทันตกรรม ฉบับที่ 2 พ.ศ. 2559)\n\nหากได้รับหลังวันที่ 25 พ.ค. 2559 มีอายุ 5 ปี และต้องต่ออายุโดยมีหน่วยกิจกรรมการศึกษาต่อเนื่อง (CDEC) อย่างน้อย 100 หน่วยกิต',
     statute: 'พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537 และ ฉบับที่ 2 พ.ศ. 2559 (ม.31, ม.6)',
@@ -23,7 +23,7 @@ const FLASHCARDS = [
   {
     id: 2,
     category: 'วิชาชีพทันตกรรม',
-    categoryColor: '#8b5cf6',
+    categoryColor: '#0d9488',
     question: 'โทษทางจรรยาบรรณที่ทันตแพทยสภาสามารถสั่งลงโทษได้ มีอะไรบ้าง?',
     answer: 'มี 5 ระดับเท่านั้น ได้แก่:\n1. ยกข้อกล่าวหา\n2. ว่ากล่าวตักเตือน\n3. ภาคทัณฑ์\n4. พักใช้ใบอนุญาต (ไม่เกิน 2 ปี)\n5. เพิกถอนใบอนุญาต',
     statute: 'พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537 มาตรา 39',
@@ -32,7 +32,7 @@ const FLASHCARDS = [
   {
     id: 3,
     category: 'วิชาชีพทันตกรรม',
-    categoryColor: '#8b5cf6',
+    categoryColor: '#0d9488',
     question: 'ใครมีสิทธิกล่าวหาหรือร้องเรียนทันตแพทย์ต่อทันตแพทยสภา?',
     answer: '"บุคคลใดก็ได้" (ไม่จำเป็นต้องเป็นผู้เสียหายโดยตรง เช่น ประชาชนทั่วไป, ทันตแพทย์ด้วยกัน, หรือสภาตั้งเรื่องเอง)',
     statute: 'พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537 มาตรา 34',
@@ -41,7 +41,7 @@ const FLASHCARDS = [
   {
     id: 4,
     category: 'วิชาชีพทันตกรรม',
-    categoryColor: '#8b5cf6',
+    categoryColor: '#0d9488',
     question: 'อายุความในการร้องเรียนคดีจรรยาบรรณต่อทันตแพทยสภา มีกำหนดเท่าใด?',
     answer: 'ภายใน 1 ปี นับแต่วันที่ผู้เสียหายหรือผู้กล่าวหารู้เรื่องการประพฤติผิดและรู้ตัวผู้กระทำผิด (แต่ทั้งนี้ต้องไม่เกิน 3 ปีนับแต่วันที่มีการกระทำความผิด)',
     statute: 'พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537 มาตรา 35',
@@ -50,7 +50,7 @@ const FLASHCARDS = [
   {
     id: 5,
     category: 'วิชาชีพทันตกรรม',
-    categoryColor: '#8b5cf6',
+    categoryColor: '#0d9488',
     question: 'หากผู้กล่าวหาหรือผู้เสียหายขอ "ถอนเรื่องร้องเรียน" ต่อทันตแพทยสภา กระบวนการจะเป็นอย่างไร?',
     answer: 'การถอนเรื่อง "ไม่เป็นเหตุให้ระงับการดำเนินการ" คณะกรรมการทันตแพทยสภายังมีอำนาจสืบสวนสอบสวนและวินิจฉัยลงโทษต่อไปได้',
     statute: 'พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537 มาตรา 36',
@@ -59,7 +59,7 @@ const FLASHCARDS = [
   {
     id: 6,
     category: 'วิชาชีพทันตกรรม',
-    categoryColor: '#8b5cf6',
+    categoryColor: '#0d9488',
     question: 'ทันตแพทย์ที่ถูก "เพิกถอนใบอนุญาต" จะขอรับใบอนุญาตใหม่ได้เมื่อใด?',
     answer: 'เมื่อพ้นกำหนด "2 ปี" นับแต่วันที่ถูกสั่งเพิกถอนใบอนุญาต และคณะกรรมการทันตแพทยสภาพิจารณาแล้วเห็นสมควรออกให้ใหม่',
     statute: 'พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537 มาตรา 42',
@@ -68,7 +68,7 @@ const FLASHCARDS = [
   {
     id: 7,
     category: 'วิชาชีพทันตกรรม',
-    categoryColor: '#8b5cf6',
+    categoryColor: '#0d9488',
     question: 'ทันตแพทย์ที่หยุดประกอบวิชาชีพทันตกรรม ใบอนุญาตยังมีผลบังคับใช้หรือไม่?',
     answer: 'ยังมีผลสมบูรณ์ เพราะใบอนุญาต (รุ่นตลอดชีพ) จะสิ้นสุดลงต่อเมื่อ: ตาย, ขอลาออก, ถูกสั่งพักใช้ หรือถูกสั่งเพิกถอนเท่านั้น การหยุดตรวจหรือไปทำงานอื่นไม่ทำให้ใบอนุญาตหมดอายุ',
     statute: 'พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537',
@@ -77,7 +77,7 @@ const FLASHCARDS = [
   {
     id: 8,
     category: 'วิชาชีพทันตกรรม',
-    categoryColor: '#8b5cf6',
+    categoryColor: '#0d9488',
     question: 'ผู้ที่ไม่ได้เป็นทันตแพทย์แต่แอบอ้างประกอบวิชาชีพทันตกรรม มีโทษตามกฎหมายอย่างไร?',
     answer: 'จำคุกไม่เกิน 3 ปี หรือปรับไม่เกิน 30,000 บาท หรือทั้งจำทั้งปรับ (ตาม ม.28, ม.50)',
     statute: 'พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537 มาตรา 28 และ 50',
@@ -256,7 +256,7 @@ const FLASHCARDS = [
   {
     id: 27,
     category: 'จรรยาบรรณ & ละเมิด',
-    categoryColor: '#ec4899',
+    categoryColor: '#e11d48',
     question: 'Informed Consent แบบใดที่เพียงพอสำหรับหัตถการตรวจฟันหรือขูดหินน้ำลายทั่วไป?',
     answer: 'พฤติกรรมยินยอมโดยปริยาย (Implied consent) เช่น คนไข้นั่งบนเก้าอี้ทำฟันแล้วอ้าปากให้ตรวจ อย่างไรก็ตาม หัตถการที่มีความเสี่ยง ผ่าตัด หรือถอนฟัน ควรได้รับ Expressed written consent เสมอ',
     statute: 'แนวทางเวชปฏิบัติทันตกรรม และ พ.ร.บ. สุขภาพแห่งชาติ ม.8',
@@ -265,7 +265,7 @@ const FLASHCARDS = [
   {
     id: 28,
     category: 'จรรยาบรรณ & ละเมิด',
-    categoryColor: '#ec4899',
+    categoryColor: '#e11d48',
     question: 'กรณีใดที่ทันตแพทย์สามารถให้การรักษาได้โดยไม่ต้องขอความยินยอม (Informed Consent)?',
     answer: 'กรณี "ฉุกเฉินและจำเป็นเร่งด่วนเพื่อช่วยชีวิต" ซึ่งหากรอขอความยินยอมจะทำให้ผู้ป่วยเป็นอันตรายถึงชีวิต และผู้ป่วยอยู่ในภาวะไม่สามารถให้ความยินยอมได้',
     statute: 'ประมวลกฎหมายอาญา ม.67 (กระทำด้วยความจำเป็น), พ.ร.บ.สุขภาพแห่งชาติ',
@@ -274,7 +274,7 @@ const FLASHCARDS = [
   {
     id: 29,
     category: 'จรรยาบรรณ & ละเมิด',
-    categoryColor: '#ec4899',
+    categoryColor: '#e11d48',
     question: 'หากทันตแพทย์ปฏิบัติตาม Standard of Care ครบถ้วน แต่เกิดภาวะแทรกซ้อนที่หลีกเลี่ยงไม่ได้ ทันตแพทย์มีความผิดหรือไม่?',
     answer: '"ไม่มีความผิด" ทั้งทางอาญา แพ่ง และจรรยาบรรณ เพราะความรับผิดทางการแพทย์พิจารณาจาก "ความประมาทเลินเล่อ (Negligence)" มิได้รับประกันผลสำเร็จของการรักษา (Not a warranty of cure)',
     statute: 'ประมวลกฎหมายแพ่งและพาณิชย์ ม.420, บรรทัดฐานคำพิพากษาศาลฎีกา',
@@ -283,7 +283,7 @@ const FLASHCARDS = [
   {
     id: 30,
     category: 'จรรยาบรรณ & ละเมิด',
-    categoryColor: '#ec4899',
+    categoryColor: '#e11d48',
     question: 'การฟ้องคดีแพ่งเรียกค่าเสียหายจากทันตแพทย์ฐานละเมิด มีอายุความเท่าใด?',
     answer: '"1 ปี" นับแต่วันที่ผู้เสียหายรู้ถึงการละเมิดและรู้ตัวผู้กระทำ หรือไม่เกิน "10 ปี" นับแต่วันที่ทำละเมิด (แต่หากเป็นคดีผู้บริโภคอาจขยายตาม พ.ร.บ.วิธีพิจารณาคดีผู้บริโภค)',
     statute: 'ประมวลกฎหมายแพ่งและพาณิชย์ มาตรา 448',
@@ -292,7 +292,7 @@ const FLASHCARDS = [
   {
     id: 31,
     category: 'จรรยาบรรณ & ละเมิด',
-    categoryColor: '#ec4899',
+    categoryColor: '#e11d48',
     question: 'ทันตแพทย์ออกใบรับรองแพทย์หรือเอกสารเบิกประกันเท็จ มีความผิดอย่างไร?',
     answer: 'ผิด 3 สถานพร้อมกัน:\n1. กฎหมายอาญา (แจ้งข้อความเท็จ/ออกเอกสารเท็จ ม.269 จำคุกไม่เกิน 2 ปี หรือปรับไม่เกิน 40,000 บาท)\n2. พ.ร.บ. วิชาชีพทันตกรรม (ผิดจรรยาบรรณ มีโทษถึงเพิกถอนใบอนุญาต)\n3. ทางแพ่ง (ฐานร่วมกันฉ้อโกง/ละเมิดต่อบริษัทประกัน)',
     statute: 'ประมวลกฎหมายอาญา ม.269, ข้อบังคับทันตแพทยสภาว่าด้วยจรรยาบรรณ',
@@ -301,7 +301,7 @@ const FLASHCARDS = [
   {
     id: 32,
     category: 'จรรยาบรรณ & ละเมิด',
-    categoryColor: '#ec4899',
+    categoryColor: '#e11d48',
     question: 'ทันตแพทย์เปิดช่อง YouTube / TikTok ให้ความรู้ แต่มีการกล่าวอ้างว่าเป็น "อันดับหนึ่ง" หรือรับรองผล 100% ผิดข้อใด?',
     answer: 'ผิดข้อบังคับทันตแพทยสภาว่าด้วยจรรยาบรรณแห่งวิชาชีพทันตกรรม เรื่อง "การโฆษณาที่โอ้อวดเกินจริง ก่อให้เกิดความเข้าใจผิด หรือรับรองผลการรักษา"',
     statute: 'ข้อบังคับทันตแพทยสภาว่าด้วยจรรยาบรรณแห่งวิชาชีพทันตกรรม',
@@ -348,7 +348,7 @@ const FLASHCARDS = [
   {
     id: 37,
     category: 'วิชาชีพทันตกรรม',
-    categoryColor: '#8b5cf6',
+    categoryColor: '#0d9488',
     question: 'การศึกษาต่อเนื่อง (CDE) ตามข้อบังคับทันตแพทยสภา พ.ศ. 2560 ต้องสะสมหน่วยกิจกรรมเท่าใด และมีการแจ้งเตือนล่วงหน้าเมื่อใด?',
     answer: '1. ต้องสะสมหน่วยกิจกรรมไม่น้อยกว่า "100 หน่วยกิจกรรม ในรอบระยะเวลา 5 ปี"\n2. การแจ้งเตือนล่วงหน้า: เมื่อครบกำหนด "4 ปี" ทันตแพทยสภาจะแจ้งเตือนผู้ที่สะสมหน่วยกิจกรรม "น้อยกว่า 80 หน่วยกิจกรรม" ให้ทราบล่วงหน้า\n3. เมื่อครบ 5 ปี หากไม่ครบ จะรวบรวมรายชื่อจัดทำประกาศภายใน 3 เดือน',
     statute: 'ข้อบังคับทันตแพทยสภา ว่าด้วยหลักเกณฑ์การเข้าร่วมการศึกษาต่อเนื่องฯ พ.ศ. 2560 (ข้อ 5, 9, 13)',
@@ -357,7 +357,7 @@ const FLASHCARDS = [
   {
     id: 38,
     category: 'วิชาชีพทันตกรรม',
-    categoryColor: '#8b5cf6',
+    categoryColor: '#0d9488',
     question: 'หากใบอนุญาตหมดอายุเนื่องจากหน่วยการศึกษาต่อเนื่อง (CDE) ไม่ครบ จะขอต่ออายุใบอนุญาตได้อย่างไร?',
     answer: 'แบ่งเป็น 2 กรณีตามระยะเวลาที่ยื่นคำร้อง:\n1. ยื่นคำร้อง "ภายใน 1 ปี" นับแต่หมดอายุ: ต้องแสดงหน่วยกิจกรรม CDE ที่เข้าร่วมหลังจากหมดอายุ "เท่ากับจำนวนหน่วยที่ยังขาดไป"\n2. ยื่นคำร้อง "หลังจาก 1 ปี" นับแต่หมดอายุ: ต้องแสดงหลักฐาน CDE ที่เข้าร่วมหลังจากหมดอายุ "ไม่น้อยกว่า 200 หน่วยกิจกรรม"',
     statute: 'ข้อบังคับทันตแพทยสภา ว่าด้วยหลักเกณฑ์การเข้าร่วมการศึกษาต่อเนื่องฯ พ.ศ. 2560 (ข้อ 10, 14)',
@@ -366,7 +366,7 @@ const FLASHCARDS = [
   {
     id: 39,
     category: 'วิชาชีพทันตกรรม',
-    categoryColor: '#8b5cf6',
+    categoryColor: '#0d9488',
     question: 'ทันตแพทย์ที่ไม่สามารถเข้าร่วมกิจกรรม CDE ได้ครบตามเกณฑ์ด้วยเหตุผลทางสุขภาพหรือเหตุสุดวิสัย มีทางออกตามกฎหมายอย่างไร?',
     answer: 'สามารถยื่นคำร้องขอให้คณะกรรมการทันตแพทยสภา "ยกเว้นการดำเนินการ" ได้เป็นรายกรณี โดยต้องแสดงหลักฐานประกอบ เช่น ใบรับรองแพทย์ หรือหลักฐานเหตุสุดวิสัย โดยคำวินิจฉัยของคณะกรรมการทันตแพทยสภาถือเป็นที่สุด',
     statute: 'ข้อบังคับทันตแพทยสภา ว่าด้วยหลักเกณฑ์การเข้าร่วมการศึกษาต่อเนื่องฯ พ.ศ. 2560 (ข้อ 15 หมวด 4 ข้อยกเว้น)',
@@ -375,7 +375,7 @@ const FLASHCARDS = [
   {
     id: 40,
     category: 'จรรยาบรรณ & ละเมิด',
-    categoryColor: '#ec4899',
+    categoryColor: '#e11d48',
     question: 'ทันตแพทย์สามารถวิพากษ์วิจารณ์ หรือบอกคนไข้ว่าทันตแพทย์คนเดิมรักษาผิดพลาด/ไม่ดี เพื่อให้คนไข้มารักษาต่อกับตน ได้หรือไม่?',
     answer: '"ห้ามเด็ดขาด" ผู้ประกอบวิชาชีพทันตกรรมต้องไม่ทับถม ให้ร้าย ประณาม หรือดูหมิ่นผู้ประกอบวิชาชีพทันตกรรมด้วยกัน ทั้งต่อหน้าและลับหลัง และต้องไม่ชักจูงผู้ป่วยของผู้อื่นมาเป็นของตนโดยมิชอบ เว้นแต่เป็นการให้ความเห็นทางวิชาการตามหน้าที่ในกระบวนการสอบสวนตามกฎหมาย',
     statute: 'ข้อบังคับทันตแพทยสภาว่าด้วยจรรยาบรรณแห่งวิชาชีพทันตกรรม (หมวดการปฏิบัติต่อเพื่อนร่วมวิชาชีพ)',
@@ -384,7 +384,7 @@ const FLASHCARDS = [
   {
     id: 41,
     category: 'จรรยาบรรณ & ละเมิด',
-    categoryColor: '#ec4899',
+    categoryColor: '#e11d48',
     question: 'ทันตแพทย์รักษาคนไข้ที่ยากจน โดยใช้วัสดุอุดฟันหรือยาที่ "หมดอายุแล้ว" แต่คิดราคาถูกมากหรือทำให้ฟรี มีความผิดหรือไม่?',
     answer: '"มีความผิด" ทั้งมาตรฐานวิชาชีพและจรรยาบรรณแห่งวิชาชีพทันตกรรม เพราะมาตรฐานการรักษาและความปลอดภัยของผู้ป่วยเป็นสิ่งที่ลดหย่อนไม่ได้ เจตนาช่วยเหลือหรือความยากจนของผู้ป่วยไม่สามารถนำมาเป็นข้ออ้างในการใช้วัสดุหรือยาที่เสื่อมสภาพ/หมดอายุ',
     statute: 'พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537 และ พ.ร.บ. สถานพยาบาล พ.ศ. 2541 มาตรา 34, 35',
@@ -393,7 +393,7 @@ const FLASHCARDS = [
   {
     id: 42,
     category: 'จรรยาบรรณ & ละเมิด',
-    categoryColor: '#ec4899',
+    categoryColor: '#e11d48',
     question: 'หากเจ้าของคลินิกหรือเจ้าหน้าที่นำเอกสารเบิกค่ารักษาพยาบาล (เช่น ประกันสังคม/ประกันสุขภาพ) มาให้ทันตแพทย์ลงชื่อ โดยทันตแพทย์เซ็นชื่อไปโดยไม่ได้ตรวจดูรายละเอียด แล้วพบว่าเป็นการเบิกเท็จ ทันตแพทย์มีความผิดหรือไม่?',
     answer: '"ทันตแพทย์มีความผิด" ทันตแพทย์ในฐานะผู้ประกอบวิชาชีพมีหน้าที่ต้องตรวจสอบความถูกต้องของเอกสารที่ตนลงลายมือชื่อเสมอ ไม่สามารถอ้างว่า "เจ้าของคลินิกเป็นผู้จัดทำ" หรือ "ไม่ได้อ่านก่อนเซ็น" เพื่อพ้นความรับผิดได้ และต้องรับผิดทั้งทางอาญา (ม.269) และจรรยาบรรณ',
     statute: 'ประมวลกฎหมายอาญา ม.269 และข้อบังคับทันตแพทยสภาว่าด้วยจรรยาบรรณแห่งวิชาชีพทันตกรรม',
@@ -402,7 +402,7 @@ const FLASHCARDS = [
   {
     id: 43,
     category: 'จรรยาบรรณ & ละเมิด',
-    categoryColor: '#ec4899',
+    categoryColor: '#e11d48',
     question: 'ทันตแพทย์ที่สำเร็จการศึกษาปริญญาโทเฉพาะทาง (Master’s Degree) จากสถาบันที่ทันตแพทยสภารับรอง สามารถโฆษณาตนเองว่าเป็น "ผู้เชี่ยวชาญ" ได้หรือไม่?',
     answer: '"ห้ามเด็ดขาด" การจะใช้คำว่า "ผู้เชี่ยวชาญ" หรือแสดงตนเป็นทันตแพทย์เฉพาะทาง ต้องได้รับ "วุฒิบัตร" หรือ "อนุมัติบัตร" แสดงความรู้ความชำนาญจากทันตแพทยสภาเท่านั้น การจบปริญญาโทหรือศึกษาดูงานต่างประเทศโดยยังไม่มีวุฒิบัตร/อนุมัติบัตร ไม่สามารถโฆษณาว่าเป็นผู้เชี่ยวชาญได้',
     statute: 'ข้อบังคับทันตแพทยสภาว่าด้วยจรรยาบรรณแห่งวิชาชีพทันตกรรม พ.ศ. 2538 หมวด 3 ข้อ 23',
@@ -447,7 +447,7 @@ const FLASHCARDS = [
   {
     id: 48,
     category: 'จรรยาบรรณ & ละเมิด',
-    categoryColor: '#ec4899',
+    categoryColor: '#e11d48',
     question: 'ผู้ป่วยเปิดเผยว่าตนติดเชื้อเอชไอวี (HIV) และรับยาต้านไวรัสอยู่ ทันตแพทย์สามารถปฏิเสธการรักษาและส่งต่อไปโรงพยาบาลอื่นได้หรือไม่?',
     answer: '"ไม่สามารถปฏิเสธการรักษาได้" หากเป็นหัตถการทั่วไปที่อยู่ในขีดความสามารถของคลินิก ทันตแพทย์ต้องให้บริการตามปกติโดยใช้มาตรการ "Standard Precautions" ในการป้องกันการติดเชื้ออย่างเท่าเทียม การปฏิเสธการรักษาผู้ป่วย HIV โดยไม่มีเหตุผลทางการแพทย์อันสมควร ถือเป็นการเลือกปฏิบัติอย่างไม่เป็นธรรม ละเมิดสิทธิผู้ป่วย และผิดจรรยาบรรณแห่งวิชาชีพ',
     statute: 'พ.ร.บ. สุขภาพแห่งชาติ พ.ศ. 2550, รัฐธรรมนูญแห่งราชอาณาจักรไทย และข้อบังคับจรรยาบรรณทันตแพทยสภา',
@@ -463,7 +463,7 @@ const CONCEPT_MAPPINGS = [
     id: 'act_dental',
     title: '1. พ.ร.บ. วิชาชีพทันตกรรม พ.ศ. 2537 / 2559',
     badge: 'หัวใจข้อสอบ 30%',
-    color: '#8b5cf6',
+    color: '#0d9488',
     icon: Scale,
     branches: [
       {
@@ -623,7 +623,7 @@ const CONCEPT_MAPPINGS = [
     id: 'ethics_tort',
     title: '5. กฎหมายการแพทย์ทั่วไป, จริยธรรม & ละเมิด',
     badge: 'แนวทางปฏิบัติ 10%',
-    color: '#ec4899',
+    color: '#e11d48',
     icon: Award,
     branches: [
       {
@@ -777,11 +777,6 @@ export default function LawStudyHub({ onBack, onStartExam }) {
           <button
             className="btn btn-primary"
             onClick={() => onStartExam({ category: 'กฎหมายและจรรยาบรรณ', mode: 'practice', count: 30 })}
-            style={{ 
-              background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
-              border: 'none',
-              boxShadow: '0 4px 15px rgba(124, 58, 237, 0.35)'
-            }}
           >
             <Play size={15} /> ลุยข้อสอบกฎหมาย (30 ข้อ)
           </button>
@@ -793,10 +788,10 @@ export default function LawStudyHub({ onBack, onStartExam }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
           <div style={{ minWidth: 0, maxWidth: '100%' }}>
             <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.4rem' }}>
-              <span className="badge" style={{ background: 'rgba(124,58,237,0.2)', color: 'var(--primary-light)', border: '1px solid rgba(124,58,237,0.4)' }}>
-                ⚖️ HIGH-YIELD PASS CRITICAL
+              <span className="badge" style={{ background: 'rgba(13,148,136,0.14)', color: 'var(--primary-light)', border: '1px solid rgba(13,148,136,0.35)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                <Scale size={12} /> HIGH-YIELD PASS CRITICAL
               </span>
-              <span className="badge" style={{ background: 'rgba(16,185,129,0.2)', color: 'var(--ink-emerald)', border: '1px solid rgba(16,185,129,0.4)' }}>
+              <span className="badge" style={{ background: 'rgba(16,185,129,0.14)', color: 'var(--ink-emerald)', border: '1px solid rgba(16,185,129,0.35)' }}>
                 133 ข้อครอบคลุม 100%
               </span>
             </div>
@@ -842,7 +837,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
           className={`dashboard-tab-item ${activeTab === 'flashcards' ? 'active' : ''}`}
           onClick={() => setActiveTab('flashcards')}
         >
-          <span className="dashboard-tab-emoji">🎴</span>
+          <Layers size={15} />
           <span>Flashcards ช่วยจำ ({FLASHCARDS.length})</span>
         </button>
 
@@ -850,7 +845,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
           className={`dashboard-tab-item ${activeTab === 'map' ? 'active' : ''}`}
           onClick={() => setActiveTab('map')}
         >
-          <span className="dashboard-tab-emoji">🗺️</span>
+          <Compass size={15} />
           <span>Concept Mapping (5 เสาหลัก)</span>
         </button>
 
@@ -858,7 +853,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
           className={`dashboard-tab-item ${activeTab === 'cheat_sheet' ? 'active' : ''}`}
           onClick={() => setActiveTab('cheat_sheet')}
         >
-          <span className="dashboard-tab-emoji">⏱️</span>
+          <Clock size={15} />
           <span>Take-Notes & ข้อเก็ง 2026</span>
         </button>
 
@@ -866,7 +861,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
           className={`dashboard-tab-item ${activeTab === 'exams' ? 'active' : ''}`}
           onClick={() => setActiveTab('exams')}
         >
-          <span className="dashboard-tab-emoji">🎯</span>
+          <Target size={15} />
           <span>คลังข้อสอบกฎหมาย (133 ข้อ)</span>
         </button>
       </div>
@@ -961,7 +956,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
                 style={{ 
                   width: `${progressPercent}%`, 
                   height: '100%', 
-                  background: 'linear-gradient(90deg, #10b981, #06b6d4)', 
+                  background: 'var(--primary)', 
                   transition: 'width 0.3s ease' 
                 }} 
               />
@@ -1100,7 +1095,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
                       </div>
 
                       <div style={{ 
-                        background: 'rgba(124, 58, 237, 0.08)', 
+                        background: 'rgba(13, 148, 136, 0.08)', 
                         borderLeft: '3px solid var(--primary)', 
                         padding: '0.6rem 0.85rem', 
                         borderRadius: '0 8px 8px 0',
@@ -1108,7 +1103,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
                         color: 'var(--primary-light)',
                         marginBottom: '0.75rem'
                       }}>
-                        <strong>⚖️ มาตราอ้างอิง:</strong> {currentCard.statute}
+                        <strong>มาตราอ้างอิง:</strong> {currentCard.statute}
                       </div>
 
                       {currentCard.trap && (
@@ -1373,10 +1368,11 @@ export default function LawStudyHub({ onBack, onStartExam }) {
                     color: 'var(--primary-light)',
                     minWidth: '95px',
                     textAlign: 'center',
-                    background: 'rgba(124, 58, 237, 0.1)',
+                    background: 'rgba(13, 148, 136, 0.1)',
                     padding: '0.4rem 0.5rem',
                     borderRadius: '8px',
-                    border: '1px solid rgba(124, 58, 237, 0.2)'
+                    border: '1px solid rgba(13, 148, 136, 0.25)',
+                    fontVariantNumeric: 'tabular-nums'
                   }}>
                     {item.num}
                   </div>
@@ -1384,11 +1380,11 @@ export default function LawStudyHub({ onBack, onStartExam }) {
                     <div style={{ fontWeight: 600, fontSize: '0.92rem', color: 'var(--text)' }}>
                       {item.label}
                     </div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--accent)', marginTop: '0.1rem' }}>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--ink-sky)', marginTop: '0.1rem' }}>
                       {item.law}
                     </div>
                     <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                      💡 {item.note}
+                      หมายเหตุ: {item.note}
                     </div>
                   </div>
                 </div>
@@ -1397,10 +1393,10 @@ export default function LawStudyHub({ onBack, onStartExam }) {
           </div>
 
           {/* Section 2: 5 Common Exam Traps */}
-          <div className="glass-panel" style={{ borderRadius: 'var(--radius)', padding: '1.5rem', marginBottom: '1.5rem', borderLeft: '4px solid #ef4444' }}>
+          <div className="glass-panel" style={{ borderRadius: 'var(--radius)', padding: '1.5rem', marginBottom: '1.5rem', borderLeft: '4px solid #e11d48' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.6rem' }}>
-              <AlertTriangle size={20} color="#ef4444" />
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#f87171' }}>
+              <AlertTriangle size={20} color="var(--ink-rose)" />
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: 'var(--ink-rose)' }}>
                 5 จุดหลุมพรางที่ข้อสอบชอบหลอกมากที่สุด (Common Traps)
               </h3>
             </div>
@@ -1454,9 +1450,9 @@ export default function LawStudyHub({ onBack, onStartExam }) {
           </div>
 
           {/* Section 3: Predicted Topics for 2026 */}
-          <div className="glass-panel" style={{ borderRadius: 'var(--radius)', padding: '1.5rem', borderLeft: '4px solid #8b5cf6' }}>
+          <div className="glass-panel" style={{ borderRadius: 'var(--radius)', padding: '1.5rem', borderLeft: '4px solid var(--primary)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.6rem' }}>
-              <Flame size={20} color="#8b5cf6" />
+              <Flame size={20} color="var(--primary)" />
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>
                 ข้อเก็งประเด็นใหม่ (Predicted High-Yield Topics 2026)
               </h3>
@@ -1469,7 +1465,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
               
               <div style={{ background: 'var(--bg-panel)', padding: '1.1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: 'var(--primary-light)', marginBottom: '0.4rem' }}>
-                  📱 1. ทันตกรรมทางไกล (Tele-dentistry)
+                  1. ทันตกรรมทางไกล (Tele-dentistry)
                 </div>
                 <div style={{ fontSize: '0.84rem', color: 'var(--text-sub)', lineHeight: 1.55 }}>
                   ตามประกาศสภา ทำได้เฉพาะการคัดกรองเบื้องต้น (Triage), นัดหมาย, และให้คำแนะนำติดตามอาการ <strong>ห้ามเด็ดขาด</strong> ในการตรวจวินิจฉัยเพื่อจัดฟันใสออนไลน์โดยไม่มีการพิมพ์ปาก/สแกนฟันในคลินิก และห้ามสั่งยาเสพติด/ยาควบคุมพิเศษผ่านระบบทางไกล
@@ -1477,8 +1473,8 @@ export default function LawStudyHub({ onBack, onStartExam }) {
               </div>
 
               <div style={{ background: 'var(--bg-panel)', padding: '1.1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: '#06b6d4', marginBottom: '0.4rem' }}>
-                  🎬 2. การโฆษณาผ่าน Influencer & TikTok
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: 'var(--ink-sky)', marginBottom: '0.4rem' }}>
+                  2. การโฆษณาผ่าน Influencer & TikTok
                 </div>
                 <div style={{ fontSize: '0.84rem', color: 'var(--text-sub)', lineHeight: 1.55 }}>
                   ทันตแพทย์ต้องรับผิดชอบต่อเนื้อหาที่ Influencer หรือคลินิกลงสื่อ การรีวิวอ้างผลการรักษาหรือจัดโปร Flash-Sale ลดราคา มีความผิดตาม พ.ร.บ.สถานพยาบาล และภาพ Before-After ต้องมี Consent ปิดบังตัวตน และห้าม Retouch ตกแต่งภาพ
@@ -1486,8 +1482,8 @@ export default function LawStudyHub({ onBack, onStartExam }) {
               </div>
 
               <div style={{ background: 'var(--bg-panel)', padding: '1.1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: '#10b981', marginBottom: '0.4rem' }}>
-                  🛡️ 3. กฎหมายคุ้มครองข้อมูลส่วนบุคคล (PDPA)
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: 'var(--ink-emerald)', marginBottom: '0.4rem' }}>
+                  3. กฎหมายคุ้มครองข้อมูลส่วนบุคคล (PDPA)
                 </div>
                 <div style={{ fontSize: '0.84rem', color: 'var(--text-sub)', lineHeight: 1.55 }}>
                   ข้อมูลการรักษาและฟิล์ม X-ray จัดเป็นข้อมูลสุขภาพที่มีความละเอียดอ่อน (Sensitive Personal Data) การนำฟิล์มหรือภาพผู้ป่วยไปบรรยาย/โพสต์เคสเพื่อการศึกษา ต้องได้รับความยินยอมแยกต่างหาก และต้อง Anonymize ทุกจุดที่ระบุตัวบุคคลได้
@@ -1495,8 +1491,8 @@ export default function LawStudyHub({ onBack, onStartExam }) {
               </div>
 
               <div style={{ background: 'var(--bg-panel)', padding: '1.1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: '#f59e0b', marginBottom: '0.4rem' }}>
-                  💉 4. Infection Control & Needlestick Safety
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: 'var(--ink-amber)', marginBottom: '0.4rem' }}>
+                  4. Infection Control & Needlestick Safety
                 </div>
                 <div style={{ fontSize: '0.84rem', color: 'var(--text-sub)', lineHeight: 1.55 }}>
                   ขั้นตอนปฏิบัติเมื่อเกิดอุบัติเหตุเข็มทิ่มตำ: ล้างแผลด้วยน้ำสะอาดและสบู่ทันที (ห้ามบีบเค้นแผลแรง) ส่งตรวจเลือดหา HIV, HBV, HCV ภายใน 2 ชั่วโมง และทันตแพทย์ผู้ดำเนินการมีหน้าที่จัดให้มีระบบกำจัดขยะติดเชื้อตามเกณฑ์ สธ.
@@ -1516,7 +1512,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
         <div className="animate-fade-in">
           <div style={{ marginBottom: '1.25rem' }}>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.4rem' }}>
-              🎯 คลังข้อสอบกฎหมายและจรรยาบรรณทันตกรรม (133 ข้อ ผ่านการตรวจทานแล้ว)
+              คลังข้อสอบกฎหมายและจรรยาบรรณทันตกรรม (133 ข้อ ผ่านการตรวจทานแล้ว)
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
               ข้อสอบทุกข้อได้รับการตรวจสอบความถูกต้องตาม พ.ร.บ. วิชาชีพทันตกรรม, พ.ร.บ. สถานพยาบาล, กฎกระทรวง และ Interpol DVI อย่างละเอียด
@@ -1526,7 +1522,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
           {/* Quick Launch Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
             
-            <div className="glass-panel" style={{ borderRadius: 'var(--radius)', padding: '1.25rem', borderLeft: '4px solid #7c3aed' }}>
+            <div className="glass-panel" style={{ borderRadius: 'var(--radius)', padding: '1.25rem', borderLeft: '4px solid var(--primary)' }}>
               <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--primary-light)', textTransform: 'uppercase', marginBottom: '0.3rem' }}>
                 All-in-One Master Exam
               </div>

@@ -146,44 +146,44 @@ export default function AuthModal({ isOpen, onClose }) {
   return createPortal(
     <div style={{
       position: 'fixed', inset: 0,
-      background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(10px)',
-      WebkitBackdropFilter: 'blur(10px)',
+      background: 'rgba(9, 9, 11, 0.72)', backdropFilter: 'blur(8px)',
+      WebkitBackdropFilter: 'blur(8px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       zIndex: 100000, padding: '1rem', boxSizing: 'border-box'
-    }}>
-      <div className="glass-panel animate-fade-in" style={{ 
+    }} onClick={onClose}>
+      <div className="glass-panel animate-fade-in" onClick={(e) => e.stopPropagation()} style={{ 
         width: '100%', maxWidth: '460px', maxHeight: 'min(92vh, 660px)', padding: 0,
-        position: 'relative', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.65)',
-        borderRadius: '16px', display: 'flex', flexDirection: 'column',
-        overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)'
+        position: 'relative', boxShadow: 'var(--shadow-elevated)',
+        background: 'var(--bg-panel)',
+        borderRadius: '14px', display: 'flex', flexDirection: 'column',
+        overflow: 'hidden', border: '1px solid var(--border-hover)'
       }}>
         
         {/* Header Area */}
         <div style={{ 
-          background: 'linear-gradient(135deg, rgba(124,58,237,0.18) 0%, rgba(18,18,30,0.95) 100%)',
-          padding: '1.25rem 1.5rem 1rem', borderBottom: '1px solid rgba(255,255,255,0.06)',
+          background: 'var(--surface-subtle)',
+          padding: '1.2rem 1.5rem 1rem', borderBottom: '1px solid var(--border)',
           position: 'relative', flexShrink: 0
         }}>
           <button 
+            type="button"
             onClick={onClose} 
+            aria-label="ปิดหน้าต่าง"
+            className="header-icon-btn"
             style={{
-              position: 'absolute', top: '1rem', right: '1rem',
-              background: 'rgba(255,255,255,0.08)', border: 'none', color: 'var(--text-muted)',
-              cursor: 'pointer', borderRadius: '50%', width: '30px', height: '30px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'all 0.2s'
+              position: 'absolute', top: '0.9rem', right: '0.9rem',
+              background: 'var(--bg-panel)', border: '1px solid var(--border)',
+              color: 'var(--text-sub)', borderRadius: '8px',
             }}
-            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
           >
             <X size={17} />
           </button>
 
-          <h2 style={{ margin: '0 0 0.25rem', fontSize: '1.4rem', fontWeight: 700, color: 'var(--text)' }}>
+          <h2 style={{ margin: '0 0 0.25rem', paddingRight: '2.2rem', fontSize: '1.35rem', fontWeight: 700, color: 'var(--text)' }}>
             {isLogin ? 'เข้าสู่ระบบ (Sign In)' : 'สมัครสมาชิกใหม่ (Register)'}
           </h2>
-          <p style={{ margin: 0, color: 'var(--text-sub)', fontSize: '0.85rem' }}>
-            {isLogin ? 'เข้าสู่ระบบเพื่อทำข้อสอบและดูสถิติของคุณ' : 'กรอกข้อมูลเพื่อเริ่มต้นใช้งานระบบคลังข้อสอบ NL Dental'}
+          <p style={{ margin: 0, color: 'var(--text-sub)', fontSize: '0.84rem' }}>
+            {isLogin ? 'เข้าสู่ระบบเพื่อทำข้อสอบและดูสถิติของคุณ' : 'กรอกข้อมูลเพื่อเริ่มต้นใช้งานระบบคลังข้อสอบ NL Dental Treasury'}
           </p>
         </div>
 
@@ -197,8 +197,8 @@ export default function AuthModal({ isOpen, onClose }) {
         }}>
           {error && (
             <div className="animate-fade-in" style={{
-              background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.3)',
-              color: '#fca5a5', padding: '0.75rem 1rem', borderRadius: '8px',
+              background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: 'var(--ink-rose)', padding: '0.75rem 1rem', borderRadius: '8px',
               marginBottom: '1rem', display: 'flex', alignItems: 'flex-start', gap: '0.65rem',
               fontSize: '0.85rem', lineHeight: 1.4
             }}>
@@ -210,8 +210,8 @@ export default function AuthModal({ isOpen, onClose }) {
           {/* Contact box for forgot password in login mode */}
           {isLogin && showForgotHelp && (
             <div className="animate-fade-in" style={{
-              background: 'rgba(6, 182, 212, 0.08)',
-              border: '1px solid rgba(6, 182, 212, 0.28)',
+              background: 'var(--primary-surface)',
+              border: '1px solid var(--primary-border)',
               borderRadius: '8px',
               padding: '0.75rem 0.9rem',
               marginBottom: '1rem',
@@ -221,10 +221,10 @@ export default function AuthModal({ isOpen, onClose }) {
               fontSize: '0.85rem',
               color: 'var(--text)'
             }}>
-              <PhoneCall size={17} color="var(--accent)" style={{ flexShrink: 0 }} />
+              <PhoneCall size={17} color="var(--primary-light)" style={{ flexShrink: 0 }} />
               <div>
                 <span style={{ color: 'var(--text-sub)' }}>กรณีลืมรหัสผ่าน กรุณาติดต่อผู้ดูแล: </span>
-                <a href="tel:0622594952" style={{ color: 'var(--accent)', fontWeight: 700, textDecoration: 'underline' }}>
+                <a href="tel:0622594952" style={{ color: 'var(--primary-light)', fontWeight: 700, textDecoration: 'underline' }}>
                   062-259-4952
                 </a>
               </div>
@@ -321,8 +321,8 @@ export default function AuthModal({ isOpen, onClose }) {
                 <div style={{
                   marginTop: '0.55rem',
                   padding: '0.65rem 0.8rem',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.07)',
+                  background: 'var(--surface-subtle)',
+                  border: '1px solid var(--border)',
                   borderRadius: '10px',
                 }} className="animate-fade-in">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
@@ -343,7 +343,7 @@ export default function AuthModal({ isOpen, onClose }) {
                           key={step}
                           style={{
                             flex: 1,
-                            background: metCount >= step ? getStrengthColor() : 'rgba(255,255,255,0.08)',
+                            background: metCount >= step ? getStrengthColor() : 'var(--border)',
                             borderRadius: '2px',
                             transition: 'background 0.3s'
                           }}
@@ -365,20 +365,20 @@ export default function AuthModal({ isOpen, onClose }) {
                           alignItems: 'center', 
                           gap: '5px', 
                           fontSize: '0.75rem', 
-                          color: c.met ? 'var(--success)' : 'var(--text-muted)', 
+                          color: c.met ? 'var(--ink-emerald)' : 'var(--text-muted)', 
                           transition: 'color 0.2s',
                           fontWeight: c.met ? 600 : 400
                         }}
                       >
                         {c.met ? (
-                          <CheckCircle2 size={13} color="var(--success)" strokeWidth={2.5} style={{ flexShrink: 0 }} />
+                          <CheckCircle2 size={13} color="var(--ink-emerald)" strokeWidth={2.5} style={{ flexShrink: 0 }} />
                         ) : (
                           <span style={{
                             display: 'inline-block',
                             width: '12px',
                             height: '12px',
                             borderRadius: '50%',
-                            border: '1px solid rgba(255, 255, 255, 0.2)',
+                            border: '1px solid var(--border-hover)',
                             boxSizing: 'border-box',
                             flexShrink: 0
                           }} />
@@ -448,7 +448,7 @@ export default function AuthModal({ isOpen, onClose }) {
           <div style={{ 
             marginTop: '1rem', 
             paddingTop: '0.75rem', 
-            borderTop: '1px solid rgba(255,255,255,0.06)',
+            borderTop: '1px solid var(--border)',
             textAlign: 'center', 
             fontSize: '0.78rem', 
             color: 'var(--text-muted)',
@@ -458,8 +458,8 @@ export default function AuthModal({ isOpen, onClose }) {
             gap: '6px'
           }}>
             <span>ติดปัญหาการใช้งาน / ลืมรหัสผ่าน:</span>
-            <a href="tel:0622594952" style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>
-              📞 062-259-4952
+            <a href="tel:0622594952" style={{ color: 'var(--primary-light)', fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <PhoneCall size={13} /> 062-259-4952
             </a>
           </div>
         </div>

@@ -43,6 +43,20 @@ class User(Base):
     created_at = Column(Integer, nullable=False)  # Unix timestamp
     role = Column(String, default="user", nullable=False)  # 'user' | 'admin'
 
+    # Profile & Study Target metadata
+    display_name = Column(String, nullable=True)
+    dental_school = Column(String, nullable=True)
+    academic_year = Column(String, nullable=True)
+    target_exam_session = Column(String, default="NL 1/2570", nullable=True)
+    target_score_pct = Column(Integer, default=75, nullable=True)
+    daily_goal_questions = Column(Integer, default=20, nullable=True)
+
+    # Future-ready Subscription & Entitlements metadata
+    subscription_tier = Column(String, default="early_access", nullable=False)  # 'free' | 'early_access' | 'pro_monthly' | 'pro_annual'
+    subscription_status = Column(String, default="active", nullable=False)  # 'active' | 'trialing' | 'past_due' | 'canceled' | 'expired'
+    subscription_expires_at = Column(Integer, nullable=True)  # Unix timestamp (None = unlimited)
+    billing_customer_id = Column(String, nullable=True)
+
     sessions = relationship("ExamSession", back_populates="user", cascade="all, delete-orphan")
 
 

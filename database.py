@@ -68,6 +68,16 @@ _COLUMN_MIGRATIONS = {
     # table_name: {column_name: DDL for ALTER TABLE ADD COLUMN}
     "users": {
         "role": "ALTER TABLE users ADD COLUMN role VARCHAR NOT NULL DEFAULT 'user'",
+        "display_name": "ALTER TABLE users ADD COLUMN display_name VARCHAR",
+        "dental_school": "ALTER TABLE users ADD COLUMN dental_school VARCHAR",
+        "academic_year": "ALTER TABLE users ADD COLUMN academic_year VARCHAR",
+        "target_exam_session": "ALTER TABLE users ADD COLUMN target_exam_session VARCHAR DEFAULT 'NL 1/2570'",
+        "target_score_pct": "ALTER TABLE users ADD COLUMN target_score_pct INTEGER DEFAULT 75",
+        "daily_goal_questions": "ALTER TABLE users ADD COLUMN daily_goal_questions INTEGER DEFAULT 20",
+        "subscription_tier": "ALTER TABLE users ADD COLUMN subscription_tier VARCHAR NOT NULL DEFAULT 'early_access'",
+        "subscription_status": "ALTER TABLE users ADD COLUMN subscription_status VARCHAR NOT NULL DEFAULT 'active'",
+        "subscription_expires_at": "ALTER TABLE users ADD COLUMN subscription_expires_at INTEGER",
+        "billing_customer_id": "ALTER TABLE users ADD COLUMN billing_customer_id VARCHAR",
     },
     "exam_sessions": {
         "time_limit_seconds": "ALTER TABLE exam_sessions ADD COLUMN time_limit_seconds INTEGER",

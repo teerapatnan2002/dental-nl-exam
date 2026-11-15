@@ -6,78 +6,78 @@ import {
 
 const PATHWAY_TYPE_META = {
   pathogenesis: {
-    label: '🧬 Pathogenesis & Mechanism Pathway',
-    badgeBg: 'rgba(168, 85, 247, 0.16)',
-    badgeColor: '#c084fc',
-    borderColor: 'rgba(168, 85, 247, 0.35)',
-    gradient: 'linear-gradient(135deg, rgba(168, 85, 247, 0.10), rgba(99, 102, 241, 0.05))',
+    label: 'Pathogenesis & Mechanism Pathway',
+    badgeBg: 'var(--primary-surface)',
+    badgeColor: 'var(--primary-light)',
+    borderColor: 'var(--primary-border)',
+    gradient: 'var(--surface-card)',
   },
   protocol: {
-    label: '📋 Clinical Protocol Flowchart',
-    badgeBg: 'rgba(16, 185, 129, 0.16)',
-    badgeColor: '#34d399',
-    borderColor: 'rgba(16, 185, 129, 0.35)',
-    gradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.10), rgba(6, 182, 212, 0.05))',
+    label: 'Clinical Protocol Flowchart',
+    badgeBg: 'rgba(16, 185, 129, 0.14)',
+    badgeColor: 'var(--ink-emerald)',
+    borderColor: 'rgba(16, 185, 129, 0.32)',
+    gradient: 'var(--surface-card)',
   },
   decision: {
-    label: '🔀 Clinical Decision Pathway',
-    badgeBg: 'rgba(6, 182, 212, 0.16)',
-    badgeColor: '#22d3ee',
-    borderColor: 'rgba(6, 182, 212, 0.35)',
-    gradient: 'linear-gradient(135deg, rgba(6, 182, 212, 0.10), rgba(59, 130, 246, 0.05))',
+    label: 'Clinical Decision Pathway',
+    badgeBg: 'var(--primary-surface)',
+    badgeColor: 'var(--primary-light)',
+    borderColor: 'var(--primary-border)',
+    gradient: 'var(--surface-card)',
   },
   procedure: {
-    label: '🛠️ Stepwise Procedure Pathway',
-    badgeBg: 'rgba(99, 102, 241, 0.16)',
-    badgeColor: '#818cf8',
-    borderColor: 'rgba(99, 102, 241, 0.35)',
-    gradient: 'linear-gradient(135deg, rgba(99, 102, 241, 0.10), rgba(14, 165, 233, 0.05))',
+    label: 'Stepwise Procedure Pathway',
+    badgeBg: 'rgba(14, 165, 233, 0.14)',
+    badgeColor: 'var(--ink-sky)',
+    borderColor: 'rgba(14, 165, 233, 0.32)',
+    gradient: 'var(--surface-card)',
   },
   legal: {
-    label: '⚖️ Thai Dental Legal Pathway',
-    badgeBg: 'rgba(244, 63, 94, 0.16)',
-    badgeColor: '#fb7185',
-    borderColor: 'rgba(244, 63, 94, 0.35)',
-    gradient: 'linear-gradient(135deg, rgba(244, 63, 94, 0.10), rgba(245, 158, 11, 0.05))',
+    label: 'Thai Dental Legal Pathway',
+    badgeBg: 'rgba(239, 68, 68, 0.14)',
+    badgeColor: 'var(--ink-rose)',
+    borderColor: 'rgba(239, 68, 68, 0.32)',
+    gradient: 'var(--surface-card)',
   },
 };
 
 const NODE_ROLE_META = {
   trigger: {
-    icon: '🌱',
-    accent: '#818cf8',
-    bg: 'rgba(99, 102, 241, 0.10)',
-    border: 'rgba(99, 102, 241, 0.35)',
+    icon: '',
+    accent: 'var(--primary-light)',
+    bg: 'rgba(13, 148, 136, 0.09)',
+    border: 'rgba(13, 148, 136, 0.32)',
   },
   mechanism: {
-    icon: '⚙️',
-    accent: '#c084fc',
-    bg: 'rgba(168, 85, 247, 0.09)',
-    border: 'rgba(168, 85, 247, 0.32)',
+    icon: '',
+    accent: 'var(--ink-sky)',
+    bg: 'rgba(2, 132, 199, 0.09)',
+    border: 'rgba(2, 132, 199, 0.32)',
   },
   decision: {
-    icon: '🔀',
-    accent: '#22d3ee',
+    icon: '',
+    accent: 'var(--ink-sky)',
     bg: 'rgba(6, 182, 212, 0.10)',
-    border: 'rgba(6, 182, 212, 0.38)',
+    border: 'rgba(6, 182, 212, 0.36)',
   },
   action: {
-    icon: '🩺',
-    accent: '#34d399',
+    icon: '',
+    accent: 'var(--ink-emerald)',
     bg: 'rgba(16, 185, 129, 0.10)',
     border: 'rgba(16, 185, 129, 0.35)',
   },
   warning: {
-    icon: '⚠️',
-    accent: '#fbbf24',
+    icon: '',
+    accent: 'var(--ink-amber)',
     bg: 'rgba(245, 158, 11, 0.10)',
-    border: 'rgba(245, 158, 11, 0.40)',
+    border: 'rgba(245, 158, 11, 0.38)',
   },
   outcome: {
-    icon: '🎯',
-    accent: '#4ade80',
-    bg: 'rgba(34, 197, 94, 0.11)',
-    border: 'rgba(34, 197, 94, 0.42)',
+    icon: '',
+    accent: 'var(--ink-emerald)',
+    bg: 'rgba(34, 197, 94, 0.10)',
+    border: 'rgba(34, 197, 94, 0.38)',
   },
 };
 
@@ -275,17 +275,17 @@ export default function ClinicalPathwayDiagram({
               type="button"
               onClick={() => setViewMode('overview')}
               style={{
-                padding: '0.24rem 0.62rem',
+                padding: '0.26rem 0.62rem',
                 borderRadius: '7px',
                 border: 'none',
-                fontSize: '0.72rem',
+                fontSize: '0.74rem',
                 fontWeight: 700,
                 cursor: 'pointer',
                 background: viewMode === 'overview' ? 'var(--primary)' : 'transparent',
                 color: viewMode === 'overview' ? '#fff' : 'var(--text-sub)',
               }}
             >
-              🗺️ ดูแผนผังทั้งหมด
+              ดูแผนผังทั้งหมด
             </button>
             <button
               type="button"
@@ -294,33 +294,33 @@ export default function ClinicalPathwayDiagram({
                 setUnlockedCount(1);
               }}
               style={{
-                padding: '0.24rem 0.62rem',
+                padding: '0.26rem 0.62rem',
                 borderRadius: '7px',
                 border: 'none',
-                fontSize: '0.72rem',
+                fontSize: '0.74rem',
                 fontWeight: 700,
                 cursor: 'pointer',
-                background: viewMode === 'step' ? '#10b981' : 'transparent',
+                background: viewMode === 'step' ? 'var(--success)' : 'transparent',
                 color: viewMode === 'step' ? '#fff' : 'var(--text-sub)',
               }}
             >
-              👣 ไล่ดูทีละขั้น
+              ไล่ดูทีละขั้น
             </button>
             <button
               type="button"
               onClick={startInteractiveMode}
               style={{
-                padding: '0.24rem 0.65rem',
+                padding: '0.26rem 0.65rem',
                 borderRadius: '7px',
                 border: 'none',
-                fontSize: '0.72rem',
-                fontWeight: 800,
+                fontSize: '0.74rem',
+                fontWeight: 700,
                 cursor: 'pointer',
-                background: viewMode === 'interactive' ? 'linear-gradient(135deg, #f59e0b, #ec4899)' : 'transparent',
-                color: viewMode === 'interactive' ? '#fff' : '#fbbf24',
+                background: viewMode === 'interactive' ? 'var(--warning)' : 'transparent',
+                color: viewMode === 'interactive' ? '#fff' : 'var(--ink-amber)',
               }}
             >
-              🎮 จำลองตัดสินใจ
+              จำลองตัดสินใจ
             </button>
           </div>
         </div>
@@ -466,12 +466,12 @@ export default function ClinicalPathwayDiagram({
                         <div style={{
                           padding: '0.75rem 0.9rem',
                           borderRadius: '10px',
-                          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(236, 72, 153, 0.09))',
-                          border: '1px solid rgba(245, 158, 11, 0.4)',
+                          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(225, 29, 72, 0.07))',
+                          border: '1px solid rgba(245, 158, 11, 0.38)',
                         }}>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.35rem' }}>
-                            <span style={{ fontSize: '0.73rem', fontWeight: 800, color: '#fbbf24' }}>
-                              🎮 ด่านจำลองการตัดสินใจ (สลับเปลี่ยนสถานการณ์ฝึกได้):
+                            <span style={{ fontSize: '0.73rem', fontWeight: 800, color: 'var(--ink-amber)' }}>
+                              ด่านจำลองการตัดสินใจ (สลับเปลี่ยนสถานการณ์ฝึกได้):
                             </span>
                             <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
                               {step.branches.map((_, sCaseIdx) => (

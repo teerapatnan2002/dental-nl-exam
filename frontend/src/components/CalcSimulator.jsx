@@ -5,11 +5,11 @@ import {
 } from 'lucide-react';
 
 const DOMAIN_META = {
-  all: { label: 'สุ่มรวมทุกหมวด (Mixed)', icon: '🎲', color: '#6366f1', topicId: null },
-  anesthesia: { label: 'ยาชา & Max Dose (MRD)', icon: '💉', color: '#38bdf8', topicId: 'OS-Local-Anesthesia' },
-  pediatric_pharma: { label: 'ฟลูออไรด์ & เภสัชเด็ก', icon: '🧪', color: '#ec4899', topicId: 'Pedo-Fluoride-Toxicology' },
-  biostat: { label: 'ชีวสถิติ & Screening 2×2', icon: '📊', color: '#10b981', topicId: 'Comm-Epidemiology-Biostat' },
-  perio_ortho: { label: 'ปริทันต์ CAL / Crown / จัดฟัน', icon: '📐', color: '#f59e0b', topicId: 'Perio-Diagnosis-Classification' },
+  all: { label: 'สุ่มรวมทุกหมวด (Mixed)', color: '#0d9488', topicId: null },
+  anesthesia: { label: 'ยาชา & Max Dose (MRD)', color: '#0284c7', topicId: 'OS-Local-Anesthesia' },
+  pediatric_pharma: { label: 'ฟลูออไรด์ & เภสัชเด็ก', color: '#e11d48', topicId: 'Pedo-Fluoride-Toxicology' },
+  biostat: { label: 'ชีวสถิติ & Screening 2×2', color: '#059669', topicId: 'Comm-Epidemiology-Biostat' },
+  perio_ortho: { label: 'ปริทันต์ CAL / Crown / จัดฟัน', color: '#d97706', topicId: 'Perio-Diagnosis-Classification' },
 };
 
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -630,8 +630,9 @@ function generateProblem(domain) {
 
 const FORMULA_CHEAT_SHEET = [
   {
-    title: '💉 Local Anesthesia MRD (1 หลอด = 1.8 mL)',
-    color: '#38bdf8',
+    title: 'Local Anesthesia MRD (1 หลอด = 1.8 mL)',
+    color: 'var(--ink-sky)',
+    borderAccent: '#0284c7',
     rows: [
       '2% Lidocaine w/ Epi: 7.0 mg/kg (Max 500 mg) · 36 mg/หลอด',
       '4% Articaine w/ Epi: 7.0 mg/kg · 72 mg/หลอด (ระวังพิษสูง 2×)',
@@ -640,8 +641,9 @@ const FORMULA_CHEAT_SHEET = [
     ],
   },
   {
-    title: '🧪 Fluoride PTD & Pediatric Drugs',
-    color: '#ec4899',
+    title: 'Fluoride PTD & Pediatric Drugs',
+    color: 'var(--ink-rose)',
+    borderAccent: '#e11d48',
     rows: [
       'Probable Toxic Dose (PTD) = 5 mg F⁻/kg → ส่ง ER + ให้ Calcium ทันที',
       '1.23% APF Gel = 12.3 mg F/mL · 5% NaF Varnish = 22.6 mg F/mL',
@@ -650,8 +652,9 @@ const FORMULA_CHEAT_SHEET = [
     ],
   },
   {
-    title: '📊 Community Biostatistics (2×2)',
-    color: '#10b981',
+    title: 'Community Biostatistics (2×2)',
+    color: 'var(--ink-emerald)',
+    borderAccent: '#059669',
     rows: [
       'Sensitivity = TP/(TP+FN) [SnNOut] · Specificity = TN/(TN+FP) [SpPIn]',
       'PPV = TP/(TP+FP) · NPV = TN/(TN+FN) [เปลี่ยนตาม Prevalence]',
@@ -659,8 +662,9 @@ const FORMULA_CHEAT_SHEET = [
     ],
   },
   {
-    title: '📐 Perio, Prostho & Orthodontics',
-    color: '#f59e0b',
+    title: 'Perio, Prostho & Orthodontics',
+    color: 'var(--ink-amber)',
+    borderAccent: '#d97706',
     rows: [
       'CAL = PD + Recession (หรือ PD − Coronal Gingival Overgrowth)',
       'Crown Margin Space: STA/Biologic width (2.0 mm) + Sulcus (1.0 mm) + Ferrule (1.5–2.0 mm)',
@@ -731,8 +735,8 @@ export default function CalcSimulator({
         className="card"
         style={{
           padding: '1.1rem 1.25rem',
-          background: 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(56,189,248,0.06))',
-          border: '1px solid rgba(56,189,248,0.28)',
+          background: 'linear-gradient(135deg, rgba(13,148,136,0.1), rgba(2,132,199,0.06))',
+          border: '1px solid rgba(13,148,136,0.28)',
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'space-between',
@@ -746,12 +750,12 @@ export default function CalcSimulator({
               width: 44,
               height: 44,
               borderRadius: '12px',
-              background: 'rgba(56,189,248,0.16)',
-              border: '1px solid rgba(56,189,248,0.35)',
+              background: 'rgba(13,148,136,0.16)',
+              border: '1px solid rgba(13,148,136,0.35)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#38bdf8',
+              color: 'var(--primary-light)',
               flexShrink: 0,
             }}
           >
@@ -759,7 +763,7 @@ export default function CalcSimulator({
           </div>
           <div>
             <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text)' }}>
-              🧮 ห้องฝึกคำนวณคลินิกแบบสุ่มตัวเลข (Interactive NL Calculation Lab)
+              ห้องฝึกคำนวณคลินิกแบบสุ่มตัวเลข (Interactive NL Calculation Lab)
             </h3>
             <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: 'var(--text-sub)' }}>
               สุ่มน้ำหนัก-ค่าแล็บใหม่ทุกครั้ง ฝึกตั้งสมการ MRD, ฟลูออไรด์ PTD, สถิติ 2×2, CAL และ Tanaka-Johnston จนแม่นมือ
@@ -772,17 +776,18 @@ export default function CalcSimulator({
             style={{
               padding: '0.4rem 0.75rem',
               borderRadius: '10px',
-              background: 'rgba(255,255,255,0.04)',
+              background: 'var(--surface-card)',
               border: '1px solid var(--border)',
               fontSize: '0.8rem',
               display: 'flex',
               alignItems: 'center',
               gap: '0.4rem',
+              fontVariantNumeric: 'tabular-nums',
             }}
           >
-            <Target size={14} style={{ color: '#10b981' }} />
+            <Target size={14} style={{ color: 'var(--ink-emerald)' }} />
             <span style={{ color: 'var(--text-sub)' }}>แม่นยำ:</span>
-            <strong style={{ color: '#34d399' }}>
+            <strong style={{ color: 'var(--ink-emerald)' }}>
               {stats.correct}/{stats.attempted} ({accuracyPct}%)
             </strong>
           </div>
@@ -791,17 +796,18 @@ export default function CalcSimulator({
             style={{
               padding: '0.4rem 0.75rem',
               borderRadius: '10px',
-              background: stats.streak >= 3 ? 'rgba(245,158,11,0.14)' : 'rgba(255,255,255,0.04)',
+              background: stats.streak >= 3 ? 'rgba(245,158,11,0.14)' : 'var(--surface-card)',
               border: `1px solid ${stats.streak >= 3 ? 'rgba(245,158,11,0.4)' : 'var(--border)'}`,
               fontSize: '0.8rem',
               display: 'flex',
               alignItems: 'center',
               gap: '0.35rem',
+              fontVariantNumeric: 'tabular-nums',
             }}
           >
-            <Flame size={14} style={{ color: '#fbbf24' }} />
+            <Flame size={14} style={{ color: 'var(--ink-amber)' }} />
             <span style={{ color: 'var(--text-sub)' }}>Streak:</span>
-            <strong style={{ color: '#fbbf24' }}>{stats.streak}</strong>
+            <strong style={{ color: 'var(--ink-amber)' }}>{stats.streak}</strong>
           </div>
 
           <button
@@ -816,12 +822,12 @@ export default function CalcSimulator({
               fontSize: '0.8rem',
               fontWeight: 700,
               cursor: 'pointer',
-              background: showCheatSheet ? 'rgba(99,102,241,0.18)' : 'rgba(255,255,255,0.05)',
-              color: showCheatSheet ? 'var(--ink-indigo)' : 'var(--text)',
-              border: `1px solid ${showCheatSheet ? 'rgba(99,102,241,0.45)' : 'var(--border)'}`,
+              background: showCheatSheet ? 'rgba(13,148,136,0.14)' : 'var(--surface-card)',
+              color: showCheatSheet ? 'var(--primary-light)' : 'var(--text)',
+              border: `1px solid ${showCheatSheet ? 'rgba(13,148,136,0.42)' : 'var(--border)'}`,
             }}
           >
-            📐 สูตรมาตรฐาน NL
+            สูตรมาตรฐาน NL
             {showCheatSheet ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
         </div>
@@ -834,7 +840,7 @@ export default function CalcSimulator({
           style={{
             padding: '1rem 1.15rem',
             background: 'var(--surface)',
-            border: '1px solid rgba(99,102,241,0.3)',
+            border: '1px solid rgba(13,148,136,0.28)',
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
             gap: '0.85rem',
@@ -848,7 +854,7 @@ export default function CalcSimulator({
                 borderRadius: '10px',
                 background: 'var(--surface-card)',
                 border: '1px solid var(--border)',
-                borderLeft: `3px solid ${sec.color}`,
+                borderLeft: `3px solid ${sec.borderAccent || sec.color}`,
               }}
             >
               <div style={{ fontSize: '0.84rem', fontWeight: 800, color: sec.color, marginBottom: '0.45rem' }}>
@@ -882,13 +888,12 @@ export default function CalcSimulator({
                 fontSize: '0.82rem',
                 fontWeight: active ? 800 : 600,
                 cursor: 'pointer',
-                background: active ? `${meta.color}22` : 'rgba(255,255,255,0.03)',
+                background: active ? `${meta.color}20` : 'var(--surface-card)',
                 color: active ? meta.color : 'var(--text-sub)',
                 border: `1.5px solid ${active ? meta.color : 'var(--border)'}`,
                 transition: 'all 0.15s',
               }}
             >
-              <span>{meta.icon}</span>
               {meta.label}
             </button>
           );
@@ -915,11 +920,11 @@ export default function CalcSimulator({
                   fontWeight: 800,
                   padding: '0.2rem 0.6rem',
                   borderRadius: '999px',
-                  background: `${domMeta.color}22`,
+                  background: `${domMeta.color}20`,
                   color: domMeta.color,
                 }}
               >
-                {domMeta.icon} {problem.badge}
+                {problem.badge}
               </span>
             </div>
             <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--text)' }}>
@@ -941,9 +946,9 @@ export default function CalcSimulator({
                   fontSize: '0.78rem',
                   fontWeight: 700,
                   cursor: 'pointer',
-                  background: 'rgba(139,92,246,0.12)',
-                  color: '#c4b5fd',
-                  border: '1px solid rgba(139,92,246,0.3)',
+                  background: 'var(--surface-card)',
+                  color: 'var(--primary-light)',
+                  border: '1px solid rgba(13,148,136,0.38)',
                 }}
               >
                 <BookOpen size={14} /> เปิดบทเรียนหัวข้อนี้
@@ -961,7 +966,7 @@ export default function CalcSimulator({
                 fontSize: '0.8rem',
                 fontWeight: 700,
                 cursor: 'pointer',
-                background: 'rgba(255,255,255,0.06)',
+                background: 'var(--surface-card)',
                 color: 'var(--text)',
                 border: '1px solid var(--border)',
               }}
@@ -976,7 +981,7 @@ export default function CalcSimulator({
           style={{
             padding: '1rem 1.15rem',
             borderRadius: '12px',
-            background: 'rgba(255,255,255,0.03)',
+            background: 'var(--surface-subtle)',
             border: '1px solid var(--border)',
             fontSize: '0.96rem',
             lineHeight: 1.7,
@@ -1014,20 +1019,21 @@ export default function CalcSimulator({
                 borderCollapse: 'collapse',
                 fontSize: '0.84rem',
                 margin: '0.2rem 0',
-                background: 'rgba(2,6,23,0.45)',
+                background: 'var(--surface-card)',
                 borderRadius: '10px',
                 overflow: 'hidden',
+                fontVariantNumeric: 'tabular-nums',
               }}
             >
               <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.06)' }}>
+                <tr style={{ background: 'var(--surface-subtle)' }}>
                   <th style={{ padding: '0.55rem 0.75rem', border: '1px solid var(--border)', textAlign: 'left', color: 'var(--text-sub)' }}>
                     2×2 Screening Matrix
                   </th>
-                  <th style={{ padding: '0.55rem 0.75rem', border: '1px solid var(--border)', color: '#38bdf8' }}>
+                  <th style={{ padding: '0.55rem 0.75rem', border: '1px solid var(--border)', color: 'var(--ink-sky)' }}>
                     {problem.matrix.colLabels ? problem.matrix.colLabels[0] : 'เป็นโรคจริง (Disease+)'}
                   </th>
-                  <th style={{ padding: '0.55rem 0.75rem', border: '1px solid var(--border)', color: '#94a3b8' }}>
+                  <th style={{ padding: '0.55rem 0.75rem', border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
                     {problem.matrix.colLabels ? problem.matrix.colLabels[1] : 'ไม่เป็นโรค (Disease-)'}
                   </th>
                 </tr>
@@ -1044,7 +1050,7 @@ export default function CalcSimulator({
                       textAlign: 'center',
                       fontWeight: 800,
                       background: problem.matrix.highlightCells.includes('tp') ? 'rgba(16,185,129,0.16)' : 'transparent',
-                      color: problem.matrix.highlightCells.includes('tp') ? '#34d399' : 'var(--text)',
+                      color: problem.matrix.highlightCells.includes('tp') ? 'var(--ink-emerald)' : 'var(--text)',
                     }}
                   >
                     {problem.matrix.rowLabels ? `a = ${problem.matrix.tp}` : `TP = ${problem.matrix.tp}`}
@@ -1056,7 +1062,7 @@ export default function CalcSimulator({
                       textAlign: 'center',
                       fontWeight: 800,
                       background: problem.matrix.highlightCells.includes('fp') ? 'rgba(16,185,129,0.16)' : 'transparent',
-                      color: problem.matrix.highlightCells.includes('fp') ? '#34d399' : 'var(--text)',
+                      color: problem.matrix.highlightCells.includes('fp') ? 'var(--ink-emerald)' : 'var(--text)',
                     }}
                   >
                     {problem.matrix.rowLabels ? `b = ${problem.matrix.fp}` : `FP = ${problem.matrix.fp}`}
@@ -1073,7 +1079,7 @@ export default function CalcSimulator({
                       textAlign: 'center',
                       fontWeight: 800,
                       background: problem.matrix.highlightCells.includes('fn') ? 'rgba(16,185,129,0.16)' : 'transparent',
-                      color: problem.matrix.highlightCells.includes('fn') ? '#34d399' : 'var(--text)',
+                      color: problem.matrix.highlightCells.includes('fn') ? 'var(--ink-emerald)' : 'var(--text)',
                     }}
                   >
                     {problem.matrix.rowLabels ? `c = ${problem.matrix.fn}` : `FN = ${problem.matrix.fn}`}
@@ -1085,7 +1091,7 @@ export default function CalcSimulator({
                       textAlign: 'center',
                       fontWeight: 800,
                       background: problem.matrix.highlightCells.includes('tn') ? 'rgba(16,185,129,0.16)' : 'transparent',
-                      color: problem.matrix.highlightCells.includes('tn') ? '#34d399' : 'var(--text)',
+                      color: problem.matrix.highlightCells.includes('tn') ? 'var(--ink-emerald)' : 'var(--text)',
                     }}
                   >
                     {problem.matrix.rowLabels ? `d = ${problem.matrix.tn}` : `TN = ${problem.matrix.tn}`}
@@ -1111,11 +1117,12 @@ export default function CalcSimulator({
                 padding: '0.7rem 0.9rem',
                 borderRadius: '10px',
                 border: '1.5px solid var(--border)',
-                background: 'rgba(255,255,255,0.05)',
+                background: 'var(--surface-input)',
                 color: 'var(--text)',
-                fontSize: '1rem',
+                fontSize: 'max(16px, 0.98rem)',
                 fontWeight: 800,
                 outline: 'none',
+                fontVariantNumeric: 'tabular-nums',
               }}
             />
             <span style={{ fontSize: '0.88rem', fontWeight: 700, color: domMeta.color, whiteSpace: 'nowrap' }}>
@@ -1136,8 +1143,8 @@ export default function CalcSimulator({
                 fontSize: '0.9rem',
                 fontWeight: 800,
                 cursor: userInput.trim() ? 'pointer' : 'not-allowed',
-                border: 'none',
-                background: userInput.trim() ? 'linear-gradient(135deg, #10b981, #059669)' : 'rgba(255,255,255,0.08)',
+                border: userInput.trim() ? 'none' : '1px solid var(--border)',
+                background: userInput.trim() ? 'var(--primary)' : 'var(--surface-subtle)',
                 color: userInput.trim() ? '#ffffff' : 'var(--text-muted)',
               }}
             >
@@ -1147,6 +1154,7 @@ export default function CalcSimulator({
             <button
               type="button"
               onClick={handleNewCase}
+              className="btn btn-primary"
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -1155,10 +1163,6 @@ export default function CalcSimulator({
                 borderRadius: '10px',
                 fontSize: '0.9rem',
                 fontWeight: 800,
-                cursor: 'pointer',
-                border: 'none',
-                background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-                color: '#ffffff',
               }}
             >
               <Sparkles size={16} /> ข้อถัดไป (สุ่มเคสใหม่)
@@ -1167,7 +1171,7 @@ export default function CalcSimulator({
         </form>
 
         <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
-          💡 คำแนะนำการปัดเศษ: {problem.hint}
+          คำแนะนำการปัดเศษ: {problem.hint}
         </div>
 
         {/* Worked Solution & Pitfall Reveal */}
@@ -1185,7 +1189,7 @@ export default function CalcSimulator({
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '0.98rem', color: submittedResult.isCorrect ? '#34d399' : '#f87171' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '0.98rem', color: submittedResult.isCorrect ? 'var(--ink-emerald)' : 'var(--ink-rose)' }}>
                 {submittedResult.isCorrect ? <CheckCircle2 size={20} /> : <XCircle size={20} />}
                 {submittedResult.isCorrect
                   ? `ถูกต้องเป๊ะ! คำตอบคือ ${problem.answer} ${problem.unit}`
@@ -1193,9 +1197,9 @@ export default function CalcSimulator({
               </div>
             </div>
 
-            <div style={{ padding: '0.75rem 0.9rem', borderRadius: '10px', background: 'rgba(2,6,23,0.4)', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#38bdf8', marginBottom: '0.45rem' }}>
-                📝 วิธีคิดทีละขั้น (Step-by-Step Breakdown)
+            <div style={{ padding: '0.75rem 0.9rem', borderRadius: '10px', background: 'var(--surface-subtle)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--ink-sky)', marginBottom: '0.45rem' }}>
+                วิธีคิดทีละขั้น (Step-by-Step Breakdown)
               </div>
               <ol style={{ margin: 0, paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.32rem', fontSize: '0.84rem', color: 'var(--text)', lineHeight: 1.55 }}>
                 {problem.steps.map((st, idx) => (
@@ -1214,18 +1218,18 @@ export default function CalcSimulator({
                 alignItems: 'flex-start',
                 gap: '0.55rem',
                 fontSize: '0.81rem',
-                color: '#fde68a',
+                color: 'var(--ink-amber)',
                 lineHeight: 1.5,
               }}
             >
-              <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: '2px', color: '#fbbf24' }} />
+              <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: '2px', color: 'var(--ink-amber)' }} />
               <div>
                 <strong>จุดลวงในข้อสอบ NL:</strong> {problem.pitfall}
               </div>
             </div>
 
             <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-              📚 อ้างอิง: {problem.reference}
+              อ้างอิง: {problem.reference}
             </div>
           </div>
         )}

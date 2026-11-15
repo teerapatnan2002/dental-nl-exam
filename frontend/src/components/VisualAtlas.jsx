@@ -6,10 +6,10 @@ import {
 import { API_BASE } from '../config';
 
 const MODALITY_META = {
-  all: { label: 'ทั้งหมดทุกประเภท', icon: '🖼️', color: '#6366f1' },
-  radiograph: { label: 'ภาพรังสีวินิจฉัย (Radiograph)', icon: '🩻', color: '#38bdf8' },
-  clinical_lesion: { label: 'ภาพคลินิก / รอยโรค (Clinical)', icon: '🦷', color: '#ec4899' },
-  cast_chart: { label: 'แบบจำลอง / กราฟ / แผนภาพ', icon: '📐', color: '#10b981' },
+  all: { label: 'ทั้งหมดทุกประเภท', color: '#0d9488' },
+  radiograph: { label: 'ภาพรังสีวินิจฉัย (Radiograph)', color: '#0284c7' },
+  clinical_lesion: { label: 'ภาพคลินิก / รอยโรค (Clinical)', color: '#e11d48' },
+  cast_chart: { label: 'แบบจำลอง / กราฟ / แผนภาพ', color: '#059669' },
 };
 
 export default function VisualAtlas({
@@ -172,20 +172,21 @@ export default function VisualAtlas({
         marginBottom: '1.25rem',
         padding: '1rem 1.15rem',
         borderRadius: '14px',
-        background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(236, 72, 153, 0.06))',
-        border: '1px solid rgba(56, 189, 248, 0.25)',
+        background: 'linear-gradient(135deg, rgba(13, 148, 136, 0.1), rgba(2, 132, 199, 0.06))',
+        border: '1px solid rgba(13, 148, 136, 0.28)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
-            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span>🖼️ คลังภาพวินิจฉัย Spot-Diagnosis & Radiograph Atlas</span>
+            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span>คลังภาพวินิจฉัย Spot-Diagnosis & Radiograph Atlas</span>
               <span style={{
                 fontSize: '0.74rem',
                 padding: '0.15rem 0.55rem',
                 borderRadius: '12px',
-                background: 'rgba(56, 189, 248, 0.18)',
-                color: '#7dd3fc',
+                background: 'rgba(2, 132, 199, 0.14)',
+                color: 'var(--ink-sky)',
                 fontWeight: 700,
+                fontVariantNumeric: 'tabular-nums',
               }}>
                 แสดง {visibleItems.length} / {totalPool} ภาพ
               </span>
@@ -211,13 +212,13 @@ export default function VisualAtlas({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                background: spotQuizMode ? '#8b5cf6' : 'rgba(255,255,255,0.05)',
+                background: spotQuizMode ? 'var(--primary)' : 'var(--surface-card)',
                 color: spotQuizMode ? '#fff' : 'var(--text-sub)',
-                border: spotQuizMode ? '1px solid #8b5cf6' : '1px solid var(--border)',
+                border: spotQuizMode ? '1px solid var(--primary)' : '1px solid var(--border)',
               }}
             >
               {spotQuizMode ? <EyeOff size={15} /> : <Eye size={15} />}
-              {spotQuizMode ? '🎯 Spot-Quiz: ซ่อนเฉลยอยู่ (คลิกเปิดรายข้อ)' : '📖 โหมดอ่าน: แสดงเฉลยทุกใบ'}
+              {spotQuizMode ? 'Spot-Quiz: ซ่อนเฉลยอยู่ (คลิกเปิดรายข้อ)' : 'โหมดอ่าน: แสดงเฉลยทุกใบ'}
             </button>
 
             {onStartExam && visibleItems.length > 0 && (
@@ -225,24 +226,22 @@ export default function VisualAtlas({
                 type="button"
                 disabled={startingDrill}
                 onClick={() => handleLaunchDrill(visibleItems.map((i) => i.id))}
+                className="btn btn-primary btn-sm"
                 style={{
                   padding: '0.45rem 0.95rem',
                   borderRadius: '10px',
                   fontSize: '0.8rem',
-                  fontWeight: 800,
+                  fontWeight: 700,
                   cursor: startingDrill ? 'wait' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
-                  background: 'linear-gradient(135deg, #10b981, #059669)',
-                  color: '#fff',
-                  border: 'none',
                 }}
               >
                 <Play size={14} />
                 {startingDrill
                   ? 'กำลังเปิดชุดฝึก...'
-                  : `⚡ ฝึกทำชุดภาพเหล่านี้ (${Math.min(30, visibleItems.length)} ข้อ)`}
+                  : `ฝึกทำชุดภาพเหล่านี้ (${Math.min(30, visibleItems.length)} ข้อ)`}
               </button>
             )}
           </div>
@@ -267,18 +266,18 @@ export default function VisualAtlas({
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
-                  background: active ? meta.color : 'rgba(255,255,255,0.03)',
+                  background: active ? meta.color : 'var(--surface-card)',
                   color: active ? '#fff' : 'var(--text-sub)',
                   border: active ? `1px solid ${meta.color}` : '1px solid var(--border)',
                 }}
               >
-                <span>{meta.icon}</span>
                 <span>{meta.label}</span>
                 <span style={{
                   fontSize: '0.7rem',
                   padding: '0.05rem 0.4rem',
                   borderRadius: '10px',
-                  background: active ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.06)',
+                  background: active ? 'rgba(255,255,255,0.22)' : 'var(--surface-subtle)',
+                  fontVariantNumeric: 'tabular-nums',
                 }}>
                   {count}
                 </span>
@@ -294,13 +293,13 @@ export default function VisualAtlas({
           marginBottom: '1.35rem',
           padding: '1rem 1.15rem',
           borderRadius: '14px',
-          background: 'var(--surface-elevated)',
-          border: '1px solid rgba(245, 158, 11, 0.45)',
+          background: 'var(--bg-panel)',
+          border: '1px solid rgba(245, 158, 11, 0.42)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--ink-amber)', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Columns size={17} />
-              <span>⚖️ โต๊ะเปรียบเทียบภาพแยกวินิจฉัยเคียงคู่ (Differential Compare)</span>
+              <span>โต๊ะเปรียบเทียบภาพแยกวินิจฉัยเคียงคู่ (Differential Compare)</span>
             </div>
             <button
               type="button"
@@ -321,15 +320,15 @@ export default function VisualAtlas({
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1rem' }}>
             {[
-              { slot: 'A (ซ้าย)', item: compareA, clear: () => setCompareA(null), accent: '#38bdf8' },
-              { slot: 'B (ขวา)', item: compareB, clear: () => setCompareB(null), accent: '#ec4899' },
+              { slot: 'A (ซ้าย)', item: compareA, clear: () => setCompareA(null), accent: 'var(--ink-sky)' },
+              { slot: 'B (ขวา)', item: compareB, clear: () => setCompareB(null), accent: 'var(--ink-rose)' },
             ].map(({ slot, item, clear, accent }) => (
               <div
                 key={slot}
                 style={{
                   padding: '0.85rem',
                   borderRadius: '12px',
-                  background: 'rgba(255,255,255,0.02)',
+                  background: 'var(--surface-card)',
                   border: `1px dashed ${item ? accent : 'var(--border)'}`,
                   minHeight: '220px',
                   display: 'flex',
@@ -352,7 +351,7 @@ export default function VisualAtlas({
 
                 {!item ? (
                   <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.82rem', textAlign: 'center', padding: '1rem' }}>
-                    กดปุ่ม “⚖️ {slot.split(' ')[0]}” บนการ์ดภาพด้านล่างเพื่อดึงมาเปรียบเทียบความต่าง
+                    กดปุ่ม &quot;เทียบ {slot.split(' ')[0]}&quot; บนการ์ดภาพด้านล่างเพื่อดึงมาเปรียบเทียบความต่าง
                   </div>
                 ) : (
                   <>
@@ -370,16 +369,16 @@ export default function VisualAtlas({
                       Q#{item.id} · {item.category} — {item.topic_title_th}
                     </div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text)', fontWeight: 700 }}>
-                      ✓ เฉลย [{item.correct_answer}]: {item.correct_choice_text || 'ดูหลักการสำคัญ'}
+                      เฉลย [{item.correct_answer}]: {item.correct_choice_text || 'ดูหลักการสำคัญ'}
                     </div>
                     {item.key_takeaway && (
-                      <div style={{ fontSize: '0.78rem', color: '#34d399', lineHeight: 1.5 }}>
-                        💡 {item.key_takeaway}
+                      <div style={{ fontSize: '0.78rem', color: 'var(--ink-emerald)', lineHeight: 1.5 }}>
+                        สรุปสำคัญ: {item.key_takeaway}
                       </div>
                     )}
                     {item.common_pitfall && (
-                      <div style={{ fontSize: '0.76rem', color: '#fbbf24', lineHeight: 1.45 }}>
-                        ⚠️ กับดัก: {item.common_pitfall}
+                      <div style={{ fontSize: '0.76rem', color: 'var(--ink-amber)', lineHeight: 1.45 }}>
+                        กับดัก: {item.common_pitfall}
                       </div>
                     )}
                   </>
@@ -403,7 +402,7 @@ export default function VisualAtlas({
         }}>
           {visibleItems.map((item) => {
             const revealed = isItemRevealed(item.id);
-            const badgeColor = specialtyColorMap[item.category] || '#6366f1';
+            const badgeColor = specialtyColorMap[item.category] || '#0d9488';
             const modMeta = MODALITY_META[item.modality] || MODALITY_META.clinical_lesion;
 
             return (
@@ -412,7 +411,7 @@ export default function VisualAtlas({
                 style={{
                   borderRadius: '14px',
                   border: '1px solid var(--border)',
-                  background: 'rgba(255, 255, 255, 0.02)',
+                  background: 'var(--surface-card)',
                   overflow: 'hidden',
                   display: 'flex',
                   flexDirection: 'column',
@@ -527,9 +526,9 @@ export default function VisualAtlas({
                         marginTop: '0.25rem',
                         padding: '0.55rem 0.75rem',
                         borderRadius: '10px',
-                        border: '1px dashed rgba(139, 92, 246, 0.5)',
-                        background: 'rgba(139, 92, 246, 0.1)',
-                        color: '#c4b5fd',
+                        border: '1px dashed rgba(13, 148, 136, 0.45)',
+                        background: 'rgba(13, 148, 136, 0.09)',
+                        color: 'var(--primary-light)',
                         fontSize: '0.79rem',
                         fontWeight: 700,
                         cursor: 'pointer',
@@ -552,18 +551,18 @@ export default function VisualAtlas({
                       flexDirection: 'column',
                       gap: '0.35rem',
                     }}>
-                      <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'flex-start', gap: '5px' }}>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--ink-emerald)', display: 'flex', alignItems: 'flex-start', gap: '5px' }}>
                         <CheckCircle2 size={14} style={{ flexShrink: 0, marginTop: '2px' }} />
                         <span>เฉลย [{item.correct_answer}]: {item.correct_choice_text || item.topic_title_th}</span>
                       </div>
                       {item.key_takeaway && (
                         <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)', lineHeight: 1.45 }}>
-                          💡 {item.key_takeaway}
+                          {item.key_takeaway}
                         </div>
                       )}
                       {item.common_pitfall && (
-                        <div style={{ fontSize: '0.74rem', color: '#fbbf24', lineHeight: 1.4 }}>
-                          ⚠️ กับดัก: {item.common_pitfall}
+                        <div style={{ fontSize: '0.74rem', color: 'var(--ink-amber)', lineHeight: 1.4 }}>
+                          กับดัก: {item.common_pitfall}
                         </div>
                       )}
                       {spotQuizMode && (
@@ -589,7 +588,7 @@ export default function VisualAtlas({
                   <div style={{
                     marginTop: 'auto',
                     paddingTop: '0.45rem',
-                    borderTop: '1px solid rgba(255,255,255,0.06)',
+                    borderTop: '1px solid var(--border)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
@@ -606,12 +605,12 @@ export default function VisualAtlas({
                           fontSize: '0.7rem',
                           fontWeight: 700,
                           cursor: 'pointer',
-                          background: compareA?.id === item.id ? '#38bdf8' : 'rgba(56,189,248,0.1)',
-                          color: compareA?.id === item.id ? '#0f172a' : '#7dd3fc',
-                          border: '1px solid rgba(56,189,248,0.3)',
+                          background: compareA?.id === item.id ? '#0284c7' : 'rgba(2, 132, 199, 0.1)',
+                          color: compareA?.id === item.id ? '#ffffff' : 'var(--ink-sky)',
+                          border: '1px solid rgba(2, 132, 199, 0.3)',
                         }}
                       >
-                        ⚖️ เทียบ A
+                        เทียบ A
                       </button>
                       <button
                         type="button"
@@ -622,12 +621,12 @@ export default function VisualAtlas({
                           fontSize: '0.7rem',
                           fontWeight: 700,
                           cursor: 'pointer',
-                          background: compareB?.id === item.id ? '#ec4899' : 'rgba(236,72,153,0.1)',
-                          color: compareB?.id === item.id ? '#fff' : '#f9a8d4',
-                          border: '1px solid rgba(236,72,153,0.3)',
+                          background: compareB?.id === item.id ? '#e11d48' : 'rgba(225, 29, 72, 0.1)',
+                          color: compareB?.id === item.id ? '#ffffff' : 'var(--ink-rose)',
+                          border: '1px solid rgba(225, 29, 72, 0.3)',
                         }}
                       >
-                        ⚖️ เทียบ B
+                        เทียบ B
                       </button>
                     </div>
 
@@ -642,9 +641,9 @@ export default function VisualAtlas({
                             fontSize: '0.7rem',
                             fontWeight: 700,
                             cursor: 'pointer',
-                            background: 'rgba(99, 102, 241, 0.12)',
-                            color: '#a5b4fc',
-                            border: '1px solid rgba(99, 102, 241, 0.3)',
+                            background: 'rgba(13, 148, 136, 0.1)',
+                            color: 'var(--primary-light)',
+                            border: '1px solid rgba(13, 148, 136, 0.3)',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '3px',
@@ -663,12 +662,12 @@ export default function VisualAtlas({
                             fontSize: '0.7rem',
                             fontWeight: 700,
                             cursor: 'pointer',
-                            background: 'rgba(16, 185, 129, 0.14)',
-                            color: '#6ee7b7',
-                            border: '1px solid rgba(16, 185, 129, 0.35)',
+                            background: 'rgba(16, 185, 129, 0.12)',
+                            color: 'var(--ink-emerald)',
+                            border: '1px solid rgba(16, 185, 129, 0.32)',
                           }}
                         >
-                          ⚡ ฝึกทำ
+                          ฝึกทำ
                         </button>
                       )}
                     </div>
@@ -843,14 +842,14 @@ export default function VisualAtlas({
                     style={{
                       padding: '0.7rem 1rem',
                       borderRadius: '10px',
-                      background: 'rgba(139, 92, 246, 0.2)',
-                      border: '1px solid rgba(139, 92, 246, 0.5)',
-                      color: '#ddd6fe',
+                      background: 'rgba(13, 148, 136, 0.2)',
+                      border: '1px solid rgba(13, 148, 136, 0.5)',
+                      color: '#5eead4',
                       fontWeight: 700,
                       cursor: 'pointer',
                     }}
                   >
-                    🔍 คลิกเพื่อดูเฉลย กลไก และจุดระวัง
+                    คลิกเพื่อดูเฉลย กลไก และจุดระวัง
                   </button>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
@@ -860,7 +859,7 @@ export default function VisualAtlas({
                       </div>
                       {lightboxItem.key_takeaway && (
                         <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.55 }}>
-                          💡 {lightboxItem.key_takeaway}
+                          สรุปสำคัญ: {lightboxItem.key_takeaway}
                         </div>
                       )}
                     </div>
@@ -874,13 +873,13 @@ export default function VisualAtlas({
 
                     {lightboxItem.common_pitfall && (
                       <div style={{ fontSize: '0.8rem', color: '#fde68a', lineHeight: 1.5, background: 'rgba(245, 158, 11, 0.1)', padding: '0.65rem 0.75rem', borderRadius: '10px' }}>
-                        ⚠️ กับดักที่ต้องระวัง: {lightboxItem.common_pitfall}
+                        กับดักที่ต้องระวัง: {lightboxItem.common_pitfall}
                       </div>
                     )}
 
                     {lightboxItem.reference && (
                       <div style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
-                        📚 แหล่งอ้างอิง: {lightboxItem.reference}
+                        แหล่งอ้างอิง: {lightboxItem.reference}
                       </div>
                     )}
                   </div>
@@ -898,7 +897,7 @@ export default function VisualAtlas({
                       className="btn btn-secondary btn-sm"
                       style={{ fontWeight: 700 }}
                     >
-                      🎓 เปิดบทเรียนหัวข้อนี้
+                      เปิดบทเรียนหัวข้อนี้
                     </button>
                   )}
                   {onStartExam && (
@@ -912,7 +911,7 @@ export default function VisualAtlas({
                       className="btn btn-primary btn-sm"
                       style={{ fontWeight: 700 }}
                     >
-                      ⚡ ฝึกทำข้อนี้ใน Practice Mode
+                      ฝึกทำข้อนี้ใน Practice Mode
                     </button>
                   )}
                 </div>

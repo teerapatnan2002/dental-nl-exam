@@ -206,6 +206,130 @@ def read_users_me(current_user: models.User = Depends(get_current_user)):
     return current_user
 
 
+SUBSCRIPTION_PLANS_CATALOG = {
+    "enforcement_mode": "early_access",
+    "early_access_all_unlocked": True,
+    "disclaimer": (
+        "แพ็กเกจสมาชิกนี้เป็นค่าบริการใช้งานระบบคลังข้อสอบและเครื่องมือวิเคราะห์บนเว็บไซต์ NL Dental Treasury เท่านั้น "
+        "ไม่เกี่ยวข้องและไม่รวมค่าธรรมเนียมการสมัครสอบของศูนย์ประเมินและรับรองความรู้ความสามารถในการประกอบวิชาชีพทันตกรรม (ศ.ป.ท.)"
+    ),
+    "plans": [
+        {
+            "id": "free",
+            "name": "Free Plan",
+            "tagline": "สำหรับทดลองฝึกซ้อมและดูแนวข้อสอบเบื้องต้น",
+            "price_thb": 0,
+            "billing_period": "ตลอดชีพ",
+            "badge": "เริ่มต้นฟรี",
+            "available_now": True,
+            "features": [
+                "สุ่มฝึกซ้อมข้อสอบรายวัน (จำกัด 20 ข้อ/วัน เมื่อเปิดระบบสมาชิก)",
+                "ดูตารางกำหนดการสอบและตัวนับถอยหลัง ศ.ป.ท.",
+                "เข้าถึงสรุปกฎหมายทันตแพทยสภาและโครงสร้างเกณฑ์ TOS 2563",
+                "บันทึกบุ๊กมาร์กข้อสอบพื้นฐาน",
+            ],
+        },
+        {
+            "id": "pro",
+            "name": "Pro Plan",
+            "tagline": "ปลดล็อกคลังข้อสอบ สรุปคลินิก และเครื่องมือวิเคราะห์ครบทุกฟีเจอร์",
+            "price_thb": 199,
+            "billing_period": "ต่อเดือน",
+            "badge": "แนะนำ · ปลดล็อกครบทุกฟีเจอร์",
+            "highlight": True,
+            "available_now": False,
+            "features": [
+                "ปลดล็อกคลังข้อสอบจริงและข้อสอบจำลองครบทั้ง 2,443 ข้อ ไม่จำกัดจำนวนครั้ง",
+                "เฉลยละเอียดรายตัวเลือก + แผนผัง Clinical Pathway ครบ 83 หัวข้อ",
+                "ใช้งาน Calc Lab คำนวณคลินิก และ Cloze & กับดักข้อสอบครบทุกด่าน",
+                "ระบบทบทวนข้อที่เคยทำผิดอัตโนมัติ (SM-2) และวิเคราะห์จุดอ่อนรายสาขาเชิงลึก",
+                "ส่งออกและสั่งพิมพ์สมุดโน้ตส่วนตัว High-Yield Cheat Sheet (PDF) ไม่จำกัด",
+            ],
+        },
+    ],
+}
+
+
+@router.get("/subscription-plans")
+def get_subscription_plans():
+    """Return future subscription tier definitions and current Early Access status."""
+    return SUBSCRIPTION_PLANS_CATALOG
+
+
+@router.patch("/profile", response_model=schema.UserResponse)
+@router.put("/profile", response_model=schema.UserResponse)
+def update_user_profile(
+    payload: schema.UserProfileUpdate,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Update the authenticated user's profile and study goals."""
+    if payload.username is not None:
+        new_username = payload.username.strip()
+        if new_username.lower() != current_user.username.lower():
+            existing_u = (
+                db.query(models.User)
+                .filter(func.lower(models.User.username) == new_username.lower(), models.User.id != current_user.id)
+                .first()
+            )
+            if existing_u:
+                raise HTTPException(status_code=409, detail="ชื่อผู้ใช้งานนี้ถูกใช้งานแล้ว (Username already taken)")
+        current_user.username = new_username
+
+    if payload.email is not None:
+        new_email = payload.email.strip().lower()
+        if new_email != current_user.email.lower():
+            existing_e = (
+                db.query(models.User)
+                .filter(func.lower(models.User.email) == new_email, models.User.id != current_user.id)
+                .first()
+            )
+            if existing_e:
+                raise HTTPException(status_code=409, detail="อีเมลนี้ถูกลงทะเบียนไปแล้ว (Email already registered)")
+        current_user.email = new_email
+
+    if payload.display_name is not None:
+        current_user.display_name = payload.display_name.strip() or None
+    if payload.dental_school is not None:
+        current_user.dental_school = payload.dental_school.strip() or None
+    if payload.academic_year is not None:
+        current_user.academic_year = payload.academic_year.strip() or None
+    if payload.target_exam_session is not None:
+        current_user.target_exam_session = payload.target_exam_session.strip() or "NL 1/2570"
+    if payload.target_score_pct is not None:
+        current_user.target_score_pct = int(payload.target_score_pct)
+    if payload.daily_goal_questions is not None:
+        current_user.daily_goal_questions = int(payload.daily_goal_questions)
+
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+
+    # Issue fresh tokens if username changed so active session stays valid
+    response_data = schema.UserResponse.model_validate(current_user, from_attributes=True)
+    response_data.access_token = create_access_token(data={"sub": current_user.username})
+    response_data.refresh_token = create_refresh_token(data={"sub": current_user.username})
+    return response_data
+
+
+@router.post("/change-password")
+def change_user_password(
+    payload: schema.PasswordChangeRequest,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Change the authenticated user's password after verifying current_password."""
+    if not verify_password(payload.current_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="รหัสผ่านปัจจุบันไม่ถูกต้อง")
+    if payload.current_password == payload.new_password:
+        raise HTTPException(status_code=400, detail="รหัสผ่านใหม่ต้องไม่ซ้ำกับรหัสผ่านเดิม")
+
+    current_user.hashed_password = get_password_hash(payload.new_password)
+    db.add(current_user)
+    db.commit()
+    return {"status": "ok", "message": "เปลี่ยนรหัสผ่านเรียบร้อยแล้ว"}
+
+
 @router.get("/admin/users", response_model=list[schema.UserResponse])
 def get_all_users(
     admin: models.User = Depends(get_current_admin),

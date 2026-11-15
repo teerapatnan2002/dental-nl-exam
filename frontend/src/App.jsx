@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ErrorBoundary from './components/ErrorBoundary';
 import Dashboard from './components/Dashboard';
 import ExamSession from './components/ExamSession';
 import ExamResult from './components/ExamResult';
-import AIHub from './components/AIHub';
 import LawStudyHub from './components/LawStudyHub';
 import ClinicalStudyHub from './components/ClinicalStudyHub';
 import AuthModal from './components/AuthModal';
+import AccountModal from './components/AccountModal';
 import ExamScheduleModal from './components/ExamScheduleModal';
 import ScheduledExamModal from './components/ScheduledExamModal';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { XCircle, User as UserIcon, LogOut, Sun, Moon, Scale, Clock, BookOpen } from 'lucide-react';
+import { XCircle, User as UserIcon, LogOut, Sun, Moon, Scale, Calendar, BookOpen, AlertCircle, X, ArrowRight } from 'lucide-react';
 import { API_BASE } from './config';
 import { getPrimaryUpcomingExam, calculateTimeRemaining } from './data/examSchedule';
 import { Analytics } from '@vercel/analytics/react';
@@ -46,24 +46,64 @@ function AppContent() {
   const [userAnswers, setUserAnswers] = useSessionState({}, 'nl_v4_userAnswers');
   const [startTime, setStartTime] = useSessionState(null, 'nl_v4_startTime');
   const [analysisData, setAnalysisData] = useSessionState(null, 'nl_v4_analysisData');
+  const [activeDashboardTab, setActiveDashboardTab] = useState('fullExam');
+  const [showAnnouncement, setShowAnnouncement] = useState(true);
 
   const [theme, setTheme] = useState(() => {
     try {
-      return localStorage.getItem('nl_theme') || 'dark';
+      const saved = localStorage.getItem('nl_theme_pref');
+      return saved === 'dark' || saved === 'light' ? saved : 'light';
     } catch {
-      return 'dark';
+      return 'light';
     }
   });
+  const scrollBarRef = useRef(null);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    try {
-      localStorage.setItem('nl_theme', theme);
-    } catch {}
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+      metaTheme.setAttribute('content', theme === 'dark' ? '#09090b' : '#f8f7f4');
+    }
   }, [theme]);
 
+  useEffect(() => {
+    if (currentView === 'aihub') {
+      setCurrentView('dashboard');
+    }
+  }, [currentView, setCurrentView]);
+
+  useEffect(() => {
+    let rafId = null;
+    const updateScroll = () => {
+      rafId = null;
+      if (!scrollBarRef.current) return;
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - window.innerHeight;
+      const pct = max > 20 ? Math.min(100, Math.max(0, (window.scrollY / max) * 100)) : 0;
+      scrollBarRef.current.style.transform = `scaleX(${pct / 100})`;
+    };
+    const onScroll = () => {
+      if (rafId === null) {
+        rafId = window.requestAnimationFrame(updateScroll);
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    updateScroll();
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
+    };
+  }, [currentView, activeDashboardTab]);
+
   const toggleTheme = () => {
-    setTheme(t => (t === 'dark' ? 'light' : 'dark'));
+    setTheme(t => {
+      const next = t === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem('nl_theme_pref', next);
+      } catch {}
+      return next;
+    });
   };
 
   const [categories, setCategories] = useState({ categories: [], tasks: [], clinical_tasks: [], law_tasks: [] });
@@ -72,6 +112,7 @@ function AppContent() {
   const [categoryTasks, setCategoryTasks] = useState({});
   const [years, setYears] = useState([]);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [accountModalState, setAccountModalState] = useState({ open: false, tab: 'profile' });
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [scheduledModalData, setScheduledModalData] = useState(null);
   const [isLoadingExam, setIsLoadingExam] = useState(false);
@@ -309,20 +350,6 @@ function AppContent() {
     }
   };
 
-  const startMockTest = (newQuestions) => {
-    if (!user) {
-      setIsAuthModalOpen(true);
-      return;
-    }
-    setExamConfig({ mode: 'practice', count: newQuestions.length });
-    setExamMode('practice');
-    setUserAnswers({});
-    setAnalysisData(null);
-    setStartTime(Date.now());
-    setQuestions(newQuestions);
-    setCurrentView('exam');
-  };
-
   const goHome = () => {
     setCurrentView('dashboard');
     setExamConfig(null);
@@ -334,121 +361,213 @@ function AppContent() {
   };
 
 
+  const handleHeaderNav = (tabId) => {
+    if (tabId === 'law_hub') {
+      setCurrentView('law_hub');
+      return;
+    }
+    setCurrentView('dashboard');
+    setActiveDashboardTab(tabId);
+    setTimeout(() => {
+      const el = document.getElementById('workspace-tabs');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 40);
+  };
+
   return (
     <>
-      {/* ── Sticky App Header ──────────────────────── */}
-      <header className="app-header">
-        <div className="app-brand" onClick={goHome}>
-          <div
-            className="app-brand-icon"
-            style={{
-              width: '28px',
-              height: '28px',
-              borderRadius: '7px',
-              background: 'var(--primary)',
-              color: '#fff',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M7 3c-2.5 0-4 2-4 5 0 2.5 1 4.5 1.5 7 .6 2.8 1.4 6 2.7 6 1.1 0 1.6-2 2.4-4 .5-1.2 1.2-2 2.4-2s1.9.8 2.4 2c.8 2 1.3 4 2.4 4 1.3 0 2.1-3.2 2.7-6 .5-2.5 1.5-4.5 1.5-7 0-3-1.5-5-4-5-1.6 0-2.8.8-5 .8S8.6 3 7 3z" />
-            </svg>
-          </div>
-          <span>NL Dental</span>
-        </div>
-
-        <div className="app-header-actions">
-          {currentView === 'exam' && (
-            <button className="btn btn-danger btn-sm" onClick={goHome}>
-              <XCircle size={15} /> Abort
+      {/* ── Top Utility Announcement Strip ──────── */}
+      {currentView === 'dashboard' && showAnnouncement && (
+        <div className="top-announcement-bar" role="region" aria-label="ประกาศกำหนดการสอบล่าสุด">
+          <div className="top-announcement-inner">
+            <span className="top-announcement-text">
+              <Calendar size={13} style={{ flexShrink: 0, color: 'var(--primary-light)' }} />
+              {nextExam && nextExamTimeLeft && !nextExamTimeLeft.isPassed ? (
+                <span className="tabular-nums">
+                  กำหนดการสอบใกล้ที่สุด: <strong>{nextExam.shortLabel || nextExam.series}</strong> · {nextExam.examDateText} (อีก {nextExamTimeLeft.days} วัน)
+                </span>
+              ) : (
+                <span>ประกาศตารางสอบ ศ.ป.ท. พ.ศ. 2569 – 2570</span>
+              )}
+            </span>
+            <button
+              type="button"
+              className="top-announcement-pill"
+              onClick={() => setIsScheduleModalOpen(true)}
+            >
+              <span>ดูตารางสอบ</span>
+              <ArrowRight size={12} />
             </button>
-          )}
+            <button
+              type="button"
+              className="top-announcement-close"
+              onClick={() => setShowAnnouncement(false)}
+              aria-label="ปิดแถบประกาศ"
+            >
+              <X size={13} />
+            </button>
+          </div>
+        </div>
+      )}
 
-          {/* Official Exam Schedule & Countdown Pill */}
+      {/* ── Sticky Editorial App Header ───────────── */}
+      <header className="app-header">
+        <div className="app-header-inner">
           <button
-            onClick={() => setIsScheduleModalOpen(true)}
-            className="theme-toggle-btn header-schedule-btn"
-            style={{
-              background: 'var(--surface-subtle)',
-              color: 'var(--text)',
-              border: '1px solid var(--border)',
-              cursor: 'pointer'
-            }}
-            title="คลิกเพื่อดูตารางสอบทางการและประกาศ ศ.ป.ท."
+            type="button"
+            className="app-brand"
+            onClick={goHome}
+            aria-label="กลับหน้าหลัก NL Dental Treasury"
           >
-            <span
-              aria-hidden="true"
-              style={{
-                width: '7px',
-                height: '7px',
-                borderRadius: '50%',
-                background: nextExamTimeLeft && !nextExamTimeLeft.isPassed
-                  ? (nextExamTimeLeft.days <= 14 ? 'var(--warning)' : 'var(--primary-light)')
-                  : 'var(--text-muted)',
-                flexShrink: 0,
-              }}
-            />
-            <span className="header-schedule-label tabular-nums" style={{ fontWeight: 600 }}>
-              {nextExam && nextExamTimeLeft && !nextExamTimeLeft.isPassed
-                ? (nextExamTimeLeft.isInProgress
-                    ? `กำลังสอบ ${nextExam.shortLabel || nextExam.series}`
-                    : `${nextExam.shortLabel || nextExam.series} • ${nextExamTimeLeft.days} วัน`)
-                : 'ผ่านกำหนดการสอบแล้ว'}
+            <div className="app-brand-emblem" aria-hidden="true">
+              <svg
+                className="app-brand-svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.15"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M7 3.5c-2.4 0-3.8 1.9-3.8 4.8 0 2.4.9 4.3 1.4 6.7.6 2.7 1.3 5.5 2.5 5.5 1.1 0 1.5-1.9 2.3-3.8.5-1.1 1.1-1.9 2.1-1.9s1.6.8 2.1 1.9c.8 1.9 1.2 3.8 2.3 3.8 1.2 0 1.9-2.8 2.5-5.5.5-2.4 1.4-4.3 1.4-6.7 0-2.9-1.4-4.8-3.8-4.8-1.5 0-2.6.7-4.5.7s-3-.7-4.5-.7z" />
+                <path className="brand-enamel-arc" d="M6.8 7.6c.2-1.2 1-2 2.1-2" strokeWidth="1.75" opacity="0.72" />
+                <path className="brand-sparkle-node" d="M19.5 1.8v3.4M17.8 3.5h3.4" strokeWidth="1.9" />
+              </svg>
+            </div>
+            <span className="app-brand-wordmark">
+              <span className="app-brand-text">
+                <span className="app-brand-main">NL Dental</span>
+                <span className="app-brand-sub">Treasury</span>
+              </span>
+              <span className="app-brand-tagline" aria-hidden="true">
+                <span className="app-brand-tagline-dot" />
+                <span>NATIONAL LICENSE · ศ.ป.ท.</span>
+              </span>
             </span>
           </button>
 
-          {/* Study & Law hubs are organized inside the Dashboard primary tabs & mobile bottom navigation */}
+          <nav className="app-header-nav" aria-label="เมนูหลักด้านบน">
+            {[
+              { id: 'fullExam', label: 'สนามสอบจำลอง' },
+              { id: 'practice', label: 'ฝึกซ้อมรายวิชา' },
+              { id: 'study_hub', label: 'เลกเชอร์คลินิก' },
+              { id: 'law_hub', label: 'สรุปกฎหมาย' },
+              { id: 'tos_analytics', label: 'TOS Analytics' },
+            ].map(link => {
+              const isLinkActive =
+                (link.id === 'law_hub' && currentView === 'law_hub') ||
+                (currentView === 'dashboard' && activeDashboardTab === link.id);
+              return (
+                <button
+                  key={link.id}
+                  type="button"
+                  onClick={() => handleHeaderNav(link.id)}
+                  className={`app-header-nav-link ${isLinkActive ? 'active' : ''}`}
+                >
+                  {link.label}
+                </button>
+              );
+            })}
+          </nav>
 
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className="theme-toggle-btn"
-            title={theme === 'dark' ? 'เปลี่ยนเป็นธีมสว่าง (Clinical Light Mode)' : 'เปลี่ยนเป็นธีมมืด (Midnight Dark Mode)'}
-            aria-label="Toggle Light and Dark Theme"
-          >
-            {theme === 'dark' ? (
-              <>
-                <Sun size={15} color="#f59e0b" />
-                <span className="theme-toggle-label">โหมดสว่าง</span>
-              </>
-            ) : (
-              <>
-                <Moon size={15} color="var(--primary)" />
-                <span className="theme-toggle-label">โหมดมืด</span>
-              </>
-            )}
-          </button>
-          
-          {user ? (
-            <div className="header-user-wrap">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.9rem', color: 'var(--text-sub)' }}>
-                <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #6366f1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.85rem', boxShadow: '0 2px 8px var(--glow-purple)' }}>
-                  {user.username.charAt(0).toUpperCase()}
-                </div>
-                <span className="header-user-name">{user.username}</span>
-              </div>
-              <button
-                onClick={logout}
-                className="header-icon-btn"
-                title="ออกจากระบบ"
-                aria-label="ออกจากระบบ"
-              >
-                <LogOut size={16} />
+          <div className="app-header-actions">
+            {currentView === 'exam' && (
+              <button className="btn btn-danger btn-sm" onClick={goHome}>
+                <XCircle size={15} /> Abort
               </button>
-            </div>
-          ) : (
-            <button className="btn btn-primary btn-sm header-auth-btn" onClick={() => setIsAuthModalOpen(true)} style={{ marginLeft: '0.25rem' }}>
-              <UserIcon size={14} />
-              <span className="header-auth-label">เข้าสู่ระบบ</span>
+            )}
+
+            {/* Official Exam Schedule & Countdown Pill */}
+            <button
+              onClick={() => setIsScheduleModalOpen(true)}
+              className="theme-toggle-btn header-schedule-btn"
+              style={{
+                background: 'var(--surface-subtle)',
+                color: 'var(--text)',
+                border: '1px solid var(--border)',
+                cursor: 'pointer'
+              }}
+              title="คลิกเพื่อดูตารางสอบทางการและประกาศ ศ.ป.ท."
+            >
+              <span
+                aria-hidden="true"
+                className={nextExamTimeLeft && !nextExamTimeLeft.isPassed ? 'live-status-dot' : undefined}
+                style={{
+                  width: '7px',
+                  height: '7px',
+                  borderRadius: '50%',
+                  background: nextExamTimeLeft && !nextExamTimeLeft.isPassed
+                    ? (nextExamTimeLeft.days <= 14 ? 'var(--warning)' : 'var(--primary-light)')
+                    : 'var(--text-muted)',
+                  flexShrink: 0,
+                }}
+              />
+              <span className="header-schedule-label tabular-nums" style={{ fontWeight: 600 }}>
+                {nextExam && nextExamTimeLeft && !nextExamTimeLeft.isPassed
+                  ? (nextExamTimeLeft.isInProgress
+                      ? `กำลังสอบ ${nextExam.shortLabel || nextExam.series}`
+                      : `${nextExam.shortLabel || nextExam.series} • ${nextExamTimeLeft.days} วัน`)
+                  : 'ผ่านกำหนดการสอบแล้ว'}
+              </span>
             </button>
-          )}
+
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className={`theme-toggle-btn ${theme === 'dark' ? 'is-dark' : 'is-light'}`}
+              title={theme === 'dark' ? 'เปลี่ยนเป็นธีมสว่าง (Light Mode)' : 'เปลี่ยนเป็นธีมมืด (Dark Mode)'}
+              aria-label="Toggle Light and Dark Theme"
+            >
+              <span className="theme-toggle-icon" aria-hidden="true">
+                {theme === 'dark' ? <Sun size={15} color="#f59e0b" /> : <Moon size={15} color="var(--primary)" />}
+              </span>
+              <span className="theme-toggle-label">
+                {theme === 'dark' ? 'โหมดสว่าง' : 'โหมดมืด'}
+              </span>
+            </button>
+            
+            {user ? (
+              <div className="header-user-wrap">
+                <button
+                  type="button"
+                  className="header-profile-trigger"
+                  onClick={() => setAccountModalState({ open: true, tab: 'profile' })}
+                  title="เปิดโปรไฟล์และตั้งค่าเป้าหมายการสอบ"
+                >
+                  <div className="header-profile-avatar">
+                    {(user.display_name || user.username || 'U').replace(/^(นทพ\.|ทพ\.|ทพญ\.)\s*/i, '').trim().charAt(0).toUpperCase()}
+                  </div>
+                  <span className="header-user-name">{user.display_name || user.username}</span>
+                </button>
+                <button
+                  onClick={logout}
+                  className="header-icon-btn"
+                  title="ออกจากระบบ"
+                  aria-label="ออกจากระบบ"
+                >
+                  <LogOut size={16} />
+                </button>
+              </div>
+            ) : (
+              <button className="btn btn-editorial-contrast btn-sm header-auth-btn" onClick={() => setIsAuthModalOpen(true)} style={{ marginLeft: '0.15rem' }}>
+                <UserIcon size={14} />
+                <span className="header-auth-label">เข้าสู่ระบบ</span>
+              </button>
+            )}
+          </div>
         </div>
+        <div className="header-scroll-progress" ref={scrollBarRef} aria-hidden="true" />
       </header>
 
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      <AccountModal
+        isOpen={accountModalState.open}
+        initialTab={accountModalState.tab}
+        onClose={() => setAccountModalState(prev => ({ ...prev, open: false }))}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
+      />
       <ExamScheduleModal
         isOpen={isScheduleModalOpen}
         onClose={() => setIsScheduleModalOpen(false)}
@@ -470,16 +589,12 @@ function AppContent() {
             taskStats={taskStats}
             categoryTasks={categoryTasks}
             years={years}
+            activeTab={activeDashboardTab}
+            onTabChange={setActiveDashboardTab}
             onStart={startExam}
             onOpenLawHub={() => setCurrentView('law_hub')}
             onOpenScheduleModal={() => setIsScheduleModalOpen(true)}
-            onOpenAIHub={() => {
-              if (!user) {
-                setIsAuthModalOpen(true);
-                return;
-              }
-              setCurrentView('aihub');
-            }}
+            onOpenAccountModal={(tab = 'profile') => setAccountModalState({ open: true, tab })}
           />
         )}
 
@@ -497,15 +612,6 @@ function AppContent() {
           />
         )}
 
-        {currentView === 'aihub' && (
-          <AIHub
-            categories={categories.categories}
-            tasks={categories.tasks}
-            onStartMockTest={startMockTest}
-            onBack={goHome}
-          />
-        )}
-
         {currentView === 'exam' && questions.length > 0 && (
           <ExamSession
             questions={questions}
@@ -519,7 +625,9 @@ function AppContent() {
 
         {currentView === 'exam' && questions.length === 0 && (
           <div className="glass-panel animate-fade-in" style={{ padding: '3rem', textAlign: 'center', marginTop: '2rem' }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>⚠️</div>
+            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '56px', height: '56px', borderRadius: '14px', background: 'rgba(245, 158, 11, 0.14)', border: '1px solid rgba(245, 158, 11, 0.3)', marginBottom: '1rem' }}>
+              <AlertCircle size={28} color="var(--warning)" />
+            </div>
             <h2 style={{ marginBottom: '0.5rem' }}>ไม่พบข้อสอบตามเงื่อนไขที่เลือก</h2>
             <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
               ไม่พบข้อสอบที่ตรงกับตัวกรองที่คุณเลือก (หรือปีที่เลือกอาจไม่มีข้อสอบในหมวดนี้ เช่น ปี 2565 มีเฉพาะข้อสอบคลินิก 4 Parts)
@@ -600,19 +708,11 @@ function AppContent() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              if (!user) {
-                setIsAuthModalOpen(true);
-                return;
-              }
-              setCurrentView('aihub');
-            }}
-            className={`mobile-bottom-nav-btn ${currentView === 'aihub' ? 'active' : ''}`}
+            onClick={() => setIsScheduleModalOpen(true)}
+            className={`mobile-bottom-nav-btn ${isScheduleModalOpen ? 'active' : ''}`}
           >
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M12 2a4 4 0 0 1 4 4v1a3 3 0 0 1 3 3 3 3 0 0 1-1 2.24A4 4 0 0 1 16 19a4 4 0 0 1-8 0 4 4 0 0 1-2-6.76A3 3 0 0 1 5 10a3 3 0 0 1 3-3V6a4 4 0 0 1 4-4z" />
-            </svg>
-            <span>AI Hub</span>
+            <Calendar size={19} aria-hidden="true" />
+            <span>กำหนดสอบ</span>
           </button>
         </nav>
       )}

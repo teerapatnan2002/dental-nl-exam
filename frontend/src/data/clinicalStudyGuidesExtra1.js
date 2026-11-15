@@ -7,7 +7,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "การขยายและอุดคลองรากฟันด้วยวัสดุชีวภาพ (WL Control & Obturation)",
     specialty: "วิทยาเอ็นโดดอนต์",
     category: "วิทยาเอ็นโดดอนต์",
-    badgeColor: "#ec4899",
+    badgeColor: "#e11d48",
     must_know_topics: [
       "Apical Constriction (0.5–1.0 mm จาก Radiographic Apex)",
       "Electronic Apex Locator (EAL) + Radiograph",
@@ -36,7 +36,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "ภาวะแทรกซ้อนทางเอ็นโดดอนต์และรากฟันแตกร้าว (VRF & Perforations)",
     specialty: "วิทยาเอ็นโดดอนต์",
     category: "วิทยาเอ็นโดดอนต์",
-    badgeColor: "#ec4899",
+    badgeColor: "#e11d48",
     must_know_topics: [
       "Vertical Root Fracture (VRF): J-shaped Radiolucency & Narrow Deep Pocket",
       "Furcation & Strip Perforation Repair (MTA / Biodentine)",
@@ -64,7 +64,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "การละลายตัวของรากฟันภายในและภายนอก (Internal vs External Resorption)",
     specialty: "วิทยาเอ็นโดดอนต์",
     category: "วิทยาเอ็นโดดอนต์",
-    badgeColor: "#ec4899",
+    badgeColor: "#e11d48",
     must_know_topics: [
       "SLOB Rule (Clark's Rule) แยก Internal vs External",
       "Internal Inflammatory Resorption & Pink Tooth of Mummery",
@@ -92,7 +92,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "กายวิภาคคลองรากฟันและการกรอเปิดทางเข้า (Krasner & Rankow + MB2)",
     specialty: "วิทยาเอ็นโดดอนต์",
     category: "วิทยาเอ็นโดดอนต์",
-    badgeColor: "#ec4899",
+    badgeColor: "#e11d48",
     must_know_topics: [
       "Krasner & Rankow Laws (Centrality, Concentricity, Color Change)",
       "MB2 Localization ใน Maxillary First Molar (60–80%)",
@@ -120,7 +120,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "การจัดการฟันแท้ปลายรากเปิด (Apexogenesis, Apexification & Revascularization)",
     specialty: "วิทยาเอ็นโดดอนต์",
     category: "วิทยาเอ็นโดดอนต์",
-    badgeColor: "#ec4899",
+    badgeColor: "#e11d48",
     must_know_topics: [
       "Hertwig's Epithelial Root Sheath (HERS)",
       "Apexogenesis (Vital Pulp ➔ VPT / Cvek)",
@@ -148,7 +148,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "จุลชีววิทยาในคลองรากฟันและการติดเชื้อซ้ำ (Biofilms & E. faecalis)",
     specialty: "วิทยาเอ็นโดดอนต์",
     category: "วิทยาเอ็นโดดอนต์",
-    badgeColor: "#ec4899",
+    badgeColor: "#e11d48",
     must_know_topics: [
       "Primary Infection (Polymicrobial Obligate Anaerobes)",
       "Secondary / Persistent Infection (Enterococcus faecalis & Candida)",
@@ -176,7 +176,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "ชีววิทยาโพรงประสาทฟันและสรีรวิทยาความเจ็บปวด (A-delta vs C Fibers)",
     specialty: "วิทยาเอ็นโดดอนต์",
     category: "วิทยาเอ็นโดดอนต์",
-    badgeColor: "#ec4899",
+    badgeColor: "#e11d48",
     must_know_topics: [
       "Brännström's Hydrodynamic Theory",
       "A-delta Fibers vs Unmyelinated C-Fibers",
@@ -204,7 +204,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "สารล้างคลองรากฟันและยาใส่ในคลองราก (NaOCl, EDTA, CHX & Ca(OH)2)",
     specialty: "วิทยาเอ็นโดดอนต์",
     category: "วิทยาเอ็นโดดอนต์",
-    badgeColor: "#ec4899",
+    badgeColor: "#e11d48",
     must_know_topics: [
       "NaOCl: ละลายเนื้อเยื่ออินทรีย์ & ฆ่าเชื้อ (Saponification)",
       "17% EDTA: กำจัด Smear Layer ส่วนอนินทรีย์",
@@ -655,7 +655,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "วิทยาโรคฟันผุ การสูญเสีย-คืนแร่ธาตุ และความเสี่ยง (Cariology & CAMBRA)",
     specialty: "ทันตกรรมบูรณะ/หัตถการ",
     category: "ทันตกรรมบูรณะ/หัตถการ",
-    badgeColor: "#6366f1",
+    badgeColor: "#0d9488",
     must_know_topics: [
       "Critical pH: Enamel (5.5) vs Dentin/Cementum (6.2–6.7) vs Fluorapatite (4.5)",
       "Stephan Curve & Ecological Plaque Hypothesis (S. mutans / Lactobacillus)",
@@ -683,7 +683,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "วัสดุอมัลกัมทางทันตกรรมและการเตรียมโพรงฟัน (Amalgam & Cavity Prep)",
     specialty: "ทันตกรรมบูรณะ/หัตถการ",
     category: "ทันตกรรมบูรณะ/หัตถการ",
-    badgeColor: "#6366f1",
+    badgeColor: "#0d9488",
     must_know_topics: [
       "Low-Copper vs High-Copper Amalgam (Elimination of Gamma-2 Phase Sn7-8Hg)",
       "Zinc-Containing Amalgam + Moisture = Delayed Expansion",
@@ -711,7 +711,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "วัสดุกลาสไอโอโนเมอร์และการยึดติดทางเคมี (GIC, RMGIC & ART)",
     specialty: "ทันตกรรมบูรณะ/หัตถการ",
     category: "ทันตกรรมบูรณะ/หัตถการ",
-    badgeColor: "#6366f1",
+    badgeColor: "#0d9488",
     must_know_topics: [
       "Acid-Base Reaction (Polyacrylic Acid + Fluoroaluminosilicate Glass)",
       "Chemical Bond: Carboxyl (COO-) Chelation with Ca2+ in Hydroxyapatite",
@@ -739,7 +739,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "รอยโรคคอฟันสึกไร้รอยผุ (NCCLs) และภาวะเสียวฟันเนื้อฟัน (Dentin Hypersensitivity)",
     specialty: "ทันตกรรมบูรณะ/หัตถการ",
     category: "ทันตกรรมบูรณะ/หัตถการ",
-    badgeColor: "#6366f1",
+    badgeColor: "#0d9488",
     must_know_topics: [
       "Abrasion (V-shaped/Notched จากแปรงฟัน) vs Erosion (Saucer/Cupped จากกรด) vs Abfraction (Wedge จากแรงเค้น)",
       "Intrinsic Erosion (GERD/Bulimia — Palatal ฟันบน) vs Extrinsic Erosion (น้ำอัดลม — Buccal ฟันหน้า)",
@@ -767,7 +767,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "ระบบสารยึดติดทางทันตกรรม ชั้นลูกผสม และ 10-MDP (Dental Adhesives)",
     specialty: "ทันตกรรมบูรณะ/หัตถการ",
     category: "ทันตกรรมบูรณะ/หัตถการ",
-    badgeColor: "#6366f1",
+    badgeColor: "#0d9488",
     must_know_topics: [
       "Enamel Bonding (Micromechanical Tags) vs Dentin Bonding (Hybrid Layer — Nakabayashi)",
       "Etch-and-Rinse (Total-Etch: 3-Step vs 2-Step)",
@@ -795,7 +795,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "การปกป้องโพรงประสาทฟัน ความหนาเนื้อฟันที่เหลือ (RDT) และการกรอผุเชิงอนุรักษ์",
     specialty: "ทันตกรรมบูรณะ/หัตถการ",
     category: "ทันตกรรมบูรณะ/หัตถการ",
-    badgeColor: "#6366f1",
+    badgeColor: "#0d9488",
     must_know_topics: [
       "Remaining Dentin Thickness (RDT > 2.0 mm vs 0.5–1.5 mm vs < 0.5 mm)",
       "Selective Caries Removal to Soft/Firm Dentin vs Stepwise Excavation",
@@ -823,7 +823,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     title: "การฟอกสีฟัน กลไกออกซิเดชัน และทันตกรรมเพื่อความสวยงาม (Bleaching & Veneers)",
     specialty: "ทันตกรรมบูรณะ/หัตถการ",
     category: "ทันตกรรมบูรณะ/หัตถการ",
-    badgeColor: "#6366f1",
+    badgeColor: "#0d9488",
     must_know_topics: [
       "Hydrogen Peroxide (In-Office 30–38%) vs Carbamide Peroxide (10% = ~3.5% HP) vs Sodium Perborate",
       "Delayed Composite Bonding หลังฟอกสีฟัน (Wait 1–2 Weeks!)",

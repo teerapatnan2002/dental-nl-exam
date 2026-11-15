@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import {
   BarChart3, CheckCircle2, TrendingUp, Layers, BookOpen,
-  Search, Shield, Sparkles, Filter, ChevronRight, HelpCircle,
+  Search, Shield, Filter, ChevronRight, HelpCircle,
   Activity, Award, PieChart, PlayCircle, Info, Target, Zap, AlertTriangle
 } from 'lucide-react';
 import { API_BASE } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 
 const READINESS_STATUS_META = {
-  ready: { label: 'พร้อมสอบ (>=75%)', color: '#10b981', bg: 'rgba(16, 185, 129, 0.14)', border: 'rgba(16, 185, 129, 0.35)' },
-  borderline: { label: 'ก้ำกึ่ง (60-74%)', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.14)', border: 'rgba(245, 158, 11, 0.35)' },
-  critical: { label: 'ต้องเร่งซ่อม (<60%)', color: '#fb7185', bg: 'rgba(244, 63, 94, 0.14)', border: 'rgba(244, 63, 94, 0.35)' },
-  unpracticed: { label: 'ยังไม่เคยฝึก', color: '#94a3b8', bg: 'rgba(148, 163, 184, 0.12)', border: 'rgba(148, 163, 184, 0.25)' },
+  ready: { label: 'พร้อมสอบ (>=75%)', color: 'var(--ink-emerald)', bg: 'rgba(16, 185, 129, 0.14)', border: 'rgba(16, 185, 129, 0.35)' },
+  borderline: { label: 'ก้ำกึ่ง (60-74%)', color: 'var(--ink-amber)', bg: 'rgba(245, 158, 11, 0.14)', border: 'rgba(245, 158, 11, 0.35)' },
+  critical: { label: 'ต้องเร่งซ่อม (<60%)', color: 'var(--ink-rose)', bg: 'rgba(239, 68, 68, 0.14)', border: 'rgba(239, 68, 68, 0.35)' },
+  unpracticed: { label: 'ยังไม่เคยฝึก', color: 'var(--text-muted)', bg: 'var(--surface-subtle)', border: 'var(--border)' },
 };
 
 export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
@@ -91,7 +91,7 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
   if (loading) {
     return (
       <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center' }}>
-        <div className="spinner" style={{ margin: '0 auto 1.5rem', width: 40, height: 40, border: '3px solid rgba(124, 58, 237, 0.2)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+        <div className="spinner" style={{ margin: '0 auto 1.5rem', width: 40, height: 40, border: '3px solid var(--surface-subtle)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
         <h3 style={{ marginBottom: '0.5rem' }}>กำลังประมวลผลข้อมูล TOS Analytics...</h3>
         <p style={{ color: 'var(--text-sub)' }}>วิเคราะห์พิมพ์เขียวเกณฑ์มาตรฐาน ศ.ป.ท. 2563 เทียบกับคลังข้อสอบ 2,443 ข้อ</p>
       </div>
@@ -123,14 +123,14 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
     'ขั้นตอนและวิธีการรักษา'
   ];
 
-  // Helper for heatmap cell color
-  const getCellColor = (count) => {
-    if (!count || count === 0) return 'rgba(255, 255, 255, 0.03)';
-    if (count < 10) return 'rgba(16, 185, 129, 0.15)';
-    if (count < 30) return 'rgba(16, 185, 129, 0.3)';
-    if (count < 60) return 'rgba(59, 130, 246, 0.4)';
-    if (count < 100) return 'rgba(124, 58, 237, 0.5)';
-    return 'rgba(236, 72, 153, 0.6)';
+  // Helper for heatmap cell color (Clinical Teal density ramp — works on Dark & Light)
+  const getCellStyle = (count) => {
+    if (!count || count === 0) return { bg: 'var(--surface-subtle)', fg: 'var(--text-muted)', border: '1px solid transparent' };
+    if (count < 10) return { bg: 'rgba(13, 148, 136, 0.12)', fg: 'var(--text)', border: '1px solid rgba(13, 148, 136, 0.22)' };
+    if (count < 30) return { bg: 'rgba(13, 148, 136, 0.24)', fg: 'var(--text)', border: '1px solid rgba(13, 148, 136, 0.34)' };
+    if (count < 60) return { bg: 'rgba(13, 148, 136, 0.42)', fg: '#fff', border: '1px solid rgba(13, 148, 136, 0.5)' };
+    if (count < 100) return { bg: 'rgba(13, 148, 136, 0.68)', fg: '#fff', border: '1px solid rgba(13, 148, 136, 0.75)' };
+    return { bg: 'var(--primary)', fg: '#fff', border: '1px solid var(--primary-light)' };
   };
 
   // Filtered topics for explorer
@@ -150,35 +150,36 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       
       {/* ── Header & KPI Banner ─────────────────────── */}
-      <div className="glass-panel" style={{ padding: '1.75rem', borderLeft: '4px solid var(--accent)' }}>
+      <div className="glass-panel" style={{ padding: 'clamp(1.2rem, 2.5vw, 1.75rem)', borderLeft: '3px solid var(--primary)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem' }}>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(124, 58, 237, 0.15)', color: 'var(--accent)', padding: '0.35rem 0.75rem', borderRadius: 'var(--radius-pill)', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.75rem' }}>
-              <Sparkles size={14} /> ศ.ป.ท. Dental Licensing Blueprint 2563
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', background: 'var(--primary-surface)', border: '1px solid var(--primary-border)', color: 'var(--primary-light)', padding: '0.3rem 0.7rem', borderRadius: 'var(--radius-pill)', fontSize: '0.78rem', fontWeight: 600, marginBottom: '0.75rem' }}>
+              <Shield size={13} /> ศ.ป.ท. Dental Licensing Blueprint 2563
             </div>
-            <h2 style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0 0 0.5rem 0' }}>
-              📊 TOS Analytics & Exam Bank Matrix
+            <h2 style={{ fontSize: 'clamp(1.35rem, 2.5vw, 1.75rem)', fontWeight: 800, margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.55rem', flexWrap: 'wrap' }}>
+              <BarChart3 size={24} color="var(--primary-light)" style={{ flexShrink: 0 }} />
+              <span>TOS Analytics &amp; Exam Bank Matrix</span>
             </h2>
-            <p style={{ color: 'var(--text-sub)', fontSize: '0.95rem', maxWidth: '680px', margin: 0, lineHeight: 1.6 }}>
+            <p style={{ color: 'var(--text-sub)', fontSize: '0.92rem', maxWidth: '680px', margin: 0, lineHeight: 1.6 }}>
               วิเคราะห์ความสอดคล้องระหว่างเกณฑ์มาตรฐานการประเมินความรู้ทันตแพทย์ (TOS 2563) กับคลังข้อสอบจริง 2,443 ข้อ ทั้ง 10 สาขาวิชาคลินิก, 5 สมรรถนะ และระดับพฤติกรรม R / A / P
             </p>
           </div>
 
           {/* Quick Stats Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 130px), 1fr))', gap: '0.85rem', width: '100%', maxWidth: '580px', minWidth: 0 }}>
-            <div className="stat-card" style={{ background: 'var(--surface-card)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', textAlign: 'center' }}>
+            <div className="stat-card" style={{ background: 'var(--surface-subtle)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', textAlign: 'center' }}>
               <div className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text)' }}>{summary.total_questions.toLocaleString()}</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>ข้อสอบทั้งหมด</div>
             </div>
-            <div className="stat-card" style={{ background: 'var(--surface-card)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', textAlign: 'center' }}>
-              <div className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--ink-emerald)' }}>{summary.clinical_questions.toLocaleString()}</div>
+            <div className="stat-card" style={{ background: 'var(--surface-subtle)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', textAlign: 'center' }}>
+              <div className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary-light)' }}>{summary.clinical_questions.toLocaleString()}</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>ภาคคลินิก (7.2x)</div>
             </div>
-            <div className="stat-card" style={{ background: 'var(--surface-card)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', textAlign: 'center' }}>
+            <div className="stat-card" style={{ background: 'var(--surface-subtle)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', textAlign: 'center' }}>
               <div className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--ink-amber)' }}>{summary.law_questions.toLocaleString()}</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>หมวดกฎหมาย (9.5x)</div>
             </div>
-            <div className="stat-card" style={{ background: 'var(--surface-card)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', textAlign: 'center' }}>
+            <div className="stat-card" style={{ background: 'var(--surface-subtle)', padding: '1rem', borderRadius: 'var(--radius-inner)', border: '1px solid var(--border)', textAlign: 'center' }}>
               <div className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--ink-sky)' }}>{summary.total_must_know_topics}</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>Must-Know Topics</div>
             </div>
@@ -186,29 +187,29 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
         </div>
 
         {/* Sub Navigation Pills */}
-        <div style={{ display: 'flex', gap: '0.6rem', marginTop: '1.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '1.25rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '0.55rem', marginTop: '1.4rem', borderTop: '1px solid var(--border)', paddingTop: '1.15rem', flexWrap: 'wrap' }}>
           <button
             onClick={() => setActiveSubTab('benchmark')}
-            className={`btn ${activeSubTab === 'benchmark' ? 'btn-primary' : 'btn-outline'}`}
-            style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            className={`btn ${activeSubTab === 'benchmark' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ fontSize: '0.84rem', padding: '0.48rem 0.95rem' }}
           >
-            <BarChart3 size={16} /> เปรียบเทียบมาตรฐาน (TOS Benchmark)
+            <BarChart3 size={15} /> เปรียบเทียบมาตรฐาน (TOS Benchmark)
           </button>
           <button
             onClick={() => setActiveSubTab('readiness')}
-            className={`btn ${activeSubTab === 'readiness' ? 'btn-primary' : 'btn-outline'}`}
-            style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            className={`btn ${activeSubTab === 'readiness' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ fontSize: '0.84rem', padding: '0.48rem 0.95rem' }}
           >
-            <Target size={16} /> ความพร้อมของฉัน (My Readiness)
+            <Target size={15} /> ความพร้อมของฉัน (My Readiness)
             {readiness?.summary?.unique_answered > 0 && (
-              <span style={{
+              <span className="tabular-nums" style={{
                 marginLeft: '0.25rem',
                 fontSize: '0.72rem',
-                fontWeight: 800,
+                fontWeight: 700,
                 padding: '0.1rem 0.45rem',
                 borderRadius: '10px',
-                background: readiness.summary.weighted_accuracy_pct >= 60 ? 'rgba(16,185,129,0.22)' : 'rgba(244,63,94,0.25)',
-                color: readiness.summary.weighted_accuracy_pct >= 60 ? '#34d399' : '#fb7185'
+                background: readiness.summary.weighted_accuracy_pct >= 60 ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)',
+                color: readiness.summary.weighted_accuracy_pct >= 60 ? 'var(--ink-emerald)' : 'var(--ink-rose)'
               }}>
                 {readiness.summary.weighted_accuracy_pct}%
               </span>
@@ -216,17 +217,17 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
           </button>
           <button
             onClick={() => setActiveSubTab('heatmap')}
-            className={`btn ${activeSubTab === 'heatmap' ? 'btn-primary' : 'btn-outline'}`}
-            style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            className={`btn ${activeSubTab === 'heatmap' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ fontSize: '0.84rem', padding: '0.48rem 0.95rem' }}
           >
-            <Layers size={16} /> แผนที่ความครอบคลุม (Coverage Heatmap)
+            <Layers size={15} /> แผนที่ความครอบคลุม (Coverage Heatmap)
           </button>
           <button
             onClick={() => setActiveSubTab('topics')}
-            className={`btn ${activeSubTab === 'topics' ? 'btn-primary' : 'btn-outline'}`}
-            style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            className={`btn ${activeSubTab === 'topics' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ fontSize: '0.84rem', padding: '0.48rem 0.95rem' }}
           >
-            <BookOpen size={16} /> เจาะลึกหัวข้อ Must-Know ({summary.total_must_know_topics})
+            <BookOpen size={15} /> เจาะลึกหัวข้อ Must-Know ({summary.total_must_know_topics})
           </button>
         </div>
       </div>
@@ -249,28 +250,30 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1rem' }}>
               {cognitive.map(cog => {
                 const isNear = Math.abs(cog.diff_pct) <= 5.0;
+                const cogColor = cog.level === 'P' ? 'var(--primary-light)' : cog.level === 'A' ? 'var(--ink-sky)' : 'var(--ink-emerald)';
+                const cogFill = cog.level === 'P' ? 'var(--primary)' : cog.level === 'A' ? 'var(--accent)' : 'var(--success)';
                 return (
-                  <div key={cog.level} style={{ background: 'var(--surface-card)', padding: '1.25rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
+                  <div key={cog.level} style={{ background: 'var(--surface-subtle)', padding: '1.2rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                       <div>
-                        <span style={{ fontSize: '1.25rem', fontWeight: 800, color: cog.level === 'P' ? '#ec4899' : cog.level === 'A' ? '#38bdf8' : '#10b981' }}>
+                        <span className="tabular-nums" style={{ fontSize: '1.25rem', fontWeight: 800, color: cogColor }}>
                           {cog.level}
                         </span>
                         <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text)' }}>{cog.name}</div>
                       </div>
-                      <span style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-pill)', background: isNear ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)', color: isNear ? '#10b981' : '#f59e0b', fontWeight: 600 }}>
+                      <span className="tabular-nums" style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-pill)', background: isNear ? 'rgba(16, 185, 129, 0.14)' : 'rgba(245, 158, 11, 0.14)', color: isNear ? 'var(--ink-emerald)' : 'var(--ink-amber)', fontWeight: 600 }}>
                         {cog.diff_pct >= 0 ? `+${cog.diff_pct}%` : `${cog.diff_pct}%`}
                       </span>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-sub)', margin: '0.75rem 0 0.35rem' }}>
+                    <div className="tabular-nums" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-sub)', margin: '0.75rem 0 0.35rem' }}>
                       <span>ในคลัง: <b>{cog.actual_count.toLocaleString()} ข้อ ({cog.actual_pct}%)</b></span>
                       <span>เกณฑ์ TOS: <b>{cog.target_pct}%</b></span>
                     </div>
 
                     {/* Comparison bar */}
-                    <div style={{ height: '8px', width: '100%', background: 'rgba(255, 255, 255, 0.06)', borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
-                      <div style={{ height: '100%', width: `${Math.min(100, cog.actual_pct)}%`, background: cog.level === 'P' ? 'linear-gradient(90deg, #ec4899, #f43f5e)' : cog.level === 'A' ? 'linear-gradient(90deg, #38bdf8, #6366f1)' : 'linear-gradient(90deg, #10b981, #059669)', borderRadius: '4px' }} />
+                    <div style={{ height: '7px', width: '100%', background: 'var(--border)', borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
+                      <div style={{ height: '100%', width: `${Math.min(100, cog.actual_pct)}%`, background: cogFill, borderRadius: '4px' }} />
                     </div>
                   </div>
                 );
@@ -281,16 +284,16 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
           {/* 10 Clinical Categories vs TOS Table */}
           <div className="glass-panel" style={{ padding: '1.5rem' }}>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Layers size={18} color="var(--accent)" /> ภาควิทยาคลินิก 10 สาขาวิชา: เป้าหมาย TOS vs ข้อสอบจริงในคลัง
+              <Layers size={18} color="var(--primary-light)" /> ภาควิทยาคลินิก 10 สาขาวิชา: เป้าหมาย TOS vs ข้อสอบจริงในคลัง
             </h3>
             <p style={{ color: 'var(--text-sub)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
               เปรียบเทียบโควตา 300 ข้อ (1 รอบสอบ) กับจำนวนข้อสอบสะสมในฐานข้อมูล 2,159 ข้อ
             </p>
 
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+              <table className="tabular-nums" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', textAlign: 'left', color: 'var(--text-muted)' }}>
+                  <tr style={{ borderBottom: '1px solid var(--border-hover)', textAlign: 'left', color: 'var(--text-muted)' }}>
                     <th style={{ padding: '0.75rem 1rem' }}>สาขาวิชา</th>
                     <th style={{ padding: '0.75rem 0.5rem', textAlign: 'center' }}>เป้าหมาย TOS (300 ข้อ)</th>
                     <th style={{ padding: '0.75rem 0.5rem', textAlign: 'center' }}>ในคลังข้อสอบจริง</th>
@@ -304,7 +307,7 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
                     const isBalanced = cat.status === 'Balanced';
                     const isHigh = cat.status === 'High';
                     return (
-                      <tr key={cat.category} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
+                      <tr key={cat.category} style={{ borderBottom: '1px solid var(--border)' }}>
                         <td style={{ padding: '0.85rem 1rem', fontWeight: 600 }}>{cat.category}</td>
                         <td style={{ padding: '0.85rem 0.5rem', textAlign: 'center', color: 'var(--text-sub)' }}>
                           {cat.target_count} ข้อ ({cat.target_pct}%)
@@ -315,25 +318,26 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
                         <td style={{ padding: '0.85rem 0.5rem', textAlign: 'center' }}>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                             <span>{cat.actual_pct}%</span>
-                            <div style={{ width: '50px', height: '6px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '3px', overflow: 'hidden' }}>
-                              <div style={{ width: `${Math.min(100, (cat.actual_pct / 20) * 100)}%`, height: '100%', background: 'var(--accent)' }} />
+                            <div style={{ width: '50px', height: '6px', background: 'var(--surface-subtle)', borderRadius: '3px', overflow: 'hidden' }}>
+                              <div style={{ width: `${Math.min(100, (cat.actual_pct / 20) * 100)}%`, height: '100%', background: 'var(--primary)' }} />
                             </div>
                           </div>
                         </td>
-                        <td style={{ padding: '0.85rem 0.5rem', textAlign: 'center', fontWeight: 600, color: cat.diff_pct > 0 ? '#10b981' : (cat.diff_pct < -2 ? '#f59e0b' : 'var(--text-sub)') }}>
+                        <td style={{ padding: '0.85rem 0.5rem', textAlign: 'center', fontWeight: 600, color: cat.diff_pct > 0 ? 'var(--ink-emerald)' : (cat.diff_pct < -2 ? 'var(--ink-amber)' : 'var(--text-sub)') }}>
                           {cat.diff_pct > 0 ? `+${cat.diff_pct}%` : `${cat.diff_pct}%`}
                         </td>
                         <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
                           <span style={{
                             fontSize: '0.75rem',
                             fontWeight: 600,
-                            padding: '0.25rem 0.65rem',
+                            padding: '0.24rem 0.62rem',
                             borderRadius: 'var(--radius-pill)',
-                            background: isBalanced ? 'rgba(16, 185, 129, 0.15)' : (isHigh ? 'rgba(124, 58, 237, 0.15)' : 'rgba(245, 158, 11, 0.15)'),
-                            color: isBalanced ? '#10b981' : (isHigh ? 'var(--accent)' : '#f59e0b'),
-                            display: 'inline-block'
+                            background: isBalanced ? 'rgba(16, 185, 129, 0.14)' : (isHigh ? 'var(--primary-surface)' : 'rgba(245, 158, 11, 0.14)'),
+                            color: isBalanced ? 'var(--ink-emerald)' : (isHigh ? 'var(--primary-light)' : 'var(--ink-amber)'),
+                            display: 'inline-block',
+                            whiteSpace: 'nowrap',
                           }}>
-                            {isBalanced ? '🎯 สมดุลตรงเกณฑ์' : (isHigh ? '🟢 คลังหนาแน่น' : '🟡 พอดีเกณฑ์')}
+                            {isBalanced ? 'สมดุลตรงเกณฑ์' : (isHigh ? 'คลังหนาแน่น' : 'พอดีเกณฑ์')}
                           </span>
                         </td>
                       </tr>
@@ -341,23 +345,23 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
                   })}
                   {/* Law Row */}
                   {lawCategory && (
-                    <tr style={{ background: 'rgba(245, 158, 11, 0.05)', borderTop: '2px solid rgba(245, 158, 11, 0.2)' }}>
-                      <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#f59e0b' }}>⚖️ {lawCategory.category} (สอบแยก)</td>
+                    <tr style={{ background: 'rgba(245, 158, 11, 0.06)', borderTop: '2px solid rgba(245, 158, 11, 0.25)' }}>
+                      <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: 'var(--ink-amber)' }}>{lawCategory.category} (สอบแยก)</td>
                       <td style={{ padding: '0.85rem 0.5rem', textAlign: 'center', color: 'var(--text-sub)' }}>
                         30 ข้อ / รอบ
                       </td>
-                      <td style={{ padding: '0.85rem 0.5rem', textAlign: 'center', fontWeight: 700, color: '#f59e0b' }}>
+                      <td style={{ padding: '0.85rem 0.5rem', textAlign: 'center', fontWeight: 700, color: 'var(--ink-amber)' }}>
                         {lawCategory.actual_count} ข้อ
                       </td>
                       <td style={{ padding: '0.85rem 0.5rem', textAlign: 'center' }}>
                         ครอบคลุม 9.5 รอบสอบ
                       </td>
-                      <td style={{ padding: '0.85rem 0.5rem', textAlign: 'center', color: '#10b981', fontWeight: 700 }}>
+                      <td style={{ padding: '0.85rem 0.5rem', textAlign: 'center', color: 'var(--ink-emerald)', fontWeight: 700 }}>
                         พร้อม 100%
                       </td>
                       <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 600, padding: '0.25rem 0.65rem', borderRadius: 'var(--radius-pill)', background: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b' }}>
-                          ⭐ กฎหมายครบวงจร
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600, padding: '0.24rem 0.62rem', borderRadius: 'var(--radius-pill)', background: 'rgba(245, 158, 11, 0.16)', color: 'var(--ink-amber)', whiteSpace: 'nowrap' }}>
+                          กฎหมายครบวงจร
                         </span>
                       </td>
                     </tr>
@@ -370,7 +374,7 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
           {/* 5 Tasks vs TOS Table */}
           <div className="glass-panel" style={{ padding: '1.5rem' }}>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <TrendingUp size={18} color="var(--accent)" /> 5 สมรรถนะทางคลินิก (Clinical Tasks)
+              <TrendingUp size={18} color="var(--primary-light)" /> 5 สมรรถนะทางคลินิก (Clinical Tasks)
             </h3>
             <p style={{ color: 'var(--text-sub)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
               สัดส่วนข้อสอบจริงเทียบกับเกณฑ์สมรรถนะ ศ.ป.ท.
@@ -378,20 +382,20 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '1rem' }}>
               {tasks.map(t => (
-                <div key={t.task} style={{ background: 'var(--surface-card)', padding: '1.1rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
+                <div key={t.task} style={{ background: 'var(--surface-subtle)', padding: '1.1rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
                   <div style={{ fontSize: '0.88rem', fontWeight: 700, marginBottom: '0.4rem', minHeight: '2.5rem' }}>{t.task}</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.4rem' }}>
+                  <div className="tabular-nums" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.4rem' }}>
                     <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text)' }}>{t.actual_count} ข้อ</span>
                     <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>เป้าหมาย {t.target_pct}%</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
+                  <div className="tabular-nums" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
                     <span>สัดส่วนจริง: <b>{t.actual_pct}%</b></span>
-                    <span style={{ color: t.diff_pct >= 0 ? '#10b981' : '#f59e0b', fontWeight: 600 }}>
+                    <span style={{ color: t.diff_pct >= 0 ? 'var(--ink-emerald)' : 'var(--ink-amber)', fontWeight: 600 }}>
                       {t.diff_pct >= 0 ? `+${t.diff_pct}%` : `${t.diff_pct}%`}
                     </span>
                   </div>
-                  <div style={{ height: '6px', width: '100%', background: 'rgba(255, 255, 255, 0.06)', borderRadius: '3px', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${Math.min(100, (t.actual_pct / 35) * 100)}%`, background: 'var(--accent)', borderRadius: '3px' }} />
+                  <div style={{ height: '6px', width: '100%', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${Math.min(100, (t.actual_pct / 35) * 100)}%`, background: 'var(--primary)', borderRadius: '3px' }} />
                   </div>
                 </div>
               ))}
@@ -409,7 +413,7 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
             <div>
               <h3 style={{ fontSize: '1.2rem', fontWeight: 700, margin: '0 0 0.3rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Layers size={18} color="var(--accent)" /> 2D Coverage Heatmap: 10 สาขาวิชา $\times$ 5 สมรรถนะ
+                <Layers size={18} color="var(--primary-light)" /> 2D Coverage Heatmap: 10 สาขาวิชา × 5 สมรรถนะ
               </h3>
               <p style={{ color: 'var(--text-sub)', fontSize: '0.85rem', margin: 0 }}>
                 ความหนาแน่นของข้อสอบจริงในแต่ละช่องพิกัด ยิ่งสีเข้มแสดงว่ามีข้อสอบสะสมมาก
@@ -417,21 +421,21 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
             </div>
 
             {/* Heatmap Legend */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--text-sub)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.75rem', color: 'var(--text-sub)' }}>
               <span>น้อย</span>
-              <span style={{ width: 14, height: 14, background: 'rgba(16, 185, 129, 0.2)', borderRadius: 3, display: 'inline-block' }} />
-              <span style={{ width: 14, height: 14, background: 'rgba(16, 185, 129, 0.4)', borderRadius: 3, display: 'inline-block' }} />
-              <span style={{ width: 14, height: 14, background: 'rgba(59, 130, 246, 0.5)', borderRadius: 3, display: 'inline-block' }} />
-              <span style={{ width: 14, height: 14, background: 'rgba(124, 58, 237, 0.6)', borderRadius: 3, display: 'inline-block' }} />
-              <span style={{ width: 14, height: 14, background: 'rgba(236, 72, 153, 0.7)', borderRadius: 3, display: 'inline-block' }} />
+              <span style={{ width: 14, height: 14, background: 'rgba(13, 148, 136, 0.12)', border: '1px solid rgba(13, 148, 136, 0.22)', borderRadius: 3, display: 'inline-block' }} />
+              <span style={{ width: 14, height: 14, background: 'rgba(13, 148, 136, 0.24)', borderRadius: 3, display: 'inline-block' }} />
+              <span style={{ width: 14, height: 14, background: 'rgba(13, 148, 136, 0.42)', borderRadius: 3, display: 'inline-block' }} />
+              <span style={{ width: 14, height: 14, background: 'rgba(13, 148, 136, 0.68)', borderRadius: 3, display: 'inline-block' }} />
+              <span style={{ width: 14, height: 14, background: 'var(--primary)', borderRadius: 3, display: 'inline-block' }} />
               <span>มาก (&gt;100)</span>
             </div>
           </div>
 
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'center' }}>
+            <table className="tabular-nums" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'center' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', color: 'var(--text-muted)' }}>
+                <tr style={{ borderBottom: '1px solid var(--border-hover)', color: 'var(--text-muted)' }}>
                   <th style={{ padding: '0.75rem 1rem', textAlign: 'left', minWidth: '180px' }}>สาขาวิชา \ สมรรถนะ</th>
                   <th style={{ padding: '0.75rem 0.5rem', width: '13%' }}>Task 1: ป้องกัน</th>
                   <th style={{ padding: '0.75rem 0.5rem', width: '13%' }}>Task 2: กลไกโรค</th>
@@ -446,26 +450,27 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
                   const catMatrix = heatmap_matrix[cat.category] || {};
                   const rowTotal = taskHeaders.reduce((sum, th) => sum + (catMatrix[th] || 0), 0);
                   return (
-                    <tr key={cat.category} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
+                    <tr key={cat.category} style={{ borderBottom: '1px solid var(--border)' }}>
                       <td style={{ padding: '0.75rem 1rem', textAlign: 'left', fontWeight: 600 }}>{cat.category}</td>
                       {taskHeaders.map(th => {
                         const cnt = catMatrix[th] || 0;
+                        const cellStyle = getCellStyle(cnt);
                         return (
-                          <td key={th} style={{ padding: '0.5rem' }}>
+                          <td key={th} style={{ padding: '0.45rem' }}>
                             <div style={{
-                              background: getCellColor(cnt),
+                              background: cellStyle.bg,
                               padding: '0.6rem 0.3rem',
                               borderRadius: '6px',
                               fontWeight: cnt > 0 ? 700 : 400,
-                              color: cnt > 0 ? '#fff' : 'var(--text-muted)',
-                              border: cnt > 50 ? '1px solid rgba(255, 255, 255, 0.2)' : 'none'
+                              color: cellStyle.fg,
+                              border: cellStyle.border,
                             }}>
                               {cnt}
                             </div>
                           </td>
                         );
                       })}
-                      <td style={{ padding: '0.5rem 0.75rem', fontWeight: 800, color: 'var(--accent)' }}>
+                      <td style={{ padding: '0.5rem 0.75rem', fontWeight: 800, color: 'var(--primary-light)' }}>
                         {rowTotal}
                       </td>
                     </tr>
@@ -494,33 +499,31 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
           {/* Search & Filter Bar */}
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
             <div style={{ position: 'relative', flex: 1, minWidth: '240px' }}>
-              <Search size={16} style={{ position: 'absolute', left: 12, top: 12, color: 'var(--text-muted)' }} />
+              <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
               <input
                 type="text"
+                className="theme-input"
                 value={searchTopic}
                 onChange={e => setSearchTopic(e.target.value)}
                 placeholder="ค้นหาชื่อหัวข้อ (เช่น VPT, MRD, Ludwig, Biologic Width)..."
                 style={{
                   width: '100%',
                   padding: '0.65rem 0.75rem 0.65rem 2.4rem',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: 'var(--radius-sm)',
-                  color: 'var(--text)',
                   fontSize: '0.88rem'
                 }}
               />
             </div>
 
             <select
+              className="input-select"
               value={selectedCategoryFilter}
               onChange={e => setSelectedCategoryFilter(e.target.value)}
               style={{
+                width: 'auto',
+                minWidth: '220px',
                 padding: '0.65rem 1rem',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: 'var(--radius-sm)',
-                color: 'var(--text)',
                 fontSize: '0.88rem'
               }}
             >
@@ -557,13 +560,13 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
                 </div>
 
                 <div style={{ textAlign: 'right' }}>
-                  <span style={{
-                    fontSize: '0.85rem',
-                    fontWeight: 800,
-                    padding: '0.3rem 0.65rem',
+                  <span className="tabular-nums" style={{
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    padding: '0.28rem 0.62rem',
                     borderRadius: 'var(--radius-pill)',
-                    background: 'rgba(124, 58, 237, 0.15)',
-                    color: 'var(--accent)',
+                    background: 'var(--primary-surface)',
+                    color: 'var(--primary-light)',
                     display: 'inline-block'
                   }}>
                     {t.count} ข้อ
@@ -596,9 +599,9 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
             <>
               {/* Readiness KPI Cards */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 210px), 1fr))', gap: '1rem' }}>
-                <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: `4px solid ${readiness.summary.weighted_accuracy_pct >= 60 ? '#10b981' : '#fb7185'}` }}>
+                <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: `3px solid ${readiness.summary.weighted_accuracy_pct >= 60 ? 'var(--success)' : 'var(--danger)'}` }}>
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>ความแม่นยำถ่วงน้ำหนัก TOS</div>
-                  <div style={{ fontSize: '2rem', fontWeight: 900, color: readiness.summary.weighted_accuracy_pct >= 60 ? '#10b981' : '#fb7185' }}>
+                  <div className="tabular-nums" style={{ fontSize: '2rem', fontWeight: 800, color: readiness.summary.weighted_accuracy_pct >= 60 ? 'var(--ink-emerald)' : 'var(--ink-rose)' }}>
                     {readiness.summary.weighted_accuracy_pct}%
                   </div>
                   <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)' }}>
@@ -606,9 +609,9 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
                   </div>
                 </div>
 
-                <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: '4px solid #38bdf8' }}>
+                <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: '3px solid var(--accent)' }}>
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>ดัชนีความพร้อมรวม (คิดความครอบคลุม)</div>
-                  <div style={{ fontSize: '2rem', fontWeight: 900, color: '#38bdf8' }}>
+                  <div className="tabular-nums" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--ink-sky)' }}>
                     {readiness.summary.projected_nl_score}%
                   </div>
                   <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)' }}>
@@ -616,9 +619,9 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
                   </div>
                 </div>
 
-                <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: '4px solid #a855f7' }}>
+                <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: '3px solid var(--primary)' }}>
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>ความแม่นยำรวมล่าสุด</div>
-                  <div style={{ fontSize: '2rem', fontWeight: 900, color: '#a855f7' }}>
+                  <div className="tabular-nums" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary-light)' }}>
                     {readiness.summary.overall_accuracy}%
                   </div>
                   <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)' }}>
@@ -626,9 +629,9 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
                   </div>
                 </div>
 
-                <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: '4px solid #f59e0b' }}>
+                <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: '3px solid var(--warning)' }}>
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>หมวดที่ต้องเร่งซ่อม</div>
-                  <div style={{ fontSize: '2rem', fontWeight: 900, color: '#f59e0b' }}>
+                  <div className="tabular-nums" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--ink-amber)' }}>
                     {readiness.summary.critical_categories_count} หมวด
                   </div>
                   <div style={{ fontSize: '0.76rem', color: 'var(--text-sub)' }}>
@@ -641,18 +644,18 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.25rem' }}>
                 <div className="glass-panel" style={{ padding: '1.4rem' }}>
                   <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Award size={18} color="var(--accent)" /> ความพร้อมตามระดับ R / A / P
+                    <Award size={18} color="var(--primary-light)" /> ความพร้อมตามระดับ R / A / P
                   </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                     {readiness.cognitive_readiness.map(cog => {
                       const meta = READINESS_STATUS_META[cog.status] || READINESS_STATUS_META.unpracticed;
                       return (
-                        <div key={cog.level} style={{ background: 'rgba(255,255,255,0.02)', padding: '0.85rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.86rem' }}>
+                        <div key={cog.level} style={{ background: 'var(--surface-subtle)', padding: '0.85rem', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                          <div className="tabular-nums" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.86rem' }}>
                             <span><strong>{cog.level}</strong> — {cog.name} <span style={{ color: 'var(--text-muted)', fontSize: '0.76rem' }}>(TOS {cog.target_pct}%)</span></span>
                             <strong style={{ color: meta.color }}>{cog.accuracy !== null ? `${cog.accuracy}%` : 'ยังไม่ทำ'}</strong>
                           </div>
-                          <div style={{ height: '7px', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', overflow: 'hidden' }}>
+                          <div style={{ height: '7px', background: 'var(--border)', borderRadius: '4px', overflow: 'hidden' }}>
                             <div style={{ width: `${cog.accuracy || 0}%`, height: '100%', background: meta.color, transition: 'width 0.3s ease' }} />
                           </div>
                           <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
@@ -666,20 +669,20 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
 
                 <div className="glass-panel" style={{ padding: '1.4rem' }}>
                   <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Activity size={18} color="#38bdf8" /> ความพร้อมตาม 5 สมรรถนะ (Tasks)
+                    <Activity size={18} color="var(--ink-sky)" /> ความพร้อมตาม 5 สมรรถนะ (Tasks)
                   </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
                     {readiness.task_readiness.map(task => {
                       const meta = READINESS_STATUS_META[task.status] || READINESS_STATUS_META.unpracticed;
                       return (
                         <div key={task.task}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
+                          <div className="tabular-nums" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
                             <span style={{ color: 'var(--text)' }}>{task.task} <span style={{ color: 'var(--text-muted)' }}>({task.target_pct}%)</span></span>
                             <span style={{ fontWeight: 700, color: meta.color }}>
                               {task.accuracy !== null ? `${task.accuracy}% (${task.unique_answered} ข้อ)` : 'ยังไม่ทำ'}
                             </span>
                           </div>
-                          <div style={{ height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '3px', overflow: 'hidden' }}>
+                          <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden' }}>
                             <div style={{ width: `${task.accuracy || 0}%`, height: '100%', background: meta.color }} />
                           </div>
                         </div>
@@ -690,11 +693,11 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
               </div>
 
               {/* Top High-ROI Weak Topics Remediation */}
-              <div className="glass-panel" style={{ padding: '1.5rem', borderLeft: '4px solid #f59e0b' }}>
+              <div className="glass-panel" style={{ padding: '1.5rem', borderLeft: '3px solid var(--warning)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.1rem' }}>
                   <div>
-                    <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: '0 0 0.25rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <AlertTriangle size={18} color="#f59e0b" /> Top High-ROI จุดอ่อนต้องซ่อมด่วน (คำนวณจากน้ำหนัก TOS × ความแม่นยำ)
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 0.25rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <AlertTriangle size={18} color="var(--ink-amber)" /> Top High-ROI จุดอ่อนต้องซ่อมด่วน (คำนวณจากน้ำหนัก TOS × ความแม่นยำ)
                     </h3>
                     <p style={{ color: 'var(--text-sub)', fontSize: '0.85rem', margin: 0 }}>
                       หัวข้อที่ลงทุนอ่าน/ฝึกทำแล้วดันคะแนนสอบรวมขึ้นได้เร็วที่สุด กดจัดชุดซ่อมเฉพาะจุดได้ใน 1 คลิก
@@ -703,14 +706,14 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
                 </div>
 
                 {readiness.top_weak_topics.length === 0 ? (
-                  <div style={{ padding: '1.5rem', textAlign: 'center', color: '#10b981', fontWeight: 600 }}>
-                    🎉 ยอดเยี่ยม! คุณผ่านเกณฑ์ความแม่นยำสูงในทุกหัวข้อที่ฝึกมาแล้ว
+                  <div style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--ink-emerald)', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                    <CheckCircle2 size={18} /> ยอดเยี่ยม! คุณผ่านเกณฑ์ความแม่นยำสูงในทุกหัวข้อที่ฝึกมาแล้ว
                   </div>
                 ) : (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))', gap: '0.9rem' }}>
                     {readiness.top_weak_topics.map((wt, idx) => (
                       <div key={wt.topic_id} style={{
-                        background: 'var(--surface-card)',
+                        background: 'var(--surface-subtle)',
                         border: '1px solid var(--border)',
                         borderRadius: '12px',
                         padding: '1rem',
@@ -721,7 +724,7 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
                       }}>
                         <div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                            <span style={{ fontSize: '0.72rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '10px', background: 'rgba(245,158,11,0.16)', color: '#fbbf24' }}>
+                            <span className="tabular-nums" style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: '10px', background: 'rgba(245,158,11,0.16)', color: 'var(--ink-amber)' }}>
                               #{idx + 1} ROI {wt.roi_score}
                             </span>
                             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{wt.category}</span>
@@ -766,24 +769,24 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
               {/* 11 Categories Readiness Breakdown */}
               <div className="glass-panel" style={{ padding: '1.5rem' }}>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <TrendingUp size={18} color="#10b981" /> ความพร้อมรายสาขาวิชา (11 หมวดเทียบน้ำหนัก TOS)
+                  <TrendingUp size={18} color="var(--ink-emerald)" /> ความพร้อมรายสาขาวิชา (11 หมวดเทียบน้ำหนัก TOS)
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))', gap: '0.85rem' }}>
                   {readiness.category_readiness.map(cat => {
                     const meta = READINESS_STATUS_META[cat.status] || READINESS_STATUS_META.unpracticed;
                     return (
-                      <div key={cat.category} style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${meta.border}`, borderRadius: '10px', padding: '0.95rem' }}>
+                      <div key={cat.category} style={{ background: 'var(--surface-subtle)', border: `1px solid ${meta.border}`, borderRadius: '10px', padding: '0.95rem' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.45rem' }}>
                           <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text)' }}>{cat.category}</div>
                           <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: '10px', background: meta.bg, color: meta.color, whiteSpace: 'nowrap' }}>
                             {meta.label}
                           </span>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', color: 'var(--text-sub)', marginBottom: '0.35rem' }}>
+                        <div className="tabular-nums" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', color: 'var(--text-sub)', marginBottom: '0.35rem' }}>
                           <span>น้ำหนักสอบ: {cat.target_pct}% • ทำแล้ว {cat.unique_answered}/{cat.total_in_bank} ({cat.coverage_pct}%)</span>
                           <strong style={{ color: meta.color }}>{cat.accuracy !== null ? `${cat.accuracy}%` : '-'}</strong>
                         </div>
-                        <div style={{ height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '3px', overflow: 'hidden', marginBottom: '0.5rem' }}>
+                        <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden', marginBottom: '0.5rem' }}>
                           <div style={{ width: `${cat.accuracy || 0}%`, height: '100%', background: meta.color }} />
                         </div>
                         {onOpenTopic && cat.recommended_topic_ids?.length > 0 && (
@@ -793,7 +796,7 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
                             className="btn btn-secondary btn-sm"
                             style={{ fontSize: '0.74rem', padding: '0.28rem 0.65rem' }}
                           >
-                            📖 ทบทวนหัวข้อหลักของหมวดนี้
+                            <BookOpen size={13} /> ทบทวนหัวข้อหลักของหมวดนี้
                           </button>
                         )}
                       </div>
