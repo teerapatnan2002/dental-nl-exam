@@ -87,7 +87,11 @@ function splitReadableSteps(text) {
   // Split long single paragraph every ~2-3 sentences or on numbered list tokens (1) (2)
   const numberedSplit = trimmed.split(/(?=(?:\(\d+\)|\b\d\.\s+[ก-ฮA-Z]))/).map(s => s.trim()).filter(Boolean);
   if (numberedSplit.length >= 2) return numberedSplit;
-  const sentences = trimmed.split(/(?<=\.)\s+(?=[A-Zก-ฮ0-9])/).map(s => s.trim()).filter(Boolean);
+  const sentences = trimmed
+    .replace(/\.\s+(?=[A-Zก-ฮ0-9])/g, '.\n')
+    .split('\n')
+    .map(s => s.trim())
+    .filter(Boolean);
   if (sentences.length <= 2) return [trimmed];
   const chunks = [];
   for (let i = 0; i < sentences.length; i += 2) {
@@ -129,12 +133,13 @@ function maskKeyTerms(text) {
   }
 
   if (out === src) {
-    const enRe = /(?<![A-Za-z0-9])([A-Z][A-Za-z0-9'\-\/]{1,}(?:\s+(?:[A-Z][A-Za-z0-9'\-\/]*|[a-z]{2,}(?:-[a-z]+)?)){0,3})(?![A-Za-z0-9])/g;
+    const enRe = /(?:^|[^A-Za-z0-9])([A-Z][A-Za-z0-9'\-\/]{1,}(?:\s+(?:[A-Z][A-Za-z0-9'\-\/]*|[a-z]{2,}(?:-[a-z]+)?)){0,3})(?![A-Za-z0-9])/g;
     const standalone = [];
     const fallbackParen = [];
     for (const m of src.matchAll(enRe)) {
       let term = (m[1] || '').trim();
-      const idx = m.index ?? 0;
+      const prefixOffset = (m[0] || '').length - (m[1] || '').length;
+      const idx = (m.index ?? 0) + prefixOffset;
       const beforeAll = src.slice(0, idx);
       const lastOpen = beforeAll.lastIndexOf('(');
       const lastClose = beforeAll.lastIndexOf(')');

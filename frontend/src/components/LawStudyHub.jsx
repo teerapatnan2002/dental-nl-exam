@@ -684,7 +684,8 @@ export default function LawStudyHub({ onBack, onStartExam }) {
   const [masteredCards, setMasteredCards] = useState(() => {
     try {
       const saved = localStorage.getItem('nl_law_flashcards_mastered');
-      return saved ? JSON.parse(saved) : [];
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed : [];
     } catch {
       return [];
     }

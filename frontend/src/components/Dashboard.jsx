@@ -166,9 +166,18 @@ export default function Dashboard({
       fetch(`${API_BASE}/api/tracking/stats`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
-      .then(res => res.json())
-      .then(data => setUserStats(data))
-      .catch(err => console.error(err));
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => {
+        if (data && typeof data === 'object' && Array.isArray(data.category_stats)) {
+          setUserStats(data);
+        } else {
+          setUserStats({ total_sessions: 0, total_questions_answered: 0, overall_accuracy: 0, category_stats: [] });
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        setUserStats({ total_sessions: 0, total_questions_answered: 0, overall_accuracy: 0, category_stats: [] });
+      });
     }
   }, [activeTab, token]);
 
@@ -177,8 +186,8 @@ export default function Dashboard({
       fetch(`${API_BASE}/api/tracking/review-due`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
-      .then(res => res.json())
-      .then(data => setReviewData(data))
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => { if (data && typeof data === 'object') setReviewData(data); })
       .catch(err => console.error(err));
 
       fetch(`${API_BASE}/api/tracking/daily-plan`, {
@@ -265,16 +274,18 @@ export default function Dashboard({
     }
   };
 
-  const lawStats = stats.find(s => s.category === lawCategoryName);
-  const clinicalStats = stats.filter(s => s.category && s.category !== lawCategoryName);
-  const totalClinical = clinicalStats.reduce((acc, cur) => acc + cur.count, 0);
-  const totalLaw = lawStats ? lawStats.count : 0;
+  const safeStats = Array.isArray(stats) ? stats : [];
+  const safeYears = Array.isArray(years) ? years : [];
+  const lawStats = safeStats.find(s => s.category === lawCategoryName);
+  const clinicalStats = safeStats.filter(s => s.category && s.category !== lawCategoryName);
+  const totalClinical = clinicalStats.reduce((acc, cur) => acc + (cur.count || 0), 0);
+  const totalLaw = lawStats ? (lawStats.count || 0) : 0;
   const totalQuestions = totalClinical + totalLaw;
   const animatedTotalQuestions = useCountUp(totalQuestions);
   const animatedTotalClinical = useCountUp(totalClinical);
   const animatedTotalLaw = useCountUp(totalLaw);
 
-  const selectedYearData = selectedYear ? years.find(y => y.year === selectedYear) : null;
+  const selectedYearData = selectedYear ? safeYears.find(y => y.year === selectedYear) : null;
 
   const mainTabs = [
     { id: 'fullExam', label: 'สนามสอบจำลอง', Icon: Target },
@@ -2855,7 +2866,7 @@ export default function Dashboard({
 
                 <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--primary-light)' }}>สถิติแยกตามรายวิชา</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '1rem' }}>
-                  {userStats.category_stats.map((cat, idx) => (
+                  {(Array.isArray(userStats.category_stats) ? userStats.category_stats : []).map((cat, idx) => (
                     <div key={idx} className="glass-panel" style={{ padding: '1rem', borderLeft: `3px solid ${cat.accuracy >= 60 ? 'var(--success)' : 'var(--danger)'}` }}>
                       <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.5rem' }}>{cat.category}</div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
@@ -2867,7 +2878,7 @@ export default function Dashboard({
                       </div>
                     </div>
                   ))}
-                  {userStats.category_stats.length === 0 && (
+                  {(!Array.isArray(userStats.category_stats) || userStats.category_stats.length === 0) && (
                     <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', gridColumn: '1 / -1', textAlign: 'center', padding: '1rem' }}>
                       คุณยังไม่มีประวัติการทำข้อสอบ ทำข้อสอบเพื่อดูสถิติแยกรายวิชาได้ที่นี่
                     </div>

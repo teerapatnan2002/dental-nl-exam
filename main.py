@@ -114,6 +114,8 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Content-Security-Policy"] = "frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
     if request.url.path.startswith("/api/"):
         response.headers["Cache-Control"] = "no-store, max-age=0"
+    elif request.url.path.startswith("/assets/") and response.status_code == 200:
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
     return response
 
 # GZip middleware
@@ -1229,11 +1231,11 @@ if os.path.exists(frontend_path):
     if os.path.exists(assets_path):
         app.mount("/assets", StaticFiles(directory=assets_path), name="assets")
 
-    @app.get("/{full_path:path}")
+    @app.api_route("/{full_path:path}", methods=["GET", "HEAD"])
     async def serve_spa(full_path: str):
-        # Do not intercept /api routes (let them 404 properly if unmatched)
-        if full_path.startswith("api"):
-            raise HTTPException(status_code=404, detail="API endpoint not found")
+        # Do not intercept API, Vercel telemetry, or missing static asset paths with index.html
+        if full_path.startswith(("api", "_vercel/", "assets/")):
+            raise HTTPException(status_code=404, detail="Not found")
 
         # Serve static file if it directly exists inside frontend/dist (guard against path traversal)
         real_root = os.path.realpath(frontend_path)
@@ -1242,10 +1244,16 @@ if os.path.exists(frontend_path):
             if real_target.startswith(real_root + os.sep) and os.path.isfile(real_target):
                 return FileResponse(real_target)
 
-        # Fallback to index.html for React SPA client-side routing
+        # Fallback to index.html for React SPA client-side routing (never cache stale entry HTML)
         index_file = os.path.join(real_root, "index.html")
         if os.path.exists(index_file):
-            return FileResponse(index_file)
+            return FileResponse(
+                index_file,
+                headers={
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                    "Pragma": "no-cache",
+                },
+            )
         raise HTTPException(status_code=404, detail="index.html not found")
 
 if __name__ == "__main__":

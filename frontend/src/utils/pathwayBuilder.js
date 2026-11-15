@@ -4,7 +4,16 @@
  * into structured step-by-step Pathway node graphs with semantic roles.
  */
 
-const LINE_OR_SENTENCE_SPLIT = /\n+|(?=(?:\(\d+\)|\b\d+\.\s+[ก-ฮA-Z]))|(?<=[.!?])\s+(?=[A-Zก-ฮ0-9])/g;
+// Lookbehind-free sentence & numbered-step splitter for cross-browser compatibility (incl. Safari < 16.4)
+const LINE_OR_NUMBERED_SPLIT = /\n+|(?=(?:\(\d+\)|\b\d+\.\s+[ก-ฮA-Z]))/g;
+
+function splitLinesAndSentences(text) {
+  return String(text || '')
+    .replace(/([.!?])\s+(?=[A-Zก-ฮ0-9])/g, '$1\n')
+    .split(LINE_OR_NUMBERED_SPLIT)
+    .map(s => s.trim())
+    .filter(Boolean);
+}
 
 // Thai causal, sequential, diagnostic & clinical protocol connectors
 const THAI_CAUSAL_SPLIT = /(?=(?:เกิดจาก|มีสาเหตุจาก|ไปกระตุ้น|เหนี่ยวนำให้|กระตุ้นให้|ส่งผลให้|ทำให้เกิด|นำไปสู่|ลุกลาม|ต่อมา|จากนั้น|ขั้นตอนที่|ลำดับแรก|ดังนั้น|จึงต้อง|จึงควร|สามารถจัดการโดย|แนวทางการรักษา|แนวทางจัดการ|การรักษาคือ|เลือกใช้|เพื่อให้|เพื่อป้องกัน|เพื่อลด|ผลลัพธ์คือ|ในกรณีที่|หากพบว่า|แต่หาก|ส่วนกรณี|ข้อควรระวัง|ห้ามทำ|ควรหลีกเลี่ยง))/g;
@@ -97,10 +106,7 @@ export function buildDynamicPathwayFromText({
   const takeaway = String(keyTakeaway || '').trim();
   if (!core && !takeaway) return null;
 
-  let segments = core
-    .split(LINE_OR_SENTENCE_SPLIT)
-    .map(s => s.trim())
-    .filter(Boolean);
+  let segments = splitLinesAndSentences(core);
 
   // If still 1-2 big blobs, split along Thai causal/protocol transitions
   const refined = [];

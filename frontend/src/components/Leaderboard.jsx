@@ -10,9 +10,9 @@ export default function Leaderboard({ onStartMock }) {
 
   useEffect(() => {
     fetch(`${API_BASE}/api/tracking/leaderboard`)
-      .then(res => res.json())
+      .then(res => (res.ok ? res.json() : null))
       .then(d => {
-        setData(d);
+        if (d && typeof d === 'object') setData(d);
         setLoading(false);
       })
       .catch(err => {

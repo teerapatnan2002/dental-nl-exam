@@ -260,7 +260,8 @@ export default function ClinicalStudyHub({
   const [cardSm2Map, setCardSm2Map] = useState({});
   const [cardMastery, setCardMastery] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem('nl_flashcard_mastery_v1') || '{}');
+      const parsed = JSON.parse(localStorage.getItem('nl_flashcard_mastery_v1') || '{}');
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
     } catch {
       return {};
     }
@@ -269,7 +270,8 @@ export default function ClinicalStudyHub({
   // Topic Mastery Tracker State (DB-synced + localStorage fallback)
   const [topicMastery, setTopicMastery] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem('nl_topic_mastery_v1') || '{}');
+      const parsed = JSON.parse(localStorage.getItem('nl_topic_mastery_v1') || '{}');
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
     } catch {
       return {};
     }
@@ -318,13 +320,17 @@ export default function ClinicalStudyHub({
         const items = [];
         try {
           const localFlash = JSON.parse(localStorage.getItem('nl_flashcard_mastery_v1') || '{}');
-          Object.entries(localFlash).forEach(([k, v]) => {
-            if (v) items.push({ card_key: k, card_type: 'flashcard', mastery_status: String(v) });
-          });
+          if (localFlash && typeof localFlash === 'object') {
+            Object.entries(localFlash).forEach(([k, v]) => {
+              if (v) items.push({ card_key: k, card_type: 'flashcard', mastery_status: String(v) });
+            });
+          }
           const localTopics = JSON.parse(localStorage.getItem('nl_topic_mastery_v1') || '{}');
-          Object.entries(localTopics).forEach(([k, v]) => {
-            if (v) items.push({ card_key: k, card_type: 'topic', mastery_status: String(v) });
-          });
+          if (localTopics && typeof localTopics === 'object') {
+            Object.entries(localTopics).forEach(([k, v]) => {
+              if (v) items.push({ card_key: k, card_type: 'topic', mastery_status: String(v) });
+            });
+          }
         } catch {
           // Ignore invalid JSON in localStorage
         }
@@ -471,8 +477,9 @@ export default function ClinicalStudyHub({
   useEffect(() => {
     setLoadingOverview(true);
     fetch(`${API_BASE}/api/learning/overview`)
-      .then(res => res.json())
+      .then(res => (res.ok ? res.json() : null))
       .then(data => {
+        if (!data || typeof data !== 'object') return;
         setOverviewData(data);
         if (initialTopicId) {
           const existsInDb = data?.topics?.some(t => t.id === initialTopicId);

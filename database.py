@@ -123,6 +123,43 @@ _INDEX_MIGRATIONS = [
 
 def _backfill_question_origins(conn):
     """Ensure mock and duplicate-archived exams are separated from real_exam rows."""
+    needs_backfill = conn.execute(
+        text(
+            """
+            SELECT EXISTS (
+                SELECT 1 FROM questions
+                WHERE (
+                    source_exam = 'NL 2 2025 Part กฎหมาย.pdf'
+                    AND (COALESCE(exam_origin, '') != 'duplicate_archive' OR COALESCE(category, '') != 'กฎหมายและจรรยาบรรณ')
+                )
+                OR (
+                    source_exam IN (
+                        'DSAT Mock Law ชุดที่ 1 (2569)',
+                        'DSAT Mock Law ชุดที่ 2 (2569)',
+                        'DSAT Mock Law ชุดที่ 3 (2569)'
+                    )
+                    AND COALESCE(exam_origin, '') != 'dsat_mock'
+                )
+                OR (
+                    (
+                        source_exam IN (
+                            'NL Law 2570 (Mock Test 70).pdf',
+                            'DSAT Mock Law ชุดที่ 4 (2570)',
+                            'AI Mock Test 2569',
+                            'AI_MOCK_TEST'
+                        )
+                        OR source_exam LIKE '%AI_MOCK%'
+                        OR source_exam LIKE '%Mock Test 70%'
+                    )
+                    AND COALESCE(exam_origin, '') != 'ai_mock'
+                )
+            )
+            """
+        )
+    ).scalar()
+    if not needs_backfill:
+        return
+
     conn.execute(
         text(
             """
@@ -170,11 +207,19 @@ def _backfill_question_origins(conn):
 
 
 def run_migrations():
-    """Add missing columns to existing tables (SQLite-safe, idempotent)."""
+    """Add missing columns to existing tables (SQLite/Postgres-safe, idempotent)."""
+    is_sqlite = SQLALCHEMY_DATABASE_URL.startswith("sqlite")
     inspector = inspect(engine)
     existing_tables = set(inspector.get_table_names())
 
     with engine.begin() as conn:
+        if not is_sqlite:
+            # Ensure only one cold-starting serverless instance runs DDL/backfill at a time
+            got_lock = conn.execute(text("SELECT pg_try_advisory_xact_lock(8842107)")).scalar()
+            if not got_lock:
+                logger.info("Skipping concurrent startup migration; another worker holds lock.")
+                return
+
         for table, columns in _COLUMN_MIGRATIONS.items():
             if table not in existing_tables:
                 continue  # table will be created fresh by create_all
@@ -183,14 +228,41 @@ def run_migrations():
                 if col not in existing_cols:
                     logger.info("Migration: adding column %s.%s", table, col)
                     conn.execute(text(ddl))
+
+        existing_indexes = None
+        if not is_sqlite:
+            existing_indexes = {
+                row[0]
+                for row in conn.execute(
+                    text("SELECT indexname FROM pg_indexes WHERE schemaname = 'public'")
+                ).fetchall()
+            }
         for idx_ddl in _INDEX_MIGRATIONS:
+            idx_name = idx_ddl.split("IF NOT EXISTS ", 1)[-1].split(" ON ", 1)[0].strip()
+            if existing_indexes is not None and idx_name in existing_indexes:
+                continue
             try:
                 conn.execute(text(idx_ddl))
             except Exception as exc:
                 logger.warning("Index migration skipped (%s): %s", idx_ddl, exc)
+
         if "questions" in existing_tables:
             _backfill_question_origins(conn)
-        if not SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
+
+        if not is_sqlite:
+            rls_enabled_tables = {
+                row[0]
+                for row in conn.execute(
+                    text(
+                        """
+                        SELECT c.relname
+                        FROM pg_class c
+                        JOIN pg_namespace n ON n.oid = c.relnamespace
+                        WHERE n.nspname = 'public' AND c.relkind = 'r' AND c.relrowsecurity = true
+                        """
+                    )
+                ).fetchall()
+            }
             for rls_table in (
                 "users",
                 "exam_sessions",
@@ -203,6 +275,8 @@ def run_migrations():
                 "user_topic_notes",
                 "active_presence",
             ):
+                if rls_table not in existing_tables or rls_table in rls_enabled_tables:
+                    continue
                 try:
                     conn.execute(text(f"ALTER TABLE public.{rls_table} ENABLE ROW LEVEL SECURITY;"))
                     conn.execute(

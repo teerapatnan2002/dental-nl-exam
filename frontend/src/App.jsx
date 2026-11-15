@@ -35,11 +35,15 @@ function getOrCreateClientKey(storageType, storageKey) {
   }
 }
 
-function useSessionState(defaultValue, key) {
+function useSessionState(defaultValue, key, validator = null) {
   const [value, setValue] = useState(() => {
     try {
       const stickyValue = window.sessionStorage.getItem(key);
-      return stickyValue !== null ? JSON.parse(stickyValue) : defaultValue;
+      if (stickyValue === null) return defaultValue;
+      const parsed = JSON.parse(stickyValue);
+      if (parsed === null || parsed === undefined) return defaultValue;
+      if (validator && !validator(parsed)) return defaultValue;
+      return parsed;
     } catch {
       return defaultValue;
     }
@@ -58,11 +62,19 @@ function useSessionState(defaultValue, key) {
 
 function AppContent() {
   const { user, token, logout, authFetch } = useAuth();
-  const [currentView, setCurrentView] = useSessionState('dashboard', 'nl_v4_currentView');
+  const [currentView, setCurrentView] = useSessionState(
+    'dashboard',
+    'nl_v4_currentView',
+    (v) => typeof v === 'string' && ['dashboard', 'exam', 'result', 'study_hub', 'law_hub'].includes(v)
+  );
   const [examConfig, setExamConfig] = useSessionState(null, 'nl_v4_examConfig');
-  const [examMode, setExamMode] = useSessionState('exam', 'nl_v4_examMode');
-  const [questions, setQuestions] = useSessionState([], 'nl_v4_questions');
-  const [userAnswers, setUserAnswers] = useSessionState({}, 'nl_v4_userAnswers');
+  const [examMode, setExamMode] = useSessionState('exam', 'nl_v4_examMode', (v) => typeof v === 'string');
+  const [questions, setQuestions] = useSessionState([], 'nl_v4_questions', Array.isArray);
+  const [userAnswers, setUserAnswers] = useSessionState(
+    {},
+    'nl_v4_userAnswers',
+    (v) => v && typeof v === 'object' && !Array.isArray(v)
+  );
   const [startTime, setStartTime] = useSessionState(null, 'nl_v4_startTime');
   const [analysisData, setAnalysisData] = useSessionState(null, 'nl_v4_analysisData');
   const [activeDashboardTab, setActiveDashboardTab] = useState('fullExam');
@@ -221,22 +233,53 @@ function AppContent() {
   const nextExam = getPrimaryUpcomingExam();
   const nextExamTimeLeft = nextExam?.timing || (nextExam ? calculateTimeRemaining(nextExam.targetDate, nextExam.endDate) : null);
 
-  // Fetch categories and stats on load
+  // Fetch categories and stats on load (with transient cold-start retry & schema validation)
   useEffect(() => {
+    let cancelled = false;
+    const fetchJsonSafe = async (url, retries = 2) => {
+      for (let attempt = 0; attempt <= retries; attempt += 1) {
+        try {
+          const res = await fetch(url);
+          if (res.ok) return await res.json();
+          if (res.status < 500 && res.status !== 429) return null;
+        } catch {
+          // Transient network / cold-start error
+        }
+        if (attempt < retries && !cancelled) {
+          await new Promise((r) => setTimeout(r, 700 * (attempt + 1)));
+        }
+      }
+      return null;
+    };
+
     Promise.all([
-      fetch(`${API_BASE}/api/categories`).then(res => res.json()),
-      fetch(`${API_BASE}/api/stats`).then(res => res.json()),
-      fetch(`${API_BASE}/api/years`).then(res => res.json()),
-    ])
-      .then(([catData, statsData, yearsData]) => {
+      fetchJsonSafe(`${API_BASE}/api/categories`),
+      fetchJsonSafe(`${API_BASE}/api/stats`),
+      fetchJsonSafe(`${API_BASE}/api/years`),
+    ]).then(([catData, statsData, yearsData]) => {
+      if (cancelled) return;
+      if (catData && typeof catData === 'object' && Array.isArray(catData.categories)) {
         setCategories(catData);
-        setStats(statsData.categories || statsData);
-        setTaskStats(statsData.tasks || []);
-        setCategoryTasks(statsData.category_tasks || {});
+      }
+      if (statsData && typeof statsData === 'object') {
+        const nextStats = Array.isArray(statsData.categories)
+          ? statsData.categories
+          : (Array.isArray(statsData) ? statsData : []);
+        setStats(nextStats);
+        setTaskStats(Array.isArray(statsData.tasks) ? statsData.tasks : []);
+        setCategoryTasks(
+          statsData.category_tasks && typeof statsData.category_tasks === 'object' && !Array.isArray(statsData.category_tasks)
+            ? statsData.category_tasks
+            : {}
+        );
         setMockSummary(statsData.mock_summary || null);
-        setYears(yearsData.years_data || []);
-      })
-      .catch(err => console.error('Failed to load initial data:', err));
+      }
+      if (yearsData && Array.isArray(yearsData.years_data)) {
+        setYears(yearsData.years_data);
+      }
+    });
+
+    return () => { cancelled = true; };
   }, []);
 
   const startExam = async (config) => {
