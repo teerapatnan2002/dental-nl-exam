@@ -520,7 +520,7 @@ export default function ExamResult({ questions, userAnswers, startTime, analysis
                             let border = 'var(--border)';
                             if (isActualCorrect) { bg = 'rgba(16, 185, 129, 0.1)'; border = 'var(--success)'; }
                             else if (isUserSelected && !isCorrect && hasKnownAnswer) { bg = 'rgba(239, 68, 68, 0.09)'; border = 'var(--danger)'; }
-                            else if (isUserSelected && !hasKnownAnswer) { bg = 'rgba(13, 148, 136, 0.1)'; border = 'var(--primary)'; }
+                            else if (isUserSelected && !hasKnownAnswer) { bg = 'rgba(37, 99, 235, 0.1)'; border = 'var(--primary)'; }
 
                             return (
                               <div key={choice.label} style={{

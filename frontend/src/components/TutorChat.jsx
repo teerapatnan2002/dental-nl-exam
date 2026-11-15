@@ -309,8 +309,8 @@ export default function TutorChat({
               fontWeight: 600,
               padding: '0.32rem 0.7rem',
               borderRadius: '14px',
-              background: 'rgba(13, 148, 136, 0.1)',
-              border: '1px solid rgba(13, 148, 136, 0.3)',
+              background: 'rgba(37, 99, 235, 0.1)',
+              border: '1px solid rgba(37, 99, 235, 0.3)',
               color: 'var(--primary-light)',
               cursor: loading ? 'not-allowed' : 'pointer',
               transition: 'all 0.15s ease'

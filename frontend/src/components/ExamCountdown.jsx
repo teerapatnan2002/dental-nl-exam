@@ -135,8 +135,8 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
               gap: '0.4rem',
               padding: '0.24rem 0.62rem',
               borderRadius: '8px',
-              background: 'rgba(13, 148, 136, 0.1)',
-              border: '1px solid rgba(13, 148, 136, 0.22)',
+              background: 'rgba(37, 99, 235, 0.1)',
+              border: '1px solid rgba(37, 99, 235, 0.22)',
               color: 'var(--primary-light)',
               fontSize: '0.73rem',
               fontWeight: 700,
@@ -173,7 +173,7 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
                         padding: '0.32rem 0.64rem',
                         borderRadius: '8px',
                         border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border)',
-                        background: isSelected ? 'rgba(13, 148, 136, 0.14)' : 'var(--surface-subtle)',
+                        background: isSelected ? 'rgba(37, 99, 235, 0.14)' : 'var(--surface-subtle)',
                         color: isSelected ? 'var(--primary-light)' : 'var(--text-sub)',
                         fontSize: '0.76rem',
                         fontWeight: isSelected ? 600 : 500,
@@ -306,9 +306,9 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
                   borderRadius: '6px',
                   fontSize: '0.72rem',
                   fontWeight: 600,
-                  background: isUrgent ? 'rgba(245, 158, 11, 0.14)' : 'rgba(13, 148, 136, 0.12)',
+                  background: isUrgent ? 'rgba(245, 158, 11, 0.14)' : 'rgba(37, 99, 235, 0.12)',
                   color: isUrgent ? 'var(--ink-amber)' : 'var(--primary-light)',
-                  border: `1px solid ${isUrgent ? 'rgba(245, 158, 11, 0.28)' : 'rgba(13, 148, 136, 0.25)'}`,
+                  border: `1px solid ${isUrgent ? 'rgba(245, 158, 11, 0.28)' : 'rgba(37, 99, 235, 0.25)'}`,
                 }}>
                   {timeLeft.isInProgress
                     ? 'กำลังดำเนินการสอบ'
@@ -523,7 +523,7 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
                           position: 'relative',
                           overflow: 'hidden',
                           background: 'var(--surface-subtle)',
-                          border: `1px solid ${unit.isSec ? 'rgba(13, 148, 136, 0.35)' : 'var(--border)'}`,
+                          border: `1px solid ${unit.isSec ? 'rgba(37, 99, 235, 0.35)' : 'var(--border)'}`,
                           borderRadius: '10px',
                           padding: '0.55rem 0.25rem',
                           textAlign: 'center',
@@ -586,8 +586,8 @@ export default function ExamCountdown({ onStartExam, onOpenLawHub, onOpenSchedul
                   <div style={{
                     padding: '0.48rem 0.65rem',
                     borderRadius: '8px',
-                    background: 'rgba(13, 148, 136, 0.08)',
-                    border: '1px solid rgba(13, 148, 136, 0.22)',
+                    background: 'rgba(37, 99, 235, 0.08)',
+                    border: '1px solid rgba(37, 99, 235, 0.22)',
                     fontSize: '0.73rem',
                   }}>
                     <div style={{ color: 'var(--text-muted)', fontSize: '0.67rem', marginBottom: '0.1rem' }}>รูปแบบสอบ</div>

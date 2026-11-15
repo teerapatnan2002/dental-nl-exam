@@ -6,7 +6,7 @@ import {
 import { API_BASE } from '../config';
 
 const MODALITY_META = {
-  all: { label: 'ทั้งหมดทุกประเภท', color: '#0d9488' },
+  all: { label: 'ทั้งหมดทุกประเภท', color: '#2563eb' },
   radiograph: { label: 'ภาพรังสีวินิจฉัย (Radiograph)', color: '#0284c7' },
   clinical_lesion: { label: 'ภาพคลินิก / รอยโรค (Clinical)', color: '#e11d48' },
   cast_chart: { label: 'แบบจำลอง / กราฟ / แผนภาพ', color: '#059669' },
@@ -172,8 +172,8 @@ export default function VisualAtlas({
         marginBottom: '1.25rem',
         padding: '1rem 1.15rem',
         borderRadius: '14px',
-        background: 'linear-gradient(135deg, rgba(13, 148, 136, 0.1), rgba(2, 132, 199, 0.06))',
-        border: '1px solid rgba(13, 148, 136, 0.28)',
+        background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(2, 132, 199, 0.06))',
+        border: '1px solid rgba(37, 99, 235, 0.28)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
@@ -402,7 +402,7 @@ export default function VisualAtlas({
         }}>
           {visibleItems.map((item) => {
             const revealed = isItemRevealed(item.id);
-            const badgeColor = specialtyColorMap[item.category] || '#0d9488';
+            const badgeColor = specialtyColorMap[item.category] || '#2563eb';
             const modMeta = MODALITY_META[item.modality] || MODALITY_META.clinical_lesion;
 
             return (
@@ -526,8 +526,8 @@ export default function VisualAtlas({
                         marginTop: '0.25rem',
                         padding: '0.55rem 0.75rem',
                         borderRadius: '10px',
-                        border: '1px dashed rgba(13, 148, 136, 0.45)',
-                        background: 'rgba(13, 148, 136, 0.09)',
+                        border: '1px dashed rgba(37, 99, 235, 0.45)',
+                        background: 'rgba(37, 99, 235, 0.09)',
                         color: 'var(--primary-light)',
                         fontSize: '0.79rem',
                         fontWeight: 700,
@@ -641,9 +641,9 @@ export default function VisualAtlas({
                             fontSize: '0.7rem',
                             fontWeight: 700,
                             cursor: 'pointer',
-                            background: 'rgba(13, 148, 136, 0.1)',
+                            background: 'rgba(37, 99, 235, 0.1)',
                             color: 'var(--primary-light)',
-                            border: '1px solid rgba(13, 148, 136, 0.3)',
+                            border: '1px solid rgba(37, 99, 235, 0.3)',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '3px',
@@ -842,9 +842,9 @@ export default function VisualAtlas({
                     style={{
                       padding: '0.7rem 1rem',
                       borderRadius: '10px',
-                      background: 'rgba(13, 148, 136, 0.2)',
-                      border: '1px solid rgba(13, 148, 136, 0.5)',
-                      color: '#5eead4',
+                      background: 'rgba(37, 99, 235, 0.2)',
+                      border: '1px solid rgba(37, 99, 235, 0.5)',
+                      color: '#93c5fd',
                       fontWeight: 700,
                       cursor: 'pointer',
                     }}

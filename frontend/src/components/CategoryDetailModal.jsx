@@ -49,8 +49,8 @@ export default function CategoryDetailModal({
 
   // Clinical Editorial semantic bar palette
   const taskColors = [
-    '#0d9488', '#0284c7', '#10b981', '#d97706',
-    '#e11d48', '#14b8a6', '#0369a1', '#64748b'
+    '#2563eb', '#0284c7', '#10b981', '#d97706',
+    '#e11d48', '#3b82f6', '#0369a1', '#64748b'
   ];
 
   return createPortal(
@@ -133,8 +133,8 @@ export default function CategoryDetailModal({
               width: '46px',
               height: '46px',
               borderRadius: '12px',
-              background: category.bg || 'rgba(13, 148, 136, 0.12)',
-              border: `1px solid ${category.borderColor || 'rgba(13, 148, 136, 0.28)'}`,
+              background: category.bg || 'rgba(37, 99, 235, 0.12)',
+              border: `1px solid ${category.borderColor || 'rgba(37, 99, 235, 0.28)'}`,
               color: category.color || 'var(--primary-light)',
               display: 'flex',
               alignItems: 'center',
@@ -152,9 +152,9 @@ export default function CategoryDetailModal({
               <span
                 className="badge"
                 style={{
-                  background: category.bg || 'rgba(13, 148, 136, 0.12)',
+                  background: category.bg || 'rgba(37, 99, 235, 0.12)',
                   color: category.color || 'var(--primary-light)',
-                  border: `1px solid ${category.borderColor || 'rgba(13, 148, 136, 0.28)'}`,
+                  border: `1px solid ${category.borderColor || 'rgba(37, 99, 235, 0.28)'}`,
                   fontSize: '0.8rem',
                   fontWeight: 600,
                   fontVariantNumeric: 'tabular-nums'

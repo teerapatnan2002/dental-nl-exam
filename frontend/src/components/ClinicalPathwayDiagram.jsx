@@ -46,8 +46,8 @@ const NODE_ROLE_META = {
   trigger: {
     icon: '',
     accent: 'var(--primary-light)',
-    bg: 'rgba(13, 148, 136, 0.09)',
-    border: 'rgba(13, 148, 136, 0.32)',
+    bg: 'rgba(37, 99, 235, 0.09)',
+    border: 'rgba(37, 99, 235, 0.32)',
   },
   mechanism: {
     icon: '',

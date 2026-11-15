@@ -435,8 +435,8 @@ export default function Dashboard({
                   gap: '0.4rem',
                   padding: '0.24rem 0.62rem',
                   borderRadius: '8px',
-                  background: 'rgba(13, 148, 136, 0.1)',
-                  border: '1px solid rgba(13, 148, 136, 0.22)',
+                  background: 'rgba(37, 99, 235, 0.1)',
+                  border: '1px solid rgba(37, 99, 235, 0.22)',
                   color: 'var(--primary-light)',
                   fontSize: '0.73rem',
                   fontWeight: 700,
@@ -520,8 +520,8 @@ export default function Dashboard({
                   gap: '0.4rem',
                   padding: '0.24rem 0.62rem',
                   borderRadius: '8px',
-                  background: 'rgba(13, 148, 136, 0.1)',
-                  border: '1px solid rgba(13, 148, 136, 0.22)',
+                  background: 'rgba(37, 99, 235, 0.1)',
+                  border: '1px solid rgba(37, 99, 235, 0.22)',
                   color: 'var(--primary-light)',
                   fontSize: '0.73rem',
                   fontWeight: 700,
@@ -591,8 +591,8 @@ export default function Dashboard({
                   gap: '0.4rem',
                   padding: '0.24rem 0.62rem',
                   borderRadius: '8px',
-                  background: 'rgba(13, 148, 136, 0.1)',
-                  border: '1px solid rgba(13, 148, 136, 0.22)',
+                  background: 'rgba(37, 99, 235, 0.1)',
+                  border: '1px solid rgba(37, 99, 235, 0.22)',
                   color: 'var(--primary-light)',
                   fontSize: '0.73rem',
                   fontWeight: 700,
@@ -1100,8 +1100,8 @@ export default function Dashboard({
                       borderRadius: '6px',
                       background: mock70TimeLeft.isPassed
                         ? 'rgba(16, 185, 129, 0.12)'
-                        : 'rgba(13, 148, 136, 0.12)',
-                      border: '1px solid ' + (mock70TimeLeft.isPassed ? 'rgba(16, 185, 129, 0.28)' : 'rgba(13, 148, 136, 0.28)'),
+                        : 'rgba(37, 99, 235, 0.12)',
+                      border: '1px solid ' + (mock70TimeLeft.isPassed ? 'rgba(16, 185, 129, 0.28)' : 'rgba(37, 99, 235, 0.28)'),
                       color: mock70TimeLeft.isPassed ? 'var(--ink-emerald)' : 'var(--primary-light)',
                       fontSize: '0.76rem',
                       fontWeight: 600,
@@ -1283,7 +1283,7 @@ export default function Dashboard({
                         <Scale size={17} color="var(--primary-light)" style={{ flexShrink: 0 }} />
                         <span>ทบทวนสรุปมาตรา & Flashcards</span>
                       </div>
-                      <span style={{ background: 'rgba(13, 148, 136, 0.14)', color: 'var(--primary-light)', padding: '0.12rem 0.48rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 600, flexShrink: 0, whiteSpace: 'nowrap' }}>
+                      <span style={{ background: 'rgba(37, 99, 235, 0.14)', color: 'var(--primary-light)', padding: '0.12rem 0.48rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 600, flexShrink: 0, whiteSpace: 'nowrap' }}>
                         อ่านได้ทันที
                       </span>
                     </div>
@@ -1360,7 +1360,7 @@ export default function Dashboard({
                 {/* ── DSAT Mock Header ── */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.35rem' }}>
                   <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.26rem 0.65rem', borderRadius: '6px', background: 'rgba(13, 148, 136, 0.12)', border: '1px solid rgba(13, 148, 136, 0.28)', color: 'var(--primary-light)', fontSize: '0.76rem', fontWeight: 600, marginBottom: '0.55rem' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.26rem 0.65rem', borderRadius: '6px', background: 'rgba(37, 99, 235, 0.12)', border: '1px solid rgba(37, 99, 235, 0.28)', color: 'var(--primary-light)', fontSize: '0.76rem', fontWeight: 600, marginBottom: '0.55rem' }}>
                       <ShieldCheck size={13} /> ข้อสอบจำลองมาตรฐาน สโมสรนิสิตนักศึกษาทันตแพทย์แห่งประเทศไทย (สนทท.)
                     </div>
                     <h2 style={{ fontSize: 'clamp(1.2rem, 2.2vw, 1.45rem)', fontWeight: 700, margin: '0 0 0.35rem 0', color: 'var(--text)', letterSpacing: '-0.02em', wordBreak: 'break-word', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -1493,7 +1493,7 @@ export default function Dashboard({
                       title: "DSAT Mock Law ชุดที่ 2",
                       subtitle: "สถานพยาบาลเอกชน & การส่งต่อ",
                       desc: "การนับเวลา 5 ปีบริบูรณ์, ช่างทันตกรรมทำฟันปลอมเถื่อน, ผู้ดำเนินการสถานพยาบาล, วุฒิบัตร vs ป.โทห้ามอ้างผู้เชี่ยวชาญ, ถ่ายโอน รพ.สต. ไป อบจ., ทันตนิติเวชศพเน่าสลาย",
-                      badgeColor: "#0d9488",
+                      badgeColor: "#2563eb",
                       qRange: "ข้อ 1 - 30 (IDs 2430-2459)",
                       sourceExam: "DSAT Mock Law ชุดที่ 2",
                       stems: [
@@ -1514,7 +1514,7 @@ export default function Dashboard({
                       title: "DSAT Mock Law ชุดที่ 3",
                       subtitle: "จรรยาบรรณ สิทธิผู้ป่วย & นิติทันตวิทยา",
                       desc: "การถอนคำร้องจรรยาบรรณ, ใบอนุญาตสถานพยาบาลสิ้นปีที่สอง, ผู้ป่วย HIV ห้ามปฏิเสธ, นักวิชาการสาธารณสุข, รอยกัด ABFO No.2, สงสัย Child Abuse, DVI เครื่องบินตก",
-                      badgeColor: "#0f766e",
+                      badgeColor: "#1d4ed8",
                       qRange: "ข้อ 1 - 30 (IDs 2460-2489)",
                       sourceExam: "DSAT Mock Law ชุดที่ 3",
                       stems: [
@@ -2075,7 +2075,7 @@ export default function Dashboard({
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                       {selectedYearData.categories.filter(c => c.name !== 'กฎหมายและจรรยาบรรณ').slice(0, 6).map((cat, idx) => (
                         <div key={cat.name} className="insight-row">
-                          <div className="insight-rank" style={{ background: idx < 3 ? 'rgba(13, 148, 136, 0.16)' : 'var(--surface-subtle)', color: idx < 3 ? 'var(--primary-light)' : 'var(--text-muted)' }}>
+                          <div className="insight-rank" style={{ background: idx < 3 ? 'rgba(37, 99, 235, 0.16)' : 'var(--surface-subtle)', color: idx < 3 ? 'var(--primary-light)' : 'var(--text-muted)' }}>
                             {idx + 1}
                           </div>
                           <div style={{ flex: 1, fontSize: '0.88rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -2190,8 +2190,8 @@ export default function Dashboard({
                             fontSize: '0.72rem',
                             fontWeight: 600,
                             color: isFeatured ? 'var(--primary-light)' : 'var(--text-muted)',
-                            background: isFeatured ? 'rgba(13, 148, 136, 0.12)' : 'var(--surface-subtle)',
-                            border: `1px solid ${isFeatured ? 'rgba(13, 148, 136, 0.25)' : 'var(--border)'}`,
+                            background: isFeatured ? 'rgba(37, 99, 235, 0.12)' : 'var(--surface-subtle)',
+                            border: `1px solid ${isFeatured ? 'rgba(37, 99, 235, 0.25)' : 'var(--border)'}`,
                             padding: '0.16rem 0.5rem',
                             borderRadius: '6px'
                           }}>
@@ -2250,8 +2250,8 @@ export default function Dashboard({
             title: 'กลุ่มศัลยศาสตร์และวิทยาการวินิจฉัยโรคช่องปาก',
             sub: 'Oral & Maxillofacial Surgery, Oral Medicine, Pathology & Radiology',
             color: 'var(--primary-light)',
-            bg: 'rgba(13, 148, 136, 0.12)',
-            borderColor: 'rgba(13, 148, 136, 0.28)',
+            bg: 'rgba(37, 99, 235, 0.12)',
+            borderColor: 'rgba(37, 99, 235, 0.28)',
             icon: <Stethoscope size={17} />,
             categoryNames: [
               'วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก',

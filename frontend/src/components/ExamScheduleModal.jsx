@@ -72,8 +72,8 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
               width: '38px',
               height: '38px',
               borderRadius: '10px',
-              background: 'rgba(13, 148, 136, 0.14)',
-              border: '1px solid rgba(13, 148, 136, 0.28)',
+              background: 'rgba(37, 99, 235, 0.14)',
+              border: '1px solid rgba(37, 99, 235, 0.28)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -285,10 +285,10 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
                     fontSize: '0.72rem',
                     padding: '0.15rem 0.55rem',
                     borderRadius: '6px',
-                    background: 'rgba(13, 148, 136, 0.14)',
+                    background: 'rgba(37, 99, 235, 0.14)',
                     color: 'var(--primary-light)',
                     fontWeight: 600,
-                    border: '1px solid rgba(13, 148, 136, 0.28)',
+                    border: '1px solid rgba(37, 99, 235, 0.28)',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.35rem'
@@ -437,7 +437,7 @@ export default function ExamScheduleModal({ isOpen, onClose, onStartExam, onOpen
                       <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text)' }}>{p.title}</div>
                       <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{p.date}</div>
                     </div>
-                    <span className="tabular-nums" style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary-light)', background: 'rgba(13, 148, 136, 0.12)', padding: '0.2rem 0.55rem', borderRadius: '6px' }}>
+                    <span className="tabular-nums" style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary-light)', background: 'rgba(37, 99, 235, 0.12)', padding: '0.2rem 0.55rem', borderRadius: '6px' }}>
                       {p.count} ข้อ
                     </span>
                   </div>

@@ -8,7 +8,7 @@ import { API_BASE } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 
 const ARENA_MODES = [
-  { id: 'mixed', label: 'ผสมท้าทาย (Cloze + Pitfall)', color: '#0d9488' },
+  { id: 'mixed', label: 'ผสมท้าทาย (Cloze + Pitfall)', color: '#2563eb' },
   { id: 'cloze', label: 'Cloze เติมเลข-กฎหมาย-คีย์เวิร์ด', color: '#0284c7' },
   { id: 'pitfall', label: 'จับผิดกับดักตัวลวง (Pitfall)', color: '#e11d48' },
 ];

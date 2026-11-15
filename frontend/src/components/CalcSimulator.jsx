@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 
 const DOMAIN_META = {
-  all: { label: 'สุ่มรวมทุกหมวด (Mixed)', color: '#0d9488', topicId: null },
+  all: { label: 'สุ่มรวมทุกหมวด (Mixed)', color: '#2563eb', topicId: null },
   anesthesia: { label: 'ยาชา & Max Dose (MRD)', color: '#0284c7', topicId: 'OS-Local-Anesthesia' },
   pediatric_pharma: { label: 'ฟลูออไรด์ & เภสัชเด็ก', color: '#e11d48', topicId: 'Pedo-Fluoride-Toxicology' },
   biostat: { label: 'ชีวสถิติ & Screening 2×2', color: '#059669', topicId: 'Comm-Epidemiology-Biostat' },

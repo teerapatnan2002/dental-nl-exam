@@ -86,7 +86,7 @@ function normalizeCogBadge(raw) {
   if (val === 'R' || val.includes('RECALL')) {
     return { code: 'R', label: 'R: ความจำความเข้าใจ (Recall)', bg: 'rgba(16, 185, 129, 0.12)', color: 'var(--ink-emerald)', border: 'rgba(16, 185, 129, 0.28)' };
   }
-  return { code: raw, label: `ระดับ ${raw}`, bg: 'rgba(13, 148, 136, 0.12)', color: 'var(--primary-light)', border: 'rgba(13, 148, 136, 0.28)' };
+  return { code: raw, label: `ระดับ ${raw}`, bg: 'rgba(37, 99, 235, 0.12)', color: 'var(--primary-light)', border: 'rgba(37, 99, 235, 0.28)' };
 }
 
 const THAI_ASSOCIATION_BY_CATEGORY = {
@@ -530,7 +530,7 @@ export default function ExplanationBox({
                     fontWeight: 600,
                     fontFamily: 'inherit',
                     cursor: 'pointer',
-                    background: showTopicPathway ? 'rgba(13, 148, 136, 0.16)' : 'var(--surface-card)',
+                    background: showTopicPathway ? 'rgba(37, 99, 235, 0.16)' : 'var(--surface-card)',
                     border: `1px solid ${showTopicPathway ? 'var(--primary)' : 'var(--border)'}`,
                     color: showTopicPathway ? 'var(--primary-light)' : 'var(--text-sub)',
                     display: 'inline-flex',

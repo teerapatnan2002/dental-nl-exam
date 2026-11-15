@@ -126,10 +126,10 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
   // Helper for heatmap cell color (Clinical Teal density ramp — works on Dark & Light)
   const getCellStyle = (count) => {
     if (!count || count === 0) return { bg: 'var(--surface-subtle)', fg: 'var(--text-muted)', border: '1px solid transparent' };
-    if (count < 10) return { bg: 'rgba(13, 148, 136, 0.12)', fg: 'var(--text)', border: '1px solid rgba(13, 148, 136, 0.22)' };
-    if (count < 30) return { bg: 'rgba(13, 148, 136, 0.24)', fg: 'var(--text)', border: '1px solid rgba(13, 148, 136, 0.34)' };
-    if (count < 60) return { bg: 'rgba(13, 148, 136, 0.42)', fg: '#fff', border: '1px solid rgba(13, 148, 136, 0.5)' };
-    if (count < 100) return { bg: 'rgba(13, 148, 136, 0.68)', fg: '#fff', border: '1px solid rgba(13, 148, 136, 0.75)' };
+    if (count < 10) return { bg: 'rgba(37, 99, 235, 0.12)', fg: 'var(--text)', border: '1px solid rgba(37, 99, 235, 0.22)' };
+    if (count < 30) return { bg: 'rgba(37, 99, 235, 0.24)', fg: 'var(--text)', border: '1px solid rgba(37, 99, 235, 0.34)' };
+    if (count < 60) return { bg: 'rgba(37, 99, 235, 0.42)', fg: '#fff', border: '1px solid rgba(37, 99, 235, 0.5)' };
+    if (count < 100) return { bg: 'rgba(37, 99, 235, 0.68)', fg: '#fff', border: '1px solid rgba(37, 99, 235, 0.75)' };
     return { bg: 'var(--primary)', fg: '#fff', border: '1px solid var(--primary-light)' };
   };
 
@@ -423,10 +423,10 @@ export default function TOSAnalytics({ onStartPractice, onOpenTopic }) {
             {/* Heatmap Legend */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.75rem', color: 'var(--text-sub)' }}>
               <span>น้อย</span>
-              <span style={{ width: 14, height: 14, background: 'rgba(13, 148, 136, 0.12)', border: '1px solid rgba(13, 148, 136, 0.22)', borderRadius: 3, display: 'inline-block' }} />
-              <span style={{ width: 14, height: 14, background: 'rgba(13, 148, 136, 0.24)', borderRadius: 3, display: 'inline-block' }} />
-              <span style={{ width: 14, height: 14, background: 'rgba(13, 148, 136, 0.42)', borderRadius: 3, display: 'inline-block' }} />
-              <span style={{ width: 14, height: 14, background: 'rgba(13, 148, 136, 0.68)', borderRadius: 3, display: 'inline-block' }} />
+              <span style={{ width: 14, height: 14, background: 'rgba(37, 99, 235, 0.12)', border: '1px solid rgba(37, 99, 235, 0.22)', borderRadius: 3, display: 'inline-block' }} />
+              <span style={{ width: 14, height: 14, background: 'rgba(37, 99, 235, 0.24)', borderRadius: 3, display: 'inline-block' }} />
+              <span style={{ width: 14, height: 14, background: 'rgba(37, 99, 235, 0.42)', borderRadius: 3, display: 'inline-block' }} />
+              <span style={{ width: 14, height: 14, background: 'rgba(37, 99, 235, 0.68)', borderRadius: 3, display: 'inline-block' }} />
               <span style={{ width: 14, height: 14, background: 'var(--primary)', borderRadius: 3, display: 'inline-block' }} />
               <span>มาก (&gt;100)</span>
             </div>

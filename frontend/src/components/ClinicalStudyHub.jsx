@@ -26,9 +26,9 @@ const SPECIALTY_COLOR_MAP = {
   'ศัลยศาสตร์ช่องปาก': '#f59e0b',
   'ทันตกรรมประดิษฐ์': '#0284c7',
   'ปริทันตวิทยา': '#10b981',
-  'ทันตกรรมบูรณะ/หัตถการ': '#0d9488',
+  'ทันตกรรมบูรณะ/หัตถการ': '#2563eb',
   'ทันตกรรมสำหรับเด็ก': '#0ea5e9',
-  'วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก': '#14b8a6',
+  'วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก': '#3b82f6',
   'ทันตกรรมบดเคี้ยวและอาการปวดบริเวณช่องปากและใบหน้า': '#06b6d4',
   'ทันตกรรมจัดฟัน': '#d97706',
   'ทันตกรรมชุมชน': '#059669',
@@ -688,7 +688,7 @@ export default function ClinicalStudyHub({
           justifyContent: 'space-between',
           padding: '1rem 1.5rem',
           borderBottom: '1px solid var(--border)',
-          background: 'linear-gradient(135deg, rgba(13, 148, 136, 0.08), rgba(2, 132, 199, 0.05))',
+          background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(2, 132, 199, 0.05))',
           flexWrap: 'wrap',
           gap: '1rem'
         }}>
@@ -712,7 +712,7 @@ export default function ClinicalStudyHub({
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: 'white',
-                boxShadow: '0 4px 12px rgba(13, 148, 136, 0.25)'
+                boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)'
               }}>
                 <GraduationCap size={22} />
               </div>
@@ -1105,7 +1105,7 @@ export default function ClinicalStudyHub({
                 ) : (
                   filteredTopics.map(topic => {
                     const isSelected = topic.id === selectedTopicId;
-                    const badgeColor = SPECIALTY_COLOR_MAP[topic.category] || '#0d9488';
+                    const badgeColor = SPECIALTY_COLOR_MAP[topic.category] || '#2563eb';
                     const hasMasterclass = Boolean(allStudyGuides[topic.id]);
                     return (
                       <div
@@ -1116,7 +1116,7 @@ export default function ClinicalStudyHub({
                           borderRadius: '10px',
                           cursor: 'pointer',
                           transition: 'all 0.15s ease',
-                          background: isSelected ? 'rgba(13, 148, 136, 0.12)' : 'var(--surface-card)',
+                          background: isSelected ? 'rgba(37, 99, 235, 0.12)' : 'var(--surface-card)',
                           border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border)',
                           borderLeft: isSelected ? `4px solid ${badgeColor}` : `4px solid ${badgeColor}50`,
                         }}
@@ -1169,7 +1169,7 @@ export default function ClinicalStudyHub({
                             P:{topic.cognitive_counts?.P || 0}
                           </span>
                           {hasMasterclass && (
-                            <span style={{ fontSize: '0.65rem', padding: '0.05rem 0.4rem', borderRadius: '4px', background: 'rgba(13, 148, 136, 0.14)', color: 'var(--primary-light)', fontWeight: 700 }}>
+                            <span style={{ fontSize: '0.65rem', padding: '0.05rem 0.4rem', borderRadius: '4px', background: 'rgba(37, 99, 235, 0.14)', color: 'var(--primary-light)', fontWeight: 700 }}>
                               ตาราง Masterclass
                             </span>
                           )}
@@ -1270,7 +1270,7 @@ export default function ClinicalStudyHub({
                         padding: '0.75rem 0.9rem',
                         borderRadius: '10px',
                         cursor: 'pointer',
-                        background: isSelected ? 'rgba(13, 148, 136, 0.12)' : 'var(--surface-card)',
+                        background: isSelected ? 'rgba(37, 99, 235, 0.12)' : 'var(--surface-card)',
                         border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border)',
                         borderLeft: `4px solid ${guide.badgeColor || 'var(--primary)'}`,
                       }}
@@ -1386,8 +1386,8 @@ export default function ClinicalStudyHub({
                     marginBottom: '1.5rem',
                     padding: '1.35rem 1.5rem',
                     borderRadius: '14px',
-                    background: 'linear-gradient(135deg, rgba(13, 148, 136, 0.09), rgba(2, 132, 199, 0.05))',
-                    border: '1px solid rgba(13, 148, 136, 0.25)'
+                    background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.09), rgba(2, 132, 199, 0.05))',
+                    border: '1px solid rgba(37, 99, 235, 0.25)'
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.6rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -1396,9 +1396,9 @@ export default function ClinicalStudyHub({
                           fontWeight: 700,
                           padding: '0.2rem 0.65rem',
                           borderRadius: '12px',
-                          background: 'rgba(13, 148, 136, 0.14)',
+                          background: 'rgba(37, 99, 235, 0.14)',
                           color: 'var(--primary-light)',
-                          border: '1px solid rgba(13, 148, 136, 0.35)'
+                          border: '1px solid rgba(37, 99, 235, 0.35)'
                         }}>
                           {moduleData.module_info.category}
                         </span>
@@ -1669,8 +1669,8 @@ export default function ClinicalStudyHub({
                           marginBottom: '2rem',
                           padding: '1.5rem',
                           borderRadius: '14px',
-                          background: 'rgba(13, 148, 136, 0.05)',
-                          border: '1px solid rgba(13, 148, 136, 0.25)'
+                          background: 'rgba(37, 99, 235, 0.05)',
+                          border: '1px solid rgba(37, 99, 235, 0.25)'
                         }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-light)', fontWeight: 800, fontSize: '1.05rem', marginBottom: '0.75rem' }}>
                             <Sparkles size={18} /> สรุปโครงสร้างหลักและตารางเปรียบเทียบ Masterclass (Decision Matrix)
@@ -1767,7 +1767,7 @@ export default function ClinicalStudyHub({
                               alignItems: 'center',
                               justifyContent: 'space-between',
                               padding: '0.65rem 1rem',
-                              background: 'rgba(13, 148, 136, 0.08)',
+                              background: 'rgba(37, 99, 235, 0.08)',
                               borderLeft: '4px solid var(--primary)',
                               borderRadius: '8px',
                               marginBottom: '1rem'
@@ -1805,7 +1805,7 @@ export default function ClinicalStudyHub({
                                         fontWeight: 800,
                                         padding: '0.15rem 0.55rem',
                                         borderRadius: '6px',
-                                        background: 'rgba(13, 148, 136, 0.14)',
+                                        background: 'rgba(37, 99, 235, 0.14)',
                                         color: 'var(--primary-light)',
                                       }}>
                                         📖 หลักการที่ {lIdx + 1} (Q#{lesson.question_id})
@@ -1858,8 +1858,8 @@ export default function ClinicalStudyHub({
                                       <button
                                         onClick={() => handleOpenCaseInTeacher(lesson.question_id)}
                                         style={{
-                                          background: 'rgba(13, 148, 136, 0.12)',
-                                          border: '1px solid rgba(13, 148, 136, 0.32)',
+                                          background: 'rgba(37, 99, 235, 0.12)',
+                                          border: '1px solid rgba(37, 99, 235, 0.32)',
                                           color: 'var(--primary-light)',
                                           borderRadius: '8px',
                                           padding: '0.25rem 0.65rem',
@@ -1879,7 +1879,7 @@ export default function ClinicalStudyHub({
                                   {/* Key Takeaway Callout */}
                                   {lesson.key_takeaway && (
                                     <div style={{
-                                      background: 'linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(13, 148, 136, 0.07))',
+                                      background: 'linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(37, 99, 235, 0.07))',
                                       borderLeft: '4px solid var(--accent)',
                                       borderRadius: '8px',
                                       padding: '0.75rem 1rem',
@@ -1930,8 +1930,8 @@ export default function ClinicalStudyHub({
                                     <div className={lesson.clinical_pearl && lesson.common_pitfall ? 'responsive-2col' : ''} style={{ display: 'grid', gridTemplateColumns: lesson.clinical_pearl && lesson.common_pitfall ? undefined : '1fr', gap: '0.75rem', marginTop: '0.75rem' }}>
                                       {lesson.clinical_pearl && (
                                         <div style={{
-                                          background: 'rgba(13, 148, 136, 0.08)',
-                                          border: '1px solid rgba(13, 148, 136, 0.25)',
+                                          background: 'rgba(37, 99, 235, 0.08)',
+                                          border: '1px solid rgba(37, 99, 235, 0.25)',
                                           borderRadius: '8px',
                                           padding: '0.65rem 0.85rem',
                                           fontSize: '0.82rem',
@@ -1974,7 +1974,7 @@ export default function ClinicalStudyHub({
                       <div style={{
                         padding: '1rem 1.25rem',
                         borderRadius: '12px',
-                        background: 'linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(13, 148, 136, 0.06))',
+                        background: 'linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(37, 99, 235, 0.06))',
                         border: '1px solid rgba(6, 182, 212, 0.28)',
                         marginBottom: '1.15rem',
                         fontSize: '0.88rem',
@@ -2179,8 +2179,8 @@ export default function ClinicalStudyHub({
 
                         const theoryCard = showTheoryCard ? (
                           <div style={{
-                            background: 'linear-gradient(135deg, rgba(13, 148, 136, 0.08), rgba(2, 132, 199, 0.05))',
-                            border: '1px solid rgba(13, 148, 136, 0.32)',
+                            background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(2, 132, 199, 0.05))',
+                            border: '1px solid rgba(37, 99, 235, 0.32)',
                             borderRadius: '14px',
                             padding: '1.5rem',
                             marginBottom: '1.25rem'
@@ -2261,7 +2261,7 @@ export default function ClinicalStudyHub({
                                 marginTop: '0.9rem',
                                 padding: '0.75rem 1rem',
                                 borderRadius: '8px',
-                                background: 'rgba(13, 148, 136, 0.09)',
+                                background: 'rgba(37, 99, 235, 0.09)',
                                 borderLeft: '4px solid var(--primary)',
                                 fontSize: '0.88rem',
                                 color: 'var(--text)'
@@ -2373,7 +2373,7 @@ export default function ClinicalStudyHub({
                                     border = '1.5px solid var(--danger)';
                                   }
                                 } else if (isPicked) {
-                                  bg = 'rgba(13, 148, 136, 0.14)';
+                                  bg = 'rgba(37, 99, 235, 0.14)';
                                   border = '1.5px solid var(--primary)';
                                 }
 
@@ -2782,8 +2782,8 @@ export default function ClinicalStudyHub({
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                           {moduleData.pearls?.map((p, idx) => (
                             <div key={idx} style={{
-                              background: 'rgba(13, 148, 136, 0.07)',
-                              border: '1px solid rgba(13, 148, 136, 0.25)',
+                              background: 'rgba(37, 99, 235, 0.07)',
+                              border: '1px solid rgba(37, 99, 235, 0.25)',
                               borderLeft: '4px solid var(--primary)',
                               borderRadius: '10px',
                               padding: '0.9rem 1rem',
@@ -2917,7 +2917,7 @@ export default function ClinicalStudyHub({
                         return (
                           <div style={{
                             background: 'var(--surface-elevated)',
-                            border: isMastered ? '1.5px solid rgba(16, 185, 129, 0.45)' : '1.5px solid rgba(13, 148, 136, 0.35)',
+                            border: isMastered ? '1.5px solid rgba(16, 185, 129, 0.45)' : '1.5px solid rgba(37, 99, 235, 0.35)',
                             borderRadius: '16px',
                             padding: '1.6rem',
                             maxWidth: '760px',
@@ -2926,7 +2926,7 @@ export default function ClinicalStudyHub({
                           }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-                                <span style={{ fontSize: '0.72rem', fontWeight: 800, padding: '0.18rem 0.55rem', borderRadius: '10px', background: 'rgba(13, 148, 136, 0.16)', color: 'var(--primary-light)' }}>
+                                <span style={{ fontSize: '0.72rem', fontWeight: 800, padding: '0.18rem 0.55rem', borderRadius: '10px', background: 'rgba(37, 99, 235, 0.16)', color: 'var(--primary-light)' }}>
                                   การ์ดที่ {safeIdx + 1} / {activeFlashcards.length}
                                 </span>
                                 <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.18rem 0.55rem', borderRadius: '10px', background: card.mode === 'cloze' ? 'rgba(245,158,11,0.16)' : 'rgba(6,182,212,0.16)', color: card.mode === 'cloze' ? 'var(--ink-amber)' : '#22d3ee' }}>
@@ -3103,7 +3103,7 @@ export default function ClinicalStudyHub({
                       <div style={{
                         padding: '1rem 1.25rem',
                         borderRadius: '12px',
-                        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(13, 148, 136, 0.06))',
+                        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(37, 99, 235, 0.06))',
                         border: '1px solid rgba(245, 158, 11, 0.3)',
                         fontSize: '0.88rem',
                         lineHeight: 1.65,
@@ -3256,7 +3256,7 @@ export default function ClinicalStudyHub({
                   </h1>
 
                   <div style={{
-                    background: 'linear-gradient(135deg, rgba(13, 148, 136, 0.07), rgba(2, 132, 199, 0.04))',
+                    background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.07), rgba(2, 132, 199, 0.04))',
                     borderLeft: '4px solid var(--primary)',
                     borderRadius: '8px',
                     padding: '1rem 1.25rem',
@@ -3370,8 +3370,8 @@ export default function ClinicalStudyHub({
 
                 {matchingMasterclass.pearl && (
                   <div style={{
-                    background: 'linear-gradient(135deg, rgba(13, 148, 136, 0.09), rgba(2, 132, 199, 0.06))',
-                    border: '1px solid rgba(13, 148, 136, 0.28)',
+                    background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.09), rgba(2, 132, 199, 0.06))',
+                    border: '1px solid rgba(37, 99, 235, 0.28)',
                     borderRadius: '12px',
                     padding: '1.25rem',
                     marginBottom: '1.5rem'
@@ -3453,7 +3453,7 @@ export default function ClinicalStudyHub({
                     <div style={{
                       padding: '1.35rem 1.5rem',
                       borderRadius: '14px',
-                      background: 'linear-gradient(135deg, rgba(225, 29, 72, 0.08), rgba(13, 148, 136, 0.06))',
+                      background: 'linear-gradient(135deg, rgba(225, 29, 72, 0.08), rgba(37, 99, 235, 0.06))',
                       border: '1px solid rgba(244, 63, 94, 0.3)'
                     }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
