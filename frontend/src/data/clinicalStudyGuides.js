@@ -21,18 +21,18 @@ export const SPECIALTY_CATEGORIES = [
 
 export const CLINICAL_STUDY_GUIDES = {
   "Endo-Pulp-Periapical-Diagnosis": {
-    "title": "การตรวจวินิจฉัยโรคของโพรงประสาทฟันและเนื้อเยื่อรอบปลายราก (AAE Diagnostic Terminology)",
+    "title": "การตรวจวินิจฉัยโรคของโพรงประสาทฟันและเนื้อเยื่อรอบปลายราก (AAE 2009 Consensus & AAE/ESE Draft Update)",
     "specialty": "วิทยาเอ็นโดดอนต์",
     "category": "วิทยาเอ็นโดดอนต์",
     "badgeColor": "#e11d48",
     "must_know_topics": [
-      "AAE Diagnostic Terminology",
-      "Pulpal Diagnosis",
-      "Apical Periodontitis",
-      "Cold Test"
+      "AAE 2009 Diagnostic Terminology (เกณฑ์เฉลยข้อสอบ NL)",
+      "Pulpal & Periapical Diagnosis",
+      "Cold Test & EPT (A-delta vs C Fibers)",
+      "อัปเดตเปรียบเทียบ: AAE/ESE Proposed Update 2025–2026"
     ],
-    "overview": "การวินิจฉัยทางเอ็นโดดอนต์ตามมาตรฐาน American Association of Endodontists (AAE 2009 Consensus) ต้องแยกออกเป็น 2 มิติเสมอ คือ 1) ภาวะของโพรงประสาทฟัน (Pulpal Diagnosis) และ 2) ภาวะของเนื้อเยื่อรอบปลายรากฟัน (Periapical/Apical Diagnosis)",
-    "core_mechanism": "1. กลไกการส่งผ่านความเจ็บปวด (Pulpal Neurophysiology):\n- **A-delta fibers**: เส้นใยประสาทชนิดมีปลอกไมอีลิน (Myelinated) ขนาดใหญ่ นำกระแสประสาทเร็ว (Fast conduction: 12-30 m/s) กระจายตัวหนาแน่นบริเวณ Coronal pulp ใกล้รอยต่อเนื้อฟัน-โพรงประสาท (Pulp-dentin junction) ตอบสนองต่อน้ำ อุณหภูมิเย็น และแรงดึงตามทฤษฎี Brännström's Hydrodynamic Theory ส่งผลให้เกิดอาการปวดแปล๊บ คมชัด (Sharp, shooting pain) หายไปทันทีเมื่อหมดสิ่งกระตุ้น (สภาวะ Reversible Pulpitis)\n- **C fibers**: เส้นใยประสาทไร้ปลอกไมอีลิน (Unmyelinated) ขนาดเล็ก นำกระแสประสาทช้า (Slow conduction: 0.5-2 m/s) ทนต่อภาวะขาดเลือดและเนื้อเยื่อเน่าตาย (Hypoxia & Necrosis) อยู่ลึกในเนื้อเยื่อโพรงประสาทส่วนกลาง (Core pulp) เมื่อพัลพ์เกิดการอักเสบรุนแรง สารอักเสบ (Bradykinin, PGE2, Histamine) จะลด Pain threshold กระตุ้น C fibers ทำให้เกิดอาการปวดลึก ตุบๆ ร้อนร้าว ตกค้างนานหลายนาทีถึงชั่วโมง (Lingering dull, throbbing pain) และปวดขึ้นมาเองโดยไม่มีสิ่งกระตุ้น (Spontaneous pain) ซึ่งเป็นอาการจำเพาะของ Symptomatic Irreversible Pulpitis (SIP)\n\n2. การทดสอบความมีชีวิตของฟัน (Pulp Vitality Testing):\n- **Cold Test (Refrigerant spray / Endo-Ice -26.2°C)**: แม่นยำที่สุดในการตรวจจับ A-delta fibers และการตอบสนองที่ตกค้างของ C fibers\n- **Electric Pulp Test (EPT)**: ตรวจการทำงานของเส้นประสาท A-delta fibers โดยให้กระแสไฟฟ้ากระตุ้น แต่ไม่สามารถบอกปริมาณเลือดที่มาเลี้ยงฟัน (Vascularity) ได้ และไม่สามารถแยกแยะระหว่าง Reversible vs Irreversible pulpitis ได้ (บอกได้แค่ Live vs Dead)\n- **Percussion & Palpation**: ตรวจสอบการลุกลามของการอักเสบออกสู่นอกโพรงประสาทเข้าสู่เส้นเอ็นยึดปริทันต์ปลายรากฟัน (Periodontal Ligament - PDL) ที่มีเส้นประสาท Proprioception ส่งผลให้ผู้ป่วยระบุตำแหน่งซี่ฟันที่เจ็บได้อย่างแม่นยำ (Symptomatic Apical Periodontitis)",
+    "overview": "การวินิจฉัยทางเอ็นโดดอนต์ตามมาตรฐาน **AAE 2009 Consensus** *(ซึ่งยังเป็นเกณฑ์หลักและแนวคำเฉลยของข้อสอบ ศ.ท.ส. / NL ปัจจุบัน)* ต้องแยก 2 แกนเสมอคือ Pulpal Diagnosis และ Periapical Diagnosis พร้อมหมายเหตุเปรียบเทียบ **ร่างแนวทางใหม่ของ AAE/ESE Joint Special Committee (2025–2026 Stakeholder Input)** เพื่อให้เข้าใจวิวัฒนาการสู่ยุค Vital Pulp Therapy และ CBCT โดยไม่สับสนเวลาตอบข้อสอบ NL",
+    "core_mechanism": "1. กลไกการส่งผ่านความเจ็บปวด (Pulpal Neurophysiology):\n- **A-delta fibers**: เส้นใยประสาทมีปลอกไมอีลิน นำเร็ว (12–30 m/s) อยู่บริเวณ Coronal pulp ตอบสนองตาม Brännström's Hydrodynamic Theory ทำให้เสียวแปล๊บคมชัดและหายทันทีเมื่อเอาสิ่งกระตุ้นออก (Reversible Pulpitis)\n- **C fibers**: เส้นใยประสาทไร้ไมอีลิน นำช้า (0.5–2 m/s) ทนภาวะขาดเลือด อยู่ลึกใน Core pulp เมื่ออักเสบรุนแรง สารอักเสบ (Bradykinin, PGE2, Histamine) กระตุ้น C fibers เกิดอาการปวดลึก ตุบๆ ปวดตกค้างนาน (>10–15 วินาที) หรือปวดขึ้นเอง (Spontaneous pain) ซึ่งเป็นอาการจำเพาะของ Symptomatic Irreversible Pulpitis (SIP)\n\n2. การทดสอบความมีชีวิต & ปลายราก (AAE 2009 Standard — ใช้ตอบข้อสอบ NL):\n- **Cold Test (-26.2°C)**: แม่นยำที่สุดในการแยกความรุนแรงของการอักเสบระหว่างอาการหายเร็ว vs ปวดตกค้างนาน\n- **Electric Pulp Test (EPT)**: บอกเพียงสถานะประสาทตอบสนองได้ vs ไม่ได้ (Live vs Dead) ไม่ได้วัดเลือดมาเลี้ยง (Vascularity) และแยก Reversible vs Irreversible ไม่ได้\n- **Percussion & Palpation**: ตรวจการลุกลามเข้าสู่ PDL ปลายราก (Proprioception) เพื่อวินิจฉัย Symptomatic Apical Periodontitis / Acute Apical Abscess / Sinus tract (CAA)\n\n3. 📢 หมายเหตุอัปเดตวิชาการ — ร่างแนวทางใหม่ AAE/ESE (2025–2026 Proposed Update vs AAE 2009):\n*(⚠️ **สถานะสำคัญ:** ปัจจุบันยังเป็นร่างเปิดรับฟังความเห็น Stakeholder Input ยังไม่แทนที่ AAE 2009 ในข้อสอบ NL — เวลาสอบยังคงตอบและเฉลยตาม AAE 2009 ในตารางด้านล่างเป็นหลัก)*\n- **Table 1: Pulpal & Pulp Space Diagnoses (ใหม่)**: เปลี่ยนจากกรอบ 2 ขั้ว *Reversible vs Irreversible* มาเน้นระดับความรุนแรง + การรักษาแบบ Vital Pulp Therapy (VPT):\n  * **Clinically Normal Pulp** *(แทน Normal Pulp; รวมกรณีตอบสนองลดลงจากอายุ/Tertiary dentin/Pulp stones/เคยทำ VPT)*\n  * **Hypersensitive Pulp** *(เพิ่มใหม่)*: พัลพ์ยังปกติแต่ไวเกิน `-Secondary to:` ท่อเนื้อฟันเปิด, เหงือกร่น, หลังอุดฟัน (ปวดแรงขึ้นแต่**ไม่ตกค้าง**) → ไม่ต้องรักษาราก\n  * **Mild Pulpitis** *(แทนส่วนใหญ่ของ Reversible Pulpitis + บังคับพ่วง `-Secondary to:` Caries/Leakage/Trauma/Crack/ECR)*: พัลพ์อักเสบระยะต้นยังไม่ติดเชื้อ ปวดไม่ตกค้าง → รักษาแบบ VPT/กำจัดสาเหตุ\n  * **Severe Pulpitis** *(แทนแนวคิด Irreversible Pulpitis)*: **จุดเปลี่ยนสำคัญ!** ตัดคำว่า 'Irreversible' ออก เพื่อสะท้อนว่าแม้ปวดเอง/ปวดตกค้าง ก็ยังอาจทำ **VPT (Partial/Full Pulpotomy)** เก็บความมีชีวิตของรากฟันได้ ไม่ได้บังคับ RCT 100% เสมอไป\n  * **Inconclusive Pulp Status** *(เพิ่มใหม่)*: ผล test ขัดแย้งหรือไม่ตอบสนองหลัง Trauma/Calcification → ให้ **Monitoring** แทนการรีบ RCT\n  * **กลุ่มฟันรักษามาก่อน**: แยกชัดเจนเป็น *Previously Initiated RCT*, *Previously Obturated Root Canal*, และ *Previous Regenerative Endodontic Treatment (REP)*\n- **Table 2: Periapical Diagnoses (ใหม่)**:\n  * **Clinically Normal Apical Tissues**: รวมเกณฑ์ทั้ง **2D radiograph และ CBCT**\n  * **Apical Hypersensitivity** *(เพิ่มใหม่)*: เจ็บเคาะ/กัดแรง **จากสาเหตุที่ไม่ใช่พัลพ์** (Hyper-occlusion, Trauma, Periodontal, TMD/Neuropathic) ไม่มีเงาดำปลายราก → **ห้ามทำ RCT!**\n  * **Localized Symptomatic / Asymptomatic Apical Periodontitis** & **Localized Apical Periodontitis with Sinus Tract**: เติม *Localized* และผนวกเกณฑ์ **low-density area on CBCT**\n  * **Inconclusive Apical Condition** *(เพิ่มใหม่)*: ไม่มีอาการ แต่ภาพ 2D/CBCT ยังสรุปไม่ได้ (เช่น ไม่มีฟิล์มเก่าเทียบหลัง RCT / อยู่ระหว่าง Healing) → **Monitoring**",
     "matrix_headers": [
       "การวินิจฉัย (Diagnosis)",
       "การตอบสนองต่อ Cold Test",
@@ -86,10 +86,11 @@ export const CLINICAL_STUDY_GUIDES = {
     ],
     "pitfalls": [
       "กับดักที่ 1: ข้อสอบมักลวงว่า \"พบเงาดำที่ปลายรากฟัน และเคาะเจ็บ จึงวินิจฉัยว่าฟันซี่นั้นเป็น Pulp Necrosis เสมอ\" -> คำตอบที่ถูกต้องคือ ต้องดูผล Vitality test ประกอบเสมอ หากฟันยังตอบสนองต่อ Cold test แสดงว่าเป็น Vital tooth รอยโรคปลายรากอาจเป็น Cementoma (PCOD) ระยะแรก หรือ Trauma ซึ่งห้ามรักษารากฟันเด็ดขาด!",
-      "กับดักที่ 2: Chronic Apical Abscess มีตุ่มหนอง (Sinus tract) ระบายความดันออกตลอดเวลา คนไข้จึงมัก \"ไม่มีอาการปวด\" ห้ามจ่ายยาปฏิชีวนะเด็ดขาด ให้รักษารากฟันแล้วตุ่มหนองจะยุบเองภายใน 7-14 วัน"
+      "กับดักที่ 2: Chronic Apical Abscess มีตุ่มหนอง (Sinus tract) ระบายความดันออกตลอดเวลา คนไข้จึงมัก \"ไม่มีอาการปวด\" ห้ามจ่ายยาปฏิชีวนะเด็ดขาด ให้รักษารากฟันแล้วตุ่มหนองจะยุบเองภายใน 7-14 วัน",
+      "กับดักศัพท์ใหม่ vs ข้อสอบ NL: แม้ร่างใหม่ AAE/ESE (2025–2026) จะเริ่มใช้คำว่า Mild Pulpitis / Severe Pulpitis / Apical Hypersensitivity / Inconclusive แต่**ข้อสอบ ศ.ท.ส. (NL) ปัจจุบันยังคงออกและเฉลยตาม AAE 2009** (Reversible / SIP / AIP / SAP / AAP / AAA / CAA) อย่าสับสนเวลาเลือกช้อยส์!"
     ],
-    "pearl": "ฟันที่มี Apical radiolucency และมีอาการปวดเคาะชัดเจน แต่ยังตอบสนองต่อ Cold test อย่างรุนแรงและตกค้างนาน วินิจฉัยร่วมคือ \"Symptomatic Irreversible Pulpitis with Symptomatic Apical Periodontitis\" การอักเสบลามออกนอกยอดรากได้ก่อนที่เนื้อเยื่อในจะตายสนิท!",
-    "reference": "Hargreaves KM, Berman LH. Cohen's Pathways of the Pulp, 12th ed. Elsevier, 2021 (Chapter 1: Diagnosis; AAE Consensus Terminology).",
+    "pearl": "แกนเฉลย NL (AAE 2009): Cold ตกค้าง + เคาะเจ็บ + มีเงาดำ = SIP with SAP | ส่วนแนวทางใหม่ AAE/ESE (2025–2026 Draft) เปลี่ยนกรอบเป็น Mild/Severe Pulpitis (รองรับ VPT แม้ใน Severe) + เพิ่ม Hypersensitive Pulp, Apical Hypersensitivity (ไม่ใช่พัลพ์ ห้าม RCT!) และ Inconclusive (ให้เฝ้าติดตาม)",
+    "reference": "Hargreaves KM, Berman LH. Cohen's Pathways of the Pulp, 12th ed. Elsevier, 2021 (AAE 2009 Consensus Terminology — มาตรฐานเฉลยข้อสอบ NL); ข้อมูลวิชาการเพิ่มเติม: AAE & ESE Joint Special Committee on Diagnostic Terminology — Proposed Update & Stakeholder Input (2025–2026).",
     "decision_matrix": [
       {
         "col_0": "Reversible Pulpitis",
@@ -191,8 +192,8 @@ export const CLINICAL_STUDY_GUIDES = {
       "กับดักสำคัญ: ในฟันน้ำนมที่มี Carious pulp exposure \"ห้ามทำ Direct Pulp Capping (DPC) เด็ดขาด\" เพราะอัตราการเกิด Internal root resorption และ Chronic inflammation สูงมาก การรักษามาตรฐานคือ Pulpotomy หรือ Pulpectomy เท่านั้น",
       "สารห้ามเลือดในการทำ Pulpotomy ในฟันแท้ต้องใช้ NaOCl 2.5-5.0% ห้ามใช้ Epinephrine เม็ดกลมหรือ Ferric sulfate เพราะการหยุดเลือดด้วยกลไกทางเคมีดังกล่าวจะบดบังภาวะการอักเสบที่แท้จริงของพัลพ์"
     ],
-    "pearl": "การทดสอบความสำเร็จของการทำ Cvek Pulpotomy ในคลินิก: ใช้สำลีชุบ 2.5% NaOCl กดแผลพัลพ์เบาๆ 5 นาที เลือดต้องหยุดสนิทและเห็นเนื้อเยื่อพัลพ์เป็นสีชมพู หากเลือดยังคงไหลซึมทะลักไม่หยุด แสดงว่าการอักเสบลามลึกเกิน 2 มม. ต้องเปลี่ยนไปทำ Full Pulpotomy หรือ Pulpectomy!",
-    "reference": "American Association of Endodontists (AAE). Clinical Guidance: Treatment of the Open Apex. J Endod, 2021.",
+    "pearl": "การทดสอบความสำเร็จของการทำ Cvek Pulpotomy ในคลินิก: ใช้สำลีชุบ 2.5% NaOCl กดแผลพัลพ์เบาๆ 5 นาที เลือดต้องหยุดสนิทและเห็นเนื้อเยื่อพัลพ์เป็นสีชมพู (สอดคล้องกับแนวคิด Vital Pulp Preservation ในร่าง AAE/ESE 2025–2026 ที่แม้อักเสบมาก [Severe Pulpitis] ยังอาจทำ Pulpotomy ได้; อย่างไรก็ตาม ข้อสอบ NL ยังคงเฉลยคำศัพท์วินิจฉัยตาม AAE 2009)",
+    "reference": "American Association of Endodontists (AAE). Clinical Guidance: Treatment of the Open Apex. J Endod, 2021; AAE Position Statement on Vital Pulp Therapy & AAE/ESE Diagnostic Terminology Stakeholder Input (2025–2026 Draft).",
     "decision_matrix": [
       {
         "col_0": "สภาวะของโพรงประสาท (Pulp Status)",

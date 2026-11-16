@@ -50,21 +50,22 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
         },
         {
             "id": "aae-diagnostic-decision",
-            "title": "แผนผังตัดสินใจวินิจฉัยโรคพัลพ์และปลายราก (AAE Consensus Decision Pathway)",
+            "title": "แผนผังตัดสินใจวินิจฉัยโรคพัลพ์และปลายราก (AAE 2009 Standard + แจ้งอัปเดต AAE/ESE 2025–2026)",
             "pathway_type": "decision",
-            "subtitle": "ตรวจ 2 มิติเสมอ: 1) Cold Test / EPT (ความมีชีวิต) + 2) Percussion / Palpation / X-ray (ปลายราก)",
-            "reference": "AAE 2009/2013 Consensus Terminology (มาตรฐานโรงเรียนทันตแพทย์ไทยทั้ง 18 สถาบัน)",
+            "subtitle": "ตรวจ 2 มิติตาม AAE 2009 (เกณฑ์เฉลยข้อสอบ NL ปัจจุบัน) พร้อมสรุปความต่างจากร่างแนวทางใหม่ AAE/ESE 2025–2026",
+            "reference": "AAE 2009/2013 Consensus Terminology (เกณฑ์เฉลยข้อสอบ ศ.ท.ส. ไทย) & AAE/ESE Joint Special Committee Proposed Update (Stakeholder Input 2025–2026)",
             "steps": [
-                _node(1, "ขั้นตรวจความมีชีวิต (Pulpal Test)", "ทดสอบด้วย Cold Test (-26.2°C) / ประวัติปวด", "แยกสภาวะของโพรงประสาทฟันก่อนเริ่มการรักษา", "decision", [
-                    {"condition": "ตอบสนองปกติ ไม่ตกค้าง", "outcome": "Normal Pulp / Reversible Pulpitis ➔ กรออุดฟัน", "color": "#10b981"},
+                _node(1, "ขั้นตรวจความมีชีวิต — ยึด AAE 2009 สำหรับตอบข้อสอบ NL", "ทดสอบด้วย Cold Test (-26.2°C) / EPT / ประวัติปวด", "แยกสภาวะโพรงประสาทตามเกณฑ์เฉลย ศ.ท.ส. (AAE 2009) ก่อนตัดสินใจรักษา", "decision", [
+                    {"condition": "ตอบสนองปกติ ไม่ตกค้าง", "outcome": "Normal Pulp / Reversible Pulpitis ➔ กรออุดฟัน (VPT หากใกล้พัลพ์)", "color": "#10b981"},
                     {"condition": "ปวดแปล๊บตกค้างนาน / ปวดเอง", "outcome": "Symptomatic Irreversible Pulpitis (SIP) ➔ รักษารากฟัน (RCT)", "color": "#f59e0b"},
                     {"condition": "ไม่ตอบสนอง Cold & EPT", "outcome": "Pulp Necrosis ➔ RCT (เช็กปลายรากต่อ)", "color": "#ef4444"},
                 ]),
-                _node(2, "ขั้นตรวจปลายราก (Apical Test)", "เคาะฟัน (Percussion) + คลำ (Palpation) + ดูตุ่มหนอง", "ประเมินการลุกลามเข้าสู่เส้นเอ็น PDL และกระดูกเบ้าฟัน", "decision", [
+                _node(2, "ขั้นตรวจปลายราก — ยึด AAE 2009 สำหรับตอบข้อสอบ NL", "เคาะฟัน (Percussion) + คลำ (Palpation) + ดูตุ่มหนอง/ภาพรังสี", "ประเมินการลุกลามเข้าสู่เส้นเอ็น PDL และกระดูกเบ้าฟัน", "decision", [
                     {"condition": "เคาะเจ็บ (+) มีหรือไม่มีเงาดำ", "outcome": "Symptomatic Apical Periodontitis (SAP)", "color": "#f59e0b"},
                     {"condition": "บวมเฉียบพลัน + หนอง + ปวดรุนแรง", "outcome": "Acute Apical Abscess ➔ I&D + Pulpectomy (RDU: ให้ ATB เฉพาะมีไข้/บวมลาม)", "color": "#ef4444"},
                     {"condition": "มีตุ่มหนอง Sinus tract (มักไม่ปวด)", "outcome": "Chronic Apical Abscess ➔ GP Tracing หาซี่ต้นเหตุ + RCT (งด ATB)", "color": "#38bdf8"},
                 ]),
+                _node(3, "📢 หมายเหตุอัปเดต: ร่างแนวทางใหม่ AAE/ESE (2025–2026 Draft vs AAE 2009)", "ยังเป็นร่างเปิดรับฟังความเห็น (Stakeholder Input) — ข้อสอบ NL ยังเฉลยตาม AAE 2009 เดิม", "ความต่างสำคัญที่ควรรู้: (1) Pulpal เปลี่ยน Reversible/Irreversible → Hypersensitive Pulp, Mild Pulpitis (-Secondary to:), Severe Pulpitis (รองรับ VPT/Pulpotomy แม้ปวดมาก ไม่ได้บังคับ RCT 100%) และเพิ่ม Inconclusive Pulp Status / Previous Regenerative; (2) Periapical เพิ่ม Apical Hypersensitivity (เจ็บจากสบฟัน/TMD/ปริทันต์ ไม่ใช่พัลพ์ ห้ามทำ RCT!), ผนวก CBCT ใน Localized SAP/AAP, เพิ่ม Sinus Tract และ Inconclusive Apical Condition (ให้ Monitoring)", "outcome"),
             ],
         },
     ],
@@ -73,10 +74,10 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
             "id": "vpt-protocol",
             "title": "Clinical Protocol: Vital Pulp Therapy (IPC, DPC & Cvek Pulpotomy)",
             "pathway_type": "protocol",
-            "subtitle": "ขั้นตอนการรักษาโพรงประสาทฟันที่มีชีวิตตามเกณฑ์ TAE & AAE (เน้น Calcium Silicate Cement)",
-            "reference": "สมาคมวิทยาเอ็นโดดอนต์ไทย (TAE) & ESE / AAE Vital Pulp Therapy Position Statement",
+            "subtitle": "ขั้นตอนการรักษาโพรงประสาทฟันที่มีชีวิตตามเกณฑ์ TAE & AAE (สอดคล้องแนวคิด Severe Pulpitis ใน AAE/ESE 2025–2026 Draft)",
+            "reference": "สมาคมวิทยาเอ็นโดดอนต์ไทย (TAE), ESE/AAE Vital Pulp Therapy Position Statement & AAE/ESE Diagnostic Terminology Draft (2025–2026)",
             "steps": [
-                _node(1, "คัดกรองเคส (Case Selection)", "ฟันมีชีวิต + ไม่มีอาการ Irreversible / ปลายรากปกติ", "ต้องไม่ปวดเองตอนกลางคืน ไม่บวม ไม่เคาะเจ็บ ไม่มี Sinus tract และตอบสนองต่อ Cold test แบบปกติหรือหายเร็ว", "trigger"),
+                _node(1, "คัดกรองเคส (Case Selection)", "ข้อสอบ NL (AAE 2009): เลือกทำใน Normal / Reversible Pulpitis", "ในการสอบ NL ฟันที่มี SIP (ปวดเองกลางคืน/ตกค้างนาน) มักเฉลยเป็น RCT แต่ในเชิงวิชาการสมัยใหม่ (AAE/ESE Draft 2025–2026: Severe Pulpitis) อาจทำ Partial/Full Pulpotomy ได้หากคุมเลือดใน 5–10 นาที", "trigger"),
                 _node(2, "เตรียมปลอดเชื้อ (Isolation)", "ใส่ Rubber Dam + ฆ่าเชื้อตัวฟันก่อนกรอผุลึก", "ป้องกันการปนเปื้อนเชื้อซ้ำจากน้ำลาย หากมีผุลึกให้เริ่มแบบ Selective Caries Removal (เหลือ Soft/Firm dentin เหนือพัลพ์ถ้าไม่ทะลุ = IPC)", "action"),
                 _node(3, "จุดตัดสินใจเมื่อทะลุพัลพ์ (Hemostasis Check)", "ประเมินจุดเลือดออก & ควบคุมเลือดด้วย 1.5–5% NaOCl", "ใช้สำลีชุบ NaOCl กดห้ามเลือดเบาๆ 5–10 นาที (ห้ามใช้แรงดัน) เพื่อประเมินสุขภาพของเนื้อเยื่อพัลพ์จริง", "decision", [
                     {"condition": "เลือดหยุดภายใน 5–10 นาที (Pulp exposure เล็ก)", "outcome": "ปิดทับด้วย Calcium Silicate Cement (MTA / Biodentine) ➔ Direct Pulp Capping หรือ Partial Pulpotomy", "color": "#10b981"},

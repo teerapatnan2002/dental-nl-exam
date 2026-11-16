@@ -21,8 +21,8 @@ router = APIRouter(prefix="/api/learning", tags=["learning"])
 TOPIC_METADATA: Dict[str, Dict[str, str]] = {
     # วิทยาเอ็นโดดอนต์ (Endodontics)
     "Endo-Pulp-Periapical-Diagnosis": {
-        "title_th": "การวินิจฉัยโรคของโพรงประสาทฟันและเนื้อเยื่อรอบปลายราก",
-        "title_en": "Pulpal & Periapical Diagnosis (AAE Consensus Terminology)",
+        "title_th": "การวินิจฉัยโรคของโพรงประสาทฟันและเนื้อเยื่อรอบปลายราก (AAE 2009 + แจ้งอัปเดต AAE/ESE 2025–2026)",
+        "title_en": "Pulpal & Periapical Diagnosis (AAE 2009 NL Standard vs AAE/ESE Draft Update)",
     },
     "Endo-Instrumentation-Obturation": {
         "title_th": "การขยายและอุดคลองรากฟันด้วยวัสดุชีวภาพ",
@@ -391,10 +391,12 @@ CANONICAL_TEXTBOOKS = [
         "thai_references": [
             "แนวทางเวชปฏิบัติทางวิทยาเอ็นโดดอนต์ สมาคมวิทยาเอ็นโดดอนต์ไทย (TAE) และทันตแพทยสภา",
             "ตำราวิทยาเอ็นโดดอนต์ คณะทันตแพทยศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย / มหาวิทยาลัยมหิดล / มหาวิทยาลัยเชียงใหม่",
-            "เกณฑ์การวินิจฉัยโรคของเนื้อเยื่อในและเนื้อเยื่อรอบปลายรากฟัน (AAE Consensus ที่โรงเรียนทันตแพทย์ไทยใช้เป็นมาตรฐานข้อสอบ ศ.ท.ส.)"
+            "เกณฑ์การวินิจฉัยโรคของเนื้อเยื่อในและเนื้อเยื่อรอบปลายรากฟัน (AAE Consensus 2009 — มาตรฐานเฉลยข้อสอบ ศ.ท.ส.)",
+            "ข้อมูลอัปเดตวิชาการ: AAE & ESE Joint Special Committee on Diagnostic Terminology — Proposed Update & Stakeholder Input (2025–2026)"
         ],
         "thai_protocol_highlights": [
-            "ข้อสอบ ศ.ท.ส. ใช้คำศัพท์การวินิจฉัยตาม AAE Consensus 2009/2013 เป็นมาตรฐานเดียวทั้ง 18 สถาบัน (เช่น Symptomatic/Asymptomatic Irreversible Pulpitis, Symptomatic/Asymptomatic Apical Periodontitis)",
+            "ข้อสอบ ศ.ท.ส. ปัจจุบันยังคงใช้และเฉลยตามคำศัพท์การวินิจฉัย AAE Consensus 2009 เป็นมาตรฐานหลักทั้ง 18 สถาบัน (Normal Pulp, Reversible Pulpitis, Symptomatic/Asymptomatic Irreversible Pulpitis, Pulp Necrosis, Normal Apical Tissues, Symptomatic/Asymptomatic Apical Periodontitis, Acute/Chronic Apical Abscess, Condensing Osteitis)",
+            "📢 แจ้งอัปเดตแนวทางใหม่ (AAE/ESE Proposed Update 2025–2026 Stakeholder Draft — ยังอยู่ระหว่างรับฟังความเห็น ยังไม่แทนที่เกณฑ์เฉลย NL 2009): แยกตารางเป็น Pulpal & Pulp Space (Clinically Normal, Hypersensitive Pulp, Mild Pulpitis `-Secondary to:`, Severe Pulpitis รองรับ VPT/Pulpotomy แม้ปวดมาก, Inconclusive Pulp Status, Previously Initiated / Obturated / Regenerative) และ Periapical (Clinically Normal + CBCT, Apical Hypersensitivity จากสบกระแทก/TMD ห้าม RCT!, Localized SAP/AAP + CBCT, Sinus Tract, Inconclusive Apical Condition ให้ Monitoring)",
             "การทำ Vital Pulp Therapy (Direct Pulp Capping / Partial Pulpotomy) ในแนวทางไทยปัจจุบันเน้นการใส่ Rubber dam, เช็ดหยุดเลือดด้วย NaOCl ภายใน 5–10 นาที และปิดทับด้วย Calcium Silicate Cement (MTA หรือ Biodentine) แทน Ca(OH)2 ดั้งเดิมในเคส Carious exposure",
             "ตามเกณฑ์การใช้ยาอย่างสมเหตุผลในงานทันตกรรม (RDU Thailand) ห้ามจ่ายยาปฏิชีวนะในเคส Reversible/Irreversible Pulpitis หรือ Localized Acute Apical Abscess ที่ระบายหนองได้แล้วและไม่มีไข้/Cellulitis"
         ]
