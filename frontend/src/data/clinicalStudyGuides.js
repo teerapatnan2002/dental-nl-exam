@@ -816,9 +816,9 @@ export const CLINICAL_STUDY_GUIDES = {
     "matrix_headers": [
       "Stage",
       "CAL ที่จุดลึกสุด",
-      "การละลายของกระดูก (RBL)",
-      "จำนวนฟันหลุดจากปริทันต์",
-      "ความซับซ้อนทางคลินิก (Complexity)"
+      "การละลายของกระดูก (RBL จาก 2 mm ใต้ CEJ)",
+      "จำนวนฟันสูญเสียจากปริทันต์",
+      "ความซับซ้อนทางคลินิก (2023) & Patient-level (2025)"
     ],
     "matrix_rows": [
       [
@@ -826,28 +826,28 @@ export const CLINICAL_STUDY_GUIDES = {
         "1 - 2 มม.",
         "< 15% (Coronal third)",
         "0 ซี่",
-        "PD <= 4 มม., แนวนอนทั้งหมด ไม่มี vertical defect"
+        "PD <= 4 มม., แนวนอนทั้งหมด ไม่มี vertical defect | Patient-level: Good"
       ],
       [
         "Stage II (Moderate)",
         "3 - 4 มม.",
         "15% - 33% (Coronal third)",
         "0 ซี่",
-        "PD <= 5 มม., แนวนอนเป็นส่วนใหญ่"
+        "PD <= 5 มม., แนวนอนเป็นส่วนใหญ่ | Patient-level: Good"
       ],
       [
         "Stage III (Severe)",
         ">= 5 มม.",
         "ลามถึง Middle หรือ Apical third",
         "<= 4 ซี่",
-        "PD >= 6 มม., Vertical defect >= 3 มม., Furcation II-III"
+        "PD >= 6 มม., Vertical defect >= 3 มม., Furcation II-III | Patient-level: Fair"
       ],
       [
         "Stage IV (Advanced)",
         ">= 5 มม.",
         "ลามถึง Middle หรือ Apical third",
         ">= 5 ซี่",
-        "สบฟันล้มเหลว (Bite collapse), ฟันเหลือน้อยกว่า 20 ซี่"
+        "สบฟันล้มเหลว (Bite collapse), < 20 ซี่ (< 10 คู่สบ) | Patient-level: Poor"
       ]
     ],
     "pitfalls": [
@@ -863,28 +863,28 @@ export const CLINICAL_STUDY_GUIDES = {
         "col_1": "1 - 2 มม.",
         "col_2": "< 15% (Coronal third)",
         "col_3": "0 ซี่",
-        "col_4": "PD <= 4 มม., แนวนอนทั้งหมด ไม่มี vertical defect"
+        "col_4": "PD <= 4 มม., แนวนอนทั้งหมด ไม่มี vertical defect | Patient-level: Good"
       },
       {
         "col_0": "Stage II (Moderate)",
         "col_1": "3 - 4 มม.",
         "col_2": "15% - 33% (Coronal third)",
         "col_3": "0 ซี่",
-        "col_4": "PD <= 5 มม., แนวนอนเป็นส่วนใหญ่"
+        "col_4": "PD <= 5 มม., แนวนอนเป็นส่วนใหญ่ | Patient-level: Good"
       },
       {
         "col_0": "Stage III (Severe)",
         "col_1": ">= 5 มม.",
         "col_2": "ลามถึง Middle หรือ Apical third",
         "col_3": "<= 4 ซี่",
-        "col_4": "PD >= 6 มม., Vertical defect >= 3 มม., Furcation II-III"
+        "col_4": "PD >= 6 มม., Vertical defect >= 3 มม., Furcation II-III | Patient-level: Fair"
       },
       {
         "col_0": "Stage IV (Advanced)",
         "col_1": ">= 5 มม.",
         "col_2": "ลามถึง Middle หรือ Apical third",
         "col_3": ">= 5 ซี่",
-        "col_4": "สบฟันล้มเหลว (Bite collapse), ฟันเหลือน้อยกว่า 20 ซี่"
+        "col_4": "สบฟันล้มเหลว (Bite collapse), < 20 ซี่ (< 10 คู่สบ) | Patient-level: Poor"
       }
     ]
   },

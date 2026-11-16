@@ -427,7 +427,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
       "ลืมปรับ Questionable → Unfavorable ในผู้ป่วยเบาหวาน HbA1C ≥ 7.0% หรือสูบบุหรี่ ≥ 10 มวน/วัน และลืมข้อยกเว้น Vertical bone loss >66% ที่มี vertical component ≥3 mm ซึ่งทำ regeneration ได้ (ยังคงเป็น Questionable)"
     ],
     pearl: "CAL: Recession บวก (+) | บวมคลุม CEJ ลบ (-) • TAP 2025 Tooth-level (4 ระดับ): Favorable / Questionable / Unfavorable / Hopeless (DM HbA1c ≥7% หรือบุหรี่ ≥10 มวน ปรับ Questionable➔Unfavorable!) • Patient-level (3 ระดับ): Good (I-II) / Fair (III) / Poor (IV) + 4 Shifters ลด 1 ขั้น (ยกเว้น Health/Gingivitis ≥ Fair และ Implant ไม่ลดระดับ)",
-    reference: "สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP Guideline 2025: An Update in Periodontal Prognosis, พ.ศ. 2568), Kwok & Caton (2007) & Newman and Carranza's Clinical Periodontology"
+    reference: "สมาคมปริทันตวิทยาแห่งประเทศไทย: Workshop E-book 2023 (AAP/EFP 2018: วัดระดับกระดูกปกติที่ 2 mm ใต้ CEJ & 5 ข้อยกเว้น CAL) และ TAP Guideline 2025: An Update in Periodontal Prognosis (พ.ศ. 2568), Kwok & Caton (2007) & Newman and Carranza's Clinical Periodontology"
   },
 
   "Perio-Etiology-Microbiology": {
@@ -445,9 +445,9 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     core_mechanism: "คราบจุลินทรีย์เริ่มจาก Acquired pellicle แล้วเกาะด้วย Early colonizers (Streptococcus/Actinomyces) ก่อนเชื่อมผ่าน Fusobacterium nucleatum (สะพานเชื่อมกลุ่ม Orange) ไปสู่ Late anaerobic colonizers กลุ่ม Red Complex (P. gingivalis, T. forsythia, T. denticola) ทว่าผู้ทำลายคอลลาเจนและกระดูกส่วนใหญ่ไม่ใช่พิษเชื้อโดยตรง แต่เป็น Matrix Metalloproteinases (MMP-8 จาก Neutrophils) และ RANKL จากการอักเสบของเจ้าบ้านเอง",
     matrix_headers: ["กลุ่มเชื้อ / ระยะพยาธิสภาพ", "องค์ประกอบเด่นที่ออกสอบ", "ความสำคัญทางคลินิก"],
     matrix_rows: [
-      ["Socransky Red Complex (Late)", "Porphyromonas gingivalis, Tannerella forsythia, Treponema denticola", "สัมพันธ์สูงสุดกับการมีเลือดออก (BOP+) และร่องลึกปริทันต์ลุกลามใน Chronic/Stage III–IV Periodontitis"],
+      ["Socransky Red Complex (Late)", "Porphyromonas gingivalis, Tannerella forsythia, Treponema denticola", "สัมพันธ์สูงสุดกับการมีเลือดออก (BOP+) และร่องลึกปริทันต์ลุกลามใน Periodontitis Stage III–IV (เดิม Chronic)"],
       ["Grade C / Molar-Incisor Pattern", "Aggregatibacter actinomycetemcomitans (Aa) — สร้าง Leukotoxin ทำลาย PMN/Macrophage", "พบบ่อยในคนอายุน้อย (เดิม Aggressive periodontitis) กระดูกทำลายเร็วมากบริเวณซี่ 6 และฟันตัด ใช้ยาเสริม Amoxicillin + Metronidazole"],
-      ["NUG / NUP & Pregnancy Gingivitis", "NUG: Fusobacteria + Spirochetes (Treponema), Prevotella intermedia | ตั้งครรภ์: P. intermedia (กินฮอร์โมนแทน Vit K)", "NUG พบเชื้อบุกรุกลึกเข้าเนื้อเยื่อเกี่ยวพัน (4 zones ของ Listgarten) ในขณะที่ Chronic periodontitis เชื้ออยู่เฉพาะใน Pocket"],
+      ["NPD (NG / NP / NS) & Pregnancy Gingivitis", "Necrotizing Periodontal Diseases: Fusobacteria + Spirochetes (Treponema), P. intermedia | ตั้งครรภ์: P. intermedia (กินฮอร์โมนแทน Vit K)", "NPD (เดิม NUG/NUP) พบเชื้อบุกรุกลึกเข้าเนื้อเยื่อเกี่ยวพัน (4 zones ของ Listgarten) ขณะที่ Periodontitis ทั่วไปเชื้ออยู่เฉพาะใน Pocket"],
       ["Page & Schroeder Stages", "Initial (PMN 2–4 วัน) ➔ Early (T-cell 4–7 วัน เริ่ม Gingivitis) ➔ Established (Plasma cell เด่น) ➔ Advanced (Bone loss + Pocket)", "จุดแบ่ง Establishing gingivitis vs Periodontitis (Advanced lesion) คือการลุกลามเข้าทำลาย Alveolar bone และ Apical migration of JE"]
     ],
     pitfalls: [
@@ -613,7 +613,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     core_mechanism: "ในแผลผ่าตัดปกติ Long Junctional Epithelium (LJE) เติบโตเร็วที่สุดลงมาปิดผิวราก (Repair ไม่ใช่ Regeneration) หลักการ GTR จึงวางแผ่นกั้น (Barrier membrane) กั้นไม่ให้ Epithelium และ Gingival CT ลงมา เปิดทางให้เฉพาะ PDL cells และ Bone cells จากเบ้ากระดูกงอกขึ้นมาสร้าง New cementum, New PDL และ New alveolar bone โดยเฉพาะใน Intrabony defect ชนิด 3-wall ซึ่งมีผนังเลี้ยงเลือดมากสุด",
     matrix_headers: ["ประเภทวัสดุ / ปัจจัยสำเร็จ", "กลไกชีวภาพ (Osteo-properties)", "ข้อบ่งชี้ & พยากรณ์โรค"],
     matrix_rows: [
-      ["3-Wall Intrabony Defect", "มีผนังกระดูกล้อม 3 ด้าน (มากสุด) เก็บเลือดและ Graft อยู่ตัวดี", "พยากรณ์ดีที่สุดสำหรับ GTR / Enamel Matrix Derivative (EMD / Emdogain) ในมุมกระดูกแคบลึก (≥ 3 mm, < 25–37°)"],
+      ["3-Wall Intrabony Defect", "มีผนังกระดูกล้อม 3 ด้าน (มากสุด) เก็บเลือดและ Graft อยู่ตัวดี", "พยากรณ์ดีที่สุดสำหรับ GTR/EMD (TAP 2023: Vertical ≥3 mm = Stage III Complexity | TAP 2025: หากทำ Regeneration ได้ คงระดับ Tooth-level = Questionable แม้ RBL >66%)"],
       ["Autogenous Bone Graft (Autograft)", "ครบ 3 กลไก: Osteogenesis + Osteoinduction + Osteoconduction (Gold Standard)", "ข้อจำกัดคือต้องมีแผลที่ Donor site เพิ่ม และปริมาณกระดูกจำกัด"],
       ["Allograft (DFDBA vs FDBA)", "DFDBA (ดึงแร่ธาตุออกเปิด BMPs ➔ Osteoinduction + Conduction) | FDBA (Osteoconduction + คงรูปนานกว่า)", "นิยมใช้ใน Intrabony defects และ Sinus/Ridge preservation (DFDBA เน้น Induction; FDBA เน้น Space maintenance)"],
       ["Xenograft (เช่น Bio-Oss) & Alloplast", "Osteoconduction เท่านั้น (ทำหน้าที่เป็นโครงนั่งร้านให้เซลล์กระดูกงอกแทรก สลายตัวช้ามาก)", "นิยมใน GBR เพิ่มความกว้างสันกระดูก/รากเทียมเพื่อคงปริมาตรระยะยาว"]
@@ -623,7 +623,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
       "หวังทำ GTR ในผู้ป่วยที่ยังสูบบุหรี่จัด คุมเบาหวานไม่ได้ หรือยังมี Oral Hygiene แย่ (Plaque score สูง) — อัตราเกิด Membrane exposure และติดเชื้อสูงมาก"
     ],
     pearl: "3-Wall Defect ดีสุดสำหรับ GTR | ครบ 3 Osteo = Autograft | มี BMP (Osteoinductive) = DFDBA | หายหลังขูด/MWF = Long Junctional Epithelium!",
-    reference: "Carranza's Clinical Periodontology 13th ed. & AAP Regeneration Consensus"
+    reference: "Carranza's Clinical Periodontology 13th ed., สมาคมปริทันตวิทยาแห่งประเทศไทย (TAP E-book 2023 & TAP Prognosis 2025) & AAP Regeneration Consensus"
   },
 
   "Perio-Periodontal-Surgery-Flaps": {
