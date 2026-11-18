@@ -215,42 +215,42 @@ TOPIC_METADATA: Dict[str, Dict[str, str]] = {
 
     # ทันตกรรมสำหรับเด็ก (Pediatric Dentistry)
     "Pedia-Primary-Pulp-Therapy": {
-        "title_th": "การบำบัดรักษาโพรงประสาทฟันน้ำนม (IPC, Pulpotomy, Pulpectomy)",
-        "title_en": "Pulp Therapy in Primary Teeth & Stainless Steel Crowns",
+        "title_th": "การบำบัดรักษาโพรงประสาทฟันน้ำนม (AAPD 2024–2025: IPC, Pulpotomy, Pulpectomy)",
+        "title_en": "Primary Pulp Therapy (MTA/Biodentine Preference & Contraindications)",
     },
     "Pedia-Behavior-Guidance": {
-        "title_th": "การประเมินและจัดการพฤติกรรมเด็กในคลินิกทันตกรรม",
-        "title_en": "Pediatric Behavior Classification (Frankl) & Non-Pharmacologic Guidance",
+        "title_th": "การประเมินและจัดการพฤติกรรมเด็ก (AAPD 2024), ยาชา & ป้องกัน IE (AHA 2021)",
+        "title_en": "Behavior Guidance (Frankl/Wright), LA Weight Dose & Pediatric IE Prophylaxis",
     },
     "Pedia-Fluoride-Pharmacology-Toxicity": {
-        "title_th": "เภสัชวิทยาของฟลูออไรด์ ขนาดยาเสริม และพิษวิทยาเฉียบพลัน (PTD)",
-        "title_en": "Fluoride Therapy, Systemic Supplementation & Probable Toxic Dose (5 mg/kg)",
+        "title_th": "เภสัชวิทยาของฟลูออไรด์ (TSPD/AAPD) ขนาดยาเสริม และพิษเฉียบพลัน (PTD)",
+        "title_en": "Fluoride Therapy, Thai Supplementation (0.55/1.1 mg NaF) & PTD (5 mg/kg)",
     },
     "Pedia-Space-Maintenance": {
-        "title_th": "การจัดการช่องว่างในชุดฟันผสมและเครื่องมือกันที่ฟัน (Space Maintainers)",
-        "title_en": "Primate/Leeway Spaces & Space Maintainers (Band & Loop, Distal Shoe, LLHA)",
+        "title_th": "การจัดการช่องว่างในชุดฟันผสม, Lingual Eruption และ Space Maintainers",
+        "title_en": "Primate/Leeway Spaces, Eruption Guidance & Space Maintainers",
     },
     "Pedia-Restorative-Techniques": {
-        "title_th": "การบูรณะฟันน้ำนม ครอบฟันโลหะไร้สนิม (SSC) และการเคลือบหลุมร่องฟัน",
-        "title_en": "Pediatric Restorative Dentistry, Hall Technique SSC & Pit/Fissure Sealants",
+        "title_th": "บูรณะฟันน้ำนม (Strip Crown, SSC Pliers, Hall, SDF) และเกณฑ์ลด Amalgam (<15 ปี)",
+        "title_en": "Pediatric Restorative Dentistry, SSC Pliers (Howe/Crimping), Hall & Sealants",
     },
     "Pedia-Dental-Traumatology": {
-        "title_th": "การจัดการอุบัติเหตุต่อฟันน้ำนมและฟันแท้ตามเกณฑ์ IADT",
-        "title_en": "Pediatric Dental Traumatology (Intrusion, Luxation & Avulsion Guidelines)",
+        "title_th": "การจัดการอุบัติเหตุต่อฟันน้ำนมและฟันแท้ตามเกณฑ์สากล (IADT 2020)",
+        "title_en": "Pediatric Dental Traumatology (Primary & Permanent IADT 2020 Guidelines)",
     },
     "Pedia-Young-Permanent-Teeth": {
-        "title_th": "การดูแลฟันแท้ซี่แรกขึ้นผิดที่ (Ectopic Eruption) และภาวะ MIH",
-        "title_en": "Young Permanent Dentition, Ectopic Eruption & Molar-Incisor Hypomineralization",
+        "title_th": "ฟันแท้เด็ก (Open Apex Cvek), MIH, ฟันเกิน Mesiodens และ Fluorosis MID",
+        "title_en": "Immature Permanent Pulp Therapy, Ectopic Eruption, Mesiodens & MIH",
     },
 
     # วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก (Oral Diagnosis & Medicine)
     "OralMed-Premalignant-Malignancy": {
-        "title_th": "รอยโรคก่อนมะเร็ง (OPMDs) มะเร็งช่องปาก และการตรวจชิ้นเนื้อ",
-        "title_en": "Oral Potentially Malignant Disorders (Leukoplakia, Erythroplakia, OLP) & OSCC",
+        "title_th": "รอยโรคก่อนมะเร็ง (OPMDs) มะเร็งเยื่อบุช่องปาก (OSCC) และการตรวจชิ้นเนื้อ",
+        "title_en": "Oral Potentially Malignant Disorders (WHO 2020/2021) & OSCC",
     },
     "OralMed-Oral-Radiology-Physics": {
-        "title_th": "ฟิสิกส์รังสีวิทยาช่องปาก การควบคุมคุณภาพภาพ และการป้องกันอันตรายจากรังสี",
-        "title_en": "Oral Radiology Physics, Projection Geometry (SLOB Rule) & Radiation Dosimetry",
+        "title_th": "ฟิสิกส์รังสีวิทยาช่องปาก คุณภาพภาพ SLOB และแนวทางความปลอดภัย (ADA 2024 / ICRP)",
+        "title_en": "Oral Radiology Physics, Projection Geometry (SLOB Rule) & Radiation Safety",
     },
     "OralMed-Vesiculobullous-Ulcers": {
         "title_th": "รอยโรคแผลถลอกและตุ่มพองจากภูมิคุ้มกันและการติดเชื้อไวรัสในช่องปาก",
@@ -416,8 +416,8 @@ CANONICAL_TEXTBOOKS = [
             "ตำราศัลยศาสตร์ช่องปากและแม็กซิลโลเฟเชียล คณะทันตแพทยศาสตร์ จุฬาฯ / มหิดล / ขอนแก่น / สงขลานครินทร์"
         ],
         "thai_protocol_highlights": [
-            "โปรโตคอลถอนฟันผู้ป่วยรับประทาน Warfarin ในโรงพยาบาลไทย: เจาะตรวจ INR ภายใน 24–72 ชม. หาก INR ≤ 3.0–3.5 สามารถถอนฟันไม่ซับซ้อน (1–3 ซี่) ได้โดยไม่ต้องหยุดยา Warfarin ร่วมกับการห้ามเลือดเฉพาะที่: ใส่ Gelfoam/Surgicel + เย็บแผล Figure-of-eight + อมบ้วนปากด้วย 5% Tranexamic acid mouthwash ครั้งละ 10 mL นาน 2 นาที วันละ 4 ครั้ง นาน 2–5 วัน",
-            "ผู้ป่วยที่ได้รับ Dual Antiplatelet Therapy (Aspirin + Clopidogrel) หลังใส่ขดลวดหัวใจ (Coronary Stent): ห้ามหยุดยาเองเด็ดขาด และควรชะลอหัตถการศัลยกรรมที่ไม่ฉุกเฉินในช่วง 6–12 เดือนแรกหลังใส่ Drug-eluting stent",
+            "โปรโตคอลถอนฟันผู้ป่วยรับประทานยาต้านการแข็งตัวของเลือด (TAOMS & SDCEP 2022): Warfarin เจาะตรวจ INR ภายใน 24–72 ชม. หาก INR ≤ 3.5 (SDCEP ยอมรับถึง < 4.0) ถอนฟันไม่ซับซ้อน (1–3 ซี่) ได้โดยไม่ต้องหยุดยา + Local hemostasis (Gelfoam/Surgicel + Figure-of-eight + 5% Tranexamic acid MW qid 2–5 วัน); สำหรับ DOACs ในหัตถการเสี่ยงเลือดออกสูง ให้งดมื้อเช้า (Apixaban/Dabigatran) หรือเลื่อนมื้อเช้า ≥ 4 ชม. หลังห้ามเลือด (Rivaroxaban/Edoxaban)",
+            "ผู้ป่วยที่ได้รับ Dual Antiplatelet Therapy (Aspirin + Clopidogrel) หลังใส่ขดลวดหัวใจ (Coronary Stent): ห้ามหยุดยาเองเด็ดขาด และควรชะลอหัตถการศัลยกรรมที่ไม่ฉุกเฉินในช่วง 6–12 เดือนแรกหลังใส่ Drug-eluting stent; ส่วน AHA 2021 IE Prophylaxis ยกเลิกการใช้ Clindamycin แล้ว ให้ใช้ Amoxicillin 2 g PO หรือในผู้แพ้ Penicillin ให้ Cephalexin 2 g PO / Azithromycin 500 mg / Doxycycline 100 mg",
             "การจำแนกฟันคุดและการส่งต่อผู้ป่วยติดเชื้อ Ludwig's angina / Deep neck infection ในระบบบริการสุขภาพไทย เน้นการประเมินทางเดินหายใจ (Airway patency: Stridor, Dysphagia, Trismus, ยกลิ้นตึง) เป็นอันดับแรกก่อนส่งห้องฉุกเฉิน รพ.ศูนย์/รพ.ทั่วไป"
         ]
     },
@@ -436,9 +436,9 @@ CANONICAL_TEXTBOOKS = [
             "Malamed's Handbook of Local Anesthesia (7th ed.) & Medical Emergencies in the Dental Office (8th ed.)"
         ],
         "thai_protocol_highlights": [
-            "มาตรฐานการคำนวณยาชาในข้อสอบใบประกอบวิชาชีพไทย (ศ.ท.ส.): หากโจทย์ไม่ระบุปริมาตรหลอดยาชา ให้ใช้ปริมาตรมาตรฐานในประเทศไทยคือ 1.8 mL/หลอด (Cartridge) เสมอ (2% Lidocaine = 36 mg/หลอด, Epinephrine 1:100,000 = 0.018 mg/หลอด; ยกเว้นโจทย์ระบุ 1.7 mL)",
-            "เกณฑ์ขนาดยาชาสูงสุด (MRD) ที่ใช้เป็นมาตรฐานในข้อสอบไทย: 2% Lidocaine = 4.4 mg/kg (สูงสุดไม่เกิน 300 mg ตามเกณฑ์ Malamed หรือ 7.0 mg/kg ไม่เกิน 500 mg ตาม FDA — ในข้อสอบไทยเน้นตัวเลข 4.4 mg/kg ของ Malamed ในการคำนวณความปลอดภัยโดยเฉพาะในเด็ก), 3% Mepivacaine = 4.4 mg/kg (สูงสุด 300 mg), 4% Articaine = 7.0 mg/kg",
-            "การจัดการ Anaphylaxis เฉียบพลันในคลินิกทันตกรรมไทย: ฉีด Epinephrine 1:1,000 (1 mg/mL) เข้ากล้ามเนื้อต้นขาด้านนอก (IM Vastus lateralis) ขนาดผู้ใหญ่ 0.3–0.5 mg (เด็ก 0.01 mg/kg สูงสุดไม่เกิน 0.3 mg) ซ้ำได้ทุก 5–15 นาที ร่วมกับโทรแจ้งสายด่วนการแพทย์ฉุกเฉิน 1669"
+            "มาตรฐานการคำนวณยาชาในไทย (1.8 mL/หลอด): 2% Lidocaine = 36 mg/หลอด, 3% Mepivacaine = 54 mg/หลอด, 4% Articaine = 72 mg/หลอด, Epinephrine 1:100,000 = 0.018 mg/หลอด (AHA Cardiac limit = 0.04 mg หรือไม่เกิน 2 หลอด)",
+            "เกณฑ์ขนาดยาชาสูงสุด (MRD) ตาม Malamed 7th ed. (2020) vs เกณฑ์อนุรักษ์ในเด็ก (AAPD/ข้อสอบไทย): Lidocaine w/ Epi = 7.0 mg/kg max 500 mg (Plain & AAPD เด็ก = 4.4 mg/kg max 300 mg), Mepivacaine = 6.6 mg/kg max 400 mg (AAPD/ข้อสอบเด็ก = 4.4 mg/kg max 300 mg), Articaine = 7.0 mg/kg (max 500 mg), Bupivacaine = 2.0 mg/kg (max 90 mg)",
+            "ภาวะฉุกเฉินในคลินิก (AHA BLS 2020/2025 & Malamed): Anaphylaxis ➔ Epinephrine 1:1,000 (0.3–0.5 mg IM Vastus lateralis) + 1669 | Hypoglycemia หมดสติ ➔ IV 50% Dextrose 50 mL | Cardiac arrest ➔ Chest compression ลึก 5–6 cm อัตรา 100–120/นาที ปล่อยอกสุด"
         ]
     },
     {
@@ -475,13 +475,16 @@ CANONICAL_TEXTBOOKS = [
         "thai_association": "สมาคมทันตกรรมหัตถการแห่งประเทศไทย (Thai Operative Dentistry Society — TODS) & กรมอนามัย กระทรวงสาธารณสุข",
         "thai_references": [
             "แนวทางเวชปฏิบัติทางทันตกรรมหัตถการและการจัดการโรคฟันผุเชิงอนุรักษ์ สมาคมทันตกรรมหัตถการแห่งประเทศไทย (TODS)",
-            "แนวทางการลดการใช้วัสดุอมัลกัมทางทันตกรรมตามอนุสัญญามินามาตะว่าด้วยปรอท สำนักทันตสาธารณสุข กรมอนามัย และทันตแพทยสภา",
+            "ADA Evidence-Based Clinical Practice Guidelines: Nonrestorative (2018) & Restorative Treatments for Carious Lesions (2023)",
+            "ESE Position Statement: Management of deep caries and the exposed pulp (IEJ 2019) & ICCMS™ Radiographic Criteria (RA1–RC6)",
+            "แนวทางการลดการใช้วัสดุอมัลกัมตามอนุสัญญามินามาตะว่าด้วยปรอท (COP-5 2023 / Phase-out 2034) สำนักทันตสาธารณสุข กรมอนามัย และทันตแพทยสภา",
             "ตำราทันตกรรมหัตถการและทันตวัสดุศาสตร์ คณะทันตแพทยศาสตร์ จุฬาฯ / มหิดล / เชียงใหม่ / ขอนแก่น"
         ],
         "thai_protocol_highlights": [
-            "แนวทาง Minimal Intervention Dentistry (MID) ของสมาคมทันตกรรมหัตถการแห่งประเทศไทย: ในฟันที่มีรอยผุลึกใกล้โพรงประสาทฟันและพัลพ์ปกติ/Reversible pulpitis แนะนำ Selective Caries Removal to Soft/Firm Dentin บริเวณผนังใกล้พัลพ์ (Pulpal/Axial wall) แต่ต้องกำจัดรอยผุให้ถึง Sound enamel/Hard dentin บริเวณขอบรอบนอก (Peripheral seal zone 1.5–2 mm)",
-            "เกณฑ์การปกป้องโพรงประสาทฟันตาม Remaining Dentin Thickness (RDT): หาก RDT ≥ 2.0 mm ไม่จำเป็นต้องใส่ Liner/Base ใต้เรซินคอมโพสิต; หาก RDT < 0.5 mm และใกล้ทะลุพัลพ์ ให้แต้มเฉพาะจุดด้วย Calcium Hydroxide หรือ Calcium Silicate Cement แล้วทับด้วย RMGIC liner",
-            "แนวทางอนุสัญญามินามาตะในประเทศไทย (กรมอนามัย & ทันตแพทยสภา): ให้หลีกเลี่ยงการใช้วัสดุอมัลกัมในการบูรณะฟันน้ำนม, เด็กอายุต่ำกว่า 15 ปี, หญิงตั้งครรภ์ และหญิงให้นมบุตร ยกเว้นมีข้อบ่งชี้ทางคลินิกที่จำเป็น"
+            "แนวทาง Minimal Intervention Dentistry (ADA 2023 / ESE 2019 / TODS): ในฟันแท้ที่ยังมีชีวิตและมีรอยผุลึกใกล้โพรงประสาทฟัน แนะนำ 1-Step Selective Carious Tissue Removal (กรอขอบรอบนอก Peripheral 1.5–2 mm ถึง Hard dentin สนิท แต่คง Soft/Firm dentin เหนือพัลพ์และอุดปิดถาวรในครั้งเดียว) เหนือกว่า Stepwise excavation และ Complete removal; หากทะลุพัลพ์เล็ก (<1 mm) และห้ามเลือดได้ ใช้ Calcium Silicate (MTA / Biodentine) ตาม ESE 2019 (Ca(OH)2 เป็นแนวทางดั้งเดิมในข้อสอบเก่า)",
+            "การจัดการแบบ Non-operative (ADA 2018) & ICCMS ภาพรังสี: รหัสภาพรังสี RA1 = outer 1/2 enamel, RA2 = inner 1/2 enamel (± DEJ), RA3 = outer 1/3 dentin, RB4 = middle 1/3 dentin, RC5 = inner 1/3 dentin; สำหรับ Root caries ในผู้ใหญ่แนะนำ 5,000 ppm NaF ใช้ที่บ้าน, หรือทา 5% NaF varnish / 38% SDF ± KI ในคลินิก",
+            "เกณฑ์ Remaining Dentin Thickness (RDT): RDT ≥ 2.0 mm ไม่ต้องใส่ Liner/Base ใต้เรซินคอมโพสิต; RDT 0.5–<2.0 mm รอง RMGIC ใต้ Amalgam หรือจุดลึกใต้ Composite; RDT < 0.5 mm วาง Bioceramic/Ca(OH)2 เฉพาะจุดแล้วทับ RMGIC",
+            "แนวทางอนุสัญญามินามาตะ (COP-5 2023 / COP-6 & กรมอนามัย): หลีกเลี่ยงอะมัลกัมในฟันน้ำนม, เด็กอายุ < 15 ปี, หญิงตั้งครรภ์ และหญิงให้นมบุตร และเตรียมเลิกผลิต/นำเข้า dental amalgam ทั่วโลกภายในปี 2034"
         ]
     },
     {

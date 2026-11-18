@@ -31,17 +31,17 @@ PATHWAYS_PART2: Dict[str, List[Dict[str, Any]]] = {
             "id": "pros-implant-osseointegration-pathway",
             "title": "Clinical Protocol: Dental Implant Spacing, Osseointegration & Peri-implant Biology",
             "pathway_type": "decision",
-            "subtitle": "3-2-1 Safety Distances, Primary Stability vs Secondary Stability & Platform Switching",
-            "reference": "Misch's Contemporary Implant Dentistry 4th ed. / ITI Treatment Guide",
+            "subtitle": "3-2-1 Safety Distances, Primary vs Secondary Stability & 7th ITI Consensus (2023) Prosthetic Selection",
+            "reference": "7th ITI Consensus Conference (Lisbon 2023) / Misch's Contemporary Implant Dentistry 4th ed.",
             "steps": [
-                _node(1, "วางแผนระยะปลอดภัยเชิงกายวิภาค (3D Positioning)", "Implant-Tooth ≥ 1.5 mm | Implant-Implant ≥ 3.0 mm | Apicocoronal ลึกจาก CEJ ข้างเคียง 3–4 mm", "เว้นระยะห่างด้าน Buccal bone thickness อย่างน้อย 1.5–2.0 mm และเหนือ Inferior Alveolar Nerve อย่างน้อย 2.0 mm เพื่อลด Bone loss และความเสี่ยงชา", "action"),
+                _node(1, "วางแผนระยะปลอดภัยเชิงกายวิภาค (3D Positioning)", "Implant-Tooth ≥ 1.5–2.0 mm | Implant-Implant ≥ 3.0 mm | Apicocoronal ลึกจาก CEJ ข้างเคียง 3–4 mm", "เว้นระยะห่างด้าน Buccal bone thickness อย่างน้อย 1.5–2.0 mm และเหนือ Inferior Alveolar Nerve / หน้าต่อ Mental foramen อย่างน้อย 2.0 mm เพื่อลด Bone loss และความเสี่ยงชา", "action"),
                 _node(2, "ประเมินเสถียรภาพและชีววิทยากระดูก (Osseointegration)", "Primary Stability (Mechanical interlocking ตอนฝัง) ➔ Secondary Stability (Biological bone remodeling)", "ช่วงสัปดาห์ที่ 2–4 เกิด Bone resorption ชั่วคราวทำให้ Total stability ต่ำสุด (Stability dip) ก่อนที่ Osteogenesis จะเพิ่มความแข็งแรง", "mechanism"),
-                _node(3, "เลือกการใส่ครอบและการรับแรง (Loading & Retention)", "ประเมิน Torque (> 35 Ncm), ISQ และความเสี่ยงแทรกซ้อน", "ตัดสินใจระหว่าง Screw-retained vs Cement-retained และจัดการ Biological complication", "decision", [
-                    {"condition": "มีข้อจำกัดระยะ Interarch space น้อย (< 4–5 mm) หรือต้องการถอดซ่อมบ่อย", "outcome": "Screw-retained Crown (ข้อดี: ไม่เสี่ยง Residual cement causing Peri-implantitis)", "color": "#10b981"},
-                    {"condition": "แนวรากเอียงออกด้าน Facial (ต้องแก้แกนด้วย Angled Abutment)", "outcome": "Cement-retained Crown + ใช้ Radiopaque ZOE/RMGIC ทาเฉพาะขอบในน้อยๆ + กำจัดส่วนเกินทุกด้าน", "color": "#38bdf8"},
-                    {"condition": "อักเสบรอบรากเทียม: เลือดออกตอน Probing (BOP+) แต่ Bone loss ยังไม่เกิด vs มี Bone loss", "outcome": "ไม่มี Bone loss = Peri-implant Mucositis (รักษาหายได้) | มี Marginal bone loss = Peri-implantitis", "color": "#ef4444"},
+                _node(3, "เลือกการใส่ครอบและวัสดุตาม 7th ITI Consensus (2023)", "ประเมิน Torque (> 35 Ncm), ISQ, ความหนาเหงือก และความเสี่ยงแทรกซ้อน", "ตัดสินใจระหว่าง Screw-retained (Ti-base) vs Cement-retained และเลือกวัสดุ Abutment/Crown", "decision", [
+                    {"condition": "มาตรฐานอันดับแรก หรือ Interarch space จำกัด (≥ 4–5 mm) / ต้องการถอดซ่อมได้", "outcome": "Screw-retained / Hybrid Crown บน Ti-base (ตัดความเสี่ยง Residual excess cement-induced peri-implantitis); ใช้ Monolithic Zirconia ในฟันหลังเพื่อลด Porcelain chipping", "color": "#10b981"},
+                    {"condition": "เขตความสวยงามด้านหน้าหรือเหงือกบาง (Thin mucosa < 2 mm)", "outcome": "ใช้ Zirconia abutment (บน Ti-base) ป้องกันสีเทาของ Titanium ทะลุเหงือก; หากจำเป็นต้องทำ Cement-retained ต้องวางขอบไม่ลึกเกิน 1.0–1.5 mm และกำจัดซีเมนต์ส่วนเกินหมดจด", "color": "#38bdf8"},
+                    {"condition": "อักเสบรอบรากเทียม: เลือดออกตอน Probing (BOP+) แต่ Bone loss ยังไม่เกิด vs มี Bone loss", "outcome": "ไม่มี Bone loss = Peri-implant Mucositis (รักษาหายกลับคืนได้) | มี Progressive marginal bone loss = Peri-implantitis", "color": "#ef4444"},
                 ]),
-                _node(4, "Implant Protective Occlusion", "ลดขนาด Occlusal table, Cusp slope ราบลง, Axial loading ไม่มี Non-working interference", "รากเทียมไม่มี PDL (ไม่มี Proprioception และไม่ยุบตัวในเบ้ากระดูกเหมือนฟันธรรมชาติ ~28 µm vs 3–5 µm) จึงต้องปรับ Light contact", "outcome"),
+                _node(4, "Implant-Protected Occlusion (Misch)", "ลดขนาด Occlusal table, Cusp slope ราบลง, Axial loading ไม่มี Working/Non-working interference", "รากเทียมไม่มี PDL (ไม่มี Proprioception และขยับในแนวดิ่งเพียง 3–5 µm เทียบกับฟันธรรมชาติ 25–100 µm) จึงตั้งสบให้แตะเบาตอนกัดเบา (Shimstock ลอดได้) และแตะพร้อมกันตอนกัดเต็มแรง", "outcome"),
             ],
         }
     ],
@@ -51,15 +51,15 @@ PATHWAYS_PART2: Dict[str, List[Dict[str, Any]]] = {
             "title": "Biomechanics & Design Pathway: Kennedy Class I/II Distal Extension RPD",
             "pathway_type": "decision",
             "subtitle": "Dual Support System (Tooth + Mucosa) ➔ Mesial Rest + RPI/RPA Clasp & Indirect Retainer Fulcrum",
-            "reference": "McCracken's Removable Partial Prosthodontics 13th ed. / Phoenix Stewart's Clinical Removable Partial Prosthodontics",
+            "reference": "McCracken's Removable Partial Prosthodontics 14th ed. / Phoenix & Stewart's Clinical RPD",
             "steps": [
                 _node(1, "ความท้าทายหลัก (Differential Compressibility)", "ฟันธรรมชาติยุบตัวใน PDL (~0.02–0.1 mm) vs สันเหงือกยุบตัวได้มาก (~0.4–2.0 mm)", "เมื่อเคี้ยวด้านท้ายอิสระ (Distal extension base) ฟันเทียมจะกระดกหมุนรอบ Fulcrum line ที่พาดผ่าน Principal occlusal rests", "trigger"),
                 _node(2, "เลือก Direct Retainer เพื่อลด Torque บนฟันหลัก", "ย้าย Occlusal Rest มาด้าน Mesial เพื่อเปลี่ยนคานงัดอันตราย", "การวาง Rest ด้าน Distal จะดึงฟันหลักล้มไปด้านหลัง (Distal tipping torque) ในขณะที่ Mesial rest เปลี่ยนจุดหมุนให้แขน Clasp ปลดล็อกออกจาก Undercut", "decision", [
-                    {"condition": "Vestibule ลึกเพียงพอ (> 4 mm) และไม่มี Tissue undercut รุนแรง", "outcome": "ใช้ RPI System (Mesial Rest + Distolingual/Distoproximal Guide Plate + I-bar): เมื่อฐานกดลง I-bar จะเคลื่อนลงล่าง-หน้าพ้น Undercut", "color": "#10b981"},
-                    {"condition": "Vestibule ตื้น / มี Soft tissue undercut มาก / Frenum สูง", "outcome": "ใช้ RPA System (Mesial Rest + Proximal Plate + Akers/Wrought-wire clasp) หรือใช้ Stress-releasing Cast/Wrought Clasp", "color": "#38bdf8"},
+                    {"condition": "Vestibule ลึกเพียงพอ (> 5 mm) และไม่มี Tissue undercut รุนแรง", "outcome": "ใช้ RPI System (Mesial Rest + Distal Guide Plate + I-bar เข้า 0.01\" undercut ที่ Mid-buccal/Mesiobuccal): เมื่อฐานกดลง I-bar จะเคลื่อนลงล่าง-หน้าพ้น Undercut", "color": "#10b981"},
+                    {"condition": "Vestibule ตื้น / มี Soft tissue undercut มาก / Frenum เกาะสูง", "outcome": "ใช้ RPA System (Mesial Rest + Proximal Plate + Akers clasp) หรือ Combination Clasp (Wrought-wire retentive arm 0.02\" + Cast reciprocal arm)", "color": "#38bdf8"},
                 ]),
-                _node(3, "เพิ่มการต้านแรงกระดก (Indirect Retainer)", "วาง Rest เสริมบนฟันหน้า/ฟันกรามน้อย (เช่น Cingulum rest บนเขี้ยว) ด้านตรงข้ามของ Fulcrum line", "วางห่างจากแกน Fulcrum line ตั้งฉากมากที่สุด เพื่อป้องกันฐานฟันเทียมท้ายอิสระยกตัวเมื่อกินอาหารเหนียว", "action"),
-                _node(4, "Major Connector & Altered Cast Technique", "ล่าง: Lingual Bar (ต้องมีพื้นที่ ≥ 8 mm จาก FGM ถึง Floor of mouth) หรือ Lingual Plate (< 8 mm) | บน: AP Palatal Strap/Full Palate", "ใช้วิธี Altered Cast Impression กดสันเหงือกในภาวะ Functional form ลดการกระดกของฐานท้ายอิสระ", "outcome"),
+                _node(3, "เพิ่มการต้านแรงกระดก (Indirect Retainer)", "วาง Rest เสริมบนฟันหน้า/ฟันกรามน้อย (เช่น Cingulum rest บนเขี้ยวบน หรือ Mesial occlusal rest บน PM1 ล่าง) ด้านหน้าต่อ Fulcrum line", "วางห่างจากแกน Fulcrum line ตั้งฉากมากที่สุด เพื่อป้องกันฐานฟันเทียมท้ายอิสระยกตัวเมื่อเคี้ยวอาหารเหนียว", "action"),
+                _node(4, "Major Connector & Altered Cast Technique", "ล่าง: วัดจากขอบเหงือกอิสระ (Marginal gingiva) ถึงพื้นปาก/Frenum — ถ้า ≥ 7–8 mm ใช้ Lingual Bar (4 mm bar + 3–4 mm clearance); ถ้า < 7–8 mm (เช่น 6 mm) หรือมี Lingual tori ต้องใช้ Lingual Plate", "ใช้วิธี Altered Cast Impression ใน Mandibular Kennedy Class I/II เพื่อบันทึกสันเหงือกในภาวะรับแรงร่วมกับโครงโลหะ ลดการกระดกของฐานท้ายอิสระ", "outcome"),
             ],
         }
     ],
@@ -69,16 +69,16 @@ PATHWAYS_PART2: Dict[str, List[Dict[str, Any]]] = {
             "title": "Design Decision Tree: Pontic Selection & Hygienic Tissue Contouring",
             "pathway_type": "decision",
             "subtitle": "Esthetic Zone (Modified Ridge Lap / Ovate) vs Posterior Non-Esthetic (Sanitary / Hygienic) & Ante's Law",
-            "reference": "Shillingburg 4th ed. / Rosenstiel Contemporary Fixed Prosthodontics",
+            "reference": "Rosenstiel's Contemporary Fixed Prosthodontics 6th ed. (2022) / Shillingburg 4th ed.",
             "steps": [
-                _node(1, "ประเมินฟันหลัก (Ante's Law & Crown-Root Ratio)", "ผลรวมพื้นที่ PDL ของฟันหลัก ≥ พื้นที่ PDL ของฟันที่หายไป + Crown-Root ratio ดีที่สุด ≤ 1:1.5 (Ideal 1:2)", "ตรวจสอบรูปร่างรากฟัน (รากแผ่แบน/หลายรากดีกว่ารากเรียวกลม) และการเรียงตัวของสันเหงือก", "action"),
-                _node(2, "เลือกแบบ Pontic ตามตำแหน่งและความสำคัญด้านความงาม", "ชั่งน้ำหนักระหว่างความสวยงาม กับการทำความสะอาดได้ง่ายด้วยไหมขัดฟัน (Superfloss)", "เลือกแบบสัมผัสสันเหงือกแบบ Zero pressure (Passive pinpoint/convex contact)", "decision", [
-                    {"condition": "ฟันหน้าบน/ล่าง ที่ต้องการความสวยงามสูง และสันเหงือกยังสมบูรณ์", "outcome": "Modified Ridge Lap Pontic (แตะเหงือกเฉพาะด้าน Buccal แบบ Convex ไม่กดทับ ด้าน Lingual โค้งมนทำความสะอาดได้)", "color": "#10b981"},
-                    {"condition": "ต้องการความสวยงามสูงสุดหลังถอนฟันทันที (Immediate Extraction Site)", "outcome": "Ovate Pontic (ปลายโค้งมนจมในเบ้า/เหงือกที่เตรียมไว้ ดูเหมือนงอกจากเหงือกจริง ต้องดูแลความสะอาดสูง)", "color": "#38bdf8"},
-                    {"condition": "ฟันหลังล่างที่ไม่เห็นเวลาพูด/ยิ้ม (Non-esthetic zone)", "outcome": "Sanitary / Hygienic Pontic (ลอยพ้นสันเหงือก ≥ 2 mm รูปโค้งปลาวาฬ/Bullet ทำความสะอาดง่ายสุด)", "color": "#f59e0b"},
-                    {"condition": "Ridge Lap / Saddle Pontic แบบเว้าโอบสันเหงือกทั้ง 2 ด้าน", "outcome": "ข้อห้าม (Contraindicated): กักเศษอาหาร ทำความสะอาดไม่ได้ เหงือกอักเสบเรื้อรัง", "color": "#ef4444"},
+                _node(1, "ประเมินฟันหลัก (Ante's Law, Span Length & Pier Abutment)", "ผลรวมพื้นที่ผิวรากในกระดูก (PDL area) ของฟันหลัก ≥ ฟันที่หายไป + Crown-Root ratio อุดมคติ 1:2 (ขั้นต่ำที่ยอมรับได้ 1:1)", "การโก่งตัวของสะพานฟันแปรผันตามกำลังสามของความยาวช่วง (L³); หากมี Pier abutment (เช่น ซี่ 15 คั่นช่องว่าง 14 และ 16) ต้องวาง Non-rigid connector (Keyway) ที่ด้าน Distal ของ Pier abutment", "action"),
+                _node(2, "เลือกแบบ Pontic ตามตำแหน่งและความสำคัญด้านความงาม", "ชั่งน้ำหนักระหว่างความสวยงาม กับการทำความสะอาดได้ง่ายด้วยไหมขัดฟัน (Superfloss)", "เลือกแบบสัมผัสสันเหงือกแบบ Zero pressure (Passive convex contact)", "decision", [
+                    {"condition": "ฟันหน้าบน/ล่าง ที่ต้องการความสวยงามสูง และสันเหงือกยังสมบูรณ์", "outcome": "Modified Ridge Lap Pontic (แตะเหงือกเฉพาะด้าน Labial/Buccal เป็นรูปตัว T หรือโค้งนูน ด้าน Lingual เปิดโล่งทำความสะอาดง่าย)", "color": "#10b981"},
+                    {"condition": "ต้องการความสวยงามสูงสุดหลังถอนฟันทันที หรือสันเหงือกหน้าบนหนาดี", "outcome": "Ovate Pontic (ผิวใต้ฐานโค้งนูนจมในแอ่ง Socket/สันเหงือก ดูเหมือนงอกจากเหงือกจริงและพยุง Interdental papilla)", "color": "#38bdf8"},
+                    {"condition": "ฟันกรามล่างที่ไม่เห็นเวลาพูด/ยิ้ม (Non-esthetic zone)", "outcome": "Sanitary / Hygienic Pontic (ลอยพ้นสันเหงือก ≥ 2–3 mm ผิวใต้ฐานโค้งนูนทุกทิศทาง ทำความสะอาดง่ายสุด); หากสันเหงือกล่างบางคมใช้ Conical (Bullet) Pontic", "color": "#f59e0b"},
+                    {"condition": "Full Ridge Lap / Saddle Pontic แบบเว้าคร่อมสันเหงือกทั้ง 2 ด้าน", "outcome": "ข้อห้าม (Contraindicated): กักเศษอาหาร Superfloss ลอดผ่านไม่ได้ เหงือกอักเสบเรื้อรัง", "color": "#ef4444"},
                 ]),
-                _node(3, "Connector Design & Stress Concentration", "ออกแบบ Connector สูง-กว้างเหมาะสม (All-ceramic Zirconia/Lithium disilicate ต้องการความหนาสูงกว่า PFM)", "เปิด Embrasure ด้านเหงือกกว้างพอให้แปรงซอกฟันและไหมขัดฟันลอดผ่านได้โดยไม่กด Interdental papilla", "outcome"),
+                _node(3, "Connector Design & Stress Concentration", "ออกแบบความสูงของ Connector ให้เพียงพอ (การโก่งตัวแปรผกผันกับกำลังสามของความสูง: 1/H³; เซรามิกล้วนต้องการพื้นที่หน้าตัดใหญ่กว่าโลหะ)", "เปิด Embrasure ด้านเหงือกพอให้แปรงซอกฟันและ Superfloss ลอดผ่านได้โดยไม่กดทับ Interdental papilla", "outcome"),
             ],
         }
     ],
@@ -87,17 +87,17 @@ PATHWAYS_PART2: Dict[str, List[Dict[str, Any]]] = {
             "id": "pros-post-core-cementation-pathway",
             "title": "Decision Pathway: Post & Core Restoration (Ferrule Effect) + Luting Cement Selection",
             "pathway_type": "decision",
-            "subtitle": "ประเมิน Coronal Structure & Ferrule ≥ 1.5–2.0 mm ➔ Cast vs Fiber Post & Conventional vs Adhesive Cement",
-            "reference": "Shillingburg 4th ed. / Gutmann / Rosenstiel Fixed Prosthodontics",
+            "subtitle": "ประเมิน Coronal Structure & Ferrule ≥ 1.5–2.0 mm ➔ Cast vs Fiber Post & Surface Conditioning by Material",
+            "reference": "Rosenstiel's Contemporary Fixed Prosthodontics 6th ed. (2022) / Shillingburg 4th ed.",
             "steps": [
-                _node(1, "เช็กความจำเป็นของการใส่เดือยฟัน (Post Indication)", "เดือยฟันมีไว้เพื่อ ‘ยึดแกนฟัน (Core Retention)’ ไม่ใช่เพื่อ ‘เสริมความแข็งแรงให้รากฟัน’", "ฟันหลังที่รักษารากฟันและยังเหลือผนังฟันเพียงพอใช้ Core buildup + Onlay/Crown โดยไม่ต้องใส่ Post เพื่อป้องกันรากแตก", "trigger"),
-                _node(2, "เงื่อนไขสำคัญที่สุด: Ferrule Effect & ความยาวราก", "ต้องเหลือเนื้อฟันธรรมชาติล้อมรอบขอบเหงือกสูง ≥ 1.5–2.0 mm หนา ≥ 1.0 mm + เหลือ Apical GP Seal ≥ 4–5 mm", "ความยาวเดือย: อย่างน้อย ≥ 2/3 ของความยาวราก หรือ ≥ ความยาวครอบฟัน และหนา ≤ 1/3 ของเส้นผ่านศูนย์กลางราก", "action"),
-                _node(3, "เลือกชนิดเดือยฟันและวัสดุซีเมนต์ยึดครอบ", "เปรียบเทียบ Elastic Modulus กับเนื้อฟัน และชนิดขอบ/วัสดุครอบ", "จับคู่ Post + Luting Agent ให้ถูกหลักกลศาสตร์และเคมี", "decision", [
-                    {"condition": "คลองรากกลม ผนังหนา เหลือ Ferrule ดี ต้องการความงาม + ลดเสี่ยง VRF", "outcome": "Fiber Post (Elastic modulus ใกล้เคียง Dentin ~20 GPa) + Core Composite + ยึดด้วย Resin Cement", "color": "#10b981"},
-                    {"condition": "คลองรากรูปวงรี/ใหญ่ หรือฟันเหลือเนื้อฟันน้อยมาก (ต้องการ Anti-rotation)", "outcome": "Custom Cast Post & Core (Alloy) + ยึดด้วย RMGIC / Zinc Phosphate / Self-adhesive Resin Cement", "color": "#38bdf8"},
-                    {"condition": "ครอบ Glass-ceramic (เช่น Lithium Disilicate E.max) vs Zirconia / PFM", "outcome": "E.max ใช้ Hydrofluoric Acid Etch + Silane + Resin Cement | Zirconia พ่นทราย Al2O3 + MDP Primer (ไม่กัด HF)", "color": "#ec4899"},
+                _node(1, "เช็กความจำเป็นของการใส่เดือยฟัน (Post Indication)", "เดือยฟันมีไว้เพื่อ ‘ยึดแกนฟัน (Core Retention)’ เท่านั้น ไม่ได้ช่วยเสริมความแข็งแรงให้รากฟัน", "ฟันกรามที่รักษารากฟันและยังเหลือผนังฟันเพียงพอใช้ห้องโพรงประสาทฟันยึดแกนฟัน (Nayyar core) + ทำ Cuspal coverage (Onlay/Crown); หากต้องใส่เดือยในฟันกรามล่างให้ใส่ในคลองราก Distal (ระวัง Danger zone ด้าน Distal ของราก Mesial)", "trigger"),
+                _node(2, "เงื่อนไขสำคัญที่สุด: Ferrule Effect & ความยาวราก", "ต้องเหลือเนื้อฟันธรรมชาติล้อมรอบเหนือขอบครอบฟันสูง ≥ 1.5–2.0 mm หนา ≥ 1.0 mm + เหลือ Apical GP Seal ≥ 4–5 mm", "ความยาวเดือย: อย่างน้อย ≥ 2/3 ของความยาวรากในกระดูก หรือ ≥ ความสูงตัวฟัน และกว้าง ≤ 1/3 ของเส้นผ่านศูนย์กลางราก", "action"),
+                _node(3, "เลือกชนิดเดือยฟันและเตรียมผิวชิ้นงานก่อนยึดซีเมนต์", "เปรียบเทียบ Elastic Modulus กับเนื้อฟัน และเตรียมผิวด้านในชิ้นงานตามประเภทวัสดุ", "จับคู่ Post + Surface Treatment + Luting Agent ให้ถูกหลักกลศาสตร์และเคมี", "decision", [
+                    {"condition": "ฟันหน้าหรือฟันกรามน้อยที่ต้องการความสวยงาม (คู่กับ All-ceramic / Zirconia crown) + ลดเสี่ยงรากแตก", "outcome": "Prefabricated Fiber Post (Elastic modulus ~18–20 GPa ใกล้เคียง Dentin ~18 GPa) + Resin Core + ยึดด้วย Adhesive/Self-adhesive Resin Cement", "color": "#10b981"},
+                    {"condition": "Silica-based Glass Ceramic (Feldspathic, Leucite, Lithium Disilicate e.max)", "outcome": "กัดด้วยกรด 5%–9.5% Hydrofluoric Acid (HF) + ทา Silane coupling agent + ยึดด้วย Adhesive Resin Cement", "color": "#ec4899"},
+                    {"condition": "Polycrystalline Zirconia / Base Metal vs Noble Gold Alloy", "outcome": "Zirconia & Base Metal: พ่นทราย 50 µm Al2O3 + ทา 10-MDP primer (ห้ามกัด HF!) | Noble/Gold Alloy: พ่นทราย Al2O3 / Tin-plating + ทา Sulfur/Thiol primer (เช่น VBATDT, MTU-6)", "color": "#38bdf8"},
                 ]),
-                _node(4, "คำเตือนการเตรียมและยึด Zirconia / Glass Ceramic", "ห้ามใช้น้ำยาล้าง PVS/Saliva ที่ปนเปื้อนฟอสเฟตบน Zirconia ก่อนทา MDP", "ทำความสะอาด Zirconia หลัง Try-in ด้วย Ivoclean หรือพ่นทรายเบาๆ เพราะฟอสเฟตในน้ำลายแย่งจับตำแหน่งออกไซด์ของ MDP", "warning"),
+                _node(4, "คำเตือนการทำความสะอาด Zirconia หลังลองในปาก (Try-in)", "ห้ามยึด Zirconia ทันทีหลังเปื้อนน้ำลายโดยไม่ขจัดหมู่ฟอสเฟต และห้ามล้างด้วย Phosphoric acid", "หมู่ฟอสเฟตในน้ำลายจะแย่งจับชั้นออกไซด์ของ Zirconia แทน 10-MDP — ต้องเช็ดด้วย Ivoclean, NaOCl หรือพ่นทราย Al2O3 เบาๆ หลังลองชิ้นงานเสร็จก่อนทา 10-MDP", "warning"),
             ],
         }
     ],
@@ -108,75 +108,76 @@ PATHWAYS_PART2: Dict[str, List[Dict[str, Any]]] = {
     "Pedia-Behavior-Guidance": [
         {
             "id": "pedia-behavior-management-pathway",
-            "title": "Clinical Escalation Pathway: Pediatric Behavior Guidance (Non-Pharmacologic to GA)",
+            "title": "Clinical Escalation Pathway: Pediatric Behavior Guidance (AAPD 2024) & Pharmacology (LA/AHA 2021)",
             "pathway_type": "decision",
-            "subtitle": "Frankl Behavior Rating Scale ➔ Basic Techniques (TSD/Distraction/Positive Reinforcement) ➔ Advanced (Protective Stabilization/Sedation/GA)",
-            "reference": "AAPD Guideline on Behavior Guidance for the Pediatric Dental Patient / ชมรมทันตกรรมสำหรับเด็กแห่งประเทศไทย",
+            "subtitle": "Frankl/Wright ➔ Basic (TSD/Distraction) ➔ Lacking Cooperative (<3 ปี ใช้ GA/Protective) • LA MRD 4.4 mg/kg • AHA 2021",
+            "reference": "AAPD Behavior Guidance & Local Anesthesia Guidelines (2024–2025) / AHA 2021 / TSPD",
             "steps": [
-                _node(1, "ประเมินพัฒนาการและระดับความร่วมมือ (Frankl Rating 1–4)", "ประเมินอายุ วุฒิภาวะทางอารมณ์ ประสบการณ์เดิม และความเร่งด่วนของการรักษา", "Frankl 1 (Definitely Negative) ➔ Frankl 4 (Definitely Positive)", "trigger"),
-                _node(2, "Basic Behavior Guidance (ด่านแรกในเด็กส่วนใหญ่)", "Tell-Show-Do (TSD), Ask-Tell-Ask, Voice Control, Positive Reinforcement, Distraction, Modeling", "TSD ใช้ได้ผลดีที่สุดในเด็กเล็กเพื่อลดความกลัวจากสิ่งที่ไม่คุ้นเคย (Fear of the unknown) โดยไม่ใช้คำขู่หรือคำหลอก", "action"),
-                _node(3, "กรณีไม่ร่วมมือรุนแรง หรือต้องทำหัตถการเร่งด่วน", "ประเมินสาเหตุ: ขาดทักษะร่วมมือ (Pre-cooperative < 3 ปี) / กลัวรุนแรง / Special Health Care Needs", "เลือกวิธีการขั้นสูงร่วมกับ Informed Consent เป็นลายลักษณ์อักษรจากผู้ปกครอง", "decision", [
-                    {"condition": "กังวลเล็กน้อย-ปานกลาง สื่อสารรู้เรื่อง หายใจทางจมูกปกติ", "outcome": "Nitrous Oxide/Oxygen Inhalation Sedation (ข้อห้าม: คัดจมูก/COPD/พึ่งผ่าตัดหูชั้นกลาง/ตั้งครรภ์ไตรมาสแรก)", "color": "#10b981"},
-                    {"condition": "ต้องป้องกันการขยับฉับพลันเพื่อความปลอดภัย (Emergency) + Consent ชัดเจน", "outcome": "Protective Stabilization (Papoose board/ผู้ปกครองช่วยกอด) เฉพาะเท่าที่จำเป็น ไม่ใช้เพื่อลงโทษ", "color": "#f59e0b"},
-                    {"condition": "เด็กเล็กมาก (ECC รุนแรงหลายซี่) / สื่อสารไม่ได้ / ต้องรักษาครบจบครั้งเดียว", "outcome": "Pharmacologic Sedation หรือ General Anesthesia (GA)", "color": "#38bdf8"},
+                _node(1, "ประเมินพัฒนาการและความร่วมมือ (Frankl 1–4 & Wright)", "Frankl 1(--) ถึง 4(++) และแยกเด็ก <3 ปี / สติปัญญาต่ำ = Lacking Cooperative Ability vs Potentially Cooperative", "เด็ก <3 ปี (Lacking Cooperative) สื่อสารเชิงเหตุผลไม่ได้ Voice control จึงไร้ผล/ห้ามใช้!", "trigger"),
+                _node(2, "Basic Behavior Guidance (ด่านแรกใน Potentially Cooperative)", "Tell-Show-Do (TSD), Ask-Tell-Ask, Voice Control (เฉพาะเด็ก ≥3 ปี), Positive Reinforcement, Distraction, Modeling", "TSD ลดความกลัวจากสิ่งที่ไม่รู้ (Fear of the unknown) โดยไม่หลอกเด็ก; หลีกเลี่ยง Parent absence หากเด็กเล็กกังวลแยกจากแม่", "action"),
+                _node(3, "Advanced Guidance & GA + ขนาดยาเด็กที่ปลอดภัย", "เลือกวิธีขั้นสูงพร้อม Written Informed Consent + คำนวณยาชา 2% Lidocaine/Mepivacaine 4.4 mg/kg, Articaine 7.0 mg/kg (>4 ปี)", "decision", [
+                    {"condition": "กังวลเล็กน้อย-ปานกลาง สื่อสารรู้เรื่อง หายใจทางจมูกปกติ", "outcome": "Nitrous Oxide/Oxygen Inhalation Sedation (หลังจบให้ 100% O₂ 3–5 นาทีกัน Diffusion hypoxia! ห้ามในคัดจมูก/COPD)", "color": "#10b981"},
+                    {"condition": "หัตถการเร่งด่วน/สั้น ต้องป้องกันการขยับฉับพลัน + Consent", "outcome": "Protective Stabilization (ระวัง Hypoxic Spell ในเด็ก Cyanotic CHD เช่น TOF!)", "color": "#f59e0b"},
+                    {"condition": "เด็กเล็ก <3 ปี (Lacking Cooperative) / S-ECC หลายซี่ / Cellulitis I&D", "outcome": "General Anesthesia (GA with ETT) เพื่อความปลอดภัยและรักษาครบจบครั้งเดียว", "color": "#38bdf8"},
                 ]),
-                _node(4, "จริยธรรมและกฎหมายในการคุมพฤติกรรม (Consent & Safety)", "ต้องอธิบายความเสี่ยงและขอ Informed Consent จากผู้ปกครองก่อนใช้ Voice control / Protective stabilization / Sedation เสมอ", "ห้ามใช้ HOME (Hand-Over-Mouth Exercise) ในปัจจุบันเพราะขัดต่อแนวทาง AAPD ล่าสุดและสิทธิเด็ก", "warning"),
+                _node(4, "AHA 2021 Pediatric IE Prophylaxis & จริยธรรม AAPD", "ให้เฉพาะ High-risk (TOF, Prosthetic valve, History of IE; Isolated ASD/Uncomplicated VSD ไม่ต้องให้!): Amoxicillin 50 mg/kg (max 2g); แพ้ PCN ใช้ Azithromycin 15 mg/kg หรือ Cephalexin 50 mg/kg (ถอด Clindamycin แล้ว!)", "ห้ามใช้ HOME (Hand-Over-Mouth Exercise) โดยเด็ดขาดเพราะขัดต่อแนวทาง AAPD 2024 และสิทธิเด็ก", "warning"),
             ],
         }
     ],
     "Pedia-Space-Maintenance": [
         {
             "id": "pedia-space-maintainer-pathway",
-            "title": "Decision Algorithm: การเลือก Space Maintainer หลังสูญเสียฟันน้ำนมก่อนกำหนด",
+            "title": "Decision Algorithm: การเลือก Space Maintainer, Lingual Eruption & Mixed Dentition",
             "pathway_type": "decision",
-            "subtitle": "ประเมิน Nolla Stage / ปริมาณกระดูกคลุมหน่อฟันถาวร ➔ Band & Loop / Distal Shoe / Lingual Arch / Nance",
-            "reference": "McDonald and Avery's Dentistry for the Child and Adolescent 11th ed. / AAPD Space Maintenance Guideline",
+            "subtitle": "ประเมิน Nolla Stage / กระดูกคลุม ➔ Band & Loop / Distal Shoe / LLHA / Nance + Lingual EruptionObserve",
+            "reference": "McDonald & Avery 11th ed. / AAPD Space Maintenance Guideline (2024–2025)",
             "steps": [
-                _node(1, "เช็กความจำเป็นของการใส่เครื่องมือกันช่องว่าง", "ถ่ายฟิล์ม Periapical ดูหน่อฟันถาวร (Permanent Successor)", "ดูว่ากระดูกที่คลุมด้าน Occlusal ของหน่อฟันถาวรละลายหายไปหมดแล้วหรือยัง และความยาวรากฟันถาวร", "trigger"),
-                _node(2, "เงื่อนไขที่ ‘ไม่ต้อง’ ใส่ Space Maintainer", "หน่อฟันถาวรสร้างราก ≥ 2/3 (Nolla stage ≥ 7) และไม่มีกระดูกคลุม หรือฟันถาวรกำลังโผล่พ้นเหงือก (< 6 เดือน)", "ข้อยกเว้น: หากสูญเสียฟันน้ำนมช้ากว่าปกติและหน่อถาวรเอียง/ขาดเนื้อที่มาก ให้ประเมิน Space Regainer แทน", "action"),
-                _node(3, "เลือกชนิด Space Maintainer ตามตำแหน่งที่หายและฟันที่ขึ้นมาแล้ว", "แยก Unilateral vs Bilateral และสถานะการขึ้นของ Permanent 1st Molar (ซี่ 6)", "เลือกอุปกรณ์ที่ตรงข้อบ่งชี้เฉพาะจุด", "decision", [
+                _node(1, "เช็กความจำเป็นของ Space Maintainer & Lingual Eruption", "ถ่าย PA ดูหน่อฟันถาวร; กรณีฟันตัดแท้ล่างขึ้นด้านลิ้น (31,41/32,42): หากฟันน้ำนมโยก 1°–2° ให้ Observe รอหลุดเอง (ถอนเฉพาะเมื่อฟันน้ำนมแน่นสนิททั้งที่ฟันแท้ขึ้น >1/2)", "ดูว่ากระดูกที่คลุมด้าน Occlusal ของหน่อฟันถาวรละลายหายไปหมดแล้วหรือยัง", "trigger"),
+                _node(2, "เงื่อนไขที่ ‘ไม่ต้อง’ ใส่ Space Maintainer", "หน่อฟันถาวรสร้างราก ≥ 2/3 (Nolla ≥ 7) และไม่มีกระดูกคลุม หรือฟันถาวรกำลังโผล่ (< 6 เดือน)", "ข้อยกเว้น: หากสูญเสียช่องว่างไปแล้วจนหน่อถาวรเอียงติด ต้องใส่ Space Regainer (เช่น Halterman)", "action"),
+                _node(3, "เลือกชนิด Space Maintainer ตามตำแหน่ง", "แยก Unilateral vs Bilateral และสถานะการขึ้นของซี่ 6", "เลือกอุปกรณ์ที่ตรงข้อบ่งชี้เฉพาะจุด", "decision", [
                     {"condition": "หายฟันกรามน้ำนมซี่ที่ 1 (D) ข้างเดียว และมีฟัน E ปกติ", "outcome": "Band and Loop (หรือ Crown and Loop หากฟัน E ผุใหญ่)", "color": "#10b981"},
-                    {"condition": "หายฟันกรามน้ำนมซี่ที่ 2 (E) ก่อนที่ Permanent 1st Molar (6) จะขึ้น", "outcome": "Distal Shoe Space Maintainer (ยื่นเข้าใต้เหงือกนำทาง Mesial surface ของซี่ 6 ไม่ให้ล้มมาข้างหน้า)", "color": "#f59e0b"},
+                    {"condition": "หายฟันกรามน้ำนมซี่ที่ 2 (E) ก่อนที่ซี่ 6 จะขึ้น", "outcome": "Distal Shoe Space Maintainer (ยื่นเข้าใต้เหงือกนำทาง Mesial surface ของซี่ 6)", "color": "#f59e0b"},
                     {"condition": "ฟันล่าง: หาย 2 ข้าง (Bilateral) + ฟันหน้าถาวรล่างขึ้นครบแล้ว", "outcome": "Lower Lingual Holding Arch (LLHA) ใช้เฉพาะเมื่อ Mandibular Permanent Incisors ขึ้นแล้วเท่านั้น!", "color": "#38bdf8"},
                     {"condition": "ฟันบน: หาย 2 ข้าง (Bilateral) ในช่วง Mixed dentition", "outcome": "Nance Holding Arch (ปุ่มอะคริลิกยันเพดานหน้า) หรือ Transpalatal Arch (TPA)", "color": "#ec4899"},
                 ]),
-                _node(4, "ข้อควรระวังพิเศษของ Distal Shoe & LLHA", "ห้ามใส่ Distal Shoe ในเด็กที่มีภาวะหัวใจพิการเสี่ยง IE / ภูมิคุ้มกันบกพร่อง / เบาหวานคุมไม่ได้", "เนื่องจากใบมีดโลหะทะลุเยื่อบุเหงือกสร้างทางเชื่อมเรื้อรัง และห้ามใส่ LLHA ก่อนฟันตัดล่างขึ้นเพราะจะขวางการขึ้นของ Lingual buds", "warning"),
+                _node(4, "ข้อควรระวังพิเศษของ Distal Shoe & LLHA", "ห้ามใส่ Distal Shoe ในเด็ก Hemophilia / หัวใจพิการเสี่ยง IE / ภูมิคุ้มกันต่ำ / เบาหวานคุมไม่ได้", "เนื่องจากใบมีดโลหะทะลุเยื่อบุสร้างแผลเรื้อรัง (ทำ Pulpectomy เก็บซี่ E แทนใน Hemophilia!)", "warning"),
             ],
         }
     ],
     "Pedia-Restorative-Techniques": [
         {
             "id": "pedia-hall-ssc-pulp-pathway",
-            "title": "Pediatric Caries & Crown Pathway: SSC, Strip Crown, SDF & Hall Technique",
+            "title": "Pediatric Caries, Strip Crown, SSC Pliers, Hall Technique & SDF Pathway (AAPD 2024–2025)",
             "pathway_type": "decision",
-            "subtitle": "เปรียบเทียบ Conventional Stainless Steel Crown vs Hall Technique vs Silver Diamine Fluoride (SDF) vs Strip Crown",
-            "reference": "AAPD Restorative Dentistry Guideline / Pediatric Dentistry Thai Guidelines",
+            "subtitle": "หน้าผุ ➔ Strip Crown/Zirconia (ไม่ใช่ Molar SSC!) • หลัง ≥2 ด้าน ➔ SSC (Howe/Abell/Crimping) • Minamata งด Amalgam <15 ปี",
+            "reference": "AAPD Restorative Dentistry Guideline (2024–2025), Minamata COP-5 & TSPD",
             "steps": [
-                _node(1, "จำแนกความลึกของรอยผุและสภาพเนื้อเยื่อโพรงประสาท", "ซักประวัติ Spontaneous pain / Night pain + ตรวจคลำหนอง/โยก + ฟิล์มรังสี Furcation radiolucency", "ฟันน้ำนมมีการอักเสบที่พื้น Furcation ได้ง่ายกว่าปลายรากเนื่องจากมี Accessory canals บริเวณ Furcation", "trigger"),
-                _node(2, "เลือกรูปแบบการบูรณะและการรักษาคลองประสาท", "ดูจำนวนด้านที่ผุ พฤติกรรมเด็ก และอายุคาดหวังก่อนฟันหลุด", "เลือกการรักษาแบบอนุรักษ์หรือครอบฟันที่คุ้มค่าที่สุด", "decision", [
-                    {"condition": "ผุหลายด้าน (≥ 2 ด้าน) / หลังทำ Pulpotomy / เด็กเสี่ยงผุสูง (High Caries Risk)", "outcome": "Stainless Steel Crown (SSC): ถอนฟันผุ กรอ Occlusal 1–1.5 mm + Proximal ผ่านจุดสัมผัส (ไม่กรอ Buccal/Lingual Ledge ยกเว้น Bulge)", "color": "#10b981"},
-                    {"condition": "ฟันน้ำนมผุเข้าเนื้อฟัน ไม่มีอาการปวด ไม่มี Furcation lesion + เด็กกลัวการฉีดยา/กรอฟัน", "outcome": "Hall Technique (สวม SSC ปิดทับทันทีหลังใส่ Separator ไม่ต้องฉีดยา/ไม่กรอฟัน เพื่อตัดอาหารแบคทีเรีย) หรือ 38% SDF (หยุดผุ แต่ฟันดำ)", "color": "#38bdf8"},
-                    {"condition": "ฟันหน้าบนน้ำนมผุหลายด้านหรือหลุดแตกขนาดใหญ่ ต้องการความสวยงาม", "outcome": "Celluloid Strip Crown (Composite Resin) หรือ Prefabricated Zirconia Crown", "color": "#ec4899"},
+                _node(1, "จำแนกตำแหน่ง ความลึก (ICDAS) และสภาพพัลพ์", "แยกฟันหน้า vs ฟันกราม + ตรวจ Spontaneous/Night pain + Extraoral swelling + ฟิล์ม Furcation", "ฟันน้ำนมมี Accessory canals ที่ Furcation ➔ รอยโรคเกิดที่ง่ามรากก่อนปลายรากเสมอ", "trigger"),
+                _node(2, "เลือกรูปแบบการบูรณะ & คีมดัดแต่ง SSC", "Minamata COP-5: หลีกเลี่ยง Amalgam ในเด็ก < 15 ปี; คีม Howe #110 ปรับความกว้าง M-D, Crimping #417 บีบขอบเหงือก 1 mm", "เลือกบูรณะตามตำแหน่งและพฤติกรรมเด็ก", "decision", [
+                    {"condition": "ฟันกรามน้ำนมผุ ≥ 2 ด้าน / หลัง Pulpotomy-Pulpectomy / High Risk", "outcome": "Stainless Steel Crown (SSC): กรอ Occlusal 1–1.5 mm + เปิด M/D ไม่มี Ledge เหลือ Cervical bulge; ปรับ M-D ด้วย Howe #110 / ขอบเหงือกด้วย Crimping #417", "color": "#10b981"},
+                    {"condition": "ฟันกรามน้ำนมผุเข้า Dentin ไม่มีปวด/หนอง + มี Clear dentin band บนฟิล์ม", "outcome": "Hall Technique (ใส่ Separator ➔ สวม SSC ด้วย GIC ไม่ฉีดไม่กรอ!) หรือ 38% SDF (หยุดผุ แต่ย้อมดำ)", "color": "#38bdf8"},
+                    {"condition": "ฟันหน้าบนน้ำนมผุรอบคอฟันหลายซี่ (Anterior S-ECC)", "outcome": "Celluloid Strip Crown (Composite Resin) หรือ Prefabricated Zirconia Crown (ห้ามใช้ Molar SSC ปิดฟันหน้า!)", "color": "#ec4899"},
+                    {"condition": "ICDAS 1–2 (Non-cavitated) ฟันกรามแท้", "outcome": "Resin Sealant (หากคุมความชื้นได้) หรือ GI Sealant / 5% NaF Varnish (หากขึ้นบางส่วนมีเหงือกคลุม)", "color": "#a855f7"},
                 ]),
-                _node(3, "สรุปการรักษาโพรงประสาทฟันน้ำนม", "Pulpotomy (อักเสบเฉพาะ Coronal pulp, ห้ามเลือดใน 3–5 นาที ➔ MTA/Biodentine/Ferric Sulfate) vs Pulpectomy (ติดเชื้อลงราก ➔ อุด ZOE/Vitapex ละลายตามราก)", "ข้อห้ามทำ Pulpotomy/Pulpectomy: รากละลาย > 1/3, ฟันโยกจากพยาธิสภาพ, หน่อฟันถาวรถูกทำลาย, หรือมี Internal resorption กว้าง", "outcome"),
+                _node(3, "สรุปการรักษาโพรงประสาทฟันน้ำนม (AAPD 2024–2025)", "Pulpotomy: MTA/Biodentine แนะนำลำดับ 1 (เหนือ Formocresol) | Pulpectomy: อุด ZOE/Vitapex ละลายตามราก (ห้าม GP!)", "ห้ามทำ Pulpectomy หากมี Facial Cellulitis, รากละลาย > 1/3, เหลือแต่ตอราก (RR) หรือทำลายหน่อฟันแท้!", "outcome"),
             ],
         }
     ],
     "Pedia-Young-Permanent-Teeth": [
         {
             "id": "pedia-mih-avulsion-young-perm",
-            "title": "Management Pathway: Young Permanent Tooth Trauma, MIH & Immature Apex Preservation",
+            "title": "Management Pathway: Young Permanent Trauma, MIH, Mesiodens & Fluorosis MID",
             "pathway_type": "decision",
-            "subtitle": "Vital Pulp Therapy (Cvek Pulpotomy), Molar-Incisor Hypomineralization (MIH) & IADT Avulsion Protocol",
-            "reference": "IADT Dental Trauma Guidelines (2020) / AAPD Pulp Therapy for Immature Permanent Teeth",
+            "subtitle": "Cvek Pulpotomy (Open Apex), MIH vs Fluorosis (Microabrasion/Icon), Ectopic 6 & Mesiodens 2/3 Root Timing",
+            "reference": "IADT Dental Trauma Guidelines (2020) / AAPD Pulp Therapy & MIH Guidelines (2024–2025)",
             "steps": [
-                _node(1, "ฟันแท้ที่รากยังสร้างไม่เสร็จ (Immature Root / Open Apex)", "เป้าหมายสูงสุด: รักษาความมีชีวิตของ Radicular Pulp เพื่อให้เกิด Apexogenesis (รากยาวขึ้น + ผนังหนาขึ้น)", "หลีกเลี่ยงการทำ Root canal เต็มรูปแบบโดยไม่จำเป็นในฟันที่ยัง Vital", "trigger"),
-                _node(2, "แนวทางการจัดการฟันแท้เด็กที่พบในข้อสอบบ่อย", "แยกตามสถานการณ์: Pulp Exposure จากอุบัติเหตุ vs หลุดทั้งซี่ (Avulsion) vs MIH", "ดำเนินการตามมาตรฐานสากลภายใน Golden period", "decision", [
-                    {"condition": "Complicated Crown Fracture (ทะลุโพรงประสาทเล็ก-กลาง) รากยังเปิด", "outcome": "Partial (Cvek) Pulpotomy (ตัดเฉพาะ 2 mm ที่ผิวออก ล้าง NaOCl ห้ามเลือด ปิดด้วย MTA/Biodentine เพื่อ Apexogenesis)", "color": "#10b981"},
-                    {"condition": "ฟันแท้หลุดทั้งซี่ (Avulsion): เก็บในนม/HBSS/น้ำลาย แห้ง < 60 นาที", "outcome": "จับที่ตัวฟัน (ห้ามขูดราก) ล้างน้ำเกลือ Replant ทันที + Flexible Splint 2 สัปดาห์ + Doxycycline/Amoxicillin + ตรวจรักษารากใน 7–10 วันหากรากปิด", "color": "#38bdf8"},
-                    {"condition": "MIH (Molar-Incisor Hypomineralization): เคลือบฟันด่างขาว/น้ำตาล เสียวฟัน แตกง่าย (PEB)", "outcome": "ฟัน 6 + ฟันตัดแท้: ทาวานิชฟลูออไรด์/CPP-ACP, ป้องกันซึมด้วย RMGIC/GIC ชั่วคราว หรือ SSC หากแตกมาก; Resin infiltration (Icon) ช่วยด้านความงามฟันหน้า", "color": "#f59e0b"},
+                _node(1, "ฟันแท้ปลายรากยังเปิด (Open Apex) & Anomalies รอบหน่อฟัน", "เป้าหมาย: รักษา Vital radicular pulp เพื่อ Apexogenesis; Mesiodens ที่ไม่กีดขวางราก 11 รอผ่าเมื่อ 11 สร้างรากครบ 2/3 (แต่หากขวาง/มี Cyst ให้ผ่าออกทันที)", "Reactive lesion เหงือกเด็ก (PG/PGCG) เกิดจาก Chronic irritation, ไม่ใช่ Infection", "trigger"),
+                _node(2, "แนวทางการจัดการฟันแท้เด็กที่พบในข้อสอบบ่อย", "แยก Cvek Pulpotomy vs MIH vs Fluorosis MID vs Ectopic 6", "ดำเนินการตามมาตรฐานสากล", "decision", [
+                    {"condition": "Complicated Crown Fracture รากยังเปิด", "outcome": "Partial (Cvek) Pulpotomy (ตัดเฉพาะ 2 mm ที่ผิว ปิดด้วย MTA/Biodentine เพื่อ Apexogenesis)", "color": "#10b981"},
+                    {"condition": "MIH (ขอบชัดบนซี่ 6 & ฟันตัด) vs Fluorosis (ขุ่นฟุ้งสมมาตร)", "outcome": "MIH: 5% NaF Varnish/CPP-ACP + GIC/SSC (PEB); Fluorosis MID: Microabrasion / Resin Infiltration (Icon) / Vital Bleaching", "color": "#f59e0b"},
+                    {"condition": "Ectopic Eruption ซี่ 6 บน หรือ ฟัน 21/11 ขึ้นผิดที่", "outcome": "Jump type เฝ้าดู 3–6 ด. | Hold type ดันถอยด้วย Brass wire/Separator/Halterman; ฟันแท้ 21/13 ค้างในกระดูก ➔ Surgical exposure + Orthodontic traction (Artificial eruption)", "color": "#38bdf8"},
                 ]),
-                _node(3, "กรณีรากเปิดแต่ Pulp ตายแล้ว (Non-vital Open Apex)", "เลือก Apexification (สร้าง Apical barrier ด้วย MTA/Biodentine ทันที) หรือ Regenerative Endodontics (Revascularization: 2.5% NaOCl + Ca(OH)2/TAP + Blood clot + MTA)", "Regenerative Endodontics มีจุดเด่นเหนือ MTA plug ตรงที่ช่วยเพิ่มความหนาและยาวของผนังรากฟันได้จริง", "outcome"),
+                _node(3, "Non-vital Open Apex & Cleidocranial/Cleft", "Non-vital Open Apex ➔ Apexification (MTA/Biodentine barrier) หรือ Regenerative Endodontics; Cleft Lip z-plasty Rule of 10s (10 wks, 10 lbs, Hb ≥10, WBC ≤10,000) + Bone graft ก่อนซี่ 3 ขึ้น (~9–11 ปี)", "เด็ก Cleft ขาดซี่ 22 บ่อย และ Bilateral cleft เสี่ยง Hearing loss (Eustachian dysfunction)", "outcome"),
             ],
         }
     ],
@@ -189,53 +190,53 @@ PATHWAYS_PART2: Dict[str, List[Dict[str, Any]]] = {
             "id": "oralmed-radiology-slob-physics-pathway",
             "title": "Radiology Physics & Localization Pathway: kVp/mAs, Radiation Safety & SLOB Rule",
             "pathway_type": "decision",
-            "subtitle": "ALARA Principle, Image Contrast vs Density, Deterministic vs Stochastic Effects & Clark's Rule",
-            "reference": "White and Pharoah's Oral Radiology 8th ed. / ICRP Radiation Protection",
+            "subtitle": "ALADAIP, ADA Feb 2024 Shielding Update, Image Contrast vs Density, Deterministic vs Stochastic & SLOB Rule",
+            "reference": "ADA Expert Panel Radiation Safety (JADA Feb 2024) / White & Pharoah 8th ed. / ICRP",
             "steps": [
                 _node(1, "พารามิเตอร์กำเนิดรังสี (Exposure Factors)", "kVp (คุมพลังงาน/ทะลุทะลวง/Contrast) vs mAs (คุมปริมาณโฟตอน/Density/ความดำ)", "เพิ่ม kVp = รังสีทะลุดีขึ้น ➔ Gray scale กว้างขึ้น (Low contrast เหมาะดู Perio/กระดูก) | ลด kVp = High contrast (ขาว-ดำชัด เหมาะดู Caries)", "mechanism"),
-                _node(2, "แยกผลทางชีวภาพของรังสีและการป้องกัน (ALARA)", "Deterministic Effect (มี Threshold เช่น Mucositis, Cataract, Osteoradionecrosis) vs Stochastic Effect (ไม่มี Threshold เช่น Cancer, Genetic mutation)", "การถ่ายรังสีทันตกรรมทั่วไปมีความเสี่ยงหลักแบบ Stochastic — ใช้ Rectangular collimator, F-speed/Digital sensor, Thyroid collar, Lead apron", "action"),
+                _node(2, "แยกผลทางชีวภาพของรังสีและการป้องกัน (ADA Feb 2024 Update)", "Deterministic Effect (มี Threshold เช่น Mucositis, Cataract, ORN) vs Stochastic Effect (ไม่มี Threshold เช่น Cancer, Mutation)", "รังสีทันตกรรมมีความเสี่ยงหลักแบบ Stochastic ➔ ใช้ Rectangular collimator, Digital/F-speed & ALADAIP | ⚠️ ADA Feb 2024: เลิกแนะนำใส่ Lead Apron / Thyroid Collar เป็นประจำแล้ว (เฉพาะเมื่อจำเป็น) เพราะไม่ช่วยกันกระเจิงภายในและเสี่ยงบังภาพจนต้องถ่ายซ้ำ (จำแยกจากข้อสอบ NL เก่า)", "action"),
                 _node(3, "การหาตำแหน่งวัตถุ 3 มิติด้วย SLOB Rule & Fault Troubleshooting", "SLOB: Same Lingual, Opposite Buccal (เมื่อขยับกระบอก X-ray ไปทาง Distal เงาเคลื่อนตามทิศกระบอก = อยู่ Lingual)", "วินิจฉัยความผิดพลาดของ Panoramic / Periapical", "decision", [
                     {"condition": "Panoramic: ฟันหน้าเล็กแคบเบลอ + กระดูกสันหลังซ้อนกลางภาพ", "outcome": "คนไข้ยืน ‘ล้ำหน้า Focal trough’ มากเกินไป (Too far forward)", "color": "#f59e0b"},
                     {"condition": "Panoramic: ฟันหน้ากว้างยืดบานออก + Condyle ตกขอบภาพ", "outcome": "คนไข้ยืน ‘ถอยหลังเกิน Focal trough’ (Too far back)", "color": "#38bdf8"},
                     {"condition": "Panoramic: Occlusal plane โค้งยิ้มมากเกิน / เงากระดูก Hyoid บังฟันล่าง", "outcome": "ก้มคางมากเกินไป (Chin tipped too far down) | หากเงยคางไป = Reverse smile + Hard palate บังรากฟันบน", "color": "#10b981"},
                 ]),
-                _node(4, "Digital Radiography & CBCT Justification", "ใช้ CBCT เฉพาะกรณีที่ 2D ให้ข้อมูลไม่เพียงพอ (Small FOV, High resolution สำหรับ Endo/Implant/Impacted nerve relation)", "ห้ามใช้ CBCT เป็น Routine screening เพื่อลดปริมาณรังสีสะสมของผู้ป่วย", "outcome"),
+                _node(4, "Digital Radiography & CBCT Justification (AAPD / Image Gently)", "ใช้ CBCT เฉพาะกรณี 2D ไม่พอ (Small FOV) — ห้ามใช้ Routine screening และหลีกเลี่ยงในเด็ก Frankl (-) ที่อยู่นิ่งไม่ได้ (เสี่ยง Motion artifact ใช้ Occlusal/PA เร็วกว่า)", "จำการล้างฟิล์ม: คราบน้ำตาลอมเหลืองเมื่อเก็บนาน = ล้างน้ำสุดท้ายไม่พอ (Insufficient washing) หรือ Fixer เสื่อม", "outcome"),
             ],
         }
     ],
     "OralMed-Vesiculobullous-Ulcers": [
         {
             "id": "oralmed-vesiculobullous-diagnostic-pathway",
-            "title": "Diagnostic Decision Tree: Vesiculobullous & Autoimmune Ulcers (Pemphigus vs MMP vs OLP vs EM)",
+            "title": "Diagnostic Decision Tree: Vesiculobullous, Autoimmune & Infectious Oral Lesions",
             "pathway_type": "decision",
-            "subtitle": "Nikolsky Sign + Histopathology (Intraepithelial vs Subepithelial Split) + Direct Immunofluorescence (DIF) ➔ Steroid Therapy",
-            "reference": "Neville's Oral and Maxillofacial Pathology 5th ed. / Burket's Oral Medicine 13th ed.",
+            "subtitle": "Nikolsky Sign + H&E Split + DIF + การแยกแผลไวรัส (HSV/VZV) และเชื้อรา (IDSA Candidiasis)",
+            "reference": "Neville's Oral Pathology 5th ed. / Burket's Oral Medicine 13th ed. / IDSA Candidiasis Guideline",
             "steps": [
-                _node(1, "ประวัติและการตรวจแผลในช่องปาก (Clinical Red Flags)", "ถุงน้ำแตกง่ายกลายเป็นแผลถลอกเรื้อรัง / Desquamative gingivitis / มีรอยโรคผิวหนังหรือตา (Symblepharon) ร่วม", "ตรวจ Nikolsky's sign (ถูเยื่อเมือกปกติแล้วลอกหลุด — บวกใน PV และ MMP) ร่วมกับซักประวัติยา (Drug triggers)", "trigger"),
+                _node(1, "ประวัติและการตรวจแผล/ติดเชื้อในช่องปาก (Clinical Red Flags)", "ถุงน้ำแตกง่ายกลายเป็นแผลถลอก (PV/MMP) vs ตุ่มน้ำข้างเดียวไม่ข้าม Midline (Herpes Zoster/VZV) vs ปื้นแดงใต้ฟันเทียม (Denture Stomatitis)", "ตรวจ Nikolsky's sign (บวกใน PV และ MMP) | หากสงสัย Denture stomatitis ทำ 10% KOH smear (ห้ามรีบ Biopsy ทันที ยกเว้นรักษาแล้วยังแดงเกิน 14 วัน)", "trigger"),
                 _node(2, "ตัดชิ้นเนื้อส่งตรวจ H&E และ Direct Immunofluorescence (DIF)", "Biopsy ขอบแผลที่มี Epithelium ติดอยู่ (Perilesional tissue) ใส่ Formalin สำหรับ H&E และใส่ Michel's solution สำหรับ DIF", "แยกโรคจากตำแหน่งที่เนื้อเยื่อแยกตัว (Level of split) และรูปแบบของ IgG/C3/Fibrinogen", "decision", [
-                    {"condition": "Pemphigus Vulgaris (PV): ตุ่มน้ำแตกไว อันตรายถึงชีวิต (Autoantibody ต่อ Desmoglein 1 & 3)", "outcome": "H&E: Intraepithelial split (Suprabasal acantholysis + Tzanck cells) | DIF: IgG/C3 ตาข่าย (Fish-net / Chicken-wire) รอบเซลล์", "color": "#ef4444"},
-                    {"condition": "Mucous Membrane Pemphigoid (MMP): พบบ่อยเป็น Desquamative gingivitis + พังผืดตา (Symblepharon)", "outcome": "H&E: Subepithelial split (แผลตึงหนาไม่แตกง่าย) | DIF: Linear band of IgG & C3 ที่ Basement membrane zone", "color": "#f59e0b"},
-                    {"condition": "Oral Lichen Planus (OLP): ลายเส้นขาว Wickham striae 2 ข้างแก้ม สมมาตร", "outcome": "H&E: Saw-tooth rete ridges + Band-like T-lymphocyte infiltrate + Civatte bodies | DIF: Shaggy Fibrinogen ที่ Basement membrane", "color": "#38bdf8"},
-                    {"condition": "Erythema Multiforme (EM): เฉียบพลันหลังติดเชื้อ HSV หรือกินยา (Sulfa/NSAIDs)", "outcome": "Hemorrhagic crusting บนริมฝีปาก + Target/Iris lesions ที่ผิวหนัง", "color": "#ec4899"},
+                    {"condition": "Pemphigus Vulgaris (PV): ตุ่มน้ำแตกไว อันตรายถึงชีวิต (Desmoglein 1 & 3)", "outcome": "H&E: Intraepithelial split (Suprabasal acantholysis + Tzanck cells) | DIF: IgG/C3 ตาข่าย (Fish-net / Chicken-wire)", "color": "#ef4444"},
+                    {"condition": "Mucous Membrane Pemphigoid (MMP): Desquamative gingivitis + พังผืดตา", "outcome": "H&E: Subepithelial split | DIF: Linear band of IgG & C3 ที่ Basement membrane zone", "color": "#f59e0b"},
+                    {"condition": "Oral Lichen Planus (OLP): Wickham striae 2 ข้างสมมาตร", "outcome": "H&E: Saw-tooth rete ridges + Band T-cell infiltrate | DIF: Shaggy Fibrinogen ที่ Basement membrane", "color": "#38bdf8"},
+                    {"condition": "Herpes Zoster (VZV) / HSV vs Denture Stomatitis (Candida)", "outcome": "VZV/HSV: ยาต้านไวรัส (Oral Acyclovir ใน 72 ชม.) ⚠️ ห้าม Steroid! | Denture Stomatitis (IDSA): Nystatin / Miconazole + ถอดล้างฟันเทียมก่อนนอน (⚠️ ห้ามทา Steroid และห้าม Miconazole ถ้ากิน Warfarin!)", "color": "#ec4899"},
                 ]),
-                _node(3, "แนวทางรักษาหลัก (Corticosteroids)", "OLP/MMP เฉพาะที่: Topical Potent Steroid (Fluocinonide/Clobetasol) + ระวัง Candida แทรกซ้อน | PV/ตาอักเสบ: Systemic Prednisolone ร่วมกับแพทย์/จักษุแพทย์", "ตรวจยืนยันแผล HSV ก่อนให้ Steroid เสมอ และนัด Follow-up OLP เรื่อยๆ เพื่อเฝ้าระวัง Malignant transformation (~1–2% ใน Erosive type)", "outcome"),
+                _node(3, "แนวทางรักษาหลักในกลุ่มภูมิคุ้มกัน (Corticosteroids)", "OLP/MMP เฉพาะที่: Topical Potent Steroid (Fluocinonide/Clobetasol) + เฝ้าระวัง Candida | PV: Systemic Prednisolone ร่วมกับแพทย์", "ตรวจยืนยันตัด HSV/Candida ออกก่อนให้ Steroid เสมอ และติดตาม Erosive OLP เพื่อเฝ้าระวัง OSCC", "outcome"),
             ],
         }
     ],
     "OralMed-Medically-Compromised-Endo-Renal": [
         {
             "id": "oralmed-endo-renal-corticosteroid-pathway",
-            "title": "Systemic Management Pathway: Endocrine (DM/Thyroid/Adrenal) & Chronic Kidney Disease",
+            "title": "Systemic Management Pathway: Endocrine (DM/Thyroid/Adrenal), Renal & Oncology",
             "pathway_type": "decision",
-            "subtitle": "HbA1c & Hypoglycemia Rescue, Thyrotoxicosis Epinephrine Limit, Rule of Twos vs Normal Care & Dialysis Heparin Window",
-            "reference": "Little and Falace's Dental Management of the Medically Compromised Patient 10th ed.",
+            "subtitle": "ADA 2025/2026 DM & Hypoglycemia, Thyrotoxicosis Epinephrine Limit, Dialysis Heparin Window & ALL Mucositis/MRONJ",
+            "reference": "Little & Falace 10th ed. / ADA Diabetes Standards 2025–2026 / AAPD / AAOMS 2022",
             "steps": [
-                _node(1, "คัดกรองระบบต่อมไร้ท่อและไตก่อนทำฟัน", "ตรวจ FBS/HbA1c, ชีพจร/BP (Thyroid), ประวัติ Steroid, ระดับ eGFR และตารางฟอกไต (Hemodialysis days)", "ผู้ป่วย DM ควรนัดเช้า หลังทานอาหารและยาปกติ ไม่ควรทำฟันตอนท้องว่าง", "trigger"),
+                _node(1, "คัดกรองระบบต่อมไร้ท่อ ไต และมะเร็งวิทยาก่อนทำฟัน", "ตรวจ HbA1c (<7% ตาม ADA 2025/2026), ชีพจร/BP (Thyroid), ยา Steroid, eGFR/ตารางฟอกไต และ ANC/Platelet/Antiresorptive", "ผู้ป่วย DM นัดเช้าหลังทานอาหาร-ยาปกติ | Orthostatic hypotension/Presyncope บนเก้าอี้ (เวียนหัวใจสั่น) ➔ ปรับนอนราบยกขา (Malamed!)", "trigger"),
                 _node(2, "แนวทางจัดการแยกตามโรคประจำตัว", "กำหนดข้อห้ามยา ยาชา และการปรับเวลาทำหัตถการ", "เลือกแนวทางที่ปลอดภัยเฉพาะโรค", "decision", [
-                    {"condition": "เบาหวาน (DM): เกิดอาการเหงื่อแตก ใจสั่น มือสั่น สับสนระหว่างทำฟัน", "outcome": "Hypoglycemia Emergency (< 70 mg/dL): หยุดทำทันที! ให้ Rule of 15 (น้ำหวาน/กลูโคส 15 g กินถ้ารู้ตัว) หรือ 50% Dextrose IV / Glucagon IM ถ้าหมดสติ", "color": "#ef4444"},
-                    {"condition": "โรคไตเรื้อรังฟอกเลือด (Hemodialysis): ต้องใส่ Heparin ระหว่างฟอก", "outcome": "ทำหัตถการที่มีเลือดออกใน ‘วันถัดไปหลังฟอกไต’ (Non-dialysis day) ห้ามวัด BP/เจาะเลือดแขนข้างที่มี AV Fistula + ปรับขนาด Amoxicillin/หลีกเลี่ยง NSAIDs & Tetracycline", "color": "#38bdf8"},
-                    {"condition": "Hyperthyroidism ที่คุมไม่ได้ / Thyroid Storm Risk", "outcome": "ห้ามใช้ยาชาที่มี Epinephrine และ Retraction cord ชุบ Epinephrine ➔ ใช้ 3% Mepivacaine/Prilocaine Plain และส่งคุมไทรอยด์ก่อนทำ Elective", "color": "#f59e0b"},
-                    {"condition": "ผู้ป่วยกิน Steroid เรื้อรัง (Secondary Adrenal Insufficiency Risk)", "outcome": "หัตถการทันตกรรมทั่วไป (Simple extraction) ส่วนใหญ่ ‘ไม่ต้อง’ เพิ่ม Double dose ให้คงขนาดยาเดิม + คุมปวดและลดเครียด (ให้เพิ่มเฉพาะ Major surgery/GA ตามแพทย์)", "color": "#10b981"},
+                    {"condition": "เบาหวาน (DM): เกิดอาการเหงื่อแตก ใจสั่น มือสั่น สับสนระหว่างทำฟัน", "outcome": "Hypoglycemia (ADA Level 1 < 70 mg/dL, Level 2 < 54 mg/dL): หยุดทำทันที! ให้ Rule of 15 (น้ำหวาน/กลูโคส 15 g) หรือ 50% Dextrose IV / Glucagon IM ถ้าหมดสติ", "color": "#ef4444"},
+                    {"condition": "โรคไตเรื้อรังฟอกเลือด (Hemodialysis): ต้องใส่ Heparin ระหว่างฟอก", "outcome": "ทำหัตถการที่มีเลือดออกใน ‘วันถัดไปหลังฟอกไต’ (Non-dialysis day) ห้ามวัด BP/เจาะเลือดแขนข้างที่มี AV Fistula + หลีกเลี่ยง NSAIDs & Tetracycline", "color": "#38bdf8"},
+                    {"condition": "Hyperthyroidism คุมไม่ได้ vs Bell's Palsy vs ALL (มะเร็งเม็ดเลือดขาวเด็ก)", "outcome": "Thyroid Storm: ห้าม Epinephrine ➔ ใช้ 3% Mepivacaine Plain | Bell's Palsy: Systemic Prednisolone ภายใน 72 ชม. คือยาหลัก | ALL เคมีบำบัด: **Oral Mucositis** เป็นภาวะแทรกซ้อนบ่อยสุด (ANC < 1,000 ให้ ATB prophylaxis; Plt ≥ 75,000 ถอนได้)", "color": "#f59e0b"},
+                    {"condition": "กิน Steroid เรื้อรัง vs ยา Osteoporosis/มะเร็งกระดูก (MRONJ — AAOMS 2022)", "outcome": "Steroid: งานทั่วไป ‘ไม่ต้อง’ Double dose | MRONJ (AAOMS 2022): กระดูกโผล่ >8 สัปดาห์ + ยา Bisphosphonate/Denosumab + ไม่เคยฉายแสง ➔ ประคับประคอง 0.12% CHX เลี่ยงถอนฟันเสี่ยงกระดูกตายลาม", "color": "#10b981"},
                 ]),
                 _node(3, "RDU ข้อควรระวังในการสั่งยาในผู้ป่วยไต", "ผู้ป่วย CKD ระยะ 3–5 ห้ามจ่าย NSAIDs (Ibuprofen/Naproxen/Celecoxib) เพราะทำให้ Acute Kidney Injury", "เลือก Paracetamol เป็นยาแก้ปวดหลัก และปรับ Interval การให้ยาปฏิชีวนะที่ขับทางไต (เช่น Amoxicillin/Cephalexin) แต่ Clindamycin/Azithromycin ขับทางตับเป็นหลัก", "warning"),
             ],
@@ -244,12 +245,12 @@ PATHWAYS_PART2: Dict[str, List[Dict[str, Any]]] = {
     "OralMed-Salivary-Gland-Pathology": [
         {
             "id": "oralmed-salivary-neoplasm-reactive-pathway",
-            "title": "Diagnostic Pathway: Salivary Gland Disorders (Reactive, Obstructive & Neoplasms)",
+            "title": "Diagnostic Pathway: Salivary Gland Disorders, Caries Tests & Neoplasms",
             "pathway_type": "decision",
-            "subtitle": "Mucocele vs Ranula, Sialolithiasis (Wharton's Duct) & Benign (Pleomorphic Adenoma) vs Malignant (Mucoepidermoid / Adenoid Cystic)",
-            "reference": "Neville's Oral and Maxillofacial Pathology 5th ed.",
+            "subtitle": "Mucocele vs Ranula, Sialolithiasis, Salivary Tests (Snyder/Dentobuff HCl) & Pleomorphic/MEC/ACC",
+            "reference": "Neville's Oral Pathology 5th ed. / Fejerskov Dental Caries",
             "steps": [
-                _node(1, "จำแนกกลุ่มอาการที่ต่อมน้ำลาย", "บวมเป็นๆ หายๆ ตอนกินอาหาร (Obstructive) vs ตุ่มใสสีฟ้าที่ริมฝีปากล่าง (Reactive) vs ก้อนโตช้าแข็ง/เจ็บ/หน้าเบี้ยว (Neoplasm)", "ตำแหน่งเกิดบ่งชี้ความน่าจะเป็นของมะเร็ง: ยิ่งต่อมน้ำลายขนาดเล็ก โอกาสเป็นมะเร็งยิ่งสูง (Minor salivary gland > Sublingual > Submandibular > Parotid)", "trigger"),
+                _node(1, "จำแนกกลุ่มอาการที่ต่อมน้ำลาย & การตรวจคุณภาพน้ำลาย", "บวมตามมื้ออาหาร (Sialolithiasis) vs ตุ่มใสริมฝีปากล่าง (Mucocele) vs ก้อนเนื้องอก (Minor glands เสี่ยงมะเร็งสูงสุด!)", "เกณฑ์น้ำลายน้อย (Hyposalivation): Unstimulated < 0.1 mL/min, Stimulated < 0.7 mL/min | Snyder test (หลอดสีเขียว Bromocresol green อ่าน 24/48/72 ชม.) = วัด Activity ของ *Lactobacillus* | Buffer capacity (Ericsson/Dentobuff) = ใช้ **Hydrochloric acid (HCl)** เจือจาง", "trigger"),
                 _node(2, "การวินิจฉัยแยกกลุ่มโรคสำคัญ", "ตรวจคลำ (Bimanual palpation), Mandibular Occlusal Film และ Histopathology", "แยก Reactive/Obstructive ออกจาก Salivary Tumor", "decision", [
                     {"condition": "ตุ่มใสที่ริมฝีปากล่างหลังกัดปาก vs ก้อนบวมใต้ลิ้นสีฟ้า (Frog-belly)", "outcome": "Mucocele (ไม่มี Epithelial lining — Mucus extravasation, ตัดต่อมน้ำลายเล็กที่ป้อนทิ้ง) vs Ranula (รักษาด้วย Marsupialization หรือตัด Sublingual gland)", "color": "#38bdf8"},
                     {"condition": "ปวดบวมใต้คางทุกครั้งก่อน/ขณะเคี้ยวอาหารเปรี้ยว (Mealtime syndrome)", "outcome": "Sialolithiasis (80–90% เกิดที่ Submandibular/Wharton's duct เพราะท่อยาวต้านแรงโน้มถ่วงและน้ำลายข้นเป็นเมือก-ด่าง) ➔ ยืนยันด้วย Lower Occlusal Radiograph", "color": "#10b981"},
@@ -263,19 +264,19 @@ PATHWAYS_PART2: Dict[str, List[Dict[str, Any]]] = {
     "OralMed-Odontogenic-Cysts-Tumors": [
         {
             "id": "oralmed-odontogenic-cyst-tumor-pathway",
-            "title": "Radiographic & Pathologic Pathway: Odontogenic Cysts vs Tumors",
+            "title": "Radiographic & Pathologic Pathway: Odontogenic Cysts vs Tumors (WHO 2022 5th ed.)",
             "pathway_type": "decision",
-            "subtitle": "Periapical / Dentigerous / OKC (Anteroposterior growth) vs Ameloblastoma (Soap-bubble) / Odontoma / CEOT",
-            "reference": "Neville's Oral and Maxillofacial Pathology 5th ed. / WHO Classification 5th ed.",
+            "subtitle": "Periapical / Dentigerous / OKC (PTCH1) vs Ameloblastoma (BRAF V600E) / Odontoma / WHO 2022 Updates",
+            "reference": "WHO Classification of Head and Neck Tumours, 5th ed. (2022) / Neville 5th ed.",
             "steps": [
-                _node(1, "วิเคราะห์ลักษณะภาพรังสี (Radiographic Analysis)", "ดูตำแหน่งสัมพันธ์กับ CEJ/ฟันคุด, ลักษณะขอบเขต (Corticated vs Unilocular/Multilocular) และการละลายรากฟัน (Root resorption)", "เช็กความสัมพันธ์กับฟันไม่ตาย vs ฟันตาย (เช่น Radicular cyst ฟันต้อง Non-vital เสมอ!)", "trigger"),
+                _node(1, "วิเคราะห์ลักษณะภาพรังสี (Radiographic Analysis)", "ดูตำแหน่งสัมพันธ์กับ CEJ/ฟันคุด, ลักษณะขอบเขต (Corticated vs Unilocular/Multilocular) และการละลายรากฟัน (Root resorption)", "WHO 2022 (5th ed.) เพิ่ม **Adenoid ameloblastoma** ในกลุ่มเนื้องอก และเพิ่ม **Surgical ciliated cyst** ในกลุ่มถุงน้ำขากรรไกร | เช็ก Vitality test (Radicular cyst ฟันต้อง Non-vital เสมอ!)", "trigger"),
                 _node(2, "แยกกลุ่ม Odontogenic Cysts & Aggressive Cysts", "แยก Dentigerous Cyst ออกจาก Odontogenic Keratocyst (OKC) จากรูปแบบการขยายตัว", "ตัดสินใจเจาะดูด (Aspiration) และตัดชิ้นเนื้อ (Biopsy)", "decision", [
                     {"condition": "เงาดำรอบ Crown ของฟันคุด (ติดพอดีที่ CEJ) ขยายออกด้านข้าง", "outcome": "Dentigerous (Follicular) Cyst (พบบ่อยอันดับ 2 รองจาก Radicular cyst; Enucleation พร้อมถอนฟันคุดโอกาสหายขาดสูง)", "color": "#10b981"},
-                    {"condition": "เงาดำลามตามแนวยาวกระดูกขากรรไกรล่าง (Anteroposterior) โดยแทบไม่พองออกด้าน Buccolingual", "outcome": "Odontogenic Keratocyst (OKC): เจาะดูดได้สารข้นขาว (Keratin), อัตราเป็นซ้ำสูง, สัมพันธ์กับ Gorlin syndrome (NBCCS) หากพบหลายถุง", "color": "#f59e0b"},
-                    {"condition": "เงาดำ Multilocular คล้ายฟองสบู่ (Soap-bubble/Honeycomb) + ละลายรากฟัน (Knife-edge root resorption)", "outcome": "Ameloblastoma (80% อยู่ Posterior mandible; Benign แต่รุกรานเฉพาะที่สูง — Histopath: Reverse polarization / Vickers-Gorlin, ต้องผ่าตัด Resection เผื่อขอบ 1–1.5 cm)", "color": "#ef4444"},
+                    {"condition": "เงาดำลามตามแนวยาวกระดูกขากรรไกรล่าง (Anteroposterior) โดยแทบไม่พองออกด้าน Buccolingual", "outcome": "Odontogenic Keratocyst (OKC): เจาะดูดได้สารข้นขาว (Keratin), อัตราเป็นซ้ำสูง, สัมพันธ์กับ Gorlin syndrome (NBCCS, ยีน PTCH1)", "color": "#f59e0b"},
+                    {"condition": "เงาดำ Multilocular คล้ายฟองสบู่ (Soap-bubble/Honeycomb) + ละลายรากฟัน (Knife-edge root resorption)", "outcome": "Ameloblastoma (พบบ่อยสุดในกลุ่มเนื้องอก; BRAF V600E mutation ในขากรรไกรล่าง — Histopath: Reverse nuclear polarization / Vickers-Gorlin, ผ่าตัด Resection เผื่อขอบ 1–1.5 cm)", "color": "#ef4444"},
                     {"condition": "เงาขาวทึบคล้ายฟันเล็กๆ หลายซี่ (Compound) หรือก้อนทึบไม่เป็นรูป (Complex) ขวางฟันขึ้น", "outcome": "Odontoma (Hamartoma พบบ่อยสุดของ Odontogenic tumors — ตัดออกง่ายไม่ค่อยกลับมาเป็นซ้ำ)", "color": "#38bdf8"},
                 ]),
-                _node(3, "ข้อสังเกตสำคัญกลุ่มทึบแสงสลับดำ (Mixed RL-RO)", "Calcifying Epithelial Odontogenic Tumor (Pindborg: Driven-snow appearance + Amyloid) vs Adenomatoid Odontogenic Tumor (AOT: ฟันเขี้ยวบนหญิงอายุน้อย + Snowflake calcifications)", "AOT มักคลุมเลย CEJ ลงมาถึงรากฟัน ต่างจาก Dentigerous cyst ที่เกาะเฉพาะที่ CEJ", "outcome"),
+                _node(3, "ข้อสังเกตสำคัญกลุ่มทึบแสงสลับดำ (Mixed RL-RO)", "Calcifying Epithelial Odontogenic Tumor (Pindborg: Driven-snow + Amyloid) vs Adenomatoid Odontogenic Tumor (AOT: ฟันเขี้ยวบนหญิงอายุน้อย + Snowflake) vs Calcifying Odontogenic Cyst (Gorlin cyst: Ghost cells!)", "AOT มักคลุมเลย CEJ ลงมาถึงรากฟัน ต่างจาก Dentigerous cyst ที่เกาะเฉพาะที่ CEJ", "outcome"),
             ],
         }
     ],
@@ -323,16 +324,16 @@ PATHWAYS_PART2: Dict[str, List[Dict[str, Any]]] = {
             "id": "tmd-splint-and-occlusal-scheme-pathway",
             "title": "Therapeutic Decision Pathway: TMD Classification (DC/TMD) & Occlusal Splint Selection",
             "pathway_type": "decision",
-            "subtitle": "Myalgia vs Disc Displacement (With/Without Reduction) ➔ Stabilization Splint vs Anterior Repositioning Splint",
-            "reference": "Okeson 8th ed. / DC/TMD Diagnostic Criteria / ราชวิทยาลัยทันตแพทย์แห่งประเทศไทย",
+            "subtitle": "Myalgia / Sleep vs Awake Bruxism / DDwR ➔ Hard Splint, ARS, Shimstock (8–12 µm) & AASM/AADSM MAD for OSA",
+            "reference": "Okeson 8th ed. / AAOP 7th ed. (2023) / DC/TMD / AASM-AADSM Guidelines",
             "steps": [
-                _node(1, "จำแนกสาเหตุ TMD ตาม DC/TMD (Muscular vs Arthrogenous)", "ประเมินเสียงคลิก (Clicking), อาการอ้าปากไม่ขึ้น (Closed Lock < 35 mm + เฉไปด้านป่วย), ปวดกล้ามเนื้อ", "แยก Disc Displacement with Reduction (DDwR: Reciprocal click ทั้งอ้า-หุบ) vs Disc Displacement without Reduction (DDwoR: เคยมีเสียงคลิกแล้วจู่ๆ เงียบและอ้าติด)", "trigger"),
+                _node(1, "จำแนกสาเหตุ TMD & ประเมินการสบฟัน/OSA", "ประเมินเสียงคลิก (Clicking), อาการอ้าปากไม่ขึ้น (Closed Lock), ตรวจจุดสบกระแทกด้วย Shimstock (8–12 µm), Abfraction จากแรงด้านข้าง", "แยก Sleep Bruxism (Hard splint) vs Awake Clenching + ทานของแข็ง (ปรับพฤติกรรมการกิน/รู้ตัว) และ OSA ที่ทน CPAP ไม่ได้ (MAD)", "trigger"),
                 _node(2, "การเลือกเฝือกสบฟันและแนวทางรักษาแบบอนุรักษ์ (Conservative First!)", "หลักการ: Reversible therapy มาก่อน Irreversible occlusal adjustment/surgery เสมอ", "เลือกชนิด Splint ให้ตรงกับพยาธิสภาพและระยะเวลาที่ใส่", "decision", [
-                    {"condition": "Masticatory Myalgia / Bruxism / ปวดข้อต่อทั่วไป (การรักษาหลัก 80–90%)", "outcome": "Stabilization Splint (Michigan/Permissive Flat-plane Full-arch Hard Acrylic): สบพร้อมกันทุกซี่ใน CR + Canine guidance แยกฟันหลังตอนเยื้องคาง", "color": "#10b981"},
-                    {"condition": "DDwR ที่มีอาการปวดข้อต่อ/คลิกรบกวนมาก (ระยะสั้นกลางคืนเท่านั้น)", "outcome": "Anterior Repositioning Splint (ARS): ยื่นคางมาหน้าให้ Condyle รองรับใต้ Disc — ห้ามใส่ถาวร 24 ชม. เพราะเสี่ยง Posterior Open Bite!", "color": "#f59e0b"},
-                    {"condition": "Acute DDwoR (อ้าปากค้างติดเฉียบพลัน < 1 สัปดาห์)", "outcome": "ประคบอุ่น + NSAIDs + Manual Manipulation ดึงคางลง-หน้าคลายแผ่นรองข้อต่อ + กายภาพบำบัด", "color": "#38bdf8"},
+                    {"condition": "Masticatory Myalgia / Sleep Bruxism / ปวดข้อต่อทั่วไป (การรักษาหลัก 80–90%)", "outcome": "Stabilization Splint (Michigan/Permissive Flat-plane Full-arch Hard Acrylic): สบพร้อมกันทุกซี่ใน CR + Canine guidance แยกฟันหลังตอนเยื้องคาง", "color": "#10b981"},
+                    {"condition": "DDwR ที่มีอาการปวดข้อต่อ/คลิกรบกวนมาก (ระยะสั้นกลางคืน) หรือ OSA ใช้เครื่อง Oral Appliance", "outcome": "ARS: ยื่นคางมาหน้าชั่วคราว (ห้ามใส่ 24 ชม. เสี่ยง Posterior Open Bite!) | MAD (AASM/AADSM): Mild–Moderate OSA / CPAP-intolerant", "color": "#f59e0b"},
+                    {"condition": "Acute DDwoR (อ้าปากค้างติดเฉียบพลัน < 1 สัปดาห์)", "outcome": "ประคบอุ่น + NSAIDs + Manual Manipulation ดึงคางลง-หน้าคลายแผ่นรองข้อต่อ + Jaw stretching exercises", "color": "#38bdf8"},
                 ]),
-                _node(3, "Occlusal Schemes ในงานทันตกรรม", "Mutually Protected / Canine Guidance (ฟันแท้/Fixed: ฟันหลังรับแรงกัด ฟันหน้านำเยื้องแยกฟันหลังพ้นแรงเฉือน) vs Bilateral Balanced Occlusion (Complete Denture เพื่อเสถียรภาพฐานฟันปลอม)", "หลีกเลี่ยงการใช้ Soft splint ในผู้ป่วยนอนกัดฟัน (Bruxism) เพราะกระตุ้นให้เคี้ยว/กัดแรงขึ้น", "outcome"),
+                _node(3, "Occlusal Schemes & FMR Reference Position", "ฟันแท้/FMR: Mutually Protected (Canine guidance) และบันทึกความสัมพันธ์ขากรรไกรที่ Centric Relation (CR) เสมอ | Complete Denture: Bilateral Balanced Occlusion", "หลีกเลี่ยงการใช้ Soft splint ในผู้ป่วยนอนกัดฟัน (Bruxism) และห้ามกรอปรับสบฟันถาวรขณะข้อต่ออักเสบเฉียบพลัน", "outcome"),
             ],
         }
     ],
@@ -341,17 +342,17 @@ PATHWAYS_PART2: Dict[str, List[Dict[str, Any]]] = {
             "id": "tmd-neuropathic-pain-differential",
             "title": "Differential Diagnosis Pathway: Odontogenic vs Non-Odontogenic / Neuropathic Orofacial Pain",
             "pathway_type": "decision",
-            "subtitle": "Trigeminal Neuralgia vs Glossopharyngeal Neuralgia vs Giant Cell Arteritis vs Atypical Odontalgia",
-            "reference": "Okeson's Bell's Oral and Facial Pain 7th ed. / ICOP 2020",
+            "subtitle": "Trigeminal Neuralgia vs Giant Cell Arteritis vs PIFP/PDAP vs Allodynia & Hyperalgesia",
+            "reference": "Okeson's Bell's Oral and Facial Pain 7th ed. / AAOP 7th ed. (2023) / ICOP 2020",
             "steps": [
-                _node(1, "กฎทองป้องกันการถอนฟันผิดซี่ (Avoid Unnecessary Endo/Exo!)", "เมื่อตรวจฟันไม่พบฟันผุลึก ไม่พบจุดกด/เคาะชัดเจน และ Local anesthesia block ที่ฟันไม่ได้ช่วยให้หายปวด 100%", "ต้องนึกถึง Non-odontogenic / Neuropathic / Vascular pain ก่อนลงมือกรอหรือรักษารากฟัน", "warning"),
-                _node(2, "จำแนกลักษณะอาการปวด (Pain Quality & Trigger)", "ซักระยะเวลา (วินาที vs ชั่วโมง vs ตลอดวัน), ลักษณะ (ไฟช็อต vs ตุ้บๆ vs แสบร้อน), และ Trigger zone", "วินิจฉัยแยกกลุ่ม Neuropathic และ Neurovascular", "decision", [
-                    {"condition": "ปวดแปลบเหมือนไฟช็อต รุนแรงมาก เป็นวินาที–ไม่เกิน 2 นาที ตามแขนง V2/V3 + มี Trigger zone แตะเบาๆ/ล้างหน้า", "outcome": "Trigeminal Neuralgia (Tic Douloureux) ➔ Drug of Choice: Carbamazepine (หรือ Oxcarbazepine); เช็ก CBC/Na+ และยีน HLA-B*1502 ในคนไทยก่อนเริ่มยา!", "color": "#ef4444"},
+                _node(1, "กฎทองป้องกันการถอนฟันผิดซี่ (Avoid Unnecessary Endo/Exo!)", "เมื่อตรวจฟันไม่พบฟันผุลึก/VRF, ภาพรังสีปกติ, และ LA block ที่ฟันไม่หาย — แยก Allodynia (สิ่งเร้าปกติไม่เจ็บกลับเจ็บ) vs Hyperalgesia (เจ็บเว่อร์)", "ต้องตรวจกล้ามเนื้อ Masseter (Referred pain) และคัดกรอง Neuropathic / Vascular pain ก่อนลงมือกรอหรือถอนฟัน", "warning"),
+                _node(2, "จำแนกลักษณะอาการปวด (Pain Quality, Duration ≤2 min vs Chronic & Trigger)", "ซักระยะเวลา (ไฟช็อต ≤2 นาที vs ตลอดวัน), อาการตุ้บขมับ + เส้นเลือดปูด, และ Trigger zone / ขยับปาก", "วินิจฉัยแยกกลุ่ม Neuropathic และ Neurovascular", "decision", [
+                    {"condition": "ปวดแปลบเหมือนไฟช็อต 10/10 นานเสี้ยววินาที–≤2 นาที ตามแขนง V2/V3 (แตะ/ล้างหน้า/ขยับปากเคี้ยว)", "outcome": "Trigeminal Neuralgia ➔ First-line: พิจารณาจ่ายยา Carbamazepine (เช็ก HLA-B*1502 ในคนไทยกัน SJS/TEN และติดตามปฏิกิริยา CYP3A4 กับ Amitriptyline!)", "color": "#ef4444"},
                     {"condition": "ปวดแปลบที่โคนลิ้น/ต่อมทอนซิล ร้าวเข้าหู กระตุ้นเวลากลืนน้ำลาย", "outcome": "Glossopharyngeal Neuralgia (CN IX)", "color": "#38bdf8"},
-                    {"condition": "ผู้สูงอายุ (> 50 ปี) ปวดขมับร้าวกรามเวลาเคี้ยว (Jaw claudication) + สายตาพร่า + กดเจ็บหลอดเลือดขมับ", "outcome": "Giant Cell (Temporal) Arteritis ➔ ภาวะฉุกเฉิน! เจาะ ESR/CRP และส่งให้ Systemic Steroid ทันทีเพื่อป้องกันตาบอดถาวร", "color": "#f59e0b"},
-                    {"condition": "ปวดตื้อๆ ต่อเนื่อง > 3 เดือน หลังถอน/รักษารากฟันแล้วหาพยาธิสภาพไม่พบ (Persistent Idiopathic Dentoalveolar Pain)", "outcome": "Atypical Odontalgia ➔ ห้ามรักษาราก/ถอนซ้ำ! รักษาด้วยยา Amitriptyline หรือ Gabapentin", "color": "#10b981"},
+                    {"condition": "ผู้สูงอายุ (≥ 50 ปี) ปวดตุ้บขมับ + เส้นเลือดขมับปูด + ปวดกรามเวลาเคี้ยว (Jaw claudication) + ตามัว", "outcome": "Giant Cell (Temporal) Arteritis ➔ ภาวะฉุกเฉิน! เจาะ ESR/CRP และให้ High-dose Systemic Corticosteroid ทันทีป้องกันตาบอดถาวร", "color": "#f59e0b"},
+                    {"condition": "ปวดตื้อๆ ต่อเนื่อง > 3 เดือน โดยตรวจฟัน/กล้ามเนื้อ/ข้อต่อปกติ (PIFP / PDAP — เดิมเรียก Psychogenic pain)", "outcome": "ห้ามรักษาราก/ถอนซ้ำ! พิจารณา Low-dose TCA (Amitriptyline) หรือ Gabapentin/Pregabalin และส่งต่อเฉพาะทาง", "color": "#10b981"},
                 ]),
-                _node(3, "ข้อควรระวังเภสัชพันธุศาสตร์ในไทย (Carbamazepine Warning)", "ประเทศไทยแนะนำตรวจ HLA-B*1502 ก่อนให้ Carbamazepine เสมอ", "เพื่อป้องกันผื่นแพ้รุนแรง Stevens-Johnson Syndrome (SJS) / Toxic Epidermal Necrolysis (TEN)", "outcome"),
+                _node(3, "ข้อควรระวังเภสัชพันธุศาสตร์และปฏิกิริยาระหว่างยา", "คัดกรองยีน HLA-B*1502 ในไทยก่อนเริ่ม Carbamazepine เสมอ + ระวัง Carbamazepine เหนี่ยวนำ CYP3A4 ลดระดับ Amitriptyline", "เพื่อป้องกันผื่นแพ้รุนแรง SJS / TEN และปรับขนาดยาร่วมอย่างปลอดภัย", "outcome"),
             ],
         }
     ],
@@ -385,13 +386,13 @@ PATHWAYS_PART2: Dict[str, List[Dict[str, Any]]] = {
             "subtitle": "Endochondral vs Intramembranous Ossification + Maxillary vs Mandibular Growth Timing & CVMI Staging",
             "reference": "Proffit's Contemporary Orthodontics 6th ed. / Enlow's Essentials of Facial Growth",
             "steps": [
-                _node(1, "กลไกการเจริญเติบโตของกะโหลกและขากรรไกร", "Cranial Vault: Intramembranous (Neural curve โตเร็ว ~90% เมื่ออายุ 6 ปี) | Cranial Base: Endochondral (Synchondroses: Spheno-occipital ปิดช้าสุด ~อายุ 15–20 ปี)", "ขากรรไกรบน (Maxilla) เคลื่อนลงล่างและไปข้างหน้า (Downward & Forward) จากการเติบโตของ Sutures ด้านหลัง/บน ร่วมกับ Surface remodeling", "mechanism"),
-                _node(2, "ประเมิน Growth Spurt (CVMI / Hand-Wrist) เพื่อกำหนดจังหวะรักษา", "แนวโน้มหยุดเติบโตตามลำดับระนาบ: Transverse (กว้างหยุดก่อน) ➔ Anteroposterior ➔ Vertical (สูงหยุดช้าสุด!)", "เลือกช่วงเวลาทองของการปรับกระดูก (Growth Modification)", "decision", [
+                _node(1, "กลไกการเจริญเติบโตของกะโหลกและขากรรไกร (AAO Screening ≤ 7 ปี)", "Cranial Vault: Intramembranous (Neural curve โตเร็ว ~90% เมื่ออายุ 6 ปี) | Cranial Base: Endochondral (Synchondroses: Spheno-occipital ปิดช้าสุด ~อายุ 15–20 ปี)", "ขากรรไกรบนเคลื่อนลง-หน้า; ขากรรไกรล่างโตช้ากว่าและนานกว่า จึงทำให้ความนูนของใบหน้าด้านข้างลดลง (Facial convexity decreases) เมื่ออายุมากขึ้น", "mechanism"),
+                _node(2, "ประเมิน Growth Spurt (CVMI / Hand-Wrist: S ➔ MP3cap ➔ MP3u) & Asymmetry", "Hand-wrist: ‘S’ (Ulnar sesamoid) = Onset | ‘MP3cap’ = Peak Growth Spurt | ‘MP3u’ = พ้น Peak แล้ว; หน้าเบี้ยวโตต่อเนื่องหลังโตเต็มที่ตรวจ Bone scan (Tc-99m SPECT)", "เลือกช่วงเวลาทองของการปรับกระดูก (Growth Modification)", "decision", [
                     {"condition": "Skeletal Class III จากขากรรไกรบนด้อยพัฒนา (Maxillary Deficiency) อายุ 7–9 ปี", "outcome": "รีบทำ Rapid Maxillary Expansion (RME) + Facemask (Protraction) ก่อน Circummaxillary sutures ประสานแน่น (~อายุ 10 ปี)", "color": "#10b981"},
-                    {"condition": "Skeletal Class II จากขากรรไกรล่างถอย (Mandibular Deficiency)", "outcome": "รอทำ Functional Appliance / Headgear ในช่วง Peak Pubertal Growth Spurt (CS3–CS4) ให้ได้ผลสูงสุด", "color": "#38bdf8"},
-                    {"condition": "Skeletal Class III จากขากรรไกรล่างยื่นแท้จริงหลังพ้นวัยโตแล้ว", "outcome": "หลีกเลี่ยง Functional/Chin cup เพราะไม่ได้ผลถาวร ➔ รอครบโตเต็มที่แล้วผ่าตัด (Orthognathic Surgery)", "color": "#ef4444"},
+                    {"condition": "Skeletal Class II จากขากรรไกรล่างถอย (Mandibular Deficiency) / Deep bite วัย 9–12 ปี", "outcome": "ใช้ Activator / Twin Block ช่วง Peak Growth Spurt (CS3–CS4 / MP3cap) — ห้ามใช้ Posterior bite plane แก้ Deep bite!", "color": "#38bdf8"},
+                    {"condition": "Skeletal Class III จากขากรรไกรล่างยื่นแท้จริงหลังพ้นวัยโต หรือ Active Condylar Hyperplasia", "outcome": "ตรวจ Tc-99m SPECT Bone scan หากยังโตต่อเนื่อง; เมื่อหยุดโตแล้วจึงผ่าตัด (Orthognathic Surgery / BSSO)", "color": "#ef4444"},
                 ]),
-                _node(3, "การปรับเปลี่ยนฟันช่วง Late Mixed Dentition", "Leeway Space (Nance's): ขากรรไกรบน ~0.9 mm/side | ขากรรไกรล่าง ~1.7 mm/side (รวม 3.4 mm)", "ความต่างขนาด C, D, E ใหญ่กว่า 3, 4, 5 สามารถใช้รักษาการซ้อนเกระดับน้อย-ปานกลางโดยใส่ Lingual Arch เก็บพื้นที่", "outcome"),
+                _node(3, "การปรับเปลี่ยนฟันช่วง Late Mixed Dentition & Leeway vs E-space", "Leeway Space of Nance (c+d+e − 3+4+5): บน ~0.9 mm/ข้าง (~1.8 mm) | ล่าง ~1.7 mm/ข้าง (~3.4 mm) *(E-space เฉพาะ e−5 ~2.0–2.5 mm/ข้าง)*", "ความต่างขนาดใช้ Lingual Holding Arch (LHA) เก็บพื้นที่แก้ฟันหน้าล่างซ้อนเกน้อย–ปานกลาง (Incisor liability ล่าง ~5–6 mm)", "outcome"),
             ],
         }
     ],
@@ -403,13 +404,13 @@ PATHWAYS_PART2: Dict[str, List[Dict[str, Any]]] = {
             "subtitle": "Tanaka-Johnston / Moyers Analysis ➔ Posterior Functional Crossbite (Quad-Helix/RME) vs Anterior Crossbite & Habit Breakers",
             "reference": "Proffit's Contemporary Orthodontics 6th ed. / แนวทางราชวิทยาลัยทันตแพทย์แห่งประเทศไทย",
             "steps": [
-                _node(1, "วิเคราะห์เนื้อที่ในชุดฟันผสม (Mixed Dentition Space Analysis)", "วัดความกว้างรวม 4 ฟันตัดล่างถาวร (SI) ➔ Tanaka-Johnston: บน = (SI/2) + 11.0 mm | ล่าง = (SI/2) + 10.5 mm (ต่อ 1 ข้าง)", "เปรียบเทียบ Space Available กับ Space Required: ขาด > 4–5 mm ต่อข้างมักพิจารณา Extraction หรือ Arch expansion", "action"),
-                _node(2, "แก้ไขความผิดปกติระยะฟันผสมที่ ‘ต้องรีบรักษา’ (Early Interception)", "ประเมินว่าเกิด Functional Shift (CR ≠ MI) หรือเสี่ยงทำลายเหงือก/กระดูกหรือไม่", "เลือกเครื่องมือให้ถูกกับชนิดปัญหาและตำแหน่งกระดูก/ฟัน", "decision", [
+                _node(1, "วิเคราะห์เนื้อที่ในชุดฟันผสม & Ectopic Canine (Ericson & Kurol)", "Tanaka-Johnston: บน = (SI/2)+11.0 mm | ล่าง = (SI/2)+10.5 mm (ต่อข้าง) | Nance Leeway: บน 0.9 / ล่าง 1.7 mm/ข้าง (E-space ~2.0–2.5 mm/ข้าง)", "คัดกรองจัดฟันไม่เกินอายุ 7 ปี (AAO); หาก PDC อยู่ Sector 1–2 ไม่มีรากร่น/ที่พอ ถอน C ช่วง 10–13 ปี หายเอง ~91%", "action"),
+                _node(2, "แก้ไขความผิดปกติระยะฟันผสมที่ ‘ต้องรีบรักษา’ (Early Interception)", "ประเมินว่าเกิด Functional Shift (CR ≠ MI), Gingival recession ฟันหน้าล่าง หรือ Skeletal discrepancy", "เลือกเครื่องมือให้ถูกกับชนิดปัญหาและตำแหน่งกระดูก/ฟัน", "decision", [
                     {"condition": "Posterior Crossbite ที่มี Mandibular Functional Shift (เช่น หน้าเบี้ยวตอนกัด)", "outcome": "รีบขยายขากรรไกรบนทันที (Quad-helix, W-arch หรือ Hyrax RME) เพื่อป้องกัน Asymmetric condylar growth", "color": "#10b981"},
-                    {"condition": "Anterior Dental Crossbite (1–2 ซี่ มี Overbite ลึกพอสมควร + มี Space พอ)", "outcome": "ใช้ Tongue blade (อายุน้อยเพิ่งงอก), Inclined bite plane, Z-spring + Bite-opening Hawley (ถ้างับลึก)", "color": "#38bdf8"},
-                    {"condition": "Anterior Open Bite จากดูดนิ้ว/ดุนลิ้น (Finger sucking / Tongue thrust)", "outcome": "Habit-breaking Appliance (Palatal Crib / Bluegrass) เมื่อเด็กพร้อมร่วมมือ และยังไม่อยู่ในวัย Growth หมด", "color": "#f59e0b"},
+                    {"condition": "Anterior Dental Crossbite (1–2 ซี่ มี Overbite พอสมควรหลังแก้ + มี Space พอ)", "outcome": "ใช้ Z-spring (Labial crown tipping) / Paddle spring / Catlan’s Lower Fixed Inclined Plane (45°, 1–3 สัปดาห์ ไม่เกิน 4 wks!)", "color": "#38bdf8"},
+                    {"condition": "Skeletal Class II + Deep Bite วัยกำลังโต (เช่น 9 ปี) vs Habit AOB", "outcome": "Class II + Deep bite ใช้ Activator / Twin Block (ห้าม Posterior bite plane เพราะทำให้ deep bite แย่ลง!); Habit AOB ใช้ Palatal Crib", "color": "#f59e0b"},
                 ]),
-                _node(3, "ผลข้างเคียงของ Serial Extraction & Timing", "Serial Extraction ทำเฉพาะ Class I ที่ซ้อนเกรุนแรง (> 10 mm) และมี Balanced soft tissue + มีหน่อ Premolar ครบ", "ห้ามทำ Serial Extraction ในผู้ป่วย Skeletal Class II/III รุนแรง หรือ Deep Bite มากเพราะจะยิ่งทำให้ Overbite ลึกขึ้น", "warning"),
+                _node(3, "ผลข้างเคียง Serial Extraction & Sealant vs PRR (ADA/AAPD)", "Serial Extraction ทำเฉพาะ Class I ที่ซ้อนเกรุนแรง (> 10 mm) และมีหน่อ Premolar ครบ | Non-cavitated ICDAS 1–2 ➔ Sealant; ICDAS 3/dentin ตื้น ➔ PRR", "ห้ามทำ Serial Extraction ใน Skeletal Class II/III รุนแรง หรือ Deep Bite มาก และระวัง Active condylar hyperplasia ในผู้ใหญ่ต้องตรวจ Bone scan (Tc-99m SPECT)", "warning"),
             ],
         }
     ],
@@ -461,7 +462,7 @@ PATHWAYS_PART2: Dict[str, List[Dict[str, Any]]] = {
             "subtitle": "WHO Oral Health Surveys 5th ed. Criteria + 2x2 Screening Matrix (PPV / NPV Prevalence Effect)",
             "reference": "WHO Oral Health Surveys: Basic Methods 5th ed. / กองทันตสาธารณสุข กรมอนามัย",
             "steps": [
-                _node(1, "เลือกดัชนีทางทันตสาธารณสุขตามกลุ่มเป้าหมาย (WHO Standards)", "DMFT/dmft (ฟันผุ: ถาวรใช้ตัวใหญ่ 32/28 ซี่, น้ำนมใช้ตัวเล็ก 20 ซี่) | SiC Index (ค่าเฉลี่ย DMFT ของ 1/3 ที่ผุสูงสุด) | CPI (ปริทันต์)", "ระวังกฎ WHO 5th ed.: นับ M (Missing) จากโรคฟันผุเท่านั้นในคนอายุ < 30 ปี แต่คนอายุ ≥ 30 ปีให้นับรวมฟันที่หายจากทุกสาเหตุ (ยกเว้นไม่นับฟันคุด M8)", "action"),
+                _node(1, "เลือกดัชนีทางทันตสาธารณสุขตามกลุ่มเป้าหมาย (WHO 5th ed., 2013)", "DMFT/dmft: ถาวร 32 ซี่ (หรือ 28 ซี่เฉพาะโปรโตคอลเดิม) D นับเฉพาะ Cavitated dentin caries | หากวัด remineralization ของรอยผุระยะเริ่มต้นต้องใช้ ICDAS", "ระวังกฎ WHO 5th ed.: นับ M (Missing) จากโรคฟันผุเท่านั้น (Code 4) ในคนอายุ < 30 ปี แต่คนอายุ ≥ 30 ปีให้นับรวม Code 4 + Code 5 (หายจากทุกสาเหตุ)", "action"),
                 _node(2, "แยกแยะการใช้และเกณฑ์คะแนนดัชนีหลักในข้อสอบ", "ตรวจสอบเงื่อนไขพิเศษของ CPITN/CPI, Dean's Index และ Plaque/Gingival Indices", "ประเมินเกณฑ์คะแนนแต่ละดัชนีให้ถูกต้อง", "decision", [
                     {"condition": "CPI Modified (WHO 5th ed.): ตรวจทุกซี่ในเรื่อง Bleeding (0,1) และ Pocket (0,1=4–5mm, 2=≥6mm) ยกเว้น Index teeth 10 ซี่ในผู้ใหญ่", "outcome": "ไม่ใช้ Probe เดินหา Calculus เพื่อสรุป Code 2 แบบเก่าในบางตาราง แต่มักออก Code 0–4 ดั้งเดิม (0=Healthy, 1=BOP, 2=Calculus, 3=4–5mm, 4=≥6mm)", "color": "#10b981"},
                     {"condition": "Dean's Fluorosis Index (ประเมินฟันตกกระ)", "outcome": "เลือกให้คะแนนตามฟัน 2 ซี่ที่ได้รับผลรุนแรงมากที่สุด (Worst two teeth) และหาก 2 ซี่ไม่เท่ากัน ให้ลงคะแนนของซี่ที่ ‘น้อยกว่า’", "color": "#38bdf8"},
@@ -485,7 +486,7 @@ PATHWAYS_PART2: Dict[str, List[Dict[str, Any]]] = {
                     {"condition": "เริ่มมีโรคระยะแรก/คัดกรองพบแล้ว (Early Diagnosis & Prompt Treatment)", "outcome": "Secondary Prevention: ตรวจคัดกรองรอยผุระยะแรก (White spot ➔ Fluoride/Sealant หยุดโรค), อุดฟัน, ขูดหินน้ำลาย, รักษารากฟัน", "color": "#38bdf8"},
                     {"condition": "โรคทำลายอวัยวะแล้ว ต้องหยุดความพิการ/ฟื้นฟูสภาพ (Disability Limitation & Rehabilitation)", "outcome": "Tertiary Prevention: ถอนฟันที่เป็นหนองรุนแรง, ใส่ฟันเทียม (RPD/CD/Implant) เพื่อคืนการบดเคี้ยว", "color": "#f59e0b"},
                 ]),
-                _node(3, "Geoffrey Rose: Population vs High-Risk Strategy", "Population Strategy (ลดความเสี่ยงทั้งประชากร เช่น ภาษีน้ำตาล/โรงเรียนปลอดน้ำอัดลม) ให้ผลลดโรคโดยรวมยั่งยืนที่สุดกว่า High-Risk (คัดแยกกลุ่มเสี่ยงมาทาเฉพาะราย)", "ทฤษฎีพฤติกรรม: Health Belief Model (HBM), Transtheoretical Model (Precontemplation ➔ Contemplation ➔ Preparation ➔ Action ➔ Maintenance), PRECEDE-PROCEED", "outcome"),
+                _node(3, "Geoffrey Rose & PRECEDE-PROCEED Evaluation", "Population Strategy (Whole-population) ลดภาระโรคยั่งยืนกว่า High-Risk | Impact Eval (Phase 7) = Predisposing/Enabling/Reinforcing + พฤติกรรม/สิ่งแวดล้อม", "Outcome Eval (Phase 8) = Health status & Quality of Life (DMFT ลดลง, ไม่ขาดเรียนเพราะปวดฟัน) — อย่าสลับกับ Phase 7 Impact Eval!", "outcome"),
             ],
         }
     ],

@@ -338,57 +338,57 @@ export const CLINICAL_STUDY_GUIDES = {
     "matrix_rows": [
       [
         "2% Lidocaine c 1:100,000 Epinephrine",
-        "4.4 mg/kg (Malamed) / สูงสุดไม่เกิน 300 mg",
+        "7.0 mg/kg / max 500 mg (Malamed 7th) | 4.4 mg/kg max 300 mg (Plain & AAPD เด็ก)",
         "36 mg Lidocaine + 18 mcg Epinephrine",
         "ยาชามาตรฐานตัวเลือกแรก (Gold standard) ในผู้ป่วยทั่วไป"
       ],
       [
         "4% Articaine c 1:100,000 Epinephrine",
-        "7.0 mg/kg / สูงสุดไม่เกิน 500 mg",
+        "7.0 mg/kg / สูงสุดไม่เกิน 500 mg (เลี่ยง < 4 ปี)",
         "72 mg Articaine + 18 mcg Epinephrine",
         "ซึมผ่านกระดูกทึบได้ดีเยี่ยม (Buccal infiltration ฟันกรามล่างสำเร็จสูง)"
       ],
       [
-        "3% Mepivacaine Plain (ไม่มี Epinephrine)",
-        "4.4 mg/kg (Malamed) / สูงสุดไม่เกิน 300 mg",
-        "54 mg Mepivacaine",
-        "ผู้ป่วยโรคหัวใจขั้นรุนแรง หรือผู้ที่ห้ามใช้ Vasoconstrictor"
+        "3% Mepivacaine Plain / 2% c 1:100,000 Epi",
+        "6.6 mg/kg max 400 mg (Malamed 7th) | 4.4 mg/kg max 300 mg (AAPD/ข้อสอบเด็ก)",
+        "54 mg (3% Plain) / 36 mg (2% + Epi)",
+        "3% Plain ใช้ในผู้ป่วยที่ห้ามใช้ Vasoconstrictor"
       ],
       [
         "0.5% Bupivacaine c 1:200,000 Epinephrine",
-        "2.0 mg/kg / สูงสุดไม่เกิน 90 mg",
+        "2.0 mg/kg / สูงสุดไม่เกิน 90 mg (ไม่แนะนำในเด็กเล็ก)",
         "9 mg Bupivacaine + 9 mcg Epinephrine",
         "ออกฤทธิ์นาน 6-8 ชม. เหมาะกับการผ่าตัดใหญ่และระงับปวดหลังผ่าตัด"
       ]
     ],
     "pitfalls": [
-      "กับดักผู้ป่วยโรคหัวใจ (Cardiac Patient Limits): ขนาดยาสูงสุดของ Epinephrine ในคนไข้โรคหัวใจตามเกณฑ์ AHA คือ 0.04 mg (เท่ากับยาชา 1:100,000 ไม่เกิน 2 หลอด หรือ 1:200,000 ไม่เกิน 4 หลอด) แม้ว่าตัวยาชา Lidocaine จะยังไม่เกินขนาดยาสูงสุดก็ตาม!",
+      "กับดักผู้ป่วยโรคหัวใจ (Cardiac Patient Limits): ขนาดยาสูงสุดของ Epinephrine ในคนไข้โรคหัวใจตามเกณฑ์ AHA คือ 0.04 mg (เท่ากับยาชา 1:100,000 ไม่เกิน 2 หลอด หรือ 1:200,000 ไม่เกิน 4 หลอด; คนปกติ max 0.2 mg) แม้ว่าตัวยาชา Lidocaine จะยังไม่เกินขนาดยาสูงสุดก็ตาม!",
       "Prilocaine และ Benzocaine สัมพันธ์กับการเกิดภาวะ Methemoglobinemia (เลือดเปลี่ยนเป็นสีน้ำตาลช็อกโกแลต SpO2 ตก) รักษาด้วยการให้ 1% Methylene blue ขนาด 1-2 mg/kg ทางหลอดเลือดดำช้าๆ"
     ],
-    "pearl": "สูตรคิดจำนวนหลอดแบบรวดเร็วในห้องสอบ: ยาชา 2% ขนาด 1.8 mL มีเนื้อยา 36 mg ต่อหลอด หากเด็กน้ำหนัก 20 kg ให้ขนาดสูงสุด 4.4 mg/kg = รับได้ 88 mg คิดเป็น 88 / 36 = ไม่เกิน 2.4 หลอด (ปัดเศษลง = สูงสุด 2 หลอดเท่านั้น)!",
-    "reference": "Malamed SF. Handbook of Local Anesthesia, 7th ed. Elsevier, 2020 (Chapters 2, 4 & 17).",
+    "pearl": "สูตรคิดจำนวนหลอดแบบรวดเร็วในห้องสอบ (1.8 mL/หลอด): 2% = 36 mg/หลอด, 3% = 54 mg/หลอด, 4% = 72 mg/หลอด • ข้อสอบเด็ก (AAPD) มักใช้ 4.4 mg/kg เช่น เด็ก 25 kg ใช้ 2% Mepivacaine = 110 mg → สูงสุด 3 หลอด (108 mg) ขณะที่ Malamed 7th ed. ปรับผู้ใหญ่ Lidocaine w/ Epi เป็น 7.0 mg/kg (max 500 mg) และ Mepivacaine เป็น 6.6 mg/kg (max 400 mg)",
+    "reference": "Malamed SF. Handbook of Local Anesthesia, 7th ed. Elsevier, 2020 (Chapters 2, 4 & 17) & AAPD Guideline.",
     "decision_matrix": [
       {
         "col_0": "2% Lidocaine c 1:100,000 Epinephrine",
-        "col_1": "4.4 mg/kg (Malamed) / สูงสุดไม่เกิน 300 mg",
+        "col_1": "7.0 mg/kg / max 500 mg (Malamed 7th) | 4.4 mg/kg max 300 mg (Plain & AAPD เด็ก)",
         "col_2": "36 mg Lidocaine + 18 mcg Epinephrine",
         "col_3": "ยาชามาตรฐานตัวเลือกแรก (Gold standard) ในผู้ป่วยทั่วไป"
       },
       {
         "col_0": "4% Articaine c 1:100,000 Epinephrine",
-        "col_1": "7.0 mg/kg / สูงสุดไม่เกิน 500 mg",
+        "col_1": "7.0 mg/kg / สูงสุดไม่เกิน 500 mg (เลี่ยง < 4 ปี)",
         "col_2": "72 mg Articaine + 18 mcg Epinephrine",
         "col_3": "ซึมผ่านกระดูกทึบได้ดีเยี่ยม (Buccal infiltration ฟันกรามล่างสำเร็จสูง)"
       },
       {
-        "col_0": "3% Mepivacaine Plain (ไม่มี Epinephrine)",
-        "col_1": "4.4 mg/kg (Malamed) / สูงสุดไม่เกิน 300 mg",
-        "col_2": "54 mg Mepivacaine",
-        "col_3": "ผู้ป่วยโรคหัวใจขั้นรุนแรง หรือผู้ที่ห้ามใช้ Vasoconstrictor"
+        "col_0": "3% Mepivacaine Plain / 2% c 1:100,000 Epi",
+        "col_1": "6.6 mg/kg max 400 mg (Malamed 7th) | 4.4 mg/kg max 300 mg (AAPD/ข้อสอบเด็ก)",
+        "col_2": "54 mg (3% Plain) / 36 mg (2% + Epi)",
+        "col_3": "3% Plain ใช้ในผู้ป่วยที่ห้ามใช้ Vasoconstrictor"
       },
       {
         "col_0": "0.5% Bupivacaine c 1:200,000 Epinephrine",
-        "col_1": "2.0 mg/kg / สูงสุดไม่เกิน 90 mg",
+        "col_1": "2.0 mg/kg / สูงสุดไม่เกิน 90 mg (ไม่แนะนำในเด็กเล็ก)",
         "col_2": "9 mg Bupivacaine + 9 mcg Epinephrine",
         "col_3": "ออกฤทธิ์นาน 6-8 ชม. เหมาะกับการผ่าตัดใหญ่และระงับปวดหลังผ่าตัด"
       }
@@ -441,10 +441,11 @@ export const CLINICAL_STUDY_GUIDES = {
     ],
     "pitfalls": [
       "กับดักข้อสอบที่พบบ่อยที่สุด: โจทย์ถาม \"ลำดับแรกสุดในการดูแลผู้ป่วย Ludwig’s Angina คืออะไร?\" ตัวเลือกลวงมักเป็น ถอนฟันทันที หรือ กรีดระบายหนอง หรือ ให้ยาฆ่าเชื้อ -> คำตอบที่ถูกต้องเพียงหนึ่งเดียวคือ \"Airway Assessment & Maintenance (ประเมินและเปิดทางเดินหายใจ)\" เพราะผู้ป่วยเสียชีวิตจากภาวะขาดอากาศหายใจ ไม่ได้เสียชีวิตจากพิษแบคทีเรีย!",
-      "อันตรายของ Danger Space: พื้นที่ระหว่าง Alar layer และ Prevertebral layer ทอดตัวยาวจากกะโหลกศีรษะลงสู่ Posterior Mediastinum หากการติดเชื้อลุกลามเข้าช่องนี้ จะเกิดภาวะ Mediastinitis ซึ่งมีอัตราการเสียชีวิตสูงกว่า 50%"
+      "อันตรายของ Danger Space: พื้นที่ระหว่าง Alar layer และ Prevertebral layer ทอดตัวยาวจากกะโหลกศีรษะลงสู่ Posterior Mediastinum หากการติดเชื้อลุกลามเข้าช่องนี้ จะเกิดภาวะ Mediastinitis ซึ่งมีอัตราการเสียชีวิตสูงกว่า 50%",
+      "ADA 2019 Antibiotic Stewardship: ห้ามจ่ายยาปฏิชีวนะในผู้ป่วยภูมิคุ้มกันปกติที่ปวดหรือบวมเฉพาะที่โดยไม่มีอาการลุกลามเข้า Fascial space หรืออาการระบบทั่วไป (ไข้, Trismus, ต่อมน้ำเหลืองโต) — การระบายหนอง (I&D) และกำจัดฟันต้นเหตุคือหัวใจหลัก; หากติดเชื้อลุกลามใช้ Amoxicillin (หรือ Clindamycin เมื่อแพ้ Penicillin + รักษา, แต่ห้ามใช้ Clindamycin ใน IE Prophylaxis!)"
     ],
-    "pearl": "การแพร่กระจายของการติดเชื้อจากฟันเขี้ยวบน (Maxillary Canine) รากที่ยาวมากจะอยู่เหนือแนว Levator anguli oris ทำให้เกิดการติดเชื้อเข้าสู่ Canine Space ส่งผลให้ร่องแก้มหาย (Obliteration of nasolabial fold) และตาบวมปิด ซึ่งเสี่ยงต่อการลุกลามเข้า Angular vein สู่ Cavernous sinus thrombosis!",
-    "reference": "Hupp JR, Ellis E, Tucker MR. Contemporary Oral and Maxillofacial Surgery, 7th ed. Elsevier, 2019 (Chapter 16: Odontogenic Infections).",
+    "pearl": "การแพร่กระจายของการติดเชื้อจากฟันเขี้ยวบน (Maxillary Canine) รากที่ยาวมากจะอยู่เหนือแนว Levator anguli oris ทำให้เกิดการติดเชื้อเข้าสู่ Canine Space ส่งผลให้ร่องแก้มหาย (Obliteration of nasolabial fold) และตาบวมปิด ซึ่งเสี่ยงต่อการลุกลามเข้า Angular vein สู่ Cavernous sinus thrombosis! • ฟันคุดล่างอักเสบลุกลามเข้า Masticator space (Submasseteric / Pterygomandibular) ทำให้เกิด Trismus รุนแรง",
+    "reference": "Hupp JR, Ellis E, Tucker MR. Contemporary Oral and Maxillofacial Surgery, 7th ed. Elsevier, 2019 (Chapter 16: Odontogenic Infections); ADA Antibiotic Guideline 2019.",
     "decision_matrix": [
       {
         "col_0": "Sublingual Space",
@@ -485,7 +486,7 @@ export const CLINICAL_STUDY_GUIDES = {
       "Hypoglycemia"
     ],
     "overview": "ภาวะฉุกเฉินทางการแพทย์สามารถเกิดขึ้นได้ทุกเมื่อในคลินิกทันตกรรม ทันตแพทย์ต้องจดจำขั้นตอนการประเมิน (P-C-A-B-D: Position, Circulation, Airway, Breathing, Definitive care) และการบริหารยาช่วยชีวิตฉุกเฉินได้อย่างแม่นยำ",
-    "core_mechanism": "1. ภาวะฉุกเฉินที่พบบ่อยและกลไกการปฐมพยาบาล:\n- **Vasovagal Syncope (เป็นลมหมดสติจากความเครียด/กลัว)**: ภาวะฉุกเฉินที่พบบ่อยที่สุด (~50%) เกิดจาก Sympathetic surge ตามด้วย Parasympathetic/Vagal rebound ทำให้เกิด Bradycardia และ Peripheral vasodilation เลือดไปเลี้ยงสมองลดลง\n  * การรักษา: ปรับเก้าอี้ให้อยู่ในท่า **Trendelenburg position** (ศีรษะต่ำ เท้าสูง 10-15 องศา) เพื่อเพิ่ม Venous return สู่สมอง, คลายเสื้อผ้า, ให้ออกซิเจน 100%\n- **Anaphylaxis (แพ้รุนแรงเฉียบพลัน)**: IgE-mediated mast cell degranulation หลั่ง Histamine และ Leukotrienes ทำให้เกิด Bronchospasm, Laryngeal edema, และ Severe hypotension\n  * ยาตัวเลือกแรกสุด (First-line drug): **Epinephrine 1:1,000 ขนาด 0.3 - 0.5 mg ฉีดเข้ากล้ามเนื้อต้นขาด้านนอก (Anterolateral thigh / Vastus lateralis)** ทันที! (เด็กให้ 0.01 mg/kg หรือ 0.15 mg) สามารถฉีดซ้ำได้ทุก 5-15 นาทีหากอาการไม่ดีขึ้น\n- **Angina Pectoris vs Myocardial Infarction (กล้ามเนื้อหัวใจขาดเลือด)**:\n  * Angina: ให้ผู้ป่วยนั่งพัก, อมยาใต้ลิ้น **Nitroglycerin 0.4 mg sublingually** ทุก 5 นาที สูงสุดไม่เกิน 3 เม็ด\n  * **ข้อห้ามเด็ดขาดของ Nitroglycerin**: ห้ามใช้หากผู้ป่วยได้รับยากลุ่ม PDE-5 inhibitors (Sildenafil/Viagra ใน 24 ชม. หรือ Tadalafil/Cialis ใน 48 ชม.) เพราะจะทำให้ความดันโลหิตตกอย่างรุนแรงจนเสียชีวิตได้!\n  * หากอมครบ 3 เม็ดหรือ 10 นาทีแล้วอาการปวดเค้นหน้าอกไม่ทุเลา ให้สงสัยกล้ามเนื้อหัวใจตายเฉียบพลัน (MI) -> โทรเรียกรถพยาบาล 1669 ทันที, ให้เคี้ยว **Aspirin 160-325 mg**, ให้ออกซิเจน และเตรียม AED\n- **Hypoglycemia (น้ำตาลในเลือดต่ำ)**:\n  * รู้สึกตัวดี: ให้น้ำหวานหรือกลูโคส 15-20 กรัม รับประทาน (Rule of 15)\n  * หมดสติ/ไม่สามารถกลืนได้: **ห้ามป้อนอาหารทางปากเด็ดขาด!** ให้ฉีด 50% Dextrose (D50W) 50 mL ทางหลอดเลือดดำ หรือฉีด Glucagon 1 mg IM\n- **Local Anesthetic Systemic Toxicity (LAST)**: เกิดจากการฉีดยาชาเข้าเส้นเลือดโดยตรงหรือเกินขนาดยาสูงสุด เริ่มจากชาลิ้น/ปาก หูอื้อ ตาพร่า พูดลิ้นพันกัน ชักเกร็ง และหัวใจหยุดเต้น\n  * การรักษา: ช่วยหายใจด้วย 100% O2, ควบคุมอาการชักด้วย Midazolam, และให้ **20% Lipid Emulsion (Intralipid)** ทางหลอดเลือดดำ (Bolus 1.5 mL/kg ตามด้วย Infusion 0.25 mL/kg/min)",
+    "core_mechanism": "1. ภาวะฉุกเฉินที่พบบ่อยและกลไกการปฐมพยาบาล:\n- **Vasovagal Syncope (เป็นลมหมดสติจากความเครียด/กลัว)**: ภาวะฉุกเฉินที่พบบ่อยที่สุด (~50%) เกิดจาก Sympathetic surge ตามด้วย Parasympathetic/Vagal rebound ทำให้เกิด Bradycardia และ Peripheral vasodilation เลือดไปเลี้ยงสมองลดลง\n  * การรักษา: ปรับเก้าอี้ให้อยู่ในท่า **Trendelenburg position** (ศีรษะต่ำ เท้าสูง 10-15 องศา) เพื่อเพิ่ม Venous return สู่สมอง, คลายเสื้อผ้า, ให้ออกซิเจน 100%\n- **Anaphylaxis (แพ้รุนแรงเฉียบพลัน)**: IgE-mediated mast cell degranulation หลั่ง Histamine และ Leukotrienes ทำให้เกิด Bronchospasm, Laryngeal edema, และ Severe hypotension\n  * ยาตัวเลือกแรกสุด (First-line drug): **Epinephrine 1:1,000 ขนาด 0.3 - 0.5 mg ฉีดเข้ากล้ามเนื้อต้นขาด้านนอก (Anterolateral thigh / Vastus lateralis)** ทันที! (เด็กให้ 0.01 mg/kg หรือ 0.15 mg) สามารถฉีดซ้ำได้ทุก 5-15 นาทีหากอาการไม่ดีขึ้น\n- **Angina Pectoris vs Myocardial Infarction (กล้ามเนื้อหัวใจขาดเลือด)**:\n  * Angina: ให้ผู้ป่วยนั่งพัก, อมยาใต้ลิ้น **Nitroglycerin 0.4 mg sublingually** ทุก 5 นาที สูงสุดไม่เกิน 3 เม็ด\n  * **ข้อห้ามเด็ดขาดของ Nitroglycerin**: ห้ามใช้หากผู้ป่วยได้รับยากลุ่ม PDE-5 inhibitors (Sildenafil/Viagra ใน 24 ชม. หรือ Tadalafil/Cialis ใน 48 ชม.) เพราะจะทำให้ความดันโลหิตตกอย่างรุนแรงจนเสียชีวิตได้!\n  * หากอมครบ 3 เม็ดหรือ 10 นาทีแล้วอาการปวดเค้นหน้าอกไม่ทุเลา ให้สงสัยกล้ามเนื้อหัวใจตายเฉียบพลัน (MI) -> โทรเรียกรถพยาบาล 1669 ทันที, ให้เคี้ยว **Aspirin 160-325 mg**, ให้ออกซิเจน และเตรียม AED\n- **Hypoglycemia (น้ำตาลในเลือดต่ำในผู้ป่วย DM)**:\n  * รู้สึกตัวดี: ให้น้ำหวานหรือกลูโคส 15-20 กรัม รับประทาน (Rule of 15)\n  * **หมดสติ/ไม่สามารถกลืนได้**: **ห้ามป้อนน้ำตาล/ของกินทางปากและห้ามเอาถุงคลุมจมูกปากเด็ดขาด!** ให้ฉีด **50% Dextrose (D50W) 50 mL IV** หรือ **Glucagon 1 mg IM**\n- **Thyroid Crisis (Thyroid Storm) vs Epinephrine Overdose**: ผู้ป่วย *Graves' disease* ที่ไม่ได้คุมอาการ หลังฉีดยาชามีไข้สูง กระสับกระส่าย หัวใจเต้นเร็ว ความดันสูง Pulse pressure (PP) กว้าง = **Thyroid crisis** (ต่างจาก Epinephrine reaction ที่มักไม่มีไข้สูง)\n- **AHA BLS 2020 & 2025 (Cardiac Arrest & Foreign Body Airway Obstruction)**:\n  * หมดสติ + ไม่มีชีพจร → เรียกช่วย/**โทร 1669 & นำ AED** → **Chest Compression ลึก 5–6 cm อัตรา 100–120 ครั้ง/นาที ปล่อยอกคืนตัวสุด (30:2)**\n  * สำลักสิ่งแปลกปลอม (AHA 2025): หากยังไอมีเสียงแรงดี (Partial obstruction) ให้กระตุ้นไอต่อไป ห้ามทำ Heimlich/Positive-pressure; หากอุดกั้นสมบูรณ์แต่ยังมีสติ สลับ **5 Back blows + 5 Abdominal thrusts**; หากหมดสติ → เริ่ม CPR & มองหาสิ่งแปลกปลอมในปากก่อนเป่าลม\n- **Local Anesthetic Systemic Toxicity (LAST)**: เกิดจากการฉีดยาชาเข้าเส้นเลือดโดยตรงหรือเกินขนาดยาสูงสุด เริ่มจากชาลิ้น/ปาก หูอื้อ ตาพร่า พูดลิ้นพันกัน ชักเกร็ง และหัวใจหยุดเต้น\n  * การรักษา: ช่วยหายใจด้วย 100% O2, ควบคุมอาการชักด้วย Midazolam, และให้ **20% Lipid Emulsion (Intralipid)** ทางหลอดเลือดดำ (Bolus 1.5 mL/kg ตามด้วย Infusion 0.25 mL/kg/min)",
     "matrix_headers": [
       "ภาวะฉุกเฉิน",
       "อาการแสดงหลัก",
@@ -526,10 +527,10 @@ export const CLINICAL_STUDY_GUIDES = {
     ],
     "pitfalls": [
       "กับดักฉีด Epinephrine ใน Anaphylaxis: ต้องฉีดเข้ากล้ามเนื้อต้นขาด้านนอก (IM Vastus lateralis) เท่านั้น! ห้ามฉีดเข้าเส้นเลือดดำ (IV) เพราะเสี่ยงต่อการเกิด Malignant cardiac arrhythmia และห้ามฉีดเข้ากล้ามเนื้อสะโพกหรือใต้ผิวหนังเพราะดูดซึมช้าเกินไป",
-      "ผู้ป่วยที่เป็นโรคหอบหืด (Asthma Attack) ยาตัวเลือกแรกคือ Albuterol/Salbutamol Inhaler พ่น 2-4 puffs หากไม่ดีขึ้นจึงใช้ Epinephrine"
+      "กับดัก Hypoglycemia หมดสติ vs Hyperventilation: ผู้ป่วยเบาหวานที่มีเหงื่อออก กระสับกระส่าย และหมดสติ ต้องฉีด 50% Dextrose IV (ห้ามเอาถุงคลุมจมูก/ปากหรืออมน้ำตาลเด็ดขาด!) | สำลักสิ่งแปลกปลอมแต่ยังไอแรงดี ห้ามทำ Heimlich ให้กระตุ้นไอต่อ (AHA 2025)"
     ],
-    "pearl": "จำความเข้มข้นของ Epinephrine ในห้องฉุกเฉินให้แม่นยำ: กล้ามเนื้อสำหรับแพ้รุนแรง (Anaphylaxis) ใช้ 1:1,000 (1 mg/mL) แต่ยาชาทันตกรรมผสม 1:100,000 (0.01 mg/mL) ความเข้มข้นต่างกันถึง 100 เท่า ห้ามหยิบผิดหลอดเด็ดขาด!",
-    "reference": "Malamed SF. Medical Emergencies in the Dental Office, 8th ed. Elsevier, 2023; AHA CPR & ECC Guidelines.",
+    "pearl": "Anaphylaxis ใช้ 1:1,000 IM ต้นขา 0.3–0.5 mg | CPR ผู้ใหญ่ (AHA 2020/2025): ลึก 5–6 cm ปล่อยอกคืนตัวสุด 100–120 ครั้ง/นาที | Hypoglycemia หมดสติ = IV 50% Dextrose!",
+    "reference": "Malamed SF. Medical Emergencies in the Dental Office, 8th ed. Elsevier, 2023; AHA BLS & ECC Guidelines (2020/2025).",
     "decision_matrix": [
       {
         "col_0": "Vasovagal Syncope",
@@ -614,7 +615,7 @@ export const CLINICAL_STUDY_GUIDES = {
       "ข้อสอบมักถามว่า \"หากคนไข้ใส่ฟันเทียมล่างแล้วมีอาการชาที่ริมฝีปากล่าง เกิดจากสาเหตุใด?\" -> เกิดจากขอบฟันเทียมกดทับ Mental Foramen เนื่องจากสันเหงือกละลายตัวมาก ต้องแก้ไขโดยการกรอ relief บริเวณฟันกรามน้อยล่างด้านแก้ม"
     ],
     "pearl": "การตรวจ Vibrating line ให้คนไข้พูดออกเสียง \"อา-อา\" สั้นๆ รอยต่อที่กระเพื่อมขึ้นลงคือ Anterior vibrating line ส่วน Posterior vibrating line จะสิ้นสุดที่รอยบุ๋ม Hamular notch สองข้าง เชื่อมตัดผ่านตุ่ม Fovea palatinae ไปข้างหน้า 1-2 มม.!",
-    "reference": "Zarb GA, Hobkirk JA, Eckert SE, Jacob RF. Prosthodontic Treatment for Edentulous Patients, 13th ed. Mosby, 2013 (Chapter 12).",
+    "reference": "Zarb GA, Hobkirk JA, Eckert SE, Jacob RF. Prosthodontic Treatment for Edentulous Patients, 13th/14th ed. Elsevier; ACP Evidence-Based Complete Denture Guidelines & GPT-10 (2023).",
     "decision_matrix": [
       {
         "col_0": "Primary Stress-Bearing",
@@ -690,7 +691,7 @@ export const CLINICAL_STUDY_GUIDES = {
     ],
     "pitfalls": [
       "กับดัก Applegate Rule 8: กฎระบุว่า \"ขนาดของช่องว่าง (Extent) ไม่นำมาคิดเป็น Modification แต่นับเฉพาะจำนวนช่องว่าง (Number of additional spaces)\" เช่น หาย 1 ซี่ หรือหาย 4 ซี่ หากเป็นช่องเดียว ก็นับเป็น Modification 1 เท่ากัน!",
-      "การเลือก Lingual bar: ข้อสอบมักให้ความลึกของพื้นปากมา เช่น 5 มม. แล้วถามว่าจะเลือก Major connector ชนิดใด? ตอบทันทีว่า Lingual Plate เพราะความลึกไม่ถึงเกณฑ์ 7-8 มม.!"
+      "การเลือก Lingual bar: ข้อสอบมักให้ความลึกของพื้นปาก (วัดด้วย Periodontal probe จากขอบเหงือกอิสระ Marginal gingiva ถึงพื้นปาก/Lingual frenum) มา เช่น 5–6 มม. แล้วถามว่าจะเลือก Major connector ชนิดใด? ตอบทันทีว่า Lingual Plate เพราะความลึกไม่ถึงเกณฑ์ 7–8 มม.!"
     ],
     "pearl": "ข้อห้ามเด็ดขาดของ Cast Circumferential Clasp (Akers): ห้ามวางบนฟันหลักปลายสุดของ Kennedy Class I และ II โดยมี Rest อยู่ด้าน Distal เพราะแรงเคี้ยวจะทำให้ปลายตะของัดตัวฟันขึ้นจนฟันหลักหลุดโยก (Class I Lever destructive action)!",
     "reference": "Carr AB, Brown DT. McCracken's Removable Partial Prosthodontics, 13th/14th ed. Elsevier, 2021 (Chapters 3, 4, 8 & 12).",
@@ -728,13 +729,13 @@ export const CLINICAL_STUDY_GUIDES = {
     "badgeColor": "#38bdf8",
     "must_know_topics": [
       "Ferrule Effect",
-      "Biologic Width",
+      "Supracrestal Tissue Attachment (STA / Biologic Width)",
       "Total Occlusal Convergence",
       "Finish Line Margins",
       "Post and Core"
     ],
-    "overview": "ความคงทนระยะยาวของครอบฟันและสะพานฟันขึ้นอยู่กับชีวกลศาสตร์ของการเตรียมฟัน (Tooth Preparation) การรักษาระยะความกว้างทางชีวภาพ (Biologic Width) และปรากฏการณ์ปลอกรัด (Ferrule Effect) ในฟันที่รักษารากฟันแล้ว",
-    "core_mechanism": "1. เรขาคณิตชีวกลศาสตร์ของการกรอฟัน (Biomechanical Geometry):\n- **Total Occlusal Convergence (TOC)**: มุมสอบเข้าหากันของผนังแกนฟันตรงข้าม ค่าที่เหมาะสมที่สุดในทางคลินิกคือ **6 ถึง 10 องศา** (ข้างละ 3-5 องศา) เพื่อให้ได้ความอยู่แน่น (Retention) และความต้านทานแรงงัด (Resistance form) สูงสุด\n- **ความสูงของผนังแกนฟัน (Axial Wall Height)**:\n  * ฟันกรามน้อย (Premolars) และฟันหน้า: ต้องการความสูงอย่างน้อย **3 มม.**\n  * ฟันกรามแท้ (Molars): เส้นผ่านศูนย์กลางกว้างขึ้น จึงต้องการความสูงอย่างน้อย **4 มม.**\n  * สัดส่วนความสูงต่อความกว้าง (Height-to-base ratio): ต้องไม่ต่ำกว่า **0.4** หากฟันสั้นเกินไป ต้องเสริมความต้านทานด้วยการกรอร่องแนวตั้ง (Auxiliary grooves/boxes) หรือทำ Crown Lengthening Surgery\n- **การตัดลดด้านบดเคี้ยว (Occlusal Reduction)**:\n  * Functional cusp (Cusp รับแรง: Palatal บน, Buccal ล่าง): ลด 1.5 มม. สำหรับโลหะล้วน, **2.0 มม.** สำหรับ PFM และ All-ceramic\n  * Non-functional cusp: ลด 1.0 มม. สำหรับโลหะ, 1.5 มม. สำหรับเซรามิก\n\n2. เส้นขอบฟัน (Finish Lines / Margins):\n- **Chamfer Margin**: มีลักษณะโค้งเว้า เหมาะกับครอบฟันโลหะล้วน, โลหะด้านลิ้นของ PFM, และครอบฟัน Zirconia\n- **Shoulder Margin (90 องศา)**: กว้าง 1.0 - 1.2 มม. พร้อมลบมุมภายในมน (Rounded internal angle) ออกแบบมาเพื่อรับแรงอัดของ All-ceramic และเซรามิกขอบเหงือก (Porcelain shoulder) ป้องกันการแตกร้าว\n\n3. ปรากฏการณ์ปลอกรัด (Ferrule Effect) ในฟันที่บูรณะเดือยฟัน (Post & Core):\n- นิยาม: ปลอกรัดของเนื้อฟันแท้ธรรมชาติรอบแกนฟันที่โผล่พ้นระดับขอบครอบฟัน\n- **ขนาดมาตรฐานทองคำ (Gold Standard Dimension)**:\n  * **ความสูงของเนื้อฟันธรรมชาติอย่างน้อย 1.5 ถึง 2.0 มม.**\n  * **ความหนาของผนังเนื้อฟันอย่างน้อย 1.0 มม.**\n  * **ต้องมีความต่อเนื่องรอบตัวฟัน 360 องศา (Circumferential ferrule)**\n- ชีวกลศาสตร์: Ferrule จะเปลี่ยนทิศทางแรงดัดงอ (Bending & Wedging force) จากแกนเดือยให้กลายเป็นแรงอัดรอบตัวฟัน ช่วยลดความเสี่ยงต่อการเกิด **รากฟันแตกแนวตั้ง (Vertical Root Fracture - VRF)** ได้อย่างมหาศาล!\n- กฎเกณฑ์ความยาวของเดือยฟัน (Post Length Rules):\n  * เดือยฟันต้องยาวอย่างน้อยเท่ากับความสูงของตัวครอบฟันทางคลินิก หรือ 2/3 ของความยาวรากฟันในกระดูก\n  * **ต้องเหลือสารอุดกัตตาเปอร์ชาปิดปลายรากฟัน (Apical Gutta-Percha Seal) ไว้อย่างน้อย 4 ถึง 5 มม. เสมอ** เพื่อป้องกันการรั่วซึมของเชื้อจุลินทรีย์ออกสู่ปลายราก!",
+    "overview": "ความคงทนระยะยาวของครอบฟันและสะพานฟันขึ้นอยู่กับชีวกลศาสตร์ของการเตรียมฟัน (Tooth Preparation) การรักษาระยะยึดเกาะเนื้อเยื่อเหนือสันกระดูก (Supracrestal Tissue Attachment: STA — เดิมเรียกว่า Biologic Width ≥ 2 mm โดยขอบครอบฟันต้องห่างยอดกระดูกเบ้าฟันอย่างน้อย 3.0 mm) และปรากฏการณ์ปลอกรัด (Ferrule Effect) ในฟันที่รักษารากฟันแล้ว",
+    "core_mechanism": "1. เรขาคณิตชีวกลศาสตร์ของการกรอฟัน (Biomechanical Geometry):\n- **Total Occlusal Convergence (TOC)**: มุมสอบเข้าหากันของผนังแกนฟันตรงข้าม ค่าที่เหมาะสมที่สุดในทางคลินิกคือ **6 ถึง 10 องศา** (ข้างละ 3-5 องศา) เพื่อให้ได้ความอยู่แน่น (Retention) และความต้านทานแรงงัด (Resistance form) สูงสุด\n- **ความสูงของผนังแกนฟัน (Axial Wall Height)**:\n  * ฟันกรามน้อย (Premolars) และฟันหน้า: ต้องการความสูงอย่างน้อย **3 มม.**\n  * ฟันกรามแท้ (Molars): เส้นผ่านศูนย์กลางกว้างขึ้น จึงต้องการความสูงอย่างน้อย **4 มม.**\n  * สัดส่วนความสูงต่อความกว้าง (Height-to-base ratio): ต้องไม่ต่ำกว่า **0.4** หากฟันสั้นเกินไป ต้องเสริมความต้านทานด้วยการกรอร่องแนวตั้ง (Auxiliary grooves/boxes) หรือทำ Crown Lengthening Surgery (รักษาระยะ Supracrestal Tissue Attachment / Biologic Width ให้ขอบครอบฟันห่างยอดกระดูก ≥ 3.0 มม.)\n- **การตัดลดด้านบดเคี้ยว (Occlusal Reduction)**:\n  * Functional cusp (Cusp รับแรง: Palatal บน, Buccal ล่าง): ลด 1.5 มม. สำหรับโลหะล้วน, **2.0 มม.** สำหรับ PFM และ All-ceramic\n  * Non-functional cusp: ลด 1.0 มม. สำหรับโลหะ, 1.5 มม. สำหรับเซรามิก\n\n2. เส้นขอบฟัน (Finish Lines / Margins):\n- **Chamfer Margin**: มีลักษณะโค้งเว้า เหมาะกับครอบฟันโลหะล้วน, โลหะด้านลิ้นของ PFM, และครอบฟัน Zirconia\n- **Shoulder Margin (90 องศา)**: กว้าง 1.0 - 1.2 มม. พร้อมลบมุมภายในมน (Rounded internal angle) ออกแบบมาเพื่อรับแรงอัดของ All-ceramic และเซรามิกขอบเหงือก (Porcelain shoulder) ป้องกันการแตกร้าว\n\n3. ปรากฏการณ์ปลอกรัด (Ferrule Effect) ในฟันที่บูรณะเดือยฟัน (Post & Core):\n- นิยาม: ปลอกรัดของเนื้อฟันแท้ธรรมชาติรอบแกนฟันที่โผล่พ้นระดับขอบครอบฟัน\n- **ขนาดมาตรฐานทองคำ (Gold Standard Dimension)**:\n  * **ความสูงของเนื้อฟันธรรมชาติอย่างน้อย 1.5 ถึง 2.0 มม.**\n  * **ความหนาของผนังเนื้อฟันอย่างน้อย 1.0 มม.**\n  * **ต้องมีความต่อเนื่องรอบตัวฟัน 360 องศา (Circumferential ferrule)**\n- ชีวกลศาสตร์: Ferrule จะเปลี่ยนทิศทางแรงดัดงอ (Bending & Wedging force) จากแกนเดือยให้กลายเป็นแรงอัดรอบตัวฟัน ช่วยลดความเสี่ยงต่อการเกิด **รากฟันแตกแนวตั้ง (Vertical Root Fracture - VRF)** ได้อย่างมหาศาล!\n- กฎเกณฑ์ความยาวของเดือยฟัน (Post Length Rules):\n  * เดือยฟันต้องยาวอย่างน้อยเท่ากับความสูงของตัวครอบฟันทางคลินิก หรือ 2/3 ของความยาวรากฟันในกระดูก\n  * **ต้องเหลือสารอุดกัตตาเปอร์ชาปิดปลายรากฟัน (Apical Gutta-Percha Seal) ไว้อย่างน้อย 4 ถึง 5 มม. เสมอ** เพื่อป้องกันการรั่วซึมของเชื้อจุลินทรีย์ออกสู่ปลายราก!",
     "matrix_headers": [
       "พารามิเตอร์การเตรียมฟัน",
       "ค่ามาตรฐานทางคลินิก",
@@ -1056,8 +1057,8 @@ export const CLINICAL_STUDY_GUIDES = {
       "10-MDP",
       "Infected vs Affected Dentin"
     ],
-    "overview": "การปกป้องโพรงประสาทฟันขึ้นอยู่กับระยะความหนาของเนื้อฟันที่เหลือ (Remaining Dentin Thickness - RDT) เหนือพัลพ์ และการแยกระหว่าง Infected Dentin กับ Affected Dentin ตามแนวทาง CariesCare International และ ICCMS",
-    "core_mechanism": "1. กฎเกณฑ์ความหนาเนื้อฟันที่เหลือ (Remaining Dentin Thickness - RDT):\n- **RDT > 2.0 มม. (ตื้น/ลึกปานกลาง)**:\n  * ความหนาของเนื้อฟันธรรมชาติ 2 มม. มีความสามารถเป็นฉนวนกันความร้อนและสารเคมีได้อย่างสมบูรณ์แบบที่สุด\n  * ไม่จำเป็นต้องใส่ Liner หรือ Base ใดๆ ทั้งสิ้น! ให้ทาสารยึดติด (Adhesive system) แล้วบูรณะได้ทันที\n- **RDT 0.5 ถึง 2.0 มม. (โพรงฟันลึก)**:\n  * จำนวนและขนาดของ Dentinal tubules กว้างขึ้น สารพิษแบคทีเรียสามารถซึมสู่พัลพ์ได้\n  * แนะนำให้ใส่ **RMGIC / GIC Base** (Resin-Modified Glass Ionomer) เพื่อเป็นฉนวนกันความร้อน เสริมความแข็งแรง และช่วยปลดปล่อยฟลูออไรด์\n- **RDT < 0.5 มม. (โพรงฟันลึกมาก เห็นเงาสีชมพูของพัลพ์รำไร)**:\n  * เสี่ยงต่อ Micro-exposure และการอักเสบเฉียบพลัน\n  * ใส่ **Sub-base** บริเวณจุดที่ลึกที่สุดด้วย Calcium Hydroxide (Ca(OH)2) หรือ Hydraulic Calcium Silicate (MTA / Biodentine) เพื่อกระตุ้นให้ Odontoblast สร้าง Reparative/Tertiary Dentin\n  * **ต้องทับด้วย RMGIC Base เสมอ** เพื่อป้องกัน Ca(OH)2 ละลายตัวและรับแรงกดจากการอัดสารอุด\n\n2. Selective Caries Removal (การกรอผุแบบเลือกสรร):\n- **Infected Dentin**: เนื้อฟันผุชั้นนอก มีคอลลาเจนสลายตัวหมดสภาพ (Denatured), แบคทีเรียอาศัยอยู่หนาแน่น, ไม่สามารถคืนแร่ธาตุได้ (Un-mineralizable) -> **ต้องกรอกำจัดออกทั้งหมด!**\n- **Affected Dentin**: เนื้อฟันชั้นใน คอลลาเจนยังมีโครงสร้างไขว้สมบูรณ์ (Intact collagen cross-links), แบคทีเรียต่ำ, สามารถเกิดกระบวนการ Re-mineralization คืนสู่ความแข็งแกร่งได้ -> **ต้องอนุรักษ์เก็บรักษาไว้เหนือโพรงประสาทฟันในฟันที่มีชีวิต!**",
+    "overview": "การปกป้องโพรงประสาทฟันขึ้นอยู่กับระยะความหนาของเนื้อฟันที่เหลือ (Remaining Dentin Thickness - RDT) เหนือพัลพ์ การกำจัดรอยผุเชิงอนุรักษ์ (Selective Carious Tissue Removal) และการผนึกขอบโพรงฟัน (Peripheral Seal) ตามแนวทาง ADA (2023), ESE (2019), CariesCare International และ ICCMS",
+    "core_mechanism": "1. กฎเกณฑ์ความหนาเนื้อฟันที่เหลือ (Remaining Dentin Thickness - RDT):\n- **RDT ≥ 2.0 มม. (ตื้น/ลึกปานกลาง)**:\n  * ความหนาของเนื้อฟันธรรมชาติ ≥ 2.0 มม. เป็นฉนวนกันความร้อนและสารเคมีได้ดีที่สุด\n  * ไม่จำเป็นต้องใส่ Liner หรือ Base ใดๆ ทั้งสิ้น ให้ทาสารยึดติด (Adhesive system) แล้วบูรณะได้ทันที\n- **RDT 0.5 ถึง < 2.0 มม. (หรือ 0.5–1.5 มม. ตามตำราทันตกรรมหัตถการ)**:\n  * ท่อเนื้อฟัน (Dentinal tubules) กว้างขึ้นและใกล้พัลพ์มากขึ้น\n  * สำหรับงาน Amalgam แนะนำรอง Base (**RMGIC / GIC**) เพื่อลดความร้อนและเป็นฉนวน; สำหรับงาน Composite สามารถใช้ Self-etch/Universal adhesive โดยตรง หรือรอง RMGIC เฉพาะจุดลึก (Selective lining)\n- **RDT < 0.5 มม. (โพรงฟันลึกมาก เห็นเงาสีชมพูของพัลพ์รำไร)**:\n  * เสี่ยงต่อ Micro-exposure และการอักเสบของพัลพ์\n  * ตามแนวทางดั้งเดิม/ข้อสอบ NL วาง **Sub-base** เฉพาะจุดที่ลึกที่สุดด้วย Calcium Hydroxide (`Ca(OH)2`) หรือ **Hydraulic Calcium Silicate (MTA / Biodentine)** แล้วทับด้วย **RMGIC Base** (อย่างไรก็ตาม **ADA 2023 / ESE 2019** เน้นว่าการทำ Selective removal ร่วมกับ RMGIC หรือวัสดุ Bioceramic และการผนึกขอบด้วย Adhesive ที่แน่นหนาให้ผลดีกว่าการใช้ `Ca(OH)2` อย่างเดียว)\n\n2. Selective Carious Tissue Removal (การกรอผุเชิงอนุรักษ์ — ADA 2023 & ESE 2019):\n- **แนวทาง 1-Step Selective Removal (แนะนำเป็นอันดับแรกเหนือ Stepwise)**:\n  * **ขอบรอบนอก (Peripheral Seal Zone 1.5–2 มม. / Surrounding walls)**: ต้องกรอกำจัดรอยผุออกทั้งหมดจนถึง **Hard Dentin** และ Sound Enamel เพื่อให้สารยึดติดสร้าง Hermetic seal ตัดวงจรอาหารของเชื้อแบคทีเรีย\n  * **พื้นก้นโพรงด้านใกล้พัลพ์ (Pulpal / Axial Wall)**: ในฟันแท้ที่ยัง **Vital และไม่มีอาการปวดแบบ Irreversible pulpitis** สามารถคง **Affected / Firm Dentin** (หรือ **Soft/Leathery Dentin** ในรอยผุลึกมากใกล้ทะลุพัลพ์) ไว้เหนือโพรงประสาทแล้วปิดผนึกถาวรในครั้งเดียว เพื่อป้องกัน Iatrogenic pulp exposure! *(หมายเหตุ: Infected/Soft dentin ต้องกรอออกทั้งหมดเฉพาะบริเวณขอบรอบนอกและในรอยผุที่ไม่ลึกใกล้พัลพ์)*",
     "matrix_headers": [
       "Remaining Dentin Thickness (RDT)",
       "สภาวะโพรงประสาท",
@@ -1066,165 +1067,163 @@ export const CLINICAL_STUDY_GUIDES = {
     ],
     "matrix_rows": [
       [
-        "RDT > 2.0 มม.",
+        "RDT ≥ 2.0 มม.",
         "ปลอดภัย สมบูรณ์",
         "ไม่ต้องใส่ Base หรือ Liner ใดๆ",
-        "Adhesive System + Composite / Amalgam"
+        "Adhesive + Composite / Amalgam (เลี่ยงใน <15 ปี/ตั้งครรภ์ ตาม Minamata; phase-out 2034)"
       ],
       [
-        "RDT 0.5 - 2.0 มม.",
-        "เริ่มมีท่อเนื้อฟันกว้างขึ้น",
-        "ใส่ Thermal / Chemical Base รองพื้น",
+        "RDT 0.5 - < 2.0 มม.",
+        "ท่อเนื้อฟันกว้างขึ้น",
+        "ใส่ Thermal / Chemical Base รองพื้น (จำเป็นใต้ Amalgam; หรือใต้ Composite เฉพาะจุดลึก)",
         "RMGIC (Fuji II LC) หรือ Conventional GIC"
       ],
       [
         "RDT < 0.5 มม. (ลึกมาก)",
         "เสี่ยงทะลุโพรงประสาท",
-        "ใส่ Sub-base กระตุ้น Reparative Dentin + ทับด้วย RMGIC",
-        "Ca(OH)2 / Biodentine / MTA + RMGIC Base"
+        "วาง Bioceramic / Sub-base เฉพาะจุดลึก + ทับด้วย RMGIC (1-step Selective Removal)",
+        "MTA / Biodentine / Ca(OH)2 (แนวทาง NL เก่า) + RMGIC Base"
       ],
       [
         "จุดทะลุขนาดเล็ก (<1 มม.) สด",
         "Vital Pulp exposure",
-        "Direct Pulp Capping (เฉพาะฟันแท้)",
-        "MTA หรือ Biodentine + RMGIC Base"
+        "Direct Pulp Capping (ห้ามเลือด ≤ 5 นาทีด้วย NaOCl/NSS)",
+        "MTA หรือ Biodentine (ESE 2019 Gold Standard) + RMGIC Base"
       ]
     ],
     "pitfalls": [
-      "กับดัก Ca(OH)2 ทาเต็มโพรงฟัน: ห้ามทา Calcium hydroxide ทั่วก้นโพรงฟันเด็ดขาด! เพราะ Ca(OH)2 มีแรงรับแรงอัดต่ำมาก (Low compressive strength) และละลายน้ำได้ง่าย หากทาหนาจะทำให้สารอุดยุบตัวหลุดร่วง ให้ทาเฉพาะจุดที่ลึกที่สุดไม่เกิน 1 มม. และต้องคลุมทับด้วย RMGIC เสมอ!",
+      "กับดัก Ca(OH)2 ทาเต็มโพรงฟัน: ห้ามทา Calcium hydroxide ทั่วก้นโพรงฟันเด็ดขาด! เพราะ Ca(OH)2 มีแรงรับแรงอัดต่ำมาก (Low compressive strength) และละลายน้ำได้ง่าย หากทาหนาจะทำให้สารอุดยุบตัวหลุดร่วง ให้ทาเฉพาะจุดที่ลึกที่สุดไม่เกิน 0.5 มม. และต้องคลุมทับด้วย RMGIC เสมอ",
       "Zinc Oxide Eugenol (ZOE): Eugenol จะยับยั้งกระบวนการ Free-radical polymerization ของคอมโพสิตเรซินอย่างรุนแรง \"ห้ามใช้ ZOE เป็นเบสรองพื้นใต้คอมโพสิตเรซินเด็ดขาด\"!"
     ],
-    "pearl": "ทฤษฎี Brännström Hydrodynamic Theory: อาการเสียวฟันหลังอุดคอมโพสิต (Post-op sensitivity) เกือบทั้งหมดไม่ได้เกิดจากการกดทับเส้นประสาทโดยตรง แต่เกิดจากการมี Microgap ทำให้น้ำในท่อเนื้อฟัน (Dentinal fluid) ขยับตัวกระตุ้น A-delta fibers การผนึกท่อเนื้อฟันด้วย 10-MDP หรือ Glutaraldehyde จึงช่วยแก้ปัญหานี้ได้อย่างเด็ดขาด!",
-    "reference": "Summitt's Fundamentals of Operative Dentistry, 4th ed. Quintessence, 2013; Sturdevant's Art and Science of Operative Dentistry, 7th ed.",
+    "pearl": "ทฤษฎี Brännström Hydrodynamic Theory: อาการเสียวฟันหลังอุดคอมโพสิตเกิดจาก Microgap ทำให้น้ำในท่อเนื้อฟันขยับกระตุ้น A-delta fibers การผนึกท่อเนื้อฟันด้วยสารยึดติดที่มี 10-MDP (Self-etch) หรือสารลดเสียวฟันกลุ่ม Glutaraldehyde/HEMA (เช่น Gluma) ช่วยป้องกันปัญหานี้ได้!",
+    "reference": "ADA Restorative Carious Lesions Guideline (JADA 2023); ESE Position Statement on Deep Caries (IEJ 2019); Sturdevant's Art and Science of Operative Dentistry, 7th ed.",
     "decision_matrix": [
       {
-        "col_0": "RDT > 2.0 มม.",
+        "col_0": "RDT ≥ 2.0 มม.",
         "col_1": "ปลอดภัย สมบูรณ์",
         "col_2": "ไม่ต้องใส่ Base หรือ Liner ใดๆ",
-        "col_3": "Adhesive System + Composite / Amalgam"
+        "col_3": "Adhesive + Composite / Amalgam (เลี่ยงใน <15 ปี/ตั้งครรภ์ ตาม Minamata; phase-out 2034)"
       },
       {
-        "col_0": "RDT 0.5 - 2.0 มม.",
-        "col_1": "เริ่มมีท่อเนื้อฟันกว้างขึ้น",
-        "col_2": "ใส่ Thermal / Chemical Base รองพื้น",
+        "col_0": "RDT 0.5 - < 2.0 มม.",
+        "col_1": "ท่อเนื้อฟันกว้างขึ้น",
+        "col_2": "ใส่ Thermal / Chemical Base รองพื้น (จำเป็นใต้ Amalgam; หรือใต้ Composite เฉพาะจุดลึก)",
         "col_3": "RMGIC (Fuji II LC) หรือ Conventional GIC"
       },
       {
         "col_0": "RDT < 0.5 มม. (ลึกมาก)",
         "col_1": "เสี่ยงทะลุโพรงประสาท",
-        "col_2": "ใส่ Sub-base กระตุ้น Reparative Dentin + ทับด้วย RMGIC",
-        "col_3": "Ca(OH)2 / Biodentine / MTA + RMGIC Base"
+        "col_2": "วาง Bioceramic / Sub-base เฉพาะจุดลึก + ทับด้วย RMGIC (1-step Selective Removal)",
+        "col_3": "MTA / Biodentine / Ca(OH)2 (แนวทาง NL เก่า) + RMGIC Base"
       },
       {
         "col_0": "จุดทะลุขนาดเล็ก (<1 มม.) สด",
         "col_1": "Vital Pulp exposure",
-        "col_2": "Direct Pulp Capping (เฉพาะฟันแท้)",
-        "col_3": "MTA หรือ Biodentine + RMGIC Base"
+        "col_2": "Direct Pulp Capping (ห้ามเลือด ≤ 5 นาทีด้วย NaOCl/NSS)",
+        "col_3": "MTA หรือ Biodentine (ESE 2019 Gold Standard) + RMGIC Base"
       }
     ]
   },
   "Pedia-Primary-Pulp-Therapy": {
-    "title": "การบำบัดรักษาโพรงประสาทฟันในฟันน้ำนม (Pulp Therapy in Primary Dentition)",
+    "title": "การบำบัดรักษาโพรงประสาทฟันในฟันน้ำนม (AAPD 2024–2025 Pulp Therapy Guidelines)",
     "specialty": "ทันตกรรมสำหรับเด็ก",
     "category": "ทันตกรรมสำหรับเด็ก",
     "badgeColor": "#0284c7",
     "must_know_topics": [
-      "Primary Pulp Therapy",
-      "Pulpotomy in Primary Teeth",
-      "Pulpectomy",
-      "DPC Contraindication",
-      "MTA vs Formocresol"
+      "Indirect Pulp Treatment (IPT/IPC > 90% Success)",
+      "AAPD 2024–2025 Pulpotomy: MTA / Biodentine Preferred over Formocresol",
+      "DPC Contraindication in Carious Primary Teeth",
+      "Pulpectomy Contraindications: Acute Facial Cellulitis & >1/3 Root Resorption"
     ],
-    "overview": "การรักษาโพรงประสาทฟันน้ำนมมีความแตกต่างจากฟันแท้อย่างสิ้นเชิงเนื่องจากสรีรวิทยาการละลายของรากฟัน (Physiological root resorption) และความสัมพันธ์ใกล้ชิดกับหน่อฟันแท้ข้างใต้ ทันตแพทย์ต้องเลือกหัตถการระหว่าง IPC, Pulpotomy และ Pulpectomy ให้ถูกต้องตามข้อบ่งชี้",
-    "core_mechanism": "1. หัตถการรักษาโพรงประสาทในฟันน้ำนม:\n- **Indirect Pulp Capping (IPC)**:\n  * ข้อบ่งชี้: ฟันผุลึกมาก แต่ไม่มีประวัติปวดขึ้นมาเอง (No spontaneous pain), ไม่มีอาการปวดตอนกลางคืน, ไม่มีเงาดำที่บริเวณง่ามรากฟัน (Furcation area)\n  * วิธีการ: กรอผุโดยเหลือ Affected dentin ชั้นในสุดไว้เหนือพัลพ์เพื่อเลี่ยงการทะลุ แล้วรองพื้นด้วย RMGIC หรือ Calcium Silicate (Biodentine) บูรณะด้วยครอบฟันโลหะไร้สนิม (Stainless Steel Crown - SSC)\n  * มีอัตราความสำเร็จสูงที่สุด (>90-95%) และปลอดภัยกว่า Pulpotomy\n- **Pulpotomy (การตัดพัลพ์ส่วนตัวฟัน)**:\n  * ข้อบ่งชี้: มีจุดทะลุโพรงประสาทจากรอยผุ (Carious exposure), แต่เนื้อเยื่อพัลพ์ในคลองรากฟันยังแข็งแรงดี (Vital radicular pulp)\n  * เกณฑ์ตัดสินสำคัญ (Hemostasis Criteria): หลังตัดพัลพ์ในตัวฟันออกหมด ใช้สำลีชุบ Normal saline หรือ 2.5% NaOCl กดห้ามเลือด **เลือดต้องหยุดสนิทภายใน 3 ถึง 5 นาที** หากเลือดยังคงไหลทะลักไม่หยุด แสดงว่าการอักเสบลุกลามลงสู่รากฟันแล้ว ต้องเปลี่ยนไปทำ Pulpectomy!\n  * วัสดุปิดทับพัลพ์:\n    - **MTA / Biodentine**: ให้ผลสำเร็จสูงสุดในปัจจุบัน (Gold standard) ปลอดสารพิษ กระตุ้นการสร้างสะพานเนื้อฟัน\n    - **15.5% Ferric Sulfate**: ห้ามเลือดด้วยกลไก Agglutination ของโปรตีนในเลือด สะดวกและปลอดภัย\n    - **Formocresol (สูตรเจือจาง 1:5 Buckley's formula)**: ทำให้เนื้อเยื่อคงสภาพ (Fixation) แต่มีข้อกังวลเรื่องความเป็นพิษและการกระจายตัว\n- **Direct Pulp Capping (DPC) ในฟันน้ำนม**:\n  * **ข้อห้ามเด็ดขาด (CONTRAINDICATED)**: ห้ามทำ DPC ในฟันน้ำนมที่มีจุดทะลุจากรอยผุ (Carious exposure) เด็ดขาด! เพราะเซลล์พัลพ์ฟันน้ำนมมีความเป็น Undifferentiated mesenchyme สูง เมื่อสัมผัสสารเคมีหรือสารพิษแบคทีเรีย จะเหนี่ยวนำให้เกิด **การละลายตัวของรากฟันจากภายใน (Internal Root Resorption)** และพัลพ์เน่าตายในอัตราที่สูงมาก!\n- **Pulpectomy (การกำจัดพัลพ์ทั้งหมดและการอุดคลองรากฟันน้ำนม)**:\n  * ข้อบ่งชี้: ฟันน้ำนมที่เป็น Irreversible pulpitis หรือ Pulp necrosis, มีหนองที่ง่ามรากฟัน แต่ **รากฟันต้องยังไม่ละลายเกิน 1/3 ของความยาวราก**\n  * สารอุดคลองรากฟัน (Root Canal Filling Material): **ต้องเป็นสารที่สามารถดูดซึม/ละลายได้ตามธรรมชาติ (Resorbable material)** ในอัตราที่ใกล้เคียงกับการละลายของรากฟันน้ำนม เช่น:\n    - Zinc Oxide Eugenol (ZOE paste ชนิดไม่มีตัวเร่งแข็ง)\n    - Iodoform-based paste (KRI paste, Maisto paste)\n    - Calcium hydroxide + Iodoform paste (**Vitapex / Metapex**)\n  * **ข้อห้าม**: ห้ามใช้ Gutta-percha อุดคลองรากฟันน้ำนมเด็ดขาด เพราะไม่ละลายตัวและจะขัดขวางการขึ้นของหน่อฟันแท้!",
+    "overview": "การรักษาโพรงประสาทฟันน้ำนมตามแนวทาง AAPD 2024–2025 และ ศ.ป.ท. ต้องแยกความรุนแรงของพยาธิสภาพพัลพ์ ระดับการละลายของรากฟัน (< 1/3 vs > 1/3) และตรวจคัดกรองการติดเชื้อลุกลามนอกช่องปาก (Facial cellulitis) เพื่อตัดสินใจระหว่าง IPT/IPC, Pulpotomy, Pulpectomy หรือ Extraction",
+    "core_mechanism": "1. หัตถการรักษาโพรงประสาทในฟันน้ำนม (AAPD 2024–2025):\n- **Indirect Pulp Treatment (IPT/IPC)**:\n  * ข้อบ่งชี้: ฟันผุลึกมาก แต่ไม่มีประวัติปวดขึ้นมาเอง (No spontaneous/night pain), ไม่มีเงาดำที่บริเวณง่ามรากฟัน (Furcation area)\n  * วิธีการ: กรอผุโดยเหลือ Affected dentin ชั้นในสุดไว้เหนือพัลพ์ ปิดด้วย RMGIC หรือ Calcium Silicate (MTA/Biodentine) และบูรณะด้วย SSC (อัตราความสำเร็จ >90–95%)\n- **Pulpotomy (การตัดพัลพ์ส่วนตัวฟัน)**:\n  * ข้อบ่งชี้: ทะลุโพรงประสาทจากรอยผุ (Carious exposure) แต่พัลพ์ในรากยังแข็งแรง (Vital radicular pulp) — หลังตัด Coronal pulp ต้อง **ห้ามเลือดหยุดสนิทภายใน 3–5 นาที** ด้วยน้ำเกลือหรือ NaOCl (หากเลือดไม่หยุดใน 5 นาที ต้องเปลี่ยนเป็น Pulpectomy!)\n  * วัสดุปิดทับพัลพ์ตาม **AAPD 2024–2025**:\n    - **MTA / Biodentine (Calcium Silicate Cements)**: **เป็นวัสดุแนะนำลำดับแรก (Strong Recommendation)** มีความเข้ากันได้ทางชีวภาพสูงสุดและกระตุ้นการซ่อมแซมโดยลด Internal resorption\n    - **15.5% Ferric Sulfate / NaOCl**: ทางเลือกที่ยอมรับได้เมื่อคุมเลือดได้ดี\n    - **Formocresol (1:5 Buckley)**: เป็นมาตรฐานอ้างอิงเดิมที่มีผลสำเร็จดี แต่บทบาทลดลงเนื่องจากข้อกังวลด้านความเป็นพิษของ Formaldehyde\n- **Direct Pulp Capping (DPC) ในฟันน้ำนม**:\n  * **ข้อห้าม (CONTRAINDICATED ใน Carious exposure!)**: เหนี่ยวนำ Internal Root Resorption สูงมาก! (ทำเฉพาะ Pinpoint mechanical exposure ที่สะอาดมากเท่านั้น)\n- **Pulpectomy & ข้อห้ามเด็ดขาด (ต้องถอน!)**:\n  * ข้อบ่งชี้: Irreversible pulpitis / Necrosis (ปวดกลางคืน, มีหนอง/Furcation lesion แต่ยังมีกระดูกหุ้มหน่อถาวร และ **รากละลาย < 1/3**)\n  * ล้างคลองรากด้วย **1% NaOCl / Normal saline** (เข้มข้นอ่อนโยนต่อฟันน้ำนม) และอุดด้วย **สารละลายพร้อมราก (Resorbable paste)** เท่านั้น ได้แก่ **ZOE** หรือ **Iodoform + Ca(OH)₂ (Vitapex / Metapex)** (**ห้ามใช้ Gutta-percha เด็ดขาด!**)\n  * **ข้อห้ามทำ Pulpectomy (ต้องถอนฟัน!):** 1) **Acute Facial Cellulitis / Extraoral Cheek Swelling (บวมแก้มลามนอกช่องปาก)** ➔ AAPD ห้ามทำ Pulpectomy ต้องถอนกำจัดแหล่งเชื้อ + ให้ Antibiotic! 2) เหลือแต่ตอราก (RR/Non-restorable) 3) รากละลาย `> 1/3` ถึง `2/3` 4) พยาธิสภาพง่ามรากทำลายกระดูกหุ้มหน่อฟันแท้!",
     "matrix_headers": [
       "หัตถการในฟันน้ำนม",
-      "สภาวะของโพรงประสาท",
-      "ระยะเวลาห้ามเลือด",
-      "วัสดุที่ใช้",
+      "สภาวะของโพรงประสาท & อาการ",
+      "ระยะเวลาห้ามเลือด / เกณฑ์ราก",
+      "วัสดุแนะนำ (AAPD 2024–2025)",
       "การบูรณะขั้นสุดท้าย"
     ],
     "matrix_rows": [
       [
-        "Indirect Pulp Capping (IPC)",
-        "Vital (ผุลึก ไม่ปวดเอง ไม่มีพยาธิสภาพปลาย/ง่ามราก)",
+        "Indirect Pulp Treatment (IPT/IPC)",
+        "Vital (ผุลึก ไม่ปวดเอง ไม่มี Furcation lesion)",
         "ไม่ทะลุพัลพ์",
-        "RMGIC หรือ Calcium Silicate",
+        "RMGIC หรือ MTA / Biodentine",
         "Stainless Steel Crown (SSC)"
       ],
       [
         "Pulpotomy",
-        "Vital c Carious exposure (พัลพ์ในรากยังดี)",
-        "เลือดหยุดสนิทใน 3 - 5 นาที",
-        "MTA / Biodentine / Ferric Sulfate",
+        "Vital carious exposure (พัลพ์ในรากยังดี)",
+        "เลือดหยุดสนิทใน 3–5 นาที",
+        "MTA / Biodentine (แนะนำสูงสุด) / Ferric Sulfate",
         "Stainless Steel Crown (SSC)"
       ],
       [
         "Pulpectomy",
-        "Irreversible Pulpitis หรือ Necrotic pulp (รากละลาย <1/3)",
-        "มีหนอง/เลือดไม่หยุด",
-        "Resorbable Paste (Vitapex / ZOE)",
+        "Irreversible / Necrotic (ไม่มี Cellulitis)",
+        "รากละลาย < 1/3, ฟันยังบูรณะได้",
+        "1% NaOCl + ZOE หรือ Vitapex/Metapex (ห้าม GP!)",
         "Stainless Steel Crown (SSC)"
       ],
       [
-        "ถอนฟัน + Space Maintainer",
-        "รากฟันละลายเกิน 1/3 หรือกระดูกง่ามรากละลายหมด",
-        "ไม่สามารถเก็บฟันได้",
-        "ใส่เครื่องมือกันที่ฟัน (เช่น Band & Loop)",
-        "ติดตามการขึ้นของฟันแท้"
+        "Extraction + Space Maintainer",
+        "Acute Facial Cellulitis (บวมแก้ม), เหลือตอราก (RR)",
+        "รากละลาย > 1/3 หรือทำลายหน่อถาวร",
+        "ถอนกำจัดแหล่งเชื้อ (+ Systemic ATB หากมีไข้/Cellulitis)",
+        "ใส่ Space Maintainer ตามตำแหน่ง"
       ]
     ],
     "pitfalls": [
-      "กับดักข้อสอบพยาธิสภาพในฟันน้ำนม: ในฟันน้ำนม รอยโรคจากการติดเชื้อของโพรงประสาทฟันจะปรากฏเป็นเงาดำที่ **\"บริเวณง่ามรากฟัน (Furcation area)\"** เป็นหลัก ไม่ใช่ที่ปลายรากฟันเหมือนฟันแท้ เพราะพื้นโพรงประสาทฟันน้ำนมบางและมี Accessory canals จำนวนมากในบริเวณง่ามราก!",
-      "กับดัก DPC ในฟันน้ำนม: ข้อสอบมักลวงว่า \"เด็ก 4 ขวบ มีฟันน้ำนมผุลึกทะลุพัลพ์ขนาด 0.5 มม. ทำ DPC ด้วย Ca(OH)2 ได้หรือไม่?\" ตอบทันทีว่า \"ไม่ได้\" DPC ในฟันน้ำนมเป็นข้อห้าม ต้องทำ Pulpotomy!"
+      "กับดัก Acute Facial Cellulitis: หากโจทย์ระบุเด็กมี 'บวมแก้มด้านขวา (Extraoral swelling / Cellulitis)' ร่วมกับฟันกรามน้ำนมผุใหญ่ ห้ามเลือกทำ Pulpectomy เพราะ AAPD ห้ามทำในภาวะติดเชื้อลุกลามนอกช่องปาก — ต้องถอนฟัน (Extraction) กำจัดต้นเหตุ!",
+      "กับดัก DPC ในฟันน้ำนม & ตอราก RR: ห้ามทำ DPC ในจุดทะลุจากฟันผุ และห้ามทำ Pulpotomy ในฟันที่ปวดเรื้อรังและผุหมดเหลือแต่ตอราก (RR)"
     ],
-    "pearl": "การบูรณะฟันน้ำนมหลังทำ Pulpotomy หรือ Pulpectomy ตัวเลือกที่ดีที่สุดและเป็นมาตรฐานทองคำคือ \"Stainless Steel Crown (SSC)\" เสมอ เพื่อป้องกัน Microleakage และฟันแตกหัก!",
-    "reference": "Nowak AJ, et al. Pediatric Dentistry: Infancy Through Adolescence, 6th ed. Elsevier, 2019; AAPD Reference Manual: Guideline on Pulp Therapy for Primary and Immature Permanent Teeth.",
+    "pearl": "AAPD 2024–2025: Pulpotomy เลือก MTA/Biodentine ก่อน Formocresol | Pulpectomy ใช้ ZOE/Vitapex ห้าม GP และห้ามทำหากมี Facial Cellulitis!",
+    "reference": "AAPD Reference Manual: Guideline on Pulp Therapy for Primary and Immature Permanent Teeth (2024–2025); McDonald & Avery 11th ed., 2022.",
     "decision_matrix": [
       {
-        "col_0": "Indirect Pulp Capping (IPC)",
-        "col_1": "Vital (ผุลึก ไม่ปวดเอง ไม่มีพยาธิสภาพปลาย/ง่ามราก)",
+        "col_0": "Indirect Pulp Treatment (IPT/IPC)",
+        "col_1": "Vital (ผุลึก ไม่ปวดเอง ไม่มี Furcation lesion)",
         "col_2": "ไม่ทะลุพัลพ์",
-        "col_3": "RMGIC หรือ Calcium Silicate",
+        "col_3": "RMGIC หรือ MTA / Biodentine",
         "col_4": "Stainless Steel Crown (SSC)"
       },
       {
         "col_0": "Pulpotomy",
-        "col_1": "Vital c Carious exposure (พัลพ์ในรากยังดี)",
-        "col_2": "เลือดหยุดสนิทใน 3 - 5 นาที",
-        "col_3": "MTA / Biodentine / Ferric Sulfate",
+        "col_1": "Vital carious exposure (พัลพ์ในรากยังดี)",
+        "col_2": "เลือดหยุดสนิทใน 3–5 นาที",
+        "col_3": "MTA / Biodentine (แนะนำสูงสุด) / Ferric Sulfate",
         "col_4": "Stainless Steel Crown (SSC)"
       },
       {
         "col_0": "Pulpectomy",
-        "col_1": "Irreversible Pulpitis หรือ Necrotic pulp (รากละลาย <1/3)",
-        "col_2": "มีหนอง/เลือดไม่หยุด",
-        "col_3": "Resorbable Paste (Vitapex / ZOE)",
+        "col_1": "Irreversible / Necrotic (ไม่มี Cellulitis)",
+        "col_2": "รากละลาย < 1/3, ฟันยังบูรณะได้",
+        "col_3": "1% NaOCl + ZOE หรือ Vitapex/Metapex (ห้าม GP!)",
         "col_4": "Stainless Steel Crown (SSC)"
       },
       {
-        "col_0": "ถอนฟัน + Space Maintainer",
-        "col_1": "รากฟันละลายเกิน 1/3 หรือกระดูกง่ามรากละลายหมด",
-        "col_2": "ไม่สามารถเก็บฟันได้",
-        "col_3": "ใส่เครื่องมือกันที่ฟัน (เช่น Band & Loop)",
-        "col_4": "ติดตามการขึ้นของฟันแท้"
+        "col_0": "Extraction + Space Maintainer",
+        "col_1": "Acute Facial Cellulitis (บวมแก้ม), เหลือตอราก (RR)",
+        "col_2": "รากละลาย > 1/3 หรือทำลายหน่อถาวร",
+        "col_3": "ถอนกำจัดแหล่งเชื้อ (+ Systemic ATB หากมีไข้/Cellulitis)",
+        "col_4": "ใส่ Space Maintainer ตามตำแหน่ง"
       }
     ]
   },
   "Pedia-Space-Maintenance": {
-    "title": "การจัดการช่องว่างในขากรรไกรและเครื่องมือกันที่ฟัน (Space Maintenance & Leeway Space)",
+    "title": "การจัดการช่องว่างในขากรรไกร การสลับฟันล่าง และ Space Maintainers",
     "specialty": "ทันตกรรมสำหรับเด็ก",
     "category": "ทันตกรรมสำหรับเด็ก",
     "badgeColor": "#0284c7",
     "must_know_topics": [
-      "Space Maintainer",
-      "Band and Loop",
-      "Distal Shoe",
-      "Nance Appliance",
-      "Leeway Space"
+      "Primate Space & Leeway Space of Nance",
+      "Band & Loop vs Distal Shoe vs LLHA vs Nance",
+      "Distal Shoe Contraindications (Hemophilia, IE Risk, Immunocompromised)",
+      "Lingual Eruption of Mandibular Incisors (Observe if Mobile)"
     ],
-    "overview": "การสูญเสียฟันกรามน้ำนมก่อนกำหนดส่งผลให้ฟันแท้ซี่ข้างเคียงล้มเอียงเข้าหาช่องว่าง ทำให้สูญเสียความยาวแนวขากรรไกร (Arch length deficiency) เกิดฟันแท้ซ้อนเกหรือฝังคุด การเลือกเครื่องมือกันที่ฟัน (Space Maintainer) ต้องพิจารณาจากตำแหน่งของฟันที่สูญเสียและการขึ้นของฟันกรามแท้ซี่แรก",
-    "core_mechanism": "1. ช่องว่างทางสรีรวิทยาในชุดฟันน้ำนมและฟันผสม:\n- **Primate Space**:\n  * ขากรรไกรบน (Maxilla): อยู่ระหว่าง **ฟันตัดข้างน้ำนมและฟันเขี้ยวน้ำนม (Lateral - Canine)**\n  * ขากรรไกรล่าง (Mandible): อยู่ระหว่าง **ฟันเขี้ยวน้ำนมและฟันกรามน้ำนมซี่ที่หนึ่ง (Canine - First Primary Molar)**\n- **Leeway Space of Nance**:\n  * ผลต่างระหว่างผลรวมความกว้างแนวใกล้กลาง-ไกลกลาง (Mesiodistal width) ของฟันเขี้ยวและฟันกรามน้ำนม (C + D + E) เทียบกับฟันแท้ที่จะขึ้นมาแทนที่ (3 + 4 + 5)\n  * ขากรรไกรบน: กว้างข้างละประมาณ **0.9 ถึง 1.5 มม.** (รวมสองข้าง ~1.8 - 2.5 มม.)\n  * ขากรรไกรล่าง: กว้างข้างละประมาณ **1.7 ถึง 2.5 มม.** (รวมสองข้าง ~3.4 - 4.0 มม.) กว้างกว่าบนอย่างมีนัยสำคัญ\n  * ประโยชน์: ฟันกรามแท้ซี่แรกจะเคลื่อนมาข้างหน้า (Late mesial shift) เข้าแทนที่ช่องว่างนี้ เปลี่ยนสบฟันจาก Flush terminal plane สู่ Class I Molar relationship\n\n2. การเลือกเครื่องมือกันที่ฟัน (Space Maintainer Selection Algorithm):\n- **สูญเสียฟันกรามน้ำนมซี่ที่หนึ่ง (Primary 1st Molar - ซี่ D)**:\n  * เครื่องมือมาตรฐาน: **Band and Loop** (สวมปลอกที่ซี่ E และดัดลวดไปยันซี่ C)\n- **สูญเสียฟันกรามน้ำนมซี่ที่สอง (Primary 2nd Molar - ซี่ E) ก่อนที่ฟันกรามแท้ซี่แรก (ซี่ 6) จะขึ้น**:\n  * มีความเสี่ยงสูงสุดที่ฟันกรามแท้ซี่แรกจะเคลื่อนล้มมาด้านหน้าใต้เหงือก\n  * เครื่องมือ: **Distal Shoe Space Maintainer** โดยมีแผ่นโลหะ (Extension blade) ฝังลงใต้เหงือกตามแนวด้านหน้าของหน่อฟันกรามแท้ซี่แรก ลึกประมาณ 1 มม. ใต้ขอบสันกระดูก\n  * **ข้อห้ามสำคัญของ Distal Shoe**:\n    - ผู้ป่วยที่มีภาวะภูมิคุ้มกันบกพร่อง (Immunocompromised), มะเร็งเม็ดเลือดขาว (Leukemia)\n    - ผู้ป่วยโรคหัวใจพิการแต่กำเนิดที่มีความเสี่ยงต่อลิ้นหัวใจอักเสบ (Infective Endocarditis risk)\n    - ผู้ป่วยเบาหวานที่ควบคุมไม่ได้ หรือมีภาวะเลือดออกง่ายผิดปกติ\n    - การดูแลสุขอนามัยในช่องปากแย่มาก\n- **สูญเสียฟันกรามน้ำนมซี่ที่สอง (ซี่ E) หลังฟันกรามแท้ซี่แรก (ซี่ 6) ขึ้นเต็มที่แล้ว**:\n  * ขากรรไกรบน: ใช้ **Nance Holding Arch** (มี Palatal acrylic button แนบเพดาน) หรือ Transpalatal Arch (TPA)\n  * ขากรรไกรล่าง: ใช้ **Lower Lingual Holding Arch (LLHA)** แต่มีข้อแม้สำคัญคือ **ฟันตัดแท้ล่าง (Lower permanent incisors) ต้องขึ้นสมบูรณ์แล้วเท่านั้น!** เพื่อป้องกันไม่ให้ลวดบาร์ไปขัดขวางหรือเบี่ยงเบนทิศทางการขึ้นของหน่อฟันตัดแท้ล่าง",
+    "overview": "การสูญเสียฟันกรามน้ำนมก่อนกำหนดส่งผลให้ฟันแท้ข้างเคียงล้มเอียงเข้าหาช่องว่าง รวมถึงการแยกแยะภาวะปกติของการสลับฟันหน้าล่างทางด้านลิ้น (Lingual eruption) เพื่อหลีกเลี่ยงการถอนหรือส่งต่อโดยไม่จำเป็น",
+    "core_mechanism": "1. ช่องว่างทางสรีรวิทยาและการสลับฟัน:\n- **Primate Space**: บน = ระหว่าง **B–C (Lateral–Canine)** | ล่าง = ระหว่าง **C–D (Canine–1st Primary Molar)**\n- **Leeway Space of Nance**: บน ~**0.9–1.5 mm/ข้าง** | ล่าง ~**1.7–2.5 mm/ข้าง** ใช้สำหรับ Late mesial shift ของซี่ 6\n- **Lingual Eruption ของฟันตัดแท้ล่าง (31,41 / 32,42)**: เป็นแนวพัฒนาการปกติของหน่อฟันแท้ที่อยู่ด้านลิ้น: หากฟันตัดน้ำนมมี **การโยกตามสรีรวิทยา (1°–2° mobility)** ให้ **Observe รอหลุดเอง** แรงลิ้นจะดันฟันแท้มาด้านหน้าเอง; จะถอนเฉพาะเมื่อฟันน้ำนมยังแน่นสนิท (`0 mobility`) ทั้งที่ฟันแท้ขึ้นเกินครึ่งซี่แล้ว\n\n2. การเลือก Space Maintainer:\n- **หายฟัน D ข้างเดียว (มี E):** `Band & Loop` (หรือ Crown & Loop)\n- **หายฟัน E ก่อนซี่ 6 ขึ้น:** `Distal Shoe` (ใบมีดนำทางซี่ 6; **ห้ามใช้เด็ดขาดใน Hemophilia / IE risk / ภูมิคุ้มกันบกพร่อง / เบาหวานคุมไม่ได้!** — ใน Hemophilia ควรรักษาซี่ E ด้วย Pulpectomy แทน!)\n- **หายฟันหลัง 2 ข้างหลังซี่ 6 ขึ้นแล้ว:** บน ➔ `Nance Holding Arch` / `TPA`; ล่าง ➔ `Lower Lingual Holding Arch (LLHA)` (**ใส่เฉพาะเมื่อฟันตัดแท้ล่าง 31–42 ขึ้นแล้วเท่านั้น!**)",
     "matrix_headers": [
       "สถานการณ์ฟันน้ำนมหลุดหาย",
       "ฟันกรามแท้ซี่แรก (ซี่ 6)",
@@ -1242,7 +1241,7 @@ export const CLINICAL_STUDY_GUIDES = {
         "สูญเสียฟัน E ก่อนซี่ 6 ขึ้น",
         "ยังไม่ขึ้น (Unerupted under bone)",
         "Distal Shoe Space Maintainer",
-        "ห้ามใช้ในคนไข้โรคหัวใจเสี่ยง IE หรือภูมิคุ้มกันต่ำ"
+        "ห้ามใช้ในคนไข้โรคหัวใจเสี่ยง IE, Hemophilia หรือภูมิคุ้มกันต่ำ"
       ],
       [
         "สูญเสียฟัน E หลังซี่ 6 ขึ้นแล้ว (บน)",
@@ -1258,11 +1257,11 @@ export const CLINICAL_STUDY_GUIDES = {
       ]
     ],
     "pitfalls": [
-      "กับดักการใช้ LLHA ในเด็กเล็ก: ข้อสอบมักถามว่า \"เด็กอายุ 5 ขวบ สูญเสียฟันกรามน้ำนมล่างสองข้าง แต่ฟันตัดแท้ล่างยังไม่ขึ้น สามารถใส่ Lower Lingual Holding Arch (LLHA) ได้หรือไม่?\" ตอบทันทีว่า \"ไม่ได้\" เพราะลวด Lingual arch จะไปขัดขวางหน่อฟันตัดแท้ล่างที่กำลังจะโผล่พ้นเหงือก ในกรณีนี้ต้องใส่ Band and Loop สองข้างแยกกันก่อน!",
-      "Distal shoe ต้องเปลี่ยนเป็นเครื่องมือชนิดอื่นทันทีที่ฟันกรามแท้ซี่แรกโผล่พ้นเหงือกสมบูรณ์ เพื่อป้องกันการสะสมของคราบจุลินทรีย์ใต้เหงือก"
+      "กับดัก Lingual eruption ฟันตัดล่าง: เด็กอายุ 6–7 ปี มีฟันน้ำนม 71/81 โยก 1°–2° และฟัน 31/41 ขึ้นด้านลิ้น ไม่ต้องส่งจัดฟันถอน! ให้ Observe รอหลุดเองตามธรรมชาติ",
+      "กับดัก LLHA: ห้ามใส่ก่อนฟันตัดแท้ล่าง 31–42 ขึ้น; และห้ามใส่ Distal Shoe ในเด็ก Hemophilia หรือ Cyanotic CHD!"
     ],
-    "pearl": "กฎ 3 ใน 4 ของการขึ้นของฟันแท้: ฟันแท้จะเริ่มโผล่ทะลุผ่านเหงือกเข้าสู่ช่องปากเมื่อ **\"รากฟันแท้สร้างเสร็จไปแล้วประมาณ 3 ใน 4 (75%) ของความยาวรากทั้งหมด\"** หากรากยังสร้างไม่ถึงครึ่ง ฟันแท้ยังไม่ขึ้นแน่นอน จำเป็นต้องใส่เครื่องมือกันที่ฟัน!",
-    "reference": "Dean JA. McDonald and Avery's Dentistry for the Child and Adolescent, 11th ed. Elsevier, 2022 (Chapter 21: Management of the Developing Occlusion).",
+    "pearl": "กฎ 3/4 ของการขึ้นฟันแท้: ฟันแท้โผล่พ้นเหงือกเมื่อสร้างราก ≥ 75% (Nolla ≥ 7) | ฟันน้ำนมหน้าล่างโยก 1°–2° กับฟันแท้ขึ้นด้านลิ้น ➔ Observe รอหลุดเอง!",
+    "reference": "Dean JA. McDonald and Avery's Dentistry for the Child and Adolescent, 11th ed. Elsevier, 2022.",
     "decision_matrix": [
       {
         "col_0": "สูญเสียฟัน D ข้างเดียว",
@@ -1274,7 +1273,7 @@ export const CLINICAL_STUDY_GUIDES = {
         "col_0": "สูญเสียฟัน E ก่อนซี่ 6 ขึ้น",
         "col_1": "ยังไม่ขึ้น (Unerupted under bone)",
         "col_2": "Distal Shoe Space Maintainer",
-        "col_3": "ห้ามใช้ในคนไข้โรคหัวใจเสี่ยง IE หรือภูมิคุ้มกันต่ำ"
+        "col_3": "ห้ามใช้ในคนไข้โรคหัวใจเสี่ยง IE, Hemophilia หรือภูมิคุ้มกันต่ำ"
       },
       {
         "col_0": "สูญเสียฟัน E หลังซี่ 6 ขึ้นแล้ว (บน)",
@@ -1291,21 +1290,20 @@ export const CLINICAL_STUDY_GUIDES = {
     ]
   },
   "Pedia-Dental-Traumatology": {
-    "title": "การบาดเจ็บต่อฟันและกระดูกเบ้าฟันตามเกณฑ์สากล (Dental Traumatology & IADT Guidelines)",
+    "title": "การบาดเจ็บต่อฟันน้ำนมและฟันแท้ตามเกณฑ์สากล (IADT 2020 Guidelines)",
     "specialty": "ทันตกรรมสำหรับเด็ก",
     "category": "ทันตกรรมสำหรับเด็ก",
     "badgeColor": "#0284c7",
     "must_know_topics": [
-      "Dental Traumatology",
-      "IADT Guidelines",
-      "Avulsion Management",
-      "Primary Tooth Intrusion",
-      "Splinting Duration"
+      "Primary Avulsion: Never Replant",
+      "Primary Lateral Luxation & Crown Discoloration (Monitor First per IADT 2020)",
+      "Primary Intrusion (Labial vs Palatal Apex)",
+      "Permanent Avulsion (< 60 Min HBSS/Cold Milk + 2 Weeks Flexible Splint)"
     ],
-    "overview": "การจัดการอุบัติเหตุทางทันตกรรมตามเกณฑ์มาตรฐานของสมาคมการบาดเจ็บทางทันตกรรมระหว่างประเทศ (IADT 2020) ต้องแยกแยะความแตกต่างอย่างเด็ดขาดระหว่างฟันน้ำนมและฟันแท้ โดยเฉพาะกรณีฟันหลุดออกจากเบ้า (Avulsion) และฟันกระแทกจมลงในเบ้า (Intrusion)",
-    "core_mechanism": "1. การบาดเจ็บในฟันน้ำนม (Primary Dentition Trauma):\n- **Avulsion (ฟันน้ำนมหลุดออกจากเบ้ากระดูกทั้งซี่)**:\n  * **กฎเหล็กเด็ดขาด (Absolute Rule): \"NEVER REPLANT A PRIMARY TOOTH!\" (ห้ามนำฟันน้ำนมที่หลุดไปใส่กลับคืนลงในเบ้ากระดูกเด็ดขาด!)**\n  * เหตุผล: การใส่ฟันน้ำนมกลับคืนมีความเสี่ยงสูงมากที่จะผลักดันเชื้อโรคและปลายรากไปทำลายหน่อฟันแท้ที่กำลังพัฒนาอยู่ข้างใต้ (Developing permanent tooth germ) ทำให้เกิด Turner's tooth, ขัดขวางการขึ้น, หรือเกิด Ankylosis\n- **Intrusion (ฟันน้ำนมถูกกระแทกจมลงในเบ้ากระดูก)**:\n  * ตรวจภาพรังสีเพื่อดูทิศทางการเคลื่อนของยอดรากฟันน้ำนม:\n    - **หากยอดรากเบนไปทางด้านแก้ม (Labial displacement)**: ปลายรากจะอยู่ห่างจากหน่อฟันแท้ -> ให้ **เฝ้าสังเกตอาการ (Monitor)** ฟันน้ำนมจะค่อยๆ งอกกลับขึ้นมาได้เองตามธรรมชาติ (Spontaneous re-eruption) ภายใน 2-6 เดือน\n    - **หากยอดรากเบนไปทางด้านเพดาน/ลิ้น (Palatal/Lingual displacement)**: ปลายรากจะทิ่มแทงเข้าสู่หน่อฟันแท้โดยตรง -> **ต้องถอนฟันน้ำนมซี่นั้นออกทันที (Extract immediately!)**\n\n2. การบาดเจ็บในฟันแท้ (Permanent Dentition Trauma - IADT 2020):\n- **Avulsion ในฟันแท้ (ฟันแท้หลุดออกจากเบ้า)**:\n  * สิ่งแวดล้อมและระยะเวลาอยู่นอกปากแบบแห้ง (Extraoral Dry Time):\n    - **อยู่นอกปากแบบแห้ง < 60 นาที (เซลล์ PDL ยังมีชีวิต)**: ล้างฟันเบาๆ ด้วยน้ำเกลือ (ห้ามขูดขัดผิวรากฟันเด็ดขาด!) -> ใส่ฟันกลับคืนสู่เบ้าทันที -> ยึดดามด้วย **Flexible Splint เป็นเวลา 2 สัปดาห์** -> เริ่มรักษารากฟัน (RCT) ภายใน 7-14 วัน (ในฟันปลายรากปิด) เพื่อป้องกันการละลายของรากฟันแบบอักเสบ (Inflammatory root resorption)\n    - **อยู่นอกปากแบบแห้ง > 60 นาที (เซลล์ PDL ตายทั้งหมดแล้ว)**: นำฟันแช่ 2% Sodium Fluoride 20 นาทีก่อนใส่กลับ -> ยึดดามด้วย Splint นาน **4 สัปดาห์** -> ยอมรับว่าฟันจะเกิดภาวะรากฟันติดเชื่อมกับกระดูก (Ankylosis) และจะเกิดการละลายทดแทน (Replacement resorption) ในที่สุด\n  * สารละลายเก็บรักษาฟันที่ดีที่สุด (Transport Media):\n    1) **HBSS (Hank's Balanced Salt Solution)**: ดีที่สุดอันดับหนึ่ง\n    2) **นมสดรสจืดเย็น (Cold Milk)**: หาง่ายและมีประสิทธิภาพยอดเยี่ยม\n    3) **น้ำเกลือปราศจากเชื้อ (Normal Saline)**\n    4) **น้ำลายในปากคนไข้ (Saliva / Buccal vestibule)**\n    * **ข้อห้าม**: ห้ามแช่ใน \"น้ำเปล่า (Water)\" เด็ดขาด เพราะเป็น Hypotonic solution ทำให้เซลล์ PDL บวมแตกตายอย่างรวดเร็ว!\n- **ระยะเวลาการยึดดามฟัน (Splinting Durations Summary)**:\n  * Subluxation, Extrusion, Luxation, Avulsion (<60 min): **ยึดดาม 2 สัปดาห์ (Flexible splint)**\n  * Root Fracture (รากฟันหัก): **ยึดดาม 4 สัปดาห์** (หากหักระดับคอฟันยึดนานถึง 4 เดือน)\n  * Alveolar Fracture (กระดูกเบ้าฟันหัก): **ยึดดาม 4 สัปดาห์**",
+    "overview": "การจัดการอุบัติเหตุทางทันตกรรมตามเกณฑ์มาตรฐาน IADT 2020 แยกความสำคัญสูงสุดระหว่างฟันน้ำนม (มุ่งปกป้องหน่อฟันแท้ หลีกเลี่ยงหัตถการที่ทำร้ายหน่อฟัน) และฟันแท้ (รักษากำลังของเซลล์ PDL และ Vital pulp)",
+    "core_mechanism": "1. การบาดเจ็บในฟันน้ำนม (IADT 2020 Primary Dentition Updates):\n- **Avulsion:** **ห้ามปลูกฟันน้ำนมกลับคืนเด็ดขาด (NEVER replant!)** เสี่ยงทำลายหน่อฟันแท้เกิด Turner's tooth / Ankylosis\n- **Intrusion:** ตรวจทิศปลายราก: เบน Labial (ออกนอก/หนีหน่อแท้) ➔ **Observe รอขึ้นเองใน 2–6 ด.**; เบน Palatal (ทิ่มหน่อแท้) ➔ พิจารณาถอนอย่างระมัดระวัง\n- **Lateral Luxation:** **IADT 2020:** หาก **ไม่ขัดขวางการสบฟัน** ให้ **ไม่ทำหัตถการ/ปล่อยคืนตำแหน่งเอง (Spontaneous repositioning)** ไม่นิยมใส่ Splint ในฟันน้ำนม; หากขวางการสบฟันให้จัดเข้าที่เบาๆ หรือกรอแต่ง\n- **Asymptomatic Crown Discoloration (เหลือง / เทาคล้ำ):** **IADT 2020** แนะนำ **Monitor/Follow-up** หากไม่มีอาการปวด ฝีหนอง (Sinus tract) โยกรุนแรง หรือเงาดำง่าม/ปลายราก *(หมายเหตุ: ข้อสอบ NL เก่ายุคก่อน 2020 อาจเฉลย Pulpectomy หากฟันสีเทาและผนัง Dentin บางจาก Necrosis)*\n\n2. การบาดเจ็บในฟันแท้ (IADT 2020 Permanent Dentition):\n- **Avulsion:** จับเฉพาะ Crown (ห้ามขูดราก!); สื่อเก็บรักษาที่ดีที่สุด: **HBSS > นมสดเย็น (Cold Milk) > NSS > น้ำลาย** (ห้ามแช่น้ำเปล่า!):\n  * **แห้ง < 60 นาที (PDL รอด):** ล้างเบาๆ ด้วย NSS ➔ Replant ➔ **Flexible Splint 2 สัปดาห์** + เริ่ม RCT ใน 7–14 วัน (หากรากปิด; หากรากเปิดติดตามการคืนชีพ/Revascularization) + Doxycycline (>8 ปี)/Amoxicillin + Tetanus check\n  * **แห้ง > 60 นาที:** แช่ **2% NaF 20 นาที** ชะลอ Ankylosis + Splint **4 สัปดาห์**\n- **Complicated Crown Fracture รากยังเปิด:** **Partial (Cvek) Pulpotomy** ปิดด้วย MTA/Biodentine เพื่อ Apexogenesis!",
     "matrix_headers": [
-      "ประเภทการบาดเจ็บ",
+      "ประเภทการบาดเจ็บ (IADT 2020)",
       "ฟันน้ำนม (Primary Teeth)",
       "ฟันแท้ (Permanent Teeth)",
       "ระยะเวลา Splinting (ฟันแท้)"
@@ -1314,75 +1312,75 @@ export const CLINICAL_STUDY_GUIDES = {
       [
         "Avulsion (หลุดออกจากเบ้า)",
         "ห้ามใส่กลับคืนเด็ดขาด (Never replant)",
-        "ใส่กลับทันที (ถ้าแห้ง <60 นาที ล้างห้ามขูดราก)",
-        "2 สัปดาห์ (แห้ง <60 นาที) / 4 สัปดาห์ (แห้ง >60 นาที)"
+        "จับ Crown ใส่กลับทันที (ห้ามขูดราก!)",
+        "2 สัปดาห์ (<60 นาที) / 4 สัปดาห์ (>60 นาที)"
+      ],
+      [
+        "Lateral Luxation / Subluxation",
+        "ไม่ขวางสบ = ปล่อยคืนที่เอง (Spontaneous repositioning); ไม่ Splint!",
+        "ดันฟันกลับเข้าที่ + Flexible splint",
+        "2 สัปดาห์ (Subluxation) / 4 สัปดาห์ (Lateral lux.)"
       ],
       [
         "Intrusion (กระแทกจมเบ้า)",
-        "รากเบนออกแก้ม=รอขึ้นเอง, เบนเข้าเพดาน=ถอนทันที",
-        "ปลายรากเปิด=รอขึ้นเอง, ปลายรากปิด=ดึงกลับ + RCT 2 สัปดาห์",
+        "เบนออกแก้ม = รอขึ้นเอง | เบนเข้าเพดาน = พิจารณาถอน",
+        "ปลายรากเปิด = รอขึ้นเอง | ปิด = ดึงกลับ + RCT 2 สัปดาห์",
         "ขึ้นกับวิธีดึงกลับ"
       ],
       [
-        "Subluxation / Extrusive Luxation",
-        "ประคองอาการ ให้อาหารอ่อน",
-        "ดันฟันกลับเข้าที่ ยึดดามด้วย Flexible splint",
-        "2 สัปดาห์"
-      ],
-      [
-        "Root Fracture (รากฟันหัก)",
-        "หากโยกมากให้ถอนเฉพาะตัวฟัน ปล่อยรากละลาย",
-        "จัดฟันเข้าที่ ยึดดามแน่นหนา",
-        "4 สัปดาห์ (ถ้าหักระดับ Cervical 4 เดือน)"
+        "ฟันเปลี่ยนสี (Discoloration ไม่มีหนอง)",
+        "IADT 2020: Monitor/Follow-up ไม่ทำ Pulpectomy จากสีอย่างเดียว",
+        "ทดสอบความมีชีวิตซ้ำ & ติดตามภาพรังสี (ระวัง False negative)",
+        "-"
       ]
     ],
     "pitfalls": [
-      "กับดักการปฐมพยาบาลฟันหลุด: การจับฟันที่หลุดต้อง **\"จับเฉพาะส่วนตัวฟัน (Crown) เท่านั้น\"** ห้ามจับหรือขูดถูบริเวณผิวรากฟัน (Root surface) เด็ดขาด เพราะจะทำลายเซลล์เยื่อปริทันต์ (PDL cells) ที่กำลังจะสมานตัวกับกระดูกเบ้าฟัน!",
-      "ยาปฏิชีวนะใน Avulsion ฟันแท้: แนะนำให้ยาปฏิชีวนะชนิดรับประทานตัวเลือกแรกคือ **Doxycycline** (ในเด็กอายุ >8 ปี) หรือ **Amoxicillin** (ในเด็กอายุ <=8 ปี เพื่อป้องกันฟันเปลี่ยนสีจาก Doxycycline) พร้อมตรวจประวัติวัคซีนบาดทะยัก (Tetanus toxoid) เสมอ!"
+      "กับดัก Lateral Luxation ฟันน้ำนม (IADT 2020): หาก 51 โยก 1 และ 61 เฉียงเข้าเพดานโดยไม่ขวางการสบฟัน ไม่ต้องใส่ Splint ให้จับสังเกตอาการปล่อยคืนตำแหน่งเอง!",
+      "กับดักฟันน้ำนมเปลี่ยนสีไม่มีหนอง: ตาม IADT 2020 สีเทาหรือเหลืองที่ไม่มีอาการ/หนอง/เงาปลายราก ให้ Follow-up ยังไม่ทำ Pulpectomy ทันที; ยาปฏิชีวนะใน Avulsion ฟันแท้ใช้ Doxycycline (>8 ปี) หรือ Amoxicillin (<=8 ปี)"
     ],
-    "pearl": "การเลือก Splint ในงาน Traumatology: ต้องใช้ชนิด **\"Flexible / Non-rigid Splint\"** (เช่น ลวดจัดฟันเส้นเล็ก 0.016 นิ้ว หรือเอ็นตกปลาติดคอมโพสิต) เพื่อให้ฟันสามารถขยับตัวได้เล็กน้อยตามสรีรวิทยา (Physiological mobility) ซึ่งช่วยกระตุ้นให้เส้นใย PDL สมานตัวโดยไม่เกิด Ankylosis!",
+    "pearl": "Primary Avulsion = ห้าม Replant! | Primary Lateral Luxation ไม่ขวางสบ = ปล่อยคืนที่เอง ไม่ Splint! | Permanent Avulsion = เก็บ HBSS/นมเย็น ห้ามขูดราก Flexible Splint 2 สัปดาห์!",
     "reference": "International Association of Dental Traumatology (IADT). Guidelines for the Management of Traumatic Dental Injuries. Dent Traumatol, 2020;36:314-358.",
     "decision_matrix": [
       {
         "col_0": "Avulsion (หลุดออกจากเบ้า)",
         "col_1": "ห้ามใส่กลับคืนเด็ดขาด (Never replant)",
-        "col_2": "ใส่กลับทันที (ถ้าแห้ง <60 นาที ล้างห้ามขูดราก)",
-        "col_3": "2 สัปดาห์ (แห้ง <60 นาที) / 4 สัปดาห์ (แห้ง >60 นาที)"
+        "col_2": "จับ Crown ใส่กลับทันที (ห้ามขูดราก!)",
+        "col_3": "2 สัปดาห์ (<60 นาที) / 4 สัปดาห์ (>60 นาที)"
+      },
+      {
+        "col_0": "Lateral Luxation / Subluxation",
+        "col_1": "ไม่ขวางสบ = ปล่อยคืนที่เอง (Spontaneous repositioning); ไม่ Splint!",
+        "col_2": "ดันฟันกลับเข้าที่ + Flexible splint",
+        "col_3": "2 สัปดาห์ (Subluxation) / 4 สัปดาห์ (Lateral lux.)"
       },
       {
         "col_0": "Intrusion (กระแทกจมเบ้า)",
-        "col_1": "รากเบนออกแก้ม=รอขึ้นเอง, เบนเข้าเพดาน=ถอนทันที",
-        "col_2": "ปลายรากเปิด=รอขึ้นเอง, ปลายรากปิด=ดึงกลับ + RCT 2 สัปดาห์",
+        "col_1": "เบนออกแก้ม = รอขึ้นเอง | เบนเข้าเพดาน = พิจารณาถอน",
+        "col_2": "ปลายรากเปิด = รอขึ้นเอง | ปิด = ดึงกลับ + RCT 2 สัปดาห์",
         "col_3": "ขึ้นกับวิธีดึงกลับ"
       },
       {
-        "col_0": "Subluxation / Extrusive Luxation",
-        "col_1": "ประคองอาการ ให้อาหารอ่อน",
-        "col_2": "ดันฟันกลับเข้าที่ ยึดดามด้วย Flexible splint",
-        "col_3": "2 สัปดาห์"
-      },
-      {
-        "col_0": "Root Fracture (รากฟันหัก)",
-        "col_1": "หากโยกมากให้ถอนเฉพาะตัวฟัน ปล่อยรากละลาย",
-        "col_2": "จัดฟันเข้าที่ ยึดดามแน่นหนา",
-        "col_3": "4 สัปดาห์ (ถ้าหักระดับ Cervical 4 เดือน)"
+        "col_0": "ฟันเปลี่ยนสี (Discoloration ไม่มีหนอง)",
+        "col_1": "IADT 2020: Monitor/Follow-up ไม่ทำ Pulpectomy จากสีอย่างเดียว",
+        "col_2": "ทดสอบความมีชีวิตซ้ำ & ติดตามภาพรังสี (ระวัง False negative)",
+        "col_3": "-"
       }
     ]
   },
   "OralMed-Premalignant-Malignancy": {
-    "title": "รอยโรคก่อนมะเร็งและมะเร็งช่องปากชนิดสะเก็ด (OPMDs & Oral Squamous Cell Carcinoma)",
+    "title": "รอยโรคก่อนมะเร็งและมะเร็งเยื่อบุช่องปากชนิดสความัส (WHO OPMD 2020/2021 & OSCC)",
     "specialty": "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
     "category": "วิทยาการวินิจฉัยและเวชศาสตร์ช่องปาก",
     "badgeColor": "#14b8a6",
     "must_know_topics": [
-      "OPMDs",
+      "WHO 2020/2021 OPMD 11 Conditions",
       "Erythroplakia",
-      "Leukoplakia",
+      "Leukoplakia & PVL",
       "Oral Squamous Cell Carcinoma",
-      "Incisional Biopsy"
+      "Incisional Biopsy & 2-Week Rule"
     ],
-    "overview": "มะเร็งช่องปากส่วนใหญ่ (>90%) เป็นชนิด Squamous Cell Carcinoma (OSCC) ซึ่งมักมีจุดเริ่มต้นจากรอยโรคก่อนมะเร็ง (Oral Potentially Malignant Disorders - OPMDs) ทันตแพทย์ต้องสามารถตรวจจับสัญญาณอันตราย (Red Flags) และตัดสินใจส่งตรวจชิ้นเนื้อ (Biopsy) ได้อย่างทันท่วงที",
-    "core_mechanism": "1. รอยโรคกลุ่มเสี่ยงก่อนมะเร็ง (Oral Potentially Malignant Disorders - OPMDs):\n- **Leukoplakia (แผ่นขาวที่ไม่สามารถเช็ดออกได้)**:\n  * นิยามของ WHO: แผ่นสีขาวที่ไม่สามารถเช็ดลอกออกได้ และไม่สามารถระบุการวินิจฉัยว่าเป็นโรคอื่นใดได้ทางคลินิกหรือพยาธิวิทยา\n  * อัตราการกลายพันธุ์เป็นมะเร็ง (Malignant Transformation Rate): ประมาณ 1 - 5% (แต่หากเป็นชนิด Non-homogeneous เช่น Verrucous หรือ Speckled leukoplakia อัตราเสี่ยงจะพุ่งสูงขึ้นหลายเท่า)\n- **Erythroplakia (แผ่นแดงกำมะหยี่)**:\n  * **มีอัตราการกลายพันธุ์เป็นมะเร็งสูงที่สุดในบรรดา OPMDs ทั้งหมด (>85 - 90%)**\n  * เมื่อตัดตรวจชิ้นเนื้อ เกือบทั้งหมดจะพบเป็น Severe Dysplasia, Carcinoma in situ (CIS), หรือ Invasive SCC อยู่แล้ว!\n- **Oral Submucous Fibrosis (OSF)**:\n  * เกิดจากการเคี้ยวหมาก (Areca nut / Betel quid) โดยสาร Arecoline จะกระตุ้น Fibroblasts ให้สร้าง Collagen มากผิดปกติ และยับยั้ง Collagenase\n  * อาการ: อ้าปากได้น้อยลงเรื่อยๆ (Progressive trismus), เยื่อบุแก้มซีดแข็งเป็นเส้นใย (Fibrous bands), แสบร้อนเมื่อทานอาหารเผ็ด, สัมพันธ์กับ OSCC สูงมาก\n- **Oral Lichen Planus (OLP)**:\n  * กลไกภูมิคุ้มกัน: CD8+ Cytotoxic T-lymphocytes ทำลายเซลล์ชั้น Basal keratinocytes ของเยื่อบุผิว\n  * ลักษณะทางคลินิก: รอยเส้นร่างแหสีขาวสมมาตรสองข้าง (Bilateral Wickham’s striae) บนเยื่อบุแก้ม\n  * พยาธิวิทยา: มีแถบเซลล์เม็ดเลือดขาวลิมโฟไซต์เรียงตัวหนาแน่นใต้รอยต่อ (Dense band-like T-cell infiltrate), รอยต่อเยื่อบุผิวหยักแหลมเหมือนฟันเลื่อย (Saw-tooth rete pegs), พบ Apoptotic keratinocytes (Civatte bodies)\n\n2. มะเร็งช่องปากชนิดสะเก็ด (Oral Squamous Cell Carcinoma - OSCC):\n- **ตำแหน่งที่มีความเสี่ยงสูงที่สุด (High-Risk Anatomical Sites)**:\n  1) **ขอบด้านข้างและใต้โคนลิ้น (Ventrolateral border of the tongue)**: พบบ่อยที่สุด\n  2) **พื้นปาก (Floor of the mouth)**\n  3) เนื้อเยื่อด้านหลังฟันกรามล่างและเพดานอ่อน (Retromolar trigone & Soft palate)\n- **สัญญาณเตือนอันตรายทางคลินิก (Clinical Red Flags)**:\n  * แผลเรื้อรังที่ไม่หายภายใน **2 สัปดาห์**\n  * ขอบแผลยกม้วนหนาและแข็ง (Indurated, rolled borders)\n  * แผลยึดติดแน่นกับเนื้อเยื่อข้างใต้ ขยับไม่ได้ (Fixation to underlying tissues)\n  * คลำพบต่อมน้ำเหลืองที่คอโต แข็งเหมือนหิน ไม่เจ็บ และยึดติดแน่น (Stony hard, painless, fixed cervical lymph node)\n- **หลักการตัดตรวจชิ้นเนื้อ (Biopsy Principles)**:\n  * **Incisional Biopsy**: ตัดชิ้นเนื้อรูปวงรีหรือลิ่ม (Wedge shape) บริเวณขอบรอยโรคที่มีการลุกลาม โดย **ต้องครอบคลุมทั้งส่วนที่เป็นรอยโรคและส่วนเนื้อเยื่อปกติข้างเคียง (Margin of lesion + Normal tissue)** และต้องลึกถึงชั้นเนื้อเยื่อเกี่ยวพัน\n  * **ข้อห้าม**: ห้ามตัดตรงใจกลางแผลที่เป็นเนื้อตาย (Necrotic center) และห้ามใช้มีดไฟฟ้า (Electrosurgery) ในการตัดชิ้นเนื้อตรวจเพราะจะทำให้เซลล์ไหม้บวมผิดรูปแปลผลไม่ได้!",
+    "overview": "มะเร็งช่องปากส่วนใหญ่ (>90%) เป็นชนิด Squamous Cell Carcinoma (OSCC) ซึ่งมักมีจุดเริ่มต้นจากรอยโรคก่อนมะเร็ง (Oral Potentially Malignant Disorders - OPMDs ตามฉันทามติ WHO 2020/2021) ทันตแพทย์ต้องสามารถตรวจจับสัญญาณอันตราย (Red Flags) และตัดสินใจส่งตรวจชิ้นเนื้อ (Biopsy) ได้อย่างทันท่วงที",
+    "core_mechanism": "1. รอยโรคกลุ่มเสี่ยงก่อนมะเร็ง (WHO OPMD 2020/2021 Consensus — 11 กลุ่มโรค):\n- **อัปเดตเกณฑ์ WHO OPMD ล่าสุด**: เพิ่ม *Oral Lichenoid Lesions (OLL)* และ *Oral lesions of chronic GVHD* เข้ารายการ และตัด *Chronic Hyperplastic Candidiasis* ออกจากการจัดกลุ่ม OPMD อย่างเป็นทางการ\n- **Leukoplakia (แผ่นขาวที่ไม่สามารถเช็ดออกได้)**:\n  * นิยามของ WHO: แผ่นสีขาวที่ไม่สามารถเช็ดลอกออกได้ และไม่สามารถระบุการวินิจฉัยว่าเป็นโรคอื่นใดได้ทางคลินิกหรือพยาธิวิทยา\n  * อัตราการกลายพันธุ์เป็นมะเร็ง (Malignant Transformation Rate): Homogeneous ประมาณ 1 - 5% (แต่ชนิด Non-homogeneous เช่น Speckled และโดยเฉพาะ **Proliferative Verrucous Leukoplakia - PVL** มีอัตราการเป็นมะเร็งสูงมาก ~50 - 70% และเป็นซ้ำสูง)\n- **Erythroplakia (แผ่นแดงกำมะหยี่)**:\n  * **มีอัตราการกลายพันธุ์เป็นมะเร็งสูงที่สุดในบรรดา OPMDs ทั้งหมด (>85 - 90%)**\n  * เมื่อตัดตรวจชิ้นเนื้อ เกือบทั้งหมดจะพบเป็น Severe Dysplasia, Carcinoma in situ (CIS), หรือ Invasive SCC อยู่แล้ว!\n- **Oral Submucous Fibrosis (OSF)**:\n  * เกิดจากการเคี้ยวหมาก (Areca nut / Betel quid) โดยสาร Arecoline จะกระตุ้น Fibroblasts ให้สร้าง Collagen มากผิดปกติ และยับยั้ง Collagenase\n  * อาการ: อ้าปากได้น้อยลงเรื่อยๆ (Progressive trismus), เยื่อบุแก้มซีดแข็งเป็นเส้นใย (Fibrous bands), แสบร้อนเมื่อทานอาหารเผ็ด, สัมพันธ์กับ OSCC สูงมาก\n- **Oral Lichen Planus (OLP) & Oral Lichenoid Lesions (OLL)**:\n  * กลไกภูมิคุ้มกัน: CD8+ Cytotoxic T-lymphocytes ทำลายเซลล์ชั้น Basal keratinocytes ของเยื่อบุผิว\n  * ลักษณะทางคลินิก: รอยเส้นร่างแหสีขาวสมมาตรสองข้าง (Bilateral Wickham’s striae) บนเยื่อบุแก้ม (ส่วน OLL มักเป็นข้างเดียวหรือชิดวัสดุบูรณะ/จากยา ➔ ทดสอบ Skin patch test ร่วมกับ Biopsy)\n  * พยาธิวิทยา: มีแถบเซลล์เม็ดเลือดขาวลิมโฟไซต์เรียงตัวหนาแน่นใต้รอยต่อ (Dense band-like T-cell infiltrate), รอยต่อเยื่อบุผิวหยักแหลมเหมือนฟันเลื่อย (Saw-tooth rete pegs), พบ Apoptotic keratinocytes (Civatte bodies)\n\n2. มะเร็งเยื่อบุช่องปากชนิดสความัส (Oral Squamous Cell Carcinoma - OSCC):\n- **ตำแหน่งที่มีความเสี่ยงสูงที่สุด (High-Risk Anatomical Sites)**:\n  1) **ขอบด้านข้างและใต้โคนลิ้น (Ventrolateral border of the tongue)**: พบบ่อยที่สุด\n  2) **พื้นปาก (Floor of the mouth)**\n  3) เนื้อเยื่อด้านหลังฟันกรามล่างและเพดานอ่อน (Retromolar trigone & Soft palate)\n- **สัญญาณเตือนอันตรายทางคลินิก (Clinical Red Flags)**:\n  * แผลเรื้อรังที่ไม่หายภายใน **2 สัปดาห์**\n  * ขอบแผลยกม้วนหนาและแข็ง (Indurated, rolled borders)\n  * แผลยึดติดแน่นกับเนื้อเยื่อข้างใต้ ขยับไม่ได้ (Fixation to underlying tissues)\n  * คลำพบต่อมน้ำเหลืองที่คอโต แข็งเหมือนหิน ไม่เจ็บ และยึดติดแน่น (Stony hard, painless, fixed cervical lymph node)\n- **หลักการตัดตรวจชิ้นเนื้อ (Biopsy Principles)**:\n  * **Incisional Biopsy**: ตัดชิ้นเนื้อรูปวงรีหรือลิ่ม (Wedge shape) บริเวณขอบรอยโรคที่มีการลุกลาม โดย **ต้องครอบคลุมทั้งส่วนที่เป็นรอยโรคและส่วนเนื้อเยื่อปกติข้างเคียง (Margin of lesion + Normal tissue)** และต้องลึกถึงชั้นเนื้อเยื่อเกี่ยวพัน\n  * **ข้อห้าม**: ห้ามตัดตรงใจกลางแผลที่เป็นเนื้อตาย (Necrotic center) และห้ามใช้มีดไฟฟ้า (Electrosurgery) ในการตัดชิ้นเนื้อตรวจเพราะจะทำให้เซลล์ไหม้บวมผิดรูปแปลผลไม่ได้!",
     "matrix_headers": [
       "รอยโรค",
       "ลักษณะทางคลินิกเด่น",
@@ -1426,7 +1424,7 @@ export const CLINICAL_STUDY_GUIDES = {
       "ข้อสอบชอบถามว่า \"รอยโรค OPMDs ชนิดใดมีอัตราการกลายพันธุ์เป็นมะเร็งสูงที่สุด?\" คำตอบคือ **Erythroplakia** ไม่ใช่ Leukoplakia!"
     ],
     "pearl": "กฎ 14 วัน (The 2-Week Rule): แผลในช่องปากใดๆ ที่กำจัดสาเหตุระคายเคือง (เช่น กรอฟันคม ถอดฟันเทียม) แล้วยังไม่หายภายใน 14 วัน \"ต้องได้รับการตัดชิ้นเนื้อตรวจ (Incisional Biopsy) ทุกรายโดยไม่มีข้อยกเว้น\"!",
-    "reference": "Neville BW, et al. Oral and Maxillofacial Pathology, 5th ed. Elsevier, 2024 (Chapters 10 & 11); WHO Classification of Head and Neck Tumours.",
+    "reference": "Warnakulasuriya S, et al. Oral potentially malignant disorders: A consensus report (WHO Collaborating Centre, 2020/2021); WHO Classification of Head and Neck Tumours, 5th ed. (2022); Neville BW, et al. Oral and Maxillofacial Pathology, 5th ed. Elsevier, 2024.",
     "decision_matrix": [
       {
         "col_0": "Erythroplakia",
@@ -1473,7 +1471,7 @@ export const CLINICAL_STUDY_GUIDES = {
       "Antiplatelet Bleeding"
     ],
     "overview": "ทันตแพทย์ต้องประเมินและบริหารจัดการผู้ป่วยโรคระบบได้อย่างปลอดภัย โดยเฉพาะแนวทางสมาคมโรคหัวใจอเมริกัน (AHA 2021 Update) สำหรับการป้องกัน Infective Endocarditis ซึ่งมีการตัดยา Clindamycin ออกอย่างเป็นทางการ และการจัดการยาต้านการแข็งตัวของเลือด",
-    "core_mechanism": "1. เกณฑ์การให้ยาปฏิชีวนะป้องกันเยื่อบุหัวใจอักเสบ (AHA 2021 IE Prophylaxis Update):\n- **หัตถการทันตกรรมที่ต้องให้ยาป้องกัน**: หัตถการที่มีการแตะต้องเนื้อเยื่อเหงือก (Manipulation of gingival tissue), บริเวณปลายรากฟัน (Periapical region), หรือมีการทะลุผ่านเยื่อบุช่องปาก (Perforation of oral mucosa) เช่น ขูดหินปูนใต้เหงือก, ถอนฟัน, ผ่าฟันคุด, ผ่าตัดปริทันต์, ใส่แถบจัดฟัน\n- **กลุ่มผู้ป่วยโรคหัวใจที่มีข้อบ่งชี้สูงสุด (High-Risk Cardiac Conditions Only)**:\n  1) ผู้ป่วยที่ได้รับการเปลี่ยนลิ้นหัวใจเทียม (Prosthetic cardiac valve หรือใช้วัสดุเทียมซ่อมแซมลิ้น)\n  2) ผู้ป่วยที่มีประวัติเคยเป็นเยื่อบุหัวใจอักเสบมาก่อน (Previous history of Infective Endocarditis)\n  3) ผู้ป่วยโรคหัวใจพิการแต่กำเนิด (Congenital Heart Disease - CHD):\n     - โรคหัวใจพิการแต่กำเนิดชนิดเขียวที่ยังไม่ได้ผ่าตัดแก้ไข (Unrepaired cyanotic CHD)\n     - ได้รับการผ่าตัดซ่อมแซมด้วยวัสดุเทียมมายังไม่เกิน **6 เดือน**\n     - ผ่าตัดซ่อมแซมแล้วแต่ยังมีข้อบกพร่องตกค้าง (Repaired CHD with residual defects)\n  4) ผู้ป่วยที่ได้รับการปลูกถ่ายหัวใจและเกิดลิ้นหัวใจผิดปกติ (Cardiac transplant with valvulopathy)\n- **สูตรยาป้องกัน (Antibiotic Regimen - รับประทานก่อนทำหัตถการ 30 - 60 นาที)**:\n  * ผู้ป่วยทั่วไป: **Amoxicillin 2.0 กรัม รับประทานครั้งเดียว (เด็ก: 50 mg/kg)**\n  * ผู้ป่วยที่แพ้ยากลุ่ม Penicillin:\n    - **Cephalexin 2.0 กรัม** (ใช้ได้เฉพาะกรณีที่ไม่มีประวัติแพ้ Penicillin แบบ Anaphylaxis, ลมพิษ, หรือ Angioedema)\n    - **Azithromycin หรือ Clarithromycin 500 มก.** (เด็ก: 15 mg/kg)\n    - **Doxycycline 100 มก.**\n  * **การเปลี่ยนแปลงครั้งประวัติศาสตร์ของ AHA 2021**: **\"ยกเลิกการใช้ Clindamycin อย่างเป็นทางการ (OFFICIALLY REMOVED!)\"** เนื่องจาก Clindamycin มีความเสี่ยงสูงมากต่อการเกิดโรคลำไส้อักเสบรุนแรงจากเชื้อ *Clostridioides difficile* (Pseudomembranous colitis) ซึ่งเป็นอันตรายถึงชีวิต!\n\n2. ภาวะความดันโลหิตสูง (Hypertension Management):\n- BP < 140/90 mmHg: ทำทันตกรรมได้ตามปกติ\n- BP 140-159 / 90-99 mmHg: ทำทันตกรรมได้ ลดความเครียด วัดความดันซ้ำ\n- BP 160-179 / 100-109 mmHg: ทำได้เฉพาะหัตถการฉุกเฉินที่ไม่ซับซ้อน หรือเลือกใช้ยาชาที่ไม่เกินขนาดยาจำกัด\n- **BP >= 180/110 mmHg (Hypertensive Crisis)**: **ห้ามทำทันตกรรมทุกชนิดเด็ดขาด!** ส่งต่อพบแพทย์ทันที\n- ขนาดยาสูงสุดของ Epinephrine ในผู้ป่วยโรคหัวใจและความดันโลหิตสูง: **0.04 mg (เท่ากับยาชา 1:100,000 ไม่เกิน 2 หลอด)**\n\n3. ยาต้านการแข็งตัวของเลือดและเกล็ดเลือด (Anticoagulants & Antiplatelets):\n- **Warfarin (Coumadin)**:\n  * ต้องตรวจค่า **INR (International Normalized Ratio)** ภายใน 24 ถึง 72 ชั่วโมงก่อนทำหัตถการ\n  * **ค่า INR <= 3.5: สามารถถอนฟันหรือทำศัลยศาสตร์ช่องปากขนาดเล็กได้โดยไม่ต้องหยุดยา Warfarin!**\n  * ให้ใช้สารช่วยห้ามเลือดเฉพาะที่ (Local hemostatic measures): เย็บปิดแผลแน่นหนา, ใส่ Gelfoam/Surgicel, อมกลั้วน้ำยา **Tranexamic acid 4.8%**\n- **Aspirin / Clopidogrel (Plavix) / Dual Antiplatelet Therapy (DAPT)**:\n  * **กฎเหล็ก: \"ห้ามสั่งหยุดยา Aspirin หรือ Clopidogrel เพื่อมาทำฟันเด็ดขาด!\"**\n  * เหตุผล: ความเสี่ยงต่อการเกิดลิ่มเลือดอุดตันในสมอง (Stroke) หรือหลอดเลือดหัวใจ (Stent thrombosis) อันตรายถึงชีวิตมากกว่าความเสี่ยงเลือดออกในช่องปากซึ่งสามารถห้ามได้ด้วยมาตรการเฉพาะที่!",
+    "core_mechanism": "1. เกณฑ์การให้ยาปฏิชีวนะป้องกันเยื่อบุหัวใจอักเสบ (AHA 2021 IE Prophylaxis Update):\n- **หัตถการทันตกรรมที่ต้องให้ยาป้องกัน**: หัตถการที่มีการแตะต้องเนื้อเยื่อเหงือก (Manipulation of gingival tissue), บริเวณปลายรากฟัน (Periapical region), หรือมีการทะลุผ่านเยื่อบุช่องปาก (Perforation of oral mucosa) เช่น ขูดหินปูนใต้เหงือก, ถอนฟัน, ผ่าฟันคุด, ผ่าตัดปริทันต์, ใส่แถบจัดฟัน\n- **กลุ่มผู้ป่วยโรคหัวใจที่มีข้อบ่งชี้สูงสุด (High-Risk Cardiac Conditions Only)**:\n  1) ผู้ป่วยที่ได้รับการเปลี่ยนลิ้นหัวใจเทียม (Prosthetic cardiac valve หรือใช้วัสดุเทียมซ่อมแซมลิ้น)\n  2) ผู้ป่วยที่มีประวัติเคยเป็นเยื่อบุหัวใจอักเสบมาก่อน (Previous history of Infective Endocarditis)\n  3) ผู้ป่วยโรคหัวใจพิการแต่กำเนิด (Congenital Heart Disease - CHD):\n     - โรคหัวใจพิการแต่กำเนิดชนิดเขียวที่ยังไม่ได้ผ่าตัดแก้ไข (Unrepaired cyanotic CHD)\n     - ได้รับการผ่าตัดซ่อมแซมด้วยวัสดุเทียมมายังไม่เกิน **6 เดือน**\n     - ผ่าตัดซ่อมแซมแล้วแต่ยังมีข้อบกพร่องตกค้าง (Repaired CHD with residual defects)\n  4) ผู้ป่วยที่ได้รับการปลูกถ่ายหัวใจและเกิดลิ้นหัวใจผิดปกติ (Cardiac transplant with valvulopathy)\n- **สูตรยาป้องกัน (Antibiotic Regimen - รับประทานก่อนทำหัตถการ 30 - 60 นาที)**:\n  * ผู้ป่วยทั่วไป: **Amoxicillin 2.0 กรัม รับประทานครั้งเดียว (เด็ก: 50 mg/kg)**\n  * ผู้ป่วยที่แพ้ยากลุ่ม Penicillin:\n    - **Cephalexin 2.0 กรัม** (ใช้ได้เฉพาะกรณีที่ไม่มีประวัติแพ้ Penicillin แบบ Anaphylaxis, ลมพิษ, หรือ Angioedema)\n    - **Azithromycin หรือ Clarithromycin 500 มก.** (เด็ก: 15 mg/kg)\n    - **Doxycycline 100 มก.**\n  * **การเปลี่ยนแปลงครั้งประวัติศาสตร์ของ AHA 2021**: **\"ยกเลิกการใช้ Clindamycin อย่างเป็นทางการ (OFFICIALLY REMOVED!)\"** เนื่องจาก Clindamycin มีความเสี่ยงสูงมากต่อการเกิดโรคลำไส้อักเสบรุนแรงจากเชื้อ *Clostridioides difficile* (Pseudomembranous colitis) ซึ่งเป็นอันตรายถึงชีวิต!\n\n2. ภาวะความดันโลหิตสูง (Hypertension Management):\n- **เกณฑ์วินิจฉัยความดันโลหิตสูง**: สมาคมความดันโลหิตสูงแห่งประเทศไทย / WHO / ESC ใช้ **>= 140/90 mmHg** (เกณฑ์สอบ NL หลัก) ขณะที่ **ACC/AHA 2017 & 2025** ปรับเกณฑ์ Stage 1 เร็วขึ้นเป็น **>= 130/80 mmHg** (Stage 2 >= 140/90 mmHg)\n- BP < 140/90 mmHg: ทำทันตกรรมได้ตามปกติ | BP 140-159 / 90-99 mmHg: ทำได้ ลดเครียด วัดซ้ำ\n- BP 160-179 / 100-109 mmHg: ทำเฉพาะฉุกเฉินไม่ซับซ้อน คุมขนาด Epinephrine\n- **BP >= 180/110 mmHg (Hypertensive Crisis)**: **ห้ามทำทันตกรรม Elective ทุกชนิดเด็ดขาด!** ส่งต่อพบแพทย์ทันที\n- ขนาดยาสูงสุดของ Epinephrine ในผู้ป่วยโรคหัวใจและความดันโลหิตสูง: **0.04 mg (เท่ากับยาชา 1:100,000 ไม่เกิน 2 หลอด)**\n\n3. ยาต้านการแข็งตัวของเลือดและเกล็ดเลือด (Anticoagulants & Antiplatelets):\n- **Warfarin (Coumadin)**:\n  * ต้องตรวจค่า **INR (International Normalized Ratio)** ภายใน 24 ถึง 72 ชั่วโมงก่อนทำหัตถการ\n  * **ค่า INR <= 3.5: สามารถถอนฟันหรือทำศัลยศาสตร์ช่องปากขนาดเล็กได้โดยไม่ต้องหยุดยา Warfarin!** (หลีกเลี่ยง Miconazole oral gel / Metronidazole / NSAIDs ที่เพิ่ม INR!)\n  * ให้ใช้สารช่วยห้ามเลือดเฉพาะที่ (Local hemostatic measures): เย็บปิดแผลแน่นหนา, ใส่ Gelfoam/Surgicel, อมกลั้วน้ำยา **Tranexamic acid 4.8–5%**\n- **Aspirin / Clopidogrel (Plavix) / Dual Antiplatelet Therapy (DAPT)**:\n  * **กฎเหล็ก: \"ห้ามสั่งหยุดยา Aspirin หรือ Clopidogrel เพื่อมาทำฟันเด็ดขาด!\"**\n  * เหตุผล: ความเสี่ยงต่อการเกิดลิ่มเลือดอุดตันในสมอง (Stroke) หรือหลอดเลือดหัวใจ (Stent thrombosis) อันตรายถึงชีวิตมากกว่าความเสี่ยงเลือดออกในช่องปากซึ่งสามารถห้ามได้ด้วยมาตรการเฉพาะที่!",
     "matrix_headers": [
       "สภาวะทางการแพทย์",
       "เกณฑ์การประเมิน",
@@ -1510,8 +1508,8 @@ export const CLINICAL_STUDY_GUIDES = {
       "กับดัก Clindamycin ในข้อสอบปัจจุบัน: ข้อสอบเก่ามักเฉลย Clindamycin 600 mg สำหรับคนแพ้ Penicillin แต่ข้อสอบตามเกณฑ์มาตรฐานปัจจุบัน AHA 2021 \"Clindamycin ถูกถอดถอนแล้ว\" หากคนไข้แพ้ Amoxicillin ตัวเลือกที่ถูกต้องคือ Azithromycin 500 mg, Cephalexin 2 g หรือ Doxycycline 100 mg!",
       "คนไข้เปลี่ยนข้อสะโพก/ข้อเข่าเทียม (Prosthetic Joint Replacement): ตามแนวทางร่วม ADA/AAOS ปัจจุบัน **ไม่จำเป็นต้องให้ยาปฏิชีวนะป้องกันก่อนทำฟันเป็นกิจวัตรอีกต่อไป** เว้นแต่มีภาวะภูมิคุ้มกันบกพร่องรุนแรงและแพทย์ศัลยกรรมกระดูกสั่งการเฉพาะราย!"
     ],
-    "pearl": "การนัดเวลาทำฟันในผู้ป่วยเบาหวาน (Diabetic Patient): ควรนัดเวลาเช้าหลังผู้ป่วยรับประทานอาหารเช้าและฉีด/กินยาเบาหวานตามปกติแล้ว เพื่อป้องกันภาวะน้ำตาลในเลือดต่ำ (Hypoglycemia) ในระหว่างการทำฟัน!",
-    "reference": "American Heart Association (AHA). Prevention of Viridans Group Streptococcal Infective Endocarditis: 2021 Update. Circulation 2021;143:e963-e978; Little and Falace’s Dental Management of the Medically Compromised Patient, 10th ed. Elsevier, 2023.",
+    "pearl": "ผู้ป่วยหลังทำฟันมีอาการบ้านหมุน ใจสั่น ตาลาย (Orthostatic hypotension / Vasovagal presyncope): ให้รีบปรับเก้าอี้นอนราบ (Supine) และยกขาสูงทันที ตามหลัก Malamed และนัดทำฟันผู้ป่วยเบาหวานในตอนเช้าหลังกินข้าว-ยาปกติ!",
+    "reference": "American Heart Association (AHA) 2021 Update (Circulation 2021;143:e963-e978); ACC/AHA 2017 & 2025 High Blood Pressure Guidelines; Little and Falace’s Dental Management of the Medically Compromised Patient, 10th ed. Elsevier, 2023.",
     "decision_matrix": [
       {
         "col_0": "Infective Endocarditis Risk",
@@ -1552,7 +1550,7 @@ export const CLINICAL_STUDY_GUIDES = {
       "Dentigerous Cyst"
     ],
     "overview": "ถุงน้ำและเนื้องอกในขากรรไกรเป็นหัวข้อสำคัญในข้อสอบ NL ทันตแพทย์ต้องสามารถแยกแยะระหว่าง Dentigerous Cyst, Odontogenic Keratocyst (OKC) และ Ameloblastoma จากลักษณะทางภาพรังสี ชีววิทยาระดับโมเลกุล และการรักษา",
-    "core_mechanism": "1. ถุงน้ำ Odontogenic Keratocyst (OKC):\n- **กำเนิดและพันธุศาสตร์ (Pathogenesis & Genetics)**:\n  * เจริญมาจากเศษเนื้อเยื่อ Dental Lamina (Rests of Serres)\n  * เกิดการกลายพันธุ์ของยีน **PTCH1 (Patched-1 Tumor Suppressor Gene)** บนโครโมโซมคู่ที่ 9q22 ซึ่งควบคุม Sonic Hedgehog Signaling Pathway\n  * สัมพันธ์กับ **Gorlin-Goltz Syndrome (Nevoid Basal Cell Carcinoma Syndrome)**:\n    - พบ Multiple OKCs ในขากรรไกรตั้งแต่อายุน้อย\n    - Multiple Basal Cell Carcinomas ที่ผิวหนัง\n    - ซี่โครงแยกสองแฉก (Bifid ribs)\n    - รอยบุ๋มที่ฝ่ามือฝ่าเท้า (Palmar/Plantar pitting)\n    - เยื่อหุ้มสมองกลายเป็นหินปูน (Calcification of falx cerebri)\n- **พยาธิวิทยาเนื้อเยื่อ (Histopathology of OKC)**:\n  * ผนังบุผิวเป็น Parakeratinized stratified squamous epithelium หนาสม่ำเสมอเพียง **6 ถึง 8 ชั้นเซลล์**\n  * ผิวชั้นบนเป็นคลื่นหยัก (Corrugated parakeratin surface)\n  * เซลล์ชั้นฐาน (Basal layer) เรียงตัวเป็นระเบียบชัดเจน คล้ายแนวรั้วบ้านหรือเสาหินปักหน้าหลุมศพ (**Palisaded basal layer / Tombstone pattern**)\n  * ไม่มี Rete pegs (Flat epithelial-connective tissue interface) ทำให้เยื่อบุหลุดลอกออกจากผนังถุงน้ำได้ง่ายมากในขณะผ่าตัด\n  * พบถุงน้ำขนาดเล็กในผนัง (Satellite / Daughter cysts) ซึ่งเป็นสาเหตุสำคัญที่ทำให้ **มีอัตราการเกิดซ้ำสูงมาก (High recurrence rate 10 - 30%)**\n- **การรักษา**: Enucleation ร่วมกับ Carnoy's solution หรือ Cryotherapy หรือทำ Marsupialization/Decompression ก่อน\n\n2. เนื้องอก Ameloblastoma (ชนิด Solid/Multicircular):\n- เนื้องอกแท้จริง (Benign neoplasm) ที่มีพฤติกรรมลุกลามแทรกซึมกระดูกเบ้าฟันอย่างรุนแรง (Locally invasive)\n- **ลักษณะทางภาพรังสี**: เงาดำโปร่งรังสีหลายห้อง (**Multilocular radiolucency**) คล้ายฟองสบู่ (**Soap-bubble**) หรือรวงผึ้ง (**Honeycomb appearance**), ขอบหยักชัดเจน, ทำให้กระดูกขากรรไกรโป่งพอง (Cortical expansion) และเกิดการละลายของรากฟันข้างเคียงแบบถูกมีดตัดตรง (**Knife-cut root resorption**)\n- **พยาธิวิทยา (Histology)**:\n  * มีลักษณะเข้าเกณฑ์ **Vickars-Gorlin Criteria**: เซลล์ชั้นนอกเป็นรูปทรงกระบอกสูงคล้าย Ameloblasts โดยมีนิวเคลียสถอยห่างจากเยื่อฐาน (**Reverse nuclear polarity**) ส่วนเซลล์ชั้นกลางสานกันหลวมๆ คล้าย **Stellate Reticulum**\n- **การรักษามาตรฐาน**: **การผ่าตัดกระดูกขากรรไกรออกเป็นบริเวณกว้าง (Wide surgical resection with safe margin 1.0 - 1.5 cm)** ห้ามใช้วิธีขูดออก (Curettage) เพียงอย่างเดียวเด็ดขาด เพราะอัตราการกลับมาเป็นซ้ำสูงถึง 50 - 90%!\n\n3. Dentigerous Cyst (Follicular Cyst):\n- เกิดจากการสะสมของของเหลวระหว่าง Reduced Enamel Epithelium กับตัวฟัน\n- ภาพรังสี: เงาดำโปร่งรังสีห้องเดียวล้อมรอบตัวฟันที่ยังไม่ขึ้น โดย **ขอบเงาดำต้องเกาะยึดติดอยู่ที่ระดับรอยต่อเคลือบฟัน-เคลือบรากฟัน (Cementoenamel Junction - CEJ)** เสมอ!\n- การรักษา: ผ่าตัดเลาะถุงน้ำออก (Enucleation) พร้อมถอนฟันซี่ที่ฝังตัว หรือทำ Marsupialization ในเด็กเพื่อเก็บฟันแท้",
+    "core_mechanism": "1. ถุงน้ำ Odontogenic Keratocyst (OKC):\n- **กำเนิดและพันธุศาสตร์ (Pathogenesis & Genetics)**:\n  * เจริญมาจากเศษเนื้อเยื่อ Dental Lamina (Rests of Serres)\n  * เกิดการกลายพันธุ์ของยีน **PTCH1 (Patched-1 Tumor Suppressor Gene)** บนโครโมโซมคู่ที่ 9q22 ซึ่งควบคุม Sonic Hedgehog Signaling Pathway\n  * สัมพันธ์กับ **Gorlin-Goltz Syndrome (Nevoid Basal Cell Carcinoma Syndrome)**:\n    - พบ Multiple OKCs ในขากรรไกรตั้งแต่อายุน้อย\n    - Multiple Basal Cell Carcinomas ที่ผิวหนัง\n    - ซี่โครงแยกสองแฉก (Bifid ribs)\n    - รอยบุ๋มที่ฝ่ามือฝ่าเท้า (Palmar/Plantar pitting)\n    - เยื่อหุ้มสมองกลายเป็นหินปูน (Calcification of falx cerebri)\n- **พยาธิวิทยาเนื้อเยื่อ (Histopathology of OKC)**:\n  * ผนังบุผิวเป็น Parakeratinized stratified squamous epithelium หนาสม่ำเสมอเพียง **6 ถึง 8 ชั้นเซลล์**\n  * ผิวชั้นบนเป็นคลื่นหยัก (Corrugated parakeratin surface)\n  * เซลล์ชั้นฐาน (Basal layer) เรียงตัวเป็นระเบียบชัดเจน คล้ายแนวรั้วบ้านหรือเสาหินปักหน้าหลุมศพ (**Palisaded basal layer / Tombstone pattern**)\n  * ไม่มี Rete pegs (Flat epithelial-connective tissue interface) ทำให้เยื่อบุหลุดลอกออกจากผนังถุงน้ำได้ง่ายมากในขณะผ่าตัด\n  * พบถุงน้ำขนาดเล็กในผนัง (Satellite / Daughter cysts) ซึ่งเป็นสาเหตุสำคัญที่ทำให้ **มีอัตราการเกิดซ้ำสูงมาก (High recurrence rate 10 - 30%)**\n- **การรักษา**: Enucleation ร่วมกับ Carnoy's solution หรือ Cryotherapy หรือทำ Marsupialization/Decompression ก่อน\n\n2. เนื้องอก Ameloblastoma (ชนิด Solid/Multicystic / Conventional):\n- เนื้องอกแท้จริง (Benign neoplasm) ที่มีพฤติกรรมลุกลามแทรกซึมกระดูกเบ้าฟันอย่างรุนแรง (Locally invasive) โดยกว่า ~60-80% ของ Ameloblastoma ในขากรรไกรล่างพบการกลายพันธุ์ของยีน **BRAF V600E** (และ WHO 2022 5th ed. ได้เพิ่ม **Adenoid ameloblastoma** เป็นชนิดใหม่ในกลุ่มเนื้องอก และเพิ่ม **Surgical ciliated cyst** ในกลุ่มถุงน้ำขากรรไกรอย่างเป็นทางการ!)\n- **ลักษณะทางภาพรังสี**: เงาดำโปร่งรังสีหลายห้อง (**Multilocular radiolucency**) คล้ายฟองสบู่ (**Soap-bubble**) หรือรวงผึ้ง (**Honeycomb appearance**), ขอบหยักชัดเจน, ทำให้กระดูกขากรรไกรโป่งพอง (Cortical expansion) และเกิดการละลายของรากฟันข้างเคียงแบบถูกมีดตัดตรง (**Knife-cut root resorption**)\n- **พยาธิวิทยา (Histology)**:\n  * มีลักษณะเข้าเกณฑ์ **Vickers-Gorlin Criteria**: เซลล์ชั้นนอกเป็นรูปทรงกระบอกสูงคล้าย Ameloblasts โดยมีนิวเคลียสถอยห่างจากเยื่อฐาน (**Reverse nuclear polarity**) ร่วมกับ Cytoplasmic vacuolization ส่วนเซลล์ชั้นกลางสานกันหลวมๆ คล้าย **Stellate Reticulum**\n- **การรักษามาตรฐาน**: **การผ่าตัดกระดูกขากรรไกรออกเป็นบริเวณกว้าง (Wide surgical resection with safe margin 1.0 - 1.5 cm)** ห้ามใช้วิธีขูดออก (Curettage) เพียงอย่างเดียวเด็ดขาด เพราะอัตราการกลับมาเป็นซ้ำสูงถึง 50 - 90%!\n\n3. Dentigerous Cyst (Follicular Cyst) & กลุ่มรอยโรคสำคัญอื่น:\n- เกิดจากการสะสมของของเหลวระหว่าง Reduced Enamel Epithelium กับตัวฟัน\n- ภาพรังสี: เงาดำโปร่งรังสีห้องเดียวล้อมรอบตัวฟันที่ยังไม่ขึ้น โดย **ขอบเงาดำต้องเกาะยึดติดอยู่ที่ระดับรอยต่อเคลือบฟัน-เคลือบรากฟัน (Cementoenamel Junction - CEJ)** เสมอ! (ต่างจาก **AOT** ที่มักพบบริเวณฟันเขี้ยวบนหญิงอายุน้อยและคลุม **เลยระดับ CEJ** ลงมาถึงรากฟัน | **COC** เด่นเรื่อง Ghost cells)\n- การรักษา: ผ่าตัดเลาะถุงน้ำออก (Enucleation) พร้อมถอนฟันซี่ที่ฝังตัว หรือทำ Marsupialization ในเด็กเพื่อเก็บฟันแท้",
     "matrix_headers": [
       "รอยโรค",
       "ลักษณะภาพรังสี",
@@ -1589,8 +1587,8 @@ export const CLINICAL_STUDY_GUIDES = {
       "กับดัก OKC ขยายตัว: OKC มักขยายตัวตามความยาวของขากรรไกรในแนวหน้า-หลัง (Anteroposterior expansion) ภายในโพรงกระดูกไขกระดูก (Medullary space) โดยที่ **กระดูกด้านแก้มและลิ้นแทบไม่โป่งพองเลย (Minimal cortical expansion)** ต่างจาก Ameloblastoma ที่จะดันกระดูกโป่งพองชัดเจน!",
       "การวินิจฉัย Radicular cyst vs Dentigerous cyst: ต้องทดสอบความมีชีวิตของฟัน (Vitality test) เสมอ Radicular cyst เกิดจากฟันที่ตายแล้ว (Pulp necrosis) เท่านั้น ส่วน Dentigerous cyst สัมพันธ์กับฟันที่ยังไม่ขึ้น!"
     ],
-    "pearl": "จำความสัมพันธ์ของยีน PTCH1 กับ Gorlin-Goltz Syndrome: หากโจทย์ให้เคสเด็กวัยรุ่นมีถุงน้ำ OKC หลายตำแหน่ง ร่วมกับมีรอยบุ๋มที่ฝ่ามือ (Palmar pits) และซี่โครงแฉก ให้ตอบชื่อกลุ่มอาการ Gorlin-Goltz Syndrome ทันที!",
-    "reference": "Neville BW, et al. Oral and Maxillofacial Pathology, 5th ed. Elsevier, 2024 (Chapter 15: Odontogenic Cysts and Tumors).",
+    "pearl": "จำความสัมพันธ์ของยีน PTCH1 กับ Gorlin-Goltz Syndrome และ BRAF V600E กับ Ameloblastoma (เกณฑ์ Vickers-Gorlin) พร้อมจำ WHO 2022 5th ed. ที่เพิ่ม Adenoid ameloblastoma & Surgical ciliated cyst!",
+    "reference": "WHO Classification of Head and Neck Tumours, 5th ed. IARC, 2022; Neville BW, et al. Oral and Maxillofacial Pathology, 5th ed. Elsevier, 2024 (Chapter 15: Odontogenic Cysts and Tumors).",
     "decision_matrix": [
       {
         "col_0": "Dentigerous Cyst",
@@ -1631,7 +1629,7 @@ export const CLINICAL_STUDY_GUIDES = {
       "Stabilization Splint"
     ],
     "overview": "เกณฑ์มาตรฐานสากล Diagnostic Criteria for Temporomandibular Disorders (DC/TMD 2014) แบ่งการวินิจฉัย Axis I ออกเป็นกลุ่มโรคกล้ามเนื้อบดเคี้ยว (Muscle Disorders) และกลุ่มโรคข้อต่อขากรรไกร (Joint Disorders) ทันตแพทย์ต้องสามารถแยกแยะเสียงคลิก (Clicking) เสียงกรอบแกรบ (Crepitus) และอาการอ้าปากติดขัดได้อย่างถูกต้อง",
-    "core_mechanism": "1. กลุ่มโรคกล้ามเนื้อบดเคี้ยว (Masticatory Muscle Disorders):\n- **Local Myalgia (ปวดกล้ามเนื้อเฉพาะที่)**: มีอาการปวดบริเวณกล้ามเนื้อบดเคี้ยว (Masseter หรือ Temporalis) เมื่อคลำตรวจด้วยแรง 1 กก. เป็นเวลา 2-5 วินาที โดย **ความเจ็บปวดจะจำกัดอยู่เฉพาะในขอบเขตของมัดกล้ามเนื้อที่ถูกกดเท่านั้น ไม่มีการกระจายปวดร้าวออกนอกมัดกล้ามเนื้อ**\n- **Myofascial Pain with Referral (ปวดกล้ามเนื้อร่วมกับปวดร้าว)**: มีจุดกดเจ็บกล้ามเนื้อ (Trigger point) และ **เมื่อกดแล้วเกิดอาการปวดร้าวแผ่ออกไปนอกขอบเขตของกล้ามเนื้อมัดนั้น (Pain referral beyond the muscle boundary)** เช่น กดกล้ามเนื้อ Masseter แล้วปวดร้าวไปยังฟันกรามล่าง หรือกด Temporalis แล้วปวดร้าวไปขมับและฟันบน\n\n2. กลุ่มโรคข้อต่อขากรรไกร (TMJ Arthropathies & Disc Derangements):\n- **Disc Displacement with Reduction (DDwR - หมอนรองกระดูกเคลื่อนกลับเข้าที่ได้)**:\n  * หมอนรองกระดูกเลื่อนไปข้างหน้าในขณะหุบปาก (Anterior displacement)\n  * อาการแสดง: มี **เสียงคลิก (Clicking sound)** ขณะอ้าปาก (เมื่อหัวขากรรไกร Condyle เคลื่อนปีนกลับขึ้นบนหมอนรอง) และมีเสียงคลิกอีกครั้งขณะหุบปาก (Reciprocal click)\n  * ขากรรไกรจะเบนออกไปด้านที่เป็นรอยโรคขณะอ้าปาก แล้วเคลื่อนกลับเข้าสู่แนวกึ่งกลางเมื่อหมอนเข้าที่ (S-shaped deviation)\n  * **ไม่มีการจำกัดระยะการอ้าปาก** (อ้าปากได้กว้างปกติ >40 มม.)\n- **Disc Displacement without Reduction with Limited Opening (DDwoR - Closed Lock เฉียบพลัน)**:\n  * หมอนรองกระดูกติดขัดอยู่ข้างหน้าตลอดเวลา ไม่สามารถปีนกลับเข้าที่ได้\n  * อาการแสดง: **อ้าปากได้แคบลงเฉียบพลันอย่างรุนแรง (Maximum unassisted opening < 40 มม. และ Assisted opening < 40 มม.)**\n  * คางจะเบี่ยงเบนไปทาง \"ข้างที่มีรอยโรค (Deflection towards the affected side)\" ตลอดแนวการอ้าปาก\n  * **เสียงคลิกที่เคยมีจะ \"หายไปสนิท\"** เนื่องจากหัวคอนดายล์ไม่สามารถปีนข้ามหมอนรองกระดูกได้อีกต่อไป\n- **Degenerative Joint Disease (DJD / Osteoarthritis)**:\n  * เกิดจากการสึกหรอและทำลายของกระดูกอ่อนข้อต่อและพื้นผิวกระดูก\n  * อาการแสดงสำคัญ: มี **เสียงกรอบแกรบ หรือ เสียงบดทราย (Coarse Crepitus)** ดังตลอดช่วงการอ้าและหุบปาก\n  * ภาพรังสี (CBCT/Tomography): พบกระดูกคอนดายล์แบนลง (Flattening), กระดูกใต้ข้อต่อหนาแน่นทึบรังสี (Subchondral sclerosis), กระดูกงอกเป็นจะงอยปากนก (**Osteophyte formation / Bird-beak appearance**), และการกร่อนแหว่ง (Erosion)\n\n3. การเลือกใช้เฝือกสบฟัน (Occlusal Splint Therapy):\n- **Stabilization Splint (Michigan Splint / Flat Plane Splint)**:\n  * เฝือกสบฟันระนาบเรียบ ให้การสบฟันแบบ Mutually Protected Occlusion มี Canine Guidance\n  * สวมใส่เวลากลางคืนเพื่อลดแรงกดดันในข้อต่อ ลดการทำงานของกล้ามเนื้อ และป้องกันการสึกของฟันจาก Bruxism เป็น **Gold Standard สำหรับ Myalgia, Arthralgia และ Bruxism**\n- **Anterior Repositioning Splint (เฝือกสบฟันปรับตำแหน่งไปข้างหน้า)**:\n  * ทำหน้าที่ประคองให้ขากรรไกรล่างยื่นมาด้านหน้าเล็กน้อยตลอดเวลาเพื่อคงหมอนรองกระดูกให้อยู่บนหัวคอนดายล์\n  * **ข้อบ่งชี้จำเพาะ**: ใช้เฉพาะในผู้ป่วยที่มีภาวะ **DDwR ชนิดมีอาการปวดรุนแรงหรือมีอาการติดขัดเป็นช่วงๆ (Painful DDwR with intermittent locking)**\n  * **ข้อควรระวังอันตราย**: ห้ามใส่ติดต่อกันเกิน 2 ถึง 3 เดือน เพราะจะทำให้เกิดการสบฟันเปิดด้านหลังอย่างถาวร (Irreversible posterior open bite)!",
+    "core_mechanism": "1. กลุ่มโรคกล้ามเนื้อบดเคี้ยว (Masticatory Muscle Disorders):\n- **Local Myalgia (ปวดกล้ามเนื้อเฉพาะที่)**: มีอาการปวดบริเวณกล้ามเนื้อบดเคี้ยว (Masseter หรือ Temporalis) เมื่อคลำตรวจด้วยแรง 1 กก. เป็นเวลา 2-5 วินาที โดย **ความเจ็บปวดจะจำกัดอยู่เฉพาะในขอบเขตของมัดกล้ามเนื้อที่ถูกกดเท่านั้น ไม่มีการกระจายปวดร้าวออกนอกมัดกล้ามเนื้อ**\n- **Myofascial Pain with Referral (ปวดกล้ามเนื้อร่วมกับปวดร้าว)**: มีจุดกดเจ็บกล้ามเนื้อ (Trigger point) และ **เมื่อกดแล้วเกิดอาการปวดร้าวแผ่ออกไปนอกขอบเขตของกล้ามเนื้อมัดนั้น (Pain referral beyond the muscle boundary)** เช่น กดกล้ามเนื้อ Masseter แล้วปวดร้าวไปยังฟันกรามล่าง หรือกด Temporalis แล้วปวดร้าวไปขมับและฟันบน\n\n2. กลุ่มโรคข้อต่อขากรรไกร (TMJ Arthropathies & Disc Derangements):\n- **Disc Displacement with Reduction (DDwR - หมอนรองกระดูกเคลื่อนกลับเข้าที่ได้)**:\n  * หมอนรองกระดูกเลื่อนไปข้างหน้าในขณะหุบปาก (Anterior displacement)\n  * อาการแสดง: มี **เสียงคลิก (Clicking sound)** ขณะอ้าปาก (เมื่อหัวขากรรไกร Condyle เคลื่อนปีนกลับขึ้นบนหมอนรอง) และมีเสียงคลิกอีกครั้งขณะหุบปาก (Reciprocal click)\n  * ขากรรไกรจะเบนออกไปด้านที่เป็นรอยโรคขณะอ้าปาก แล้วเคลื่อนกลับเข้าสู่แนวกึ่งกลางเมื่อหมอนเข้าที่ (S-shaped deviation)\n  * **ไม่มีการจำกัดระยะการอ้าปาก** (อ้าปากได้กว้างปกติ >40 มม.)\n- **Disc Displacement without Reduction with Limited Opening (DDwoR - Closed Lock เฉียบพลัน)**:\n  * หมอนรองกระดูกติดขัดอยู่ข้างหน้าตลอดเวลา ไม่สามารถปีนกลับเข้าที่ได้\n  * อาการแสดง: **อ้าปากได้แคบลงเฉียบพลันอย่างรุนแรง (Maximum unassisted opening < 40 มม. และ Assisted opening < 40 มม.)**\n  * คางจะเบี่ยงเบนไปทาง \"ข้างที่มีรอยโรค (Deflection towards the affected side)\" ตลอดแนวการอ้าปาก\n  * **เสียงคลิกที่เคยมีจะ \"หายไปสนิท\"** เนื่องจากหัวคอนดายล์ไม่สามารถปีนข้ามหมอนรองกระดูกได้อีกต่อไป\n- **Degenerative Joint Disease (DJD / Osteoarthritis vs. Osteoarthrosis)**:\n  * เกิดจากการสึกหรอและทำลายของกระดูกอ่อนข้อต่อและพื้นผิวกระดูก\n  * อาการแสดงสำคัญ: มี **เสียงกรอบแกรบ หรือ เสียงบดทราย (Coarse Crepitus)** ดังตลอดช่วงการอ้าและหุบปาก\n  * แยกตามเกณฑ์ DC/TMD: **Osteoarthritis** = มี Crepitus + ภาพรังสีข้อเสื่อม + **มีอาการปวด/คลำเจ็บที่ข้อต่อ** | **Osteoarthrosis** = มี Crepitus + ภาพรังสีข้อเสื่อม แต่ **ไม่มีอาการปวด**\n  * ภาพรังสี (**CBCT/CT** ดีที่สุดสำหรับกระดูก): พบกระดูกคอนดายล์แบนลง (Flattening), กระดูกใต้ข้อต่อหนาแน่นทึบรังสี (Subchondral sclerosis), กระดูกงอกเป็นจะงอยปากนก (**Osteophyte formation / Bird-beak appearance**), และการกร่อนแหว่ง (Erosion)\n- **TMJ Subluxation (Hypermobility) & Acute Traumatic Arthralgia/Retrodiscitis**:\n  * **TMJ Subluxation**: อ้าปากกว้างมากผิดปกติ (>55–60 มม.) Condyle เลื่อนข้ามยอด Eminence ไปด้านหน้า (จำกัดระยะอ้า/ประคองคางเวลาหาว)\n  * **Acute Retrodiscitis (กระแทกคางเฉียบพลัน)**: Joint effusion ดัน Condyle ลงล่างทำให้ **สบฟันกรามข้างนั้นไม่ลง (Ipsilateral posterior open bite)** — รักษาด้วยอาหารอ่อน พักข้อต่อ น้ำแข็ง 24–48 ชม. แรก + NSAIDs และ **ห้ามกรอปรับสบฟันเด็ดขาด!**\n\n3. การเลือกใช้เฝือกสบฟัน (Occlusal Splint Therapy):\n- **Stabilization Splint (Michigan Splint / Flat Plane Splint)**:\n  * เฝือกสบฟันระนาบเรียบ ให้การสบฟันแบบ Mutually Protected Occlusion มี Canine Guidance\n  * สวมใส่เวลากลางคืนเพื่อลดแรงกดดันในข้อต่อ ลดการทำงานของกล้ามเนื้อ และป้องกันการสึกของฟันจาก Bruxism เป็น **Gold Standard สำหรับ Myalgia, Arthralgia และ Bruxism**\n- **Anterior Repositioning Splint (เฝือกสบฟันปรับตำแหน่งไปข้างหน้า)**:\n  * ทำหน้าที่ประคองให้ขากรรไกรล่างยื่นมาด้านหน้าเล็กน้อยตลอดเวลาเพื่อคงหมอนรองกระดูกให้อยู่บนหัวคอนดายล์\n  * **ข้อบ่งชี้จำเพาะ**: ใช้เฉพาะในผู้ป่วยที่มีภาวะ **DDwR ชนิดมีอาการปวดรุนแรงหรือมีอาการติดขัดเป็นช่วงๆ (Painful DDwR with intermittent locking)**\n  * **ข้อควรระวังอันตราย**: ห้ามใส่ติดต่อกันเกิน 2 ถึง 3 เดือน เพราะจะทำให้เกิดการสบฟันเปิดด้านหลังอย่างถาวร (Irreversible posterior open bite)!",
     "matrix_headers": [
       "โรคของข้อต่อ/กล้ามเนื้อ",
       "ลักษณะเสียงในข้อต่อ",
@@ -1669,7 +1667,7 @@ export const CLINICAL_STUDY_GUIDES = {
       "ความแตกต่างระหว่าง Deviation vs Deflection: Deviation คืออ้าปากแล้วคางเบนออกไปข้างหนึ่งแล้วกลับมาตรงกึ่งกลางเมื่ออ้าสุด (พบใน DDwR) ส่วน Deflection คือคางเฉออกไปข้างที่มีรอยโรคแล้วไม่กลับมาตรงกึ่งกลางเลย (พบใน Closed Lock)!"
     ],
     "pearl": "เสียง Crepitus (เสียงกรอบแกรบเหมือนเดินเหยียบก้อนกรวด) เป็นอาการแสดงจำเพาะ (Pathognomonic sign) ของโรคข้อเสื่อม Degenerative Joint Disease (Osteoarthritis) หากได้ยินเสียงนี้ ตอบ DJD ทันที!",
-    "reference": "Schiffman E, et al. Diagnostic Criteria for Temporomandibular Disorders (DC/TMD) for Clinical and Research Applications. J Oral Facial Pain Headache, 2014;28(1):6-27; Okeson JP. Management of Temporomandibular Disorders and Occlusion, 8th ed. Elsevier, 2020.",
+    "reference": "Schiffman E, et al. Diagnostic Criteria for Temporomandibular Disorders (DC/TMD) for Clinical and Research Applications. J Oral Facial Pain Headache, 2014;28(1):6-27; de Leeuw R, Klasser GD. AAOP Guidelines, 7th ed. 2023; Okeson JP. Management of Temporomandibular Disorders and Occlusion, 8th ed. Elsevier, 2020.",
     "decision_matrix": [
       {
         "col_0": "Disc Displacement c Reduction",
@@ -1789,7 +1787,7 @@ export const CLINICAL_STUDY_GUIDES = {
       "Spaulding Classification"
     ],
     "overview": "ความรู้ด้านวิทยาการระบาดและชีวสถิติเป็นหัวใจของทันตสาธารณสุข โดยเฉพาะการคำนวณ Sensitivity, Specificity, ค่าทำนายผลบวก (PPV) ซึ่งแปรผันตามความชุกของโรค, ดัชนีตรวจสภาวะช่องปากของ WHO, และการควบคุมการติดเชื้อตามมาตรฐาน Spaulding",
-    "core_mechanism": "1. การประเมินชุดตรวจวินิจฉัย (2x2 Contingency Table for Diagnostic Tests):\n- **Sensitivity (ความไว)**: ความสามารถของชุดตรวจในการตรวจจับคนที่เป็นโรคได้อย่างถูกต้อง\n  * Formula: **Sensitivity = TP / (TP + FN)**\n  * ชุดตรวจที่มีความไวสูงมาก (High Sensitivity) เหมาะกับการใช้เป็น **แบบคัดกรอง (Screening Test)** เพื่อไม่ให้ผู้ป่วยหลุดรอด (Rule Out: SnNOut)\n- **Specificity (ความจำเพาะ)**: ความสามารถของชุดตรวจในการระบุคนที่ไม่ได้เป็นโรคได้อย่างถูกต้อง\n  * Formula: **Specificity = TN / (TN + FP)**\n  * ชุดตรวจที่มีความจำเพาะสูงมาก (High Specificity) เหมาะกับการใช้เป็น **แบบยืนยันการวินิจฉัย (Confirmatory Test)** เพื่อป้องกันผลบวกลวง (Rule In: SpPIn)\n- **Positive Predictive Value (PPV - ค่าทำนายผลบวก)**: เมื่อผลตรวจเป็นบวก โอกาสที่คนนั้นจะเป็นโรคจริงเท่ากับเท่าใด\n  * Formula: **PPV = TP / (TP + FP)**\n  * **กฎทองคำของความชุก (Prevalence Effect)**:\n    - ค่า Sensitivity และ Specificity เป็นคุณสมบัติประจำตัวของเครื่องมือ ไม่เปลี่ยนแปลงตามความชุกของโรค\n    - แต่ **ค่า PPV ขึ้นอยู่กับความชุกของโรค (Prevalence) โดยตรง!**\n    - เมื่อนำชุดตรวจไปใช้ในชุมชนที่มี **ความชุกของโรคต่ำมาก (Low Prevalence)** ค่า **PPV จะลดต่ำลงอย่างมาก** ในขณะที่ค่า Negative Predictive Value (NPV) จะพุ่งสูงขึ้นเกือบ 100%!\n\n2. ดัชนีทางทันตสาธารณสุขที่พบบ่อยในข้อสอบ:\n- **DMFT Index (Decayed, Missing, Filled Teeth)**:\n  * ใช้ในฟันแท้ นับฟันทั้งหมด **28 ซี่ (ไม่นับฟันกรามแท้ซี่ที่สาม / ฟันคุดทั้ง 4 ซี่)**\n  * ฟันที่ถูกถอนด้วยเหตุผลอื่น เช่น จัดฟัน อุบัติเหตุ หรือฟันแต่กำเนิดไม่ขึ้น ห้ามนำมานับเป็น M เด็ดขาด!\n  * ฟันซี่หนึ่งมีทั้งรอยผุและรอยอุด ให้บันทึกเป็น D (Decayed) เสมอ!\n- **Community Periodontal Index (CPI / CPITN)**:\n  * ใช้หัวตรวจปริทันต์ของ WHO (WHO CPI Probe): มีตุ้มกลมที่ปลายขนาดเส้นผ่านศูนย์กลาง **0.5 มม.** และมีแถบสีดำทึบที่ระยะ **3.5 ถึง 5.5 มม.** ใช้แรงตรวจไม่เกิน **20 กรัม**\n  * รหัส CPI:\n    - Code 0: ปริทันต์สุขภาพดี\n    - Code 1: มีเลือดออกเมื่อตรวจ (BOP)\n    - Code 2: มีหินน้ำลายเหนือหรือใต้เหงือก\n    - Code 3: ร่องลึกปริทันต์ 4 - 5 มม. (แถบสีดำบางส่วนจมลงใต้เหงือก)\n    - Code 4: ร่องลึกปริทันต์ >= 6 มม. (แถบสีดำจมมิดหายไปใต้เหงือกทั้งหมด)\n\n3. การควบคุมการติดเชื้อและการทำลายเชื้อ (Spaulding Classification):\n- **Critical Items**: เครื่องมือที่แทงทะลุเหงือก เข้าสู่กระดูกเบ้าฟันหรือกระแสเลือด (คีมถอนฟัน, หัวกรอ, มีดผ่าตัด, Curettes) -> **ต้องผ่านการนึ่งฆ่าเชื้อด้วยความร้อนชื้น (Sterilization / Autoclave) เท่านั้น!**\n- **Semicritical Items**: เครื่องมือที่สัมผัสเยื่อบุช่องปากหรือน้ำลายแต่ไม่แทงทะลุเนื้อเยื่อ (กระจกส่องปาก, Amalgam condenser) -> นึ่งฆ่าเชื้อ หรือทำลายเชื้อระดับสูง (High-level disinfection)\n- **ตัวบ่งชี้ทางชีวภาพ (Biological Indicators - Spore Test)**:\n  * หม้อนึ่งความดันไอน้ำ (Steam Autoclave) และ Chemical Vapor: ใช้สปอร์ของ **Geobacillus stearothermophilus**\n  * ตู้อบลมร้อนแห้ง (Dry Heat Oven) และก๊าซเอทิลีนออกไซด์ (Ethylene Oxide): ใช้สปอร์ของ **Bacillus atrophaeus**",
+    "core_mechanism": "1. การประเมินชุดตรวจวินิจฉัย (2x2 Contingency Table for Diagnostic Tests):\n- **Sensitivity (ความไว)**: ความสามารถของชุดตรวจในการตรวจจับคนที่เป็นโรคได้อย่างถูกต้อง\n  * Formula: **Sensitivity = TP / (TP + FN)**\n  * ชุดตรวจที่มีความไวสูงมาก (High Sensitivity) เหมาะกับการใช้เป็น **แบบคัดกรอง (Screening Test)** เพื่อไม่ให้ผู้ป่วยหลุดรอด (Rule Out: SnNOut)\n- **Specificity (ความจำเพาะ)**: ความสามารถของชุดตรวจในการระบุคนที่ไม่ได้เป็นโรคได้อย่างถูกต้อง\n  * Formula: **Specificity = TN / (TN + FP)**\n  * ชุดตรวจที่มีความจำเพาะสูงมาก (High Specificity) เหมาะกับการใช้เป็น **แบบยืนยันการวินิจฉัย (Confirmatory Test)** เพื่อป้องกันผลบวกลวง (Rule In: SpPIn)\n- **Positive Predictive Value (PPV - ค่าทำนายผลบวก)**: เมื่อผลตรวจเป็นบวก โอกาสที่คนนั้นจะเป็นโรคจริงเท่ากับเท่าใด\n  * Formula: **PPV = TP / (TP + FP)**\n  * **กฎทองคำของความชุก (Prevalence Effect)**:\n    - ค่า Sensitivity และ Specificity เป็นคุณสมบัติประจำตัวของเครื่องมือ ไม่เปลี่ยนแปลงตามความชุกของโรค\n    - แต่ **ค่า PPV ขึ้นอยู่กับความชุกของโรค (Prevalence) โดยตรง!**\n    - เมื่อนำชุดตรวจไปใช้ในชุมชนที่มี **ความชุกของโรคต่ำมาก (Low Prevalence)** ค่า **PPV จะลดต่ำลงอย่างมาก** ในขณะที่ค่า Negative Predictive Value (NPV) จะพุ่งสูงขึ้นเกือบ 100%!\n\n2. ดัชนีทางทันตสาธารณสุขที่พบบ่อยในข้อสอบ (WHO 5th ed., 2013):\n- **DMFT Index (Decayed, Missing, Filled Teeth)**:\n  * ประเมินฟันแท้ **32 ซี่ (18–48; ใช้ฐาน 28 ซี่เฉพาะโปรโตคอลเดิมที่ไม่รวมฟันคุด)** โดย `D` นับเฉพาะ **Cavitated dentin caries** เท่านั้น (ไม่นับ white spot / enamel caries)\n  * กฎรหัส `M` ตามอายุ (WHO 5th ed.): อายุ **< 30 ปี** นับเฉพาะ `Code 4` (ถอนจากฟันผุ) ห้ามนำฟันที่ถอนด้วยเหตุผลอื่น (`Code 5` เช่น จัดฟัน อุบัติเหตุ) มานับเป็น M เด็ดขาด; อายุ **≥ 30 ปี** นับ `M = Code 4 + Code 5`\n  * ฟันซี่หนึ่งมีทั้งรอยผุและรอยอุด ให้บันทึกเป็น D (Decayed) เสมอ!\n  * *(หากประเมินรอยผุระยะเริ่มต้นที่ไม่เป็นโพรง หรือผล **remineralization** จากฟลูออไรด์ ต้องใช้ **ICDAS** Codes 0–6 ไม่ใช้ `dmft`/`deft`)*\n- **Community Periodontal Index (Modified CPI vs Classic CPITN)**:\n  * ใช้หัวตรวจปริทันต์ของ WHO (WHO CPI Probe): มีตุ้มกลมที่ปลายขนาดเส้นผ่านศูนย์กลาง **0.5 มม.** และมีแถบสีดำทึบที่ระยะ **3.5 ถึง 5.5 มม.** ใช้แรงตรวจไม่เกิน **20 กรัม**\n  * **WHO Modified CPI (5th ed., 2013):** ตรวจ **ทุกซี่** แยกบันทึก **Bleeding (`0, 1`)** และ **Pocket (`0, 1=4–5 mm, 2=≥6 mm`)** โดย**ตัดรหัส Calculus ออก** และตรวจ LOA ในฟันดัชนีสำหรับอายุ ≥ 15 ปี\n  * **Classic CPITN (อ้างอิงข้อสอบ NL เดิม):** Code 0 (Healthy), Code 1 (BOP), Code 2 (Calculus), Code 3 (Pocket 4–5 มม.), Code 4 (Pocket ≥ 6 มม.)\n\n3. การควบคุมการติดเชื้อและการทำลายเชื้อ (Spaulding Classification):\n- **Critical Items**: เครื่องมือที่แทงทะลุเหงือก เข้าสู่กระดูกเบ้าฟันหรือกระแสเลือด (คีมถอนฟัน, หัวกรอ, มีดผ่าตัด, Curettes) -> **ต้องผ่านการนึ่งฆ่าเชื้อด้วยความร้อนชื้น (Sterilization / Autoclave) เท่านั้น!**\n- **Semicritical Items**: เครื่องมือที่สัมผัสเยื่อบุช่องปากหรือน้ำลายแต่ไม่แทงทะลุเนื้อเยื่อ (กระจกส่องปาก, Amalgam condenser) -> นึ่งฆ่าเชื้อ หรือทำลายเชื้อระดับสูง (High-level disinfection)\n- **ตัวบ่งชี้ทางชีวภาพ (Biological Indicators - Spore Test)**:\n  * หม้อนึ่งความดันไอน้ำ (Steam Autoclave) และ Chemical Vapor: ใช้สปอร์ของ **Geobacillus stearothermophilus**\n  * ตู้อบลมร้อนแห้ง (Dry Heat Oven) และก๊าซเอทิลีนออกไซด์ (Ethylene Oxide): ใช้สปอร์ของ **Bacillus atrophaeus**",
     "matrix_headers": [
       "ตัวชี้วัด / มาตรวัด",
       "สูตรคำนวณ / เกณฑ์มาตรฐาน",
@@ -1826,7 +1824,7 @@ export const CLINICAL_STUDY_GUIDES = {
       "กับดัก PPV ในประชากรความชุกต่ำ: ข้อสอบมักถามว่า \"หากนำชุดตรวจที่มี Sensitivity 95% และ Specificity 95% ไปตรวจคัดกรองมะเร็งช่องปากในประชากรทั่วไปที่มีความชุกเพียง 0.1% ผล PPV จะเป็นอย่างไร?\" คำตอบคือ **PPV จะมีค่าต่ำมาก (อาจต่ำกว่า 5-10%)** เพราะจะมีคนที่เป็น False Positive จำนวนมหาศาลจากประชากรปกติ!",
       "สปอร์ทดสอบเครื่อง Autoclave: ข้อสอบชอบสลับระหว่าง *Geobacillus stearothermophilus* (ใช้กับไอน้ำ) กับ *Bacillus atrophaeus* (ใช้กับความร้อนแห้ง) จำคู่นี้ให้แม่นยำ!"
     ],
-    "pearl": "กฎการนับ DMFT: ฟันกรามซี่ที่สาม (Third Molars 18, 28, 38, 48) จะถูก \"ตัดออกจากการคำนวณ DMFT เสมอ\" คะแนนเต็มของ DMFT จึงคิดจากฐานฟันแท้ 28 ซี่เท่านั้น!",
+    "pearl": "กฎการนับ DMFT (WHO 5th ed., 2013): ประเมินฟันแท้ 32 ซี่ (28 ซี่เฉพาะโปรโตคอลไม่รวมฟันคุด); D = cavitated dentin caries เท่านั้น; อายุ < 30 ปี M = Code 4 (ถอนจากฟันผุเท่านั้น) และ ≥ 30 ปี M = Code 4 + Code 5!",
     "reference": "Burt BA, Eklund SA. Dentistry, Dental Practice, and the Community, 7th ed. Elsevier, 2020; WHO Oral Health Surveys: Basic Methods, 5th ed.; CDC Guidelines for Infection Control in Dental Health-Care Settings.",
     "decision_matrix": [
       {

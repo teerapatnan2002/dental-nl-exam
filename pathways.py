@@ -132,7 +132,7 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
                 _node(1, "สมดุลในเนื้อเยื่อ (pKa vs pH)", "RN + H⁺ ⇌ RNH⁺ (Henderson-Hasselbalch)", "ยาชามีสภาวะสมดุลระหว่างรูป Base ไม่แตกตัว (RN — ละลายไขมันดี, ทะลุเยื่อหุ้มประสาท) กับรูป Cation (RNH⁺)", "mechanism"),
                 _node(2, "ทะลุผ่าน Axoplasm & จับ Receptor", "รูป RN ผ่าน Axon Membrane ➔ แตกตัวเป็น RNH⁺ จับ Voltage-Gated Na⁺ Channel", "RNH⁺ ไปอุดช่อง Na⁺ ด้านใน (Intracellular side) ป้องกัน Na⁺ ไหลเข้าเซลล์ ➔ ไม่เกิด Depolarization", "mechanism"),
                 _node(3, "เหตุใดเนื้อเยื่ออักเสบจึงชาได้ยาก?", "pH เนื้อเยื่อลดลง (เป็นกรด pH 5–6)", "สัดส่วนรูป RN ลดลงมาก ยาชาจึงข้ามเยื่อหุ้มประสาทได้น้อยลง ต้องแก้ด้วย Regional Nerve Block (เช่น IANB/Gow-Gates) ห่างจากจุดอักเสบ", "warning"),
-                _node(4, "คำนวณขนาดยาชาสูงสุด (Thai MRD Protocol)", "มาตรฐานหลอดในไทย = 1.8 mL/Cartridge", "2% Lidocaine = 36 mg/หลอด (MRD 4.4 mg/kg สูงสุด 300 mg) • 3% Mepivacaine = 54 mg/หลอด (MRD 4.4 mg/kg) • 4% Articaine = 72 mg/หลอด (MRD 7.0 mg/kg)", "outcome"),
+                _node(4, "คำนวณขนาดยาชาสูงสุด (Thai & Malamed 7th MRD)", "มาตรฐานหลอดในไทย = 1.8 mL/Cartridge", "2% Lidocaine (36 mg/หลอด): 7.0 mg/kg max 500 mg w/ Epi (Malamed 7th) หรือ 4.4 mg/kg max 300 mg (Plain/AAPD เด็ก) • Mepivacaine (54 mg 3% / 36 mg 2%): 6.6 mg/kg max 400 mg (AAPD 4.4 mg/kg) • 4% Articaine (72 mg): 7.0 mg/kg • AHA Cardiac Epi max = 0.04 mg", "outcome"),
             ],
         }
     ],
@@ -148,8 +148,9 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
                     {"condition": "หน้ามืด ใจสั่น เหงื่อออก (Vasovagal Syncope)", "outcome": "จัดท่านอนหงายยกขาสูง (Trendelenburg / Feet slightly elevated 10–15°) + คลายเสื้อผ้า + O2 + แอมโมเนีย", "color": "#38bdf8"},
                     {"condition": "ผื่นลมพิษ หอบเสียงวี้ด ความดันตก (Anaphylaxis)", "outcome": "ไปขั้นที่ 2: ฉีด Epinephrine 1:1,000 IM ทันที!", "color": "#ef4444"},
                     {"condition": "ชาลิ้น-ปาก หูอื้อ ชักหลังฉีดยาชา (LAST)", "outcome": "หยุดฉีดยาชา + Airway + Hyperventilate 100% O2 + Benzodiazepine/20% Lipid Emulsion", "color": "#f59e0b"},
+                    {"condition": "ผู้ป่วยเบาหวานหมดสติ (Hypoglycemia) / สำลักไอ", "outcome": "Hypoglycemia หมดสติ ➔ IV 50% Dextrose 50 mL (ห้ามใส่ถุงคลุมหน้าหรืออมน้ำตาล!) | สำลักยังไอแรงดี ➔ กระตุ้นไอต่อ (AHA 2025)", "color": "#10b981"},
                 ]),
-                _node(2, "ยาหลักช่วยชีวิต Anaphylaxis (First-Line)", "ฉีด Epinephrine 1:1,000 (1 mg/mL) เข้ากล้ามเนื้อ (IM)", "ฉีดที่ Vastus lateralis (หน้าขาด้านนอก): ผู้ใหญ่ 0.3–0.5 mg | เด็ก 0.01 mg/kg (max 0.3 mg) ซ้ำได้ทุก 5–15 นาที + โทร 1669", "action"),
+                _node(2, "ยาหลักช่วยชีวิต Anaphylaxis & BLS 2020/2025", "Anaphylaxis: Epinephrine 1:1,000 IM (0.3–0.5 mg ต้นขา) | ไม่มีชีพจร: CPR 5–6 cm (100–120/นาที)", "ฉีดที่ Vastus lateralis ซ้ำได้ทุก 5–15 นาที + โทร 1669 | อุดกั้นทางเดินหายใจสมบูรณ์แต่ยังมีสติ (AHA 2025): สลับ 5 Back blows + 5 Abdominal thrusts", "action"),
                 _node(3, "ยารอง & ส่งต่อโรงพยาบาล (Adjuncts)", "Antihistamine + Corticosteroid + Salbutamol (หากหอบ) + IV Fluid", "ยาแก้แพ้/สเตียรอยด์ช่วยป้องกัน Biphasic reaction แต่ 'ห้ามใช้แทน Epinephrine' เด็ดขาด! เฝ้าดูสัญญาณชีพจนส่งต่อ รพ.", "outcome"),
             ],
         }
@@ -234,30 +235,30 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
     "Operative-Cariology-Pathology": [
         {
             "id": "caries-demin-remin",
-            "title": "Pathogenesis of Dental Caries: กราฟสเตฟาน (Stephan Curve) & กลไกคืนแร่ธาตุของฟลูออไรด์",
+            "title": "Pathogenesis of Dental Caries: กราฟสเตฟาน (Stephan Curve) & แนวทาง ADA (2018/2023)",
             "pathway_type": "pathogenesis",
-            "subtitle": "สมดุลกรด-แร่ธาตุใน Biofilm, Critical pH 5.5 (Enamel) / 6.2–6.7 (Dentin) ➔ White Spot Lesion",
-            "reference": "Sturdevant's Operative Dentistry & Fejerskov Dental Caries",
+            "subtitle": "Critical pH 5.5/6.2–6.7 | ICCMS (RA1–RA3, RB4, RC5–RC6) ➔ Non-restorative & Selective Removal",
+            "reference": "ADA Nonrestorative (2018) / Restorative (2023), ICCMS™ Guide & Sturdevant's 7th ed.",
             "steps": [
-                _node(1, "Fermentation & pH Drop", "แบคทีเรีย (S. mutans / Lactobacilli) หมักน้ำตาลซูโครสเกิดกรดแลคติก", "ค่า pH ใน Biofilm ลดลงต่ำกว่า Critical pH ของ Enamel (~5.5) ทำให้ Ca²⁺ และ PO₄³⁻ ละลายออกจาก Subsurface", "trigger"),
-                _node(2, "รอยโรคเริ่มต้น (White Spot Lesion)", "ผิวนอกเคลือบฟัน (Surface zone) ยังคงสภาพ แต่ใต้ผิวฟันพรุน (Subsurface demineralization)", "เห็นสีขาวขุ่นเมื่อเป่าแห้ง (แห้งขุ่น เปียกใส) — ระยะ Non-cavitated นี้สามารถย้อนกลับ (Reverse) ได้ด้วยฟลูออไรด์!", "mechanism"),
-                _node(3, "กลไกป้องกัน & คืนแร่ธาตุ (Remineralization)", "ฟลูออไรด์เร่ง Ca²⁺/PO₄³⁻ ตกผลึกเป็น Fluorapatite (Critical pH ลดลงเหลือ ~4.5)", "แนวทางไทย TODS/MID: ถ้ายังไม่เป็นโพรง (Non-cavitated) เน้นควบคุมน้ำตาล + 5% NaF Varnish; ถ้าผุลึกใน Dentin ใช้ Selective Caries Removal ป้องกันทะลุพัลพ์", "outcome"),
+                _node(1, "Fermentation & pH Drop", "แบคทีเรีย (S. mutans / Lactobacilli; ส่วน Root caries = Actinomyces) หมักน้ำตาลซูโครสเกิดกรด", "ค่า pH ลดต่ำกว่า Critical pH ของ Enamel (~5.5) หรือ Dentin (~6.2–6.7) ทำให้ Ca²⁺ และ PO₄³⁻ ละลายออกจาก Subsurface", "trigger"),
+                _node(2, "รอยโรคเริ่มต้น & ภาพรังสี (ICDAS & ICCMS)", "ICDAS 1–2 (White spot แห้งขุ่นเปียกใส) | ภาพรังสี ICCMS: RA1 (นอก 1/2 E), RA2 (ใน 1/2 E ± DEJ), RA3 (นอก 1/3 D)", "Noncavitated coronal (ADA 2018): Occlusal ใช้ Sealants; Approximal ใช้ 5% NaF / Resin infiltration; Cavitated ที่ไม่กรอใช้ 38% SDF; Root caries ใช้ 5,000 ppm NaF / 5% Varnish / 38% SDF", "mechanism"),
+                _node(3, "การกรอฟันผุเชิงอนุรักษ์ (ADA 2023 & ESE 2019)", "เมื่อฟันมีชีวิตและผุลึก: แนะนำ 1-step Selective Caries Removal เหนือ Stepwise และ Non-selective removal", "กรอรอบขอบ Peripheral 1.5–2 mm ถึง Hard dentin สนิท แต่ผนัง Pulpal/Axial เหลือ Soft/Firm dentin เพื่อเลี่ยง Pulp exposure แล้วปิดผนึกถาวรทันที", "outcome"),
             ],
         }
     ],
     "Operative-Pulp-Protection-Deep-Caries": [
         {
             "id": "operative-rdt-mid-protocol",
-            "title": "Clinical Protocol: การปกป้องโพรงประสาทฟันตาม Remaining Dentin Thickness (RDT)",
+            "title": "Clinical Protocol: การปกป้องโพรงประสาทฟันตาม RDT & ADA (2023) / ESE (2019)",
             "pathway_type": "decision",
-            "subtitle": "แนวทาง Minimal Intervention Dentistry (TODS Thailand) สำหรับโพรงฟันลึก",
-            "reference": "Sturdevant's Operative Dentistry & สมาคมทันตกรรมหัตถการแห่งประเทศไทย (TODS)",
+            "subtitle": "1-Step Selective Caries Removal + Remaining Dentin Thickness (RDT) & Bioceramic Direct Pulp Capping",
+            "reference": "ADA Restorative (2023), ESE (2019), Sturdevant's Operative Dentistry & สมาคมทันตกรรมหัตถการ (TODS)",
             "steps": [
-                _node(1, "การกรอผุเชิงอนุรักษ์ (Selective Caries Removal)", "กรอผุขอบนอกรอบโพรง (Peripheral Seal 1.5–2 mm) ให้ถึง Hard Dentin สนิท", "แต่ผนังด้านใกล้พัลพ์ (Pulpal/Axial wall) ในฟันที่ไม่มีอาการ ให้กรอแค่ Soft/Firm dentin เพื่อหลีกเลี่ยง Mechanical pulp exposure", "action"),
-                _node(2, "เลือก Liner / Base ตามความหนาเนื้อฟันที่เหลือ (RDT)", "ประเมินระยะห่างระหว่างพื้นโพรงฟันกับโพรงประสาท", "decision", [
-                    {"condition": "RDT ≥ 2.0 mm (ตื้น–ปานกลาง)", "outcome": "ไม่จำเป็นต้องใส่ Liner/Base ➔ Bonding + Composite ได้เลย", "color": "#10b981"},
-                    {"condition": "RDT 0.5–1.5 mm (ลึก)", "outcome": "รองพื้นเฉพาะด้วย RMGIC Base เพื่อลด Shrinkage stress และเป็นฉนวนความร้อน", "color": "#38bdf8"},
-                    {"condition": "RDT < 0.5 mm (ชิดพัลพ์/แดงเรื่อ)", "outcome": "แต้มเฉพาะจุดด้วย Ca(OH)2 หรือ MTA/Biodentine ➔ ทับด้วย RMGIC liner ➔ บูรณะปิดผนึก", "color": "#f59e0b"},
+                _node(1, "การกรอผุเชิงอนุรักษ์ (1-Step Selective Caries Removal)", "กรอผุขอบนอกรอบโพรง (Peripheral Seal 1.5–2 mm) ให้ถึง Hard Dentin สนิท", "ผนังใกล้พัลพ์ในฟันที่ไม่มีอาการ Irreversible pulpitis ให้คง Soft/Firm dentin ไว้แล้วอุดถาวรเลย — เหนือกว่า Stepwise (ซึ่งต้องเปิดซ้ำรอบ 2) และ Complete removal", "action"),
+                _node(2, "เลือก Liner / Base ตามความหนาเนื้อฟันที่เหลือ (RDT)", "ประเมินระยะห่างระหว่างพื้นโพรงฟันกับโพรงประสาท (หากทะลุพัลพ์เล็กห้ามเลือดได้ ➔ MTA/Biodentine ตาม ESE 2019)", "decision", [
+                    {"condition": "RDT ≥ 2.0 mm (ตื้น–ปานกลาง)", "outcome": "ไม่จำเป็นต้องใส่ Liner/Base ➔ Adhesive + Composite ได้เลย", "color": "#10b981"},
+                    {"condition": "RDT 0.5–< 2.0 mm (หรือ 0.5–1.5 mm)", "outcome": "รอง RMGIC Base ใต้ Amalgam หรือเฉพาะจุดลึกใต้ Composite เพื่อเป็นฉนวนและลด Shrinkage stress", "color": "#38bdf8"},
+                    {"condition": "RDT < 0.5 mm (ชิดพัลพ์/แดงเรื่อ)", "outcome": "วาง MTA/Biodentine (หรือ Ca(OH)2 ในแนวทาง NL เดิม) เฉพาะจุดลึก ➔ ทับ RMGIC ➔ บูรณะปิดผนึก", "color": "#f59e0b"},
                 ]),
             ],
         }
@@ -282,17 +283,18 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
     "Pedia-Primary-Pulp-Therapy": [
         {
             "id": "pedia-pulp-pathway",
-            "title": "Pediatric Pulp Therapy Protocol (ฟันน้ำนม): IPC ➔ Pulpotomy ➔ Pulpectomy vs Extract",
+            "title": "Pediatric Pulp Therapy Protocol (ฟันน้ำนม — AAPD 2024–2025): IPC ➔ Pulpotomy ➔ Pulpectomy vs Extract",
             "pathway_type": "decision",
-            "subtitle": "เกณฑ์สำคัญ AAPD: ดูอาการปวดกลางคืน, การห้ามเลือดใน 5 นาที และ Root Resorption > 1/3",
-            "reference": "McDonald & Avery, AAPD Reference Manual & TSPD Thailand",
+            "subtitle": "MTA/Biodentine (Preferred over Formocresol) • ห้าม DPC • ห้าม Pulpectomy หากมี Facial Cellulitis/รากละลาย > 1/3",
+            "reference": "AAPD Pulp Therapy Guideline (2024–2025), McDonald & Avery 11th ed. & TSPD Thailand",
             "steps": [
-                _node(1, "ประเมินประวัติ & ภาพรังสี (Pre-op Screen)", "ถามอาการ Spontaneous/Night pain + ตรวจ Furcation radiolucency & การละลายราก", "ตัดสินใจระหว่าง Vital vs Non-Vital", "decision", [
-                    {"condition": "ไม่มี Spontaneous pain, ไม่ละลายราก", "outcome": "ทำ Vital Pulp Therapy (IPC หากไม่ทะลุ หรือ Pulpotomy ด้วย MTA/Ferric Sulfate/Formocresol หากทะลุ)", "color": "#10b981"},
-                    {"condition": "มี Spontaneous pain / หนอง / ฟันตาย แต่รากละลาย < 1/3", "outcome": "ทำ Pulpectomy + อุดคลองรากด้วยวัสดุที่ละลายพร้อมราก (ZnOE / Iodoform-Ca(OH)2 เช่น Metapex)", "color": "#f59e0b"},
-                    {"condition": "Internal/External root resorption มาก > 1/3 หรือทำลายหน่อฟันแท้", "outcome": "ถอนฟัน (Extraction) + ใส่ Space Maintainer ตามตำแหน่งฟัน!", "color": "#ef4444"},
+                _node(1, "ประเมินประวัติ & ภาพรังสี (Pre-op Screen)", "ถามอาการ Spontaneous/Night pain + ตรวจ Extraoral swelling (Cellulitis) + Furcation radiolucency & การละลายราก", "ตัดสินใจระหว่าง Vital vs Non-Vital vs Extraction", "decision", [
+                    {"condition": "ไม่มี Spontaneous pain, ไม่ทะลุ, ไม่ละลายราก", "outcome": "Indirect Pulp Treatment (IPT/IPC): เหลือ Affected dentin ชั้นใน + ปิด RMGIC/MTA/Biodentine + SSC (ความสำเร็จสูงสุด >90%)", "color": "#10b981"},
+                    {"condition": "ทะลุจากรอยผุ + พัลพ์รากยังมีชีวิต (ห้ามเลือดหยุดใน 3–5 นาที)", "outcome": "Pulpotomy: AAPD 2024–2025 แนะนำ MTA/Biodentine เป็นลำดับแรก (หรือ 15.5% Ferric sulfate; ลดใช้ Formocresol) + ครอบ SSC (ห้าม DPC!)", "color": "#0ea5e9"},
+                    {"condition": "ปวดกลางคืน / หนอง / เลือดไม่หยุดใน 5 นาที (รากละลาย < 1/3, ไม่มี Cellulitis)", "outcome": "Pulpectomy + ล้าง 1% NaOCl/NSS + อุด ZOE / Iodoform-Ca(OH)2 (Vitapex) ที่ละลายตามราก (ห้าม GP!) + SSC", "color": "#f59e0b"},
+                    {"condition": "Acute Facial Cellulitis / บวมแก้ม / รากละลาย > 1/3 / เหลือแต่ตอราก (RR)", "outcome": "ถอนฟันทันที (Extraction) + ให้ Antibiotic หากติดเชื้อลุกลาม + ใส่ Space Maintainer! (ห้ามทำ Pulpectomy!)", "color": "#ef4444"},
                 ]),
-                _node(2, "บูรณะขั้นสุดท้าย (Final Restoration)", "ครอบฟันโลหะไร้สนิม (Stainless Steel Crown - SSC)", "หลังทำ Pulpotomy หรือ Pulpectomy ในฟันกรามน้ำนม ต้องใส่ SSC เสมอเพื่อป้องกันฟันแตกและ Microleakage", "outcome"),
+                _node(2, "บูรณะขั้นสุดท้าย & คีมปรับ SSC (SSC Adaptation Pliers)", "ครอบฟันโลหะไร้สนิม (SSC) เพื่อป้องกัน Microleakage & แตกหัก", "Howe #110 = ปรับลดความกว้าง Mesio-distal | Abell #112 = ปั้นจุดสัมผัส | Johnson #114 = ดัดตัวครอบ | Crimping #417 = บีบขอบเหงือก 1 mm", "outcome"),
             ],
         }
     ],
@@ -301,14 +303,14 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
             "id": "thai-fluoride-toxic-pathway",
             "title": "เกณฑ์ฟลูออไรด์ไทย (TSPD/กรมอนามัย) & Emergency Pathway เมื่อเด็กกินฟลูออไรด์เกินขนาด (PTD)",
             "pathway_type": "protocol",
-            "subtitle": "1,000 ppm ปริมาณตามอายุ + ตารางเสริมตาม F น้ำดื่ม (<0.3 / 0.3–0.6 / >0.6 ppm) + แก้พิษ PTD 5 mg/kg",
-            "reference": "สมาคมทันตกรรมสำหรับเด็กแห่งประเทศไทย (TSPD 2560/2566) & ทันตแพทยสภา",
+            "subtitle": "1,000–1,500 ppm (0.76% SMFP = 1000 ppm) + เม็ดเสริม (0.55 mg NaF = 0.25 mg F⁻) + PTD 5 mg/kg",
+            "reference": "สมาคมทันตกรรมสำหรับเด็กแห่งประเทศไทย (TSPD) & AAPD Fluoride Therapy Guideline (2024–2025)",
             "steps": [
-                _node(1, "ยาสีฟันประจำวัน (TSPD Thailand)", "ใช้ 1,000–1,500 ppm ตั้งแต่ฟันน้ำนมซี่แรกขึ้น!", "<3 ปี: แตะพอเปียก/เมล็ดข้าวสาร (~0.1g) เช็ดฟองออก | 3–<6 ปี: เท่าเมล็ดถั่วเขียว (~0.25g) | ≥6 ปี: เต็มหน้าตัดแปรง", "action"),
-                _node(2, "ฟลูออไรด์เม็ดเสริม (เฉพาะ High Caries Risk 6 เดือน – 16 ปี)", "เช็กปริมาณฟลูออไรด์ในน้ำดื่มของพื้นที่นั้นก่อนเสมอ!", "อายุ <6 เดือน หรือ น้ำดื่มมี F > 0.6 ppm ➔ ห้ามจ่ายฟลูออไรด์เสริมทุกกรณี! (<0.3 ppm จ่าย 0.25/0.5/1.0 mg ตามช่วงอายุ)", "decision"),
-                _node(3, "ภาวะฉุกเฉินพิษฟลูออไรด์ (PTD ≥ 5 mg F/kg)", "ฟลูออไรด์จับกับกรดในกระเพาะเป็น HF (กัดกร่อน) + จับกับ Ca²⁺ เกิด Hypocalcemia", "decision", [
-                    {"condition": "ได้รับ < 5 mg F/kg", "outcome": "ให้ดื่มนมหรือ Calcium gluconate เพื่อตกตะกอน CaF₂ + สังเกตอาการ", "color": "#38bdf8"},
-                    {"condition": "ได้รับ ≥ 5 mg F/kg (PTD) หรือ ≥ 15 mg F/kg (Certainly Lethal)", "outcome": "ป้อนนม/สารละลายแคลเซียมทันที (ห้ามทำให้อาเจียนถ้าซึม) + รีบนำส่งโรงพยาบาลให้ IV Calcium gluconate + ล้างท้อง", "color": "#ef4444"},
+                _node(1, "ยาสีฟันประจำวัน (TSPD Thailand & AAPD)", "ใช้ 1,000–1,500 ppm ตั้งแต่ฟันน้ำนมซี่แรกขึ้น! (ระวังหลอก 10% SMFP = พิษอันตราย)", "<3 ปี: เท่าเมล็ดข้าวสาร (~0.1g) เช็ดฟองออก | 3–<6 ปี: เมล็ดถั่วเขียว (~0.25g) | ≥6 ปี: เต็มหน้าแปรง (บ้วนทิ้งไม่ล้างน้ำตามมาก)", "action"),
+                _node(2, "ฟลูออไรด์เม็ดเสริม & เคลือบในคลินิก", "เช็กฟลูออไรด์ในน้ำดื่ม (<0.3 / 0.3–0.6 / >0.6 ppm) ก่อนจ่ายเม็ดเสริม (0.55 mg NaF = 0.25 mg F⁻, 1.1 mg NaF = 0.50 mg F⁻)", "High-risk <6 ปีที่ไม่ร่วมมือ ➔ ทา 5% NaF Varnish (22,600 ppm) ทุก 3–6 ด. หรือ 38% SDF; อายุ <6 ด./น้ำ >0.6 ppm ห้ามจ่ายเม็ดเสริม!", "decision"),
+                _node(3, "ภาวะฉุกเฉินพิษฟลูออไรด์ (PTD ≥ 5 mg F/kg)", "ฟลูออไรด์จับกรดในกระเพาะเป็น HF (กัดกร่อน) + จับ Ca²⁺ เกิด Hypocalcemia/Hyperkalemia", "decision", [
+                    {"condition": "ได้รับ < 5 mg F/kg", "outcome": "ให้ดื่มนมหรือ Calcium gluconate/CaCO₃ เพื่อตกตะกอน CaF₂ + สังเกตอาการ", "color": "#38bdf8"},
+                    {"condition": "ได้รับ ≥ 5 mg F/kg (PTD) หรือ ≥ 15–32 mg F/kg (Lethal)", "outcome": "ป้อนนม/สารละลายแคลเซียมทันที (ห้ามทำให้อาเจียนถ้าซึม) + รีบส่ง รพ. ให้ IV Calcium gluconate + ล้างท้อง", "color": "#ef4444"},
                 ]),
             ],
         }
@@ -316,20 +318,21 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
     "Pedia-Dental-Traumatology": [
         {
             "id": "iadt-avulsion-pathway",
-            "title": "IADT 2020 Emergency Pathway: ฟันหลุดออกจากเบ้า (Primary vs Permanent Avulsion)",
+            "title": "IADT 2020 Emergency Pathway: ฟันหลุด / กระแทกจม / เฉียง / เปลี่ยนสี (Primary vs Permanent)",
             "pathway_type": "decision",
-            "subtitle": "เวลาบนพื้นแห้ง (Extra-oral Dry Time) & ความสมบูรณ์ของปลายรากคือตัวกำหนดชะตาของ PDL Cells",
-            "reference": "IADT Guidelines 2020 & สมาคมทันตกรรมสำหรับเด็กแห่งประเทศไทย (TSPD)",
+            "subtitle": "Primary: ห้าม Replant + Lateral Luxation ไม่ขวางสบให้รอคืนที่เอง + ฟันเปลี่ยนสีไม่มีหนองให้ Monitor",
+            "reference": "IADT Guidelines for Management of Traumatic Dental Injuries (2020) & TSPD",
             "steps": [
                 _node(1, "แยกชนิดฟันทันที!", "ฟันน้ำนม vs ฟันแท้", "decision", [
-                    {"condition": "ฟันน้ำนม (Primary Tooth Avulsion)", "outcome": "🛑 ห้ามใส่กลับเข้าเบ้าฟัน (Do NOT replant) เด็ดขาด! เพื่อไม่ให้กระทบหน่อฟันแท้ข้างใต้", "color": "#ef4444"},
-                    {"condition": "ฟันแท้ (Permanent Tooth Avulsion)", "outcome": "จับเฉพาะตัวฟัน (Crown) อย่าแตะราก ➔ ใส่กลับทันที หรือแช่ใน Cold Milk / HBSS / NSS (ห้ามแช่น้ำเปล่า!)", "color": "#10b981"},
+                    {"condition": "ฟันน้ำนม Avulsion / Lateral Luxation / Intrusion", "outcome": "🛑 ห้าม Replant เด็ดขาด! | Lateral Luxation ไม่ขวางสบ ➔ ปล่อย Spontaneous repositioning (ไม่ Splint!); Intrusion เบน Labial = รอขึ้น, เบน Palatal = ประเมินถอน", "color": "#ef4444"},
+                    {"condition": "ฟันน้ำนมเปลี่ยนสี (เหลือง/เทา) ไม่มีปวด-บวม-ฝีหนอง", "outcome": "IADT 2020: ให้ Monitor/Follow-up ไม่ทำ Pulpectomy จากสีฟันอย่างเดียว! (หมายเหตุ: ข้อสอบ NL เก่าก่อน 2020 อาจเฉลย Pulpectomy หากผนังรากบางจาก Necrosis)", "color": "#f59e0b"},
+                    {"condition": "ฟันแท้ (Permanent Tooth Avulsion)", "outcome": "จับเฉพาะตัวฟัน (Crown) อย่าแตะราก ➔ ใส่กลับทันที หรือแช่ Cold Milk / HBSS / NSS (ห้ามแช่น้ำเปล่า!)", "color": "#10b981"},
                 ]),
-                _node(2, "ประเมิน Extra-oral Dry Time (EODT)", "เซลล์ PDL อยู่รอดได้นานแค่ไหนนอกช่องปาก?", "decision", [
+                _node(2, "ประเมิน Extra-oral Dry Time (EODT) ในฟันแท้", "เซลล์ PDL อยู่รอดได้นานแค่ไหนนอกช่องปาก?", "decision", [
                     {"condition": "EODT < 60 นาที (หรือแช่สื่อที่เหมาะสม)", "outcome": "ล้างเบาๆ ด้วย NSS ➔ Replant ➔ Flexible splint 2 สัปดาห์ (กระดูกหัก 4 สัปดาห์)", "color": "#10b981"},
                     {"condition": "EODT > 60 นาที (เซลล์ PDL ตายแล้ว)", "outcome": "ขูดซาก PDL ออก/ทำ RCT นอกปากได้ ➔ แช่ 2% NaF 20 นาที ชะลอ Ankylosis ➔ Replant + Splint 4 สัปดาห์", "color": "#f59e0b"},
                 ]),
-                _node(3, "การรักษาราก & ยา (Post-Replantation)", "เริ่ม RCT ภายใน 7–10 วันในฟันแท้ปลายรากปิด (ก่อนถอด Splint)", "ใส่ Ca(OH)2 (หรือ Corticosteroid-antibiotic paste) + ให้ Doxycycline/Amoxicillin + ตรวจวัคซีนบาดทะยัก", "outcome"),
+                _node(3, "การรักษาราก & ยา (Post-Replantation)", "เริ่ม RCT ภายใน 7–10 วันในฟันแท้ปลายรากปิด (ก่อนถอด Splint)", "ใส่ Ca(OH)2 (หรือ Corticosteroid-antibiotic paste) + ให้ Doxycycline (>8 ปี)/Amoxicillin + ตรวจวัคซีนบาดทะยัก", "outcome"),
             ],
         }
     ],
@@ -338,31 +341,31 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
             "id": "oral-cancer-screening-pathway",
             "title": "Thai Screening & Biopsy Protocol: รอยโรคก่อนมะเร็งช่องปาก (OPMDs) & OSCC",
             "pathway_type": "protocol",
-            "subtitle": "คัดกรองความเสี่ยงสูงในไทย (เคี้ยวหมากพลู/ยาเส้น) ➔ กฎ 2 สัปดาห์ ➔ เทคนิคการตัดชิ้นเนื้อที่ถูกต้อง",
-            "reference": "Neville's Oral Pathology & สถาบันมะเร็งแห่งชาติ-กรมอนามัย",
+            "subtitle": "เกณฑ์ WHO OPMD 2020/2021 + คัดกรองความเสี่ยงสูง (หมากพลู/บุหรี่/สุรา) ➔ กฎ 2 สัปดาห์ ➔ Biopsy ที่ถูกต้อง",
+            "reference": "WHO OPMD Consensus (Warnakulasuriya et al., 2021) / Neville's Oral Pathology 5th ed. (2024) & สถาบันมะเร็งแห่งชาติ",
             "steps": [
-                _node(1, "คัดกรองปัจจัยเสี่ยง & รอยโรค", "ซักประวัติสูบบุหรี่ ดื่มสุรา เคี้ยวหมากพลู (พบมากที่กระพุ้งแก้มในผู้สูงอายุไทย)", "สังเกตรอยโรค Erythroplakia (โอกาสกลายเป็นมะเร็งสูงสุด!), Speckled leukoplakia, OSMF (อ้าปากแคบเป็นแถบพังผืด)", "trigger"),
+                _node(1, "คัดกรองปัจจัยเสี่ยง & รอยโรค OPMDs (WHO 2020/2021 Update)", "ซักประวัติสูบบุหรี่ ดื่มสุรา เคี้ยวหมากพลู (กระพุ้งแก้ม) | WHO 2020/2021 เพิ่ม Oral Lichenoid Lesions (OLL) & Oral cGVHD และตัด Chronic Hyperplastic Candidiasis ออก", "Erythroplakia มีโอกาสเป็น/กลายมะเร็งสูงสุด (>85–90%), Proliferative Verrucous Leukoplakia (PVL) กลายมะเร็งสูงสุดในกลุ่มรอยขาว, OSMF (อ้าปากแคบเป็นพังผืด)", "trigger"),
                 _node(2, "กฎ 2 สัปดาห์ (2-Week Observation Rule)", "กำจัดสาเหตุระคายเคือง (เช่น ขอบฟันคม ฟันเทียมหลวม) แล้วนัดดูซ้ำที่ 14 วัน", "decision", [
                     {"condition": "รอยโรคยุบหายดีภายใน 2 สัปดาห์", "outcome": "Traumatic / Reactive lesion ➔ ติดตามต่อเนื่องตามความเหมาะสม", "color": "#10b981"},
                     {"condition": "รอยโรคยังคงอยู่เกิน 2 สัปดาห์ (หรือสงสัยรุนแรงทันที)", "outcome": "ทำ Incisional Biopsy ทันที!", "color": "#ef4444"},
                 ]),
-                _node(3, "หลักตัดชิ้นเนื้อที่ถูก (Biopsy Technique)", "ใช้ Toluidine blue ช่วยเลือกจุด (หากขนาดใหญ่) ➔ ตัดขอบรอยโรค (Margin + Normal tissue)", "⚠️ ห้ามตัดตรงกลางแผลที่มีเนื้อตาย (Necrotic center) และตัดชิ้นเนื้อลึกพอถึง Submucosa + แช่ 10% Neutral Buffered Formalin", "outcome"),
+                _node(3, "หลักตัดชิ้นเนื้อที่ถูก (Biopsy Technique)", "ใช้ Toluidine blue ช่วยเลือกจุด (หากขนาดใหญ่) ➔ ตัดขอบรอยโรค (Margin + Normal tissue)", "⚠️ ห้ามตัดตรงกลางแผลที่มีเนื้อตาย (Necrotic center) หรือใช้ Electrosurgery และตัดลึกพอถึง Submucosa + แช่ 10% Neutral Buffered Formalin", "outcome"),
             ],
         }
     ],
     "OralMed-Medically-Compromised-CVD": [
         {
             "id": "aha-2021-ie-pathway",
-            "title": "AHA 2021 Protocol: การป้องกันเยื่อบุหัวใจอักเสบติดเชื้อ (IE Prophylaxis)",
+            "title": "AHA 2021 Protocol & HTN Gate: ป้องกัน IE และเกณฑ์ความดันโลหิต",
             "pathway_type": "decision",
-            "subtitle": "เกณฑ์คู่ 2 เงื่อนไข (ผู้ป่วยเสี่ยงสูง x หัตถการที่มีเลือดออก) + กฎใหม่: ห้ามใช้ Clindamycin!",
-            "reference": "AHA 2021 Scientific Statement & คู่มือ RDU Thailand",
+            "subtitle": "เกณฑ์คู่ 2 เงื่อนไข (เสี่ยงสูง x หัตถการเลือดออก) + งด Clindamycin! + เกณฑ์ความดัน >=180/110 ห้ามทำ Elective",
+            "reference": "AHA 2021 Scientific Statement, ACC/AHA HTN Guideline & Little & Falace 10th ed.",
             "steps": [
-                _node(1, "เงื่อนไขที่ 1: โรคหัวใจกลุ่มเสี่ยงสูง (4 กลุ่มหลักเท่านั้น)", "Prosthetic valve • Previous IE • Unrepaired cyanotic CHD / Post-repair <6 เดือนที่มี Residual defect • Heart transplant valvulopathy", "❌ MVP, Rheumatic heart disease เฉยๆ, ใส่ Stent หลอดเลือดหัวใจ, Pacemaker ไม่ต้องกินยาป้องกัน IE!", "decision"),
+                _node(1, "เงื่อนไขที่ 1 & ความดันโลหิต: โรคหัวใจเสี่ยงสูง & เกณฑ์เลื่อนหัตถการ", "IE เสี่ยงสูง: Prosthetic valve • Previous IE • Unrepaired cyanotic CHD / Post-repair <6 เดือนหรือมี Residual defect • Heart transplant valvulopathy | ความดัน: ≥180/110 mmHg งด Elective ส่งแพทย์ทันที!", "❌ MVP, RHD เฉยๆ, Stent, Pacemaker ไม่ต้องให้ยาป้องกัน IE | เกณฑ์ HTN วินิจฉัย: ≥140/90 (ไทย/WHO/ESC) vs ≥130/80 (ACC/AHA 2017/2025)", "decision"),
                 _node(2, "เงื่อนไขที่ 2: หัตถการที่มีเลือดออก/รบกวนเหงือกและปลายรากฟัน", "ถอนฟัน, ขูดหินน้ำลาย, วาง Probe ปริทันต์, RCT ทะลุปลายราก", "❌ การฉีดยาชาผ่านเนื้อเยื่อไม่ติดเชื้อ, ถ่าย X-ray, ปรับลวดจัดฟัน, ฟันน้ำนมหลุดเอง ไม่ต้องให้ยา", "mechanism"),
                 _node(3, "เลือกยาปฏิชีวนะกินครั้งเดียวก่อนทำ 30–60 นาที (AHA 2021 Update)", "ผู้ใหญ่ (Standard vs Penicillin Allergy)", "decision", [
                     {"condition": "ไม่แพ้ Penicillin", "outcome": "Amoxicillin 2 g (เด็ก 50 mg/kg) 30–60 นาทีก่อนทำ", "color": "#10b981"},
-                    {"condition": "แพ้ Penicillin (ไม่รุนแรง vs Anaphylaxis)", "outcome": "Azithromycin 500 mg / Clarithromycin 500 mg / Doxycycline 100 mg (⚠️ งดจ่าย Clindamycin แล้วตาม AHA 2021!)", "color": "#f59e0b"},
+                    {"condition": "แพ้ Penicillin (ไม่รุนแรง vs Anaphylaxis/Urticaria/Angioedema)", "outcome": "ไม่รุนแรงให้ Cephalexin 2 g ได้ | ถ้าแพ้รุนแรง/Anaphylaxis ห้ามกลุ่ม Beta-lactam: ใช้ Azithromycin 500 mg / Clarithromycin 500 mg / Doxycycline 100 mg (⚠️ งดจ่าย Clindamycin แล้วตาม AHA 2021!)", "color": "#f59e0b"},
                 ]),
             ],
         }
@@ -372,15 +375,15 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
             "id": "thai-warfarin-pathway",
             "title": "Thai Protocol: การถอนฟันในผู้ป่วยรับประทานยาละลายลิ่มเลือด (Warfarin / Antiplatelet)",
             "pathway_type": "protocol",
-            "subtitle": "เจาะตรวจ INR ภายใน 24–72 ชม. ➔ ห้ามหยุดยาเอง ➔ Local Hemostasis & 5% Tranexamic Acid",
-            "reference": "แนวทางทันตแพทยสภา & สมาคมศัลยศาสตร์ช่องปากแห่งประเทศไทยฯ (TAOMS)",
+            "subtitle": "เจาะตรวจ INR ภายใน 24–72 ชม. ➔ ห้ามหยุดยาเอง ➔ Local Hemostasis & 4.8–5% Tranexamic Acid",
+            "reference": "SDCEP Anticoagulant/Antiplatelet Guideline, Little & Falace 10th ed. & TAOMS Thailand",
             "steps": [
                 _node(1, "ตรวจค่า INR ล่าสุด (ภายใน 24–72 ชม.)", "ประเมินความเสี่ยงเลือดออก vs ความเสี่ยงลิ่มเลือดอุดตัน (Thromboembolism)", "decision", [
-                    {"condition": "INR ≤ 3.0–3.5 (ระดับรักษาปกติ 2.0–3.0)", "outcome": "ถอนฟันไม่ซับซ้อน (1–3 ซี่) ได้เลยโดย 'ไม่ต้องหยุด Warfarin!'", "color": "#10b981"},
+                    {"condition": "INR ≤ 3.0–3.5 (ระดับรักษาปกติ 2.0–3.0)", "outcome": "ถอนฟันไม่ซับซ้อน (1–3 ซี่) ได้เลยโดย 'ไม่ต้องหยุด Warfarin!' (Antiplatelet SAPT/DAPT ห้ามหยุดยาเช่นกัน!)", "color": "#10b981"},
                     {"condition": "INR > 3.5 หรือผ่าตัดซับซ้อน", "outcome": "ปรึกษาแพทย์เจ้าของไข้เพื่อปรับขนาดยา ไม่สั่งผู้ป่วยหยุดยาเอง!", "color": "#ef4444"},
                 ]),
                 _node(2, "Atraumatic Extraction & Local Hemostasis", "ถอนฟันแบบลดบาดเจ็บ + ใส่ Gelfoam / Oxidized cellulose ในเบ้าฟัน", "เย็บแผล Figure-of-eight เพื่อพยุงขอบเหงือกและกดลิ่มเลือด", "action"),
-                _node(3, "Post-op Stabilization (Tranexamic Acid)", "อมบ้วนปากด้วย 5% Tranexamic acid mouthwash 10 mL นาน 2 นาที วันละ 4 ครั้ง นาน 2–5 วัน", "หลีกเลี่ยงยาแก้ปวดกลุ่ม NSAIDs (ให้ Paracetamol แทน) และหลีกเลี่ยง Metronidazole ที่ตีกับ Warfarin!", "outcome"),
+                _node(3, "Post-op Stabilization & Drug Interactions", "อมบ้วนปากด้วย 4.8–5% Tranexamic acid 10 mL นาน 2 นาที วันละ 4 ครั้ง นาน 2–5 วัน", "⚠️ ห้ามจ่าย NSAIDs, Metronidazole และ **Miconazole oral gel** (ยับยั้ง CYP2C9 ทำ INR พุ่งสูง!) — ใช้ Paracetamol และ Nystatin suspension แทน", "outcome"),
             ],
         }
     ],
@@ -405,15 +408,15 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
             "id": "tmd-care-pathway",
             "title": "Clinical Care Pathway: เกณฑ์วินิจฉัย DC/TMD & Conservative-First Treatment",
             "pathway_type": "decision",
-            "subtitle": "แยกอาการปวดกล้ามเนื้อ vs Intra-articular TMJ Disorder (DDwR / DDwoR) ➔ การรักษาแบบ Reversible",
-            "reference": "Okeson (8th ed.), DC/TMD ฉบับภาษาไทย & ชมรมทันตกรรมบดเคี้ยวฯ",
+            "subtitle": "แยกอาการปวดกล้ามเนื้อ vs Intra-articular TMJ Disorder (DDwR / DDwoR / Osteoarthritis vs Osteoarthrosis) ➔ Conservative First",
+            "reference": "Okeson (8th ed.), AAOP (7th ed. 2023), DC/TMD ฉบับภาษาไทย & ชมรมทันตกรรมบดเคี้ยวฯ",
             "steps": [
-                _node(1, "ตรวจคัดกรอง DC/TMD", "กดกล้ามเนื้อ Masseter/Temporalis นาน 5 วินาที + ฟังเสียงคลิก/วัดระยะอ้าปาก", "แยก Axis I (Physical) เป็น 2 กลุ่มหลัก", "decision", [
-                    {"condition": "ปวดเฉพาะจุด หรือ ปวดร้าวออกนอกมัดกล้ามเนื้อ", "outcome": "Myalgia / Myofascial pain with referral (มักจำลองอาการปวดที่คุ้นเคย Familiar pain ได้)", "color": "#38bdf8"},
-                    {"condition": "เสียง Clicking อ้าปากและปิดปาก (อ้าสุดได้ปกติ)", "outcome": "Disc Displacement with Reduction (DDwR) — แผ่นรองข้อเคลื่อนมาด้านหน้าแล้วเด้งกลับเมื่ออ้า", "color": "#f59e0b"},
-                    {"condition": "เคยคลิกแต่จู่ๆ เสียงหาย + อ้าปากได้ < 35 mm เอียงไปข้างที่เป็น", "outcome": "Disc Displacement without Reduction with Limited Opening (Closed Lock)", "color": "#ef4444"},
+                _node(1, "ตรวจคัดกรอง DC/TMD", "กดกล้ามเนื้อ Masseter/Temporalis 1 kg (2s Local / 5s Referred) + ฟังเสียง/วัดระยะอ้าปาก + CBCT/MRI ตามข้อบ่งชี้", "แยก Axis I (Physical): กล้ามเนื้อ vs ข้อต่อ", "decision", [
+                    {"condition": "ปวดเฉพาะจุด vs ปวดร้าวออกนอกมัดกล้ามเนื้อ", "outcome": "Local Myalgia (เฉพาะที่กด) vs Myofascial pain with referral (ร้าวไปฟัน/ขมับที่ตรวจฟันปกติ)", "color": "#38bdf8"},
+                    {"condition": "Clicking (อ้าปกติ >40 mm + Deviation) vs เสียงคลิกหาย + อ้า <35 mm", "outcome": "DDwR (อาจมี intermittent locking) vs DDwoR Closed Lock (Deflection ไปข้างที่เป็น) | Hypermobility >55 mm = Subluxation", "color": "#f59e0b"},
+                    {"condition": "เสียง Crepitus + CBCT กระดูกเสื่อม (Flattening / Osteophyte)", "outcome": "Osteoarthritis (มีอาการปวด/คลำเจ็บ) vs Osteoarthrosis (ไม่ปวด) — ไม่หายด้วย Conservative ให้ทำ Arthrocentesis", "color": "#ef4444"},
                 ]),
-                _node(2, "การรักษาอันดับแรก (Conservative & Reversible)", "Self-care, อาหารอ่อน, ประคบอุ่น, กายภาพบำบัด, Hard Acrylic Stabilization Splint", "⚠️ กฎเหล็กข้อสอบ: ห้ามกรอปรับสบฟันถาวร (Occlusal equilibration) หรือผ่าตัดเป็นลำดับแรก!", "outcome"),
+                _node(2, "การรักษาอันดับแรก (Conservative & Reversible)", "Self-care, อาหารอ่อน, ประคบอุ่น (หรือเย็น 24–48 ชม. แรกหลังอุบัติเหตุ), NSAIDs, Stretching, Hard Acrylic Stabilization Splint", "⚠️ กฎเหล็กข้อสอบ: ห้ามกรอปรับสบฟันถาวร (Occlusal equilibration) ในผู้ป่วย TMD หรือ Acute Retrodiscitis เด็ดขาด!", "outcome"),
             ],
         }
     ],
@@ -474,11 +477,11 @@ CURATED_TOPIC_PATHWAYS: Dict[str, List[Dict[str, Any]]] = {
             "reference": "สำนักทันตสาธารณสุข กรมอนามัย & สปสช. / สำนักงานประกันสังคม",
             "steps": [
                 _node(1, "ตรวจสอบสิทธิผู้ป่วย (Eligibility Check)", "ผู้ป่วยมาด้วยงานทันตกรรมพื้นฐาน/ส่งเสริมป้องกัน/ฟันเทียม", "decision", [
-                    {"condition": "บัตรทอง (UCS — สปสช.)", "outcome": "ครอบคลุม ขูด อุด ถอน รักษาคลองรากฟันหน้า-ฟันกรามน้อย ฟันเทียมพื้นฐาน และงานส่งเสริมป้องกัน (PP) ที่หน่วยบริการตามสิทธิ", "color": "#10b981"},
-                    {"condition": "ประกันสังคม (SSS ม.33/ม.39)", "outcome": "ขูด อุด ถอน ผ่าฟันคุด เบิกได้ตามจริงไม่เกิน 900 บาท/ปี (ทำที่คลินิกคู่สัญญาไม่ต้องสำรองจ่าย)", "color": "#38bdf8"},
-                    {"condition": "สวัสดิการข้าราชการ (CSMBS)", "outcome": "รักษาที่ รพ.รัฐ เบิกจ่ายแบบ Fee-for-service ตามอัตราที่กรมบัญชีกลางกำหนด", "color": "#a855f7"},
+                    {"condition": "บัตรทอง (UCS — สปสช.)", "outcome": "ครอบคลุม ขูด อุด ถอน รักษาคลองรากฟัน ฟันเทียมพื้นฐาน SSC เด็กตามข้อบ่งชี้แพทย์ และงาน P&P + 30 บาทรักษาทุกที่ (คลินิกเอกชน 3 ครั้ง/ปี)", "color": "#10b981"},
+                    {"condition": "ประกันสังคม (SSS ม.33/ม.39)", "outcome": "ขูด อุด ถอน ไม่เกิน 900 บาท/ปี + ตั้งแต่ 1 พ.ค. 2569 แยกวงเงินผ่าฟันคุดเป็น 1,500 บ./ซี่ (ไม่ซับซ้อน) หรือ 2,500 บ./ซี่ (ซับซ้อน)", "color": "#38bdf8"},
+                    {"condition": "สวัสดิการข้าราชการ (CSMBS)", "outcome": "รักษาที่ รพ.รัฐ เบิกจ่ายแบบ Fee-for-service ตามอัตราที่กรมบัญชีกลางกำหนด (บุตรอายุ < 20 ปีบริบูรณ์)", "color": "#a855f7"},
                 ]),
-                _node(2, "โครงการส่งเสริมป้องกันระดับประเทศ", "สูตรแปรงฟัน 2-2-2 & โครงการฟันเทียมพระราชทาน", "กลุ่มอายุดัชนีสำรวจไทย: 3, 5, 12, 15, 35–44, 60–74, 80–85 ปี; เป้าหมายผู้สูงอายุ ≥20 ซี่และคู่สบหลัง ≥4 คู่สบ", "outcome"),
+                _node(2, "โครงการส่งเสริมป้องกันระดับประเทศ & สำรวจครั้งที่ 9 (2566)", "สูตรแปรงฟัน 2-2-2 | ยาสีฟัน 1,000–1,500 ppm (5,000 ppm = ยาอันตราย 2569)", "สำรวจครั้งที่ 9 (2566): 12 ปี DMFT = 1.2 | 60–74 ปี มีฟัน ≥20 ซี่ 60.9% | 80–85 ปี 27.7%", "outcome"),
             ],
         }
     ],

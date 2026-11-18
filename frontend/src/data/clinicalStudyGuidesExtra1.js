@@ -236,25 +236,25 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     badgeColor: "#f59e0b",
     must_know_topics: [
       "Lever, Wedge & Wheel-and-Axle Principles of Elevators",
-      "Forceps Selection (#150, #151, #17, #23 Cowhorn, #88R/L)",
-      "5 Stages of Extraction Socket Healing & Dry Socket",
-      "Atraumatic Grip & Alveolar Bone Expansion"
+      "Forceps Selection (#150, #151, #17, #23 Cowhorn, #88R/L) & Dry Socket",
+      "AHA 2021 Infective Endocarditis Prophylaxis (No Clindamycin!) & ADA 2015 PJI",
+      "SDCEP 2022 Anticoagulants/Antiplatelets & ADA 2019/2023 Antibiotics/Pain"
     ],
-    overview: "หลักฟิสิกส์ของคานงัดและลิ่มที่ใช้ในการโยกถอนฟัน การเลือกคีมให้เข้ากับกายวิภาครากฟันแต่ละซี่ และชีววิทยาการหายของเบ้าฟันหลังถอน",
-    core_mechanism: "คีมถอนฟันไม่ได้ ‘ดึง’ ฟันตรงๆ แต่กด Beaks ลงไปให้ชิดปลายรากที่สุดเพื่อย้ายจุดหมุน (Fulcrum) ลงล่างแล้วโยกขยาย Alveolar bone ส่วน Elevator (เช่น Cryer ใช้หลัก Wheel-and-axle, Straight elevator ใช้ Lever/Wedge) ต้องไม่ใช้ฟันที่จะเก็บเป็น Fulcrum โดยเด็ดขาด หลังถอนเกิด Clot ➔ Granulation tissue ➔ Osteoid ➔ Woven bone ➔ Lamellar bone",
-    matrix_headers: ["เครื่องมือ / กลไก", "หลักการใช้ & ตัวอย่างซี่ฟัน", "ข้อควรระวังป้องกันภาวะแทรกซ้อน"],
+    overview: "หลักฟิสิกส์ของคานงัดและลิ่มที่ใช้ในการโยกถอนฟัน การเลือกคีม การหายของเบ้าฟัน ตลอดจนการจัดการผู้ป่วยโรคหัวใจ ยาละลายลิ่มเลือด (Warfarin, DOACs, DAPT) ยาป้องกันการติดเชื้อ (AHA 2021 / ADA 2015) และยาแก้ปวด/ปฏิชีวนะตามหลักฐานเชิงประจักษ์ (ADA 2019 & 2023/2024)",
+    core_mechanism: "1. ชีวกลศาสตร์ถอนฟัน: กด Beaks ลงชิดปลายรากเพื่อย้าย Fulcrum แล้วขยาย Alveolar bone; Cryer ใช้ Wheel-and-axle, Straight elevator ใช้ Lever/Wedge (ห้ามใช้ฟันดีเป็น Fulcrum); หลังถอนเกิด Clot ➔ Granulation tissue (1–2 wk) ➔ Osteoid ➔ Woven bone (4–6 wk) ➔ Lamellar bone\n2. AHA 2021 IE Prophylaxis (30–60 นาทีก่อนทำเฉพาะกลุ่มเสี่ยงสูง: ลิ้นหัวใจเทียม, เคยเป็น IE, CHD ชนิดเขียวบางกลุ่ม, Transplant valvulopathy): Amoxicillin 2 g PO (เด็ก 50 mg/kg) | แพ้ Penicillin ไม่มี Anaphylaxis/Urticaria/Angioedema: Cephalexin 2 g PO | แพ้รุนแรง: Azithromycin / Clarithromycin 500 mg หรือ Doxycycline 100 mg PO (**AHA 2021 ยกเลิก Clindamycin แล้ว!**); ADA 2015: ข้อเข่า/สะโพกเทียม (PJI) ไม่ต้องให้ยาป้องกันเป็นประจำ\n3. SDCEP 2022 & TAOMS Anticoagulants: Warfarin ตรวจ INR ใน 24–72 ชม. ถอนได้โดยไม่หยุดยาหาก INR ≤ 3.5 (SDCEP ถึง < 4.0) + Local hemostasis | DOACs: Low risk ไม่หยุด, High risk ให้ **งด (Miss)** มื้อเช้าสำหรับ Apixaban/Dabigatran และ **เลื่อน (Delay ≥ 4 ชม. หลังห้ามเลือด)** สำหรับ Rivaroxaban/Edoxaban | Antiplatelets (ASA/Clopidogrel): ห้ามหยุดยาเอง ใช้ Local hemostasis\n4. ADA 2019 & 2023/2024 Pain/Infection & Sialolith/Splenectomy: คุมปวดหลังถอนด้วย NSAIDs (± Acetaminophen) เลี่ยง Opioids; หญิงตั้งครรภ์ใช้ Paracetamol เลี่ยง NSAIDs; ผู้ป่วยหลังตัดม้าม (Post-splenectomy Thalassemia) เสี่ยงสูงต่อการติดเชื้อหลังผ่าตัด/OPSI; นิ่วต่อมน้ำลายใน FOM รักษาด้วย Sialolithotomy",
+    matrix_headers: ["เครื่องมือ / โปรโตคอล", "หลักการใช้ & เกณฑ์มาตรฐาน", "ข้อควรระวัง / คำแนะนำสำคัญ"],
     matrix_rows: [
-      ["Universal Forceps (#150 บน / #151 ล่าง)", "ถอนฟันหน้า ฟันกรามน้อยบน-ล่าง (#150 บนโค้ง S; #151 ล่างหักงอ)", "โยก Buccal ก่อนเป็นหลักในฟันบน/หน้าล่าง ยกเว้น Mandibular Molars ที่ Cortical bone ด้าน Buccal หนา ให้ระวังแรงบิด"],
-      ["Cowhorn Forceps (#23) & #88 R/L", "#23 จับเข้า Furcation ฟันกรามล่าง 2 ราก | #88 R/L (Trifurcation) ใช้กับฟันกรามบน 3 ราก", "ห้ามใช้ #23 ในฟันกรามล่างที่มีรากหลอม (Conical) หรือฟันบน; #88 มี 1 จงอยด้าน Buccal และ 2 จงอยด้าน Palatal"],
-      ["Straight / Cryer / Root-tip Pick", "Straight: งัดระดับกระดูก Interradicular (Lever) | Cryer: คานหมุน (Wheel-and-axle) เกี่ยวรากข้างที่หักเหลือ", "ห้ามใช้ฟันซี่ข้างเคียงเป็น Fulcrum เดี๋ยวฟันดีหลุด/โยก! และห้ามใช้ Root tip pick ออกแรงงัดหนักปลายรากใกล้ Sinus/IAN"],
-      ["Dry Socket (Alveolar Osteitis)", "ลิ่มเลือดสลายจาก Fibrinolysis (พบวันที่ 2–4 หลังถอนฟันคุดล่าง ปวดร้าวถึงหู มีกลิ่นเหม็น แต่ ‘ไม่มีไข้/หนอง’)", "ไม่ต้องขูดเบ้าฟัน (Don't curette!), ล้างด้วยน้ำเกลืออุ่น ปิดด้วย Alvogyl / ZOE-gauze dressing + Analgesic (ไม่จำเป็นต้องให้ Antibiotic!)"]
+      ["Forceps (#150/#151, #23, #88R/L) & Dry Socket", "#150 บน / #151 ล่าง (#150S/#151S ฟันน้ำนม/ซี่เล็ก) | #23 Cowhorn ฟันกรามล่าง | Dry socket (วัน 2–4 ไม่มีไข้): ล้าง NSS + Obtundent dressing", "ห้ามขูด (Don't curette!) เบ้า Dry socket และไม่ต้องจ่ายยาปฏิชีวนะ"],
+      ["AHA 2021 IE Prophylaxis (ลิ้นหัวใจเทียม/เคยเป็น IE)", "Amoxicillin 2 g PO (30–60 นาทีก่อน) | แพ้ไม่รุนแรง: Cephalexin 2 g PO | แพ้รุนแรง: Azithromycin 500 mg / Doxycycline 100 mg", "⚠️ Clindamycin ถูกถอดออกจาก AHA 2021 แล้ว! และข้อเทียม (PJI) ไม่ต้องให้ยาป้องกันประจำ (ADA 2015)"],
+      ["SDCEP 2022 Anticoagulants / Antiplatelets", "Warfarin (INR ≤ 3.5–<4.0): ไม่หยุดยา | Antiplatelets: ไม่หยุดยา | High-risk DOACs: Miss Apixaban/Dabigatran, Delay Rivaroxaban/Edoxaban", "ห้ามเลือดเฉพาะที่: Gelfoam/Surgicel (ใน bone bleed ลึก) + Figure-of-eight + 5% Tranexamic acid MW 2–5 วัน"],
+      ["ADA 2019/2024 Pain, Infection & Special Cases", "ปวดหลังถอน: Ibuprofen ± Acetaminophen (หญิงตั้งครรภ์ใช้ Paracetamol) | ติดเชื้อไม่ลุกลาม: ไม่จ่าย ATB; ลาม/มีไข้/Gram+ cocci: Amoxicillin", "Sialolith ท่อน้ำลายใต้ลิ้น ➔ Sialolithotomy (ไม่ใช่ Marsupialization) | Post-splenectomy Thalassemia ➔ ระวัง Post-op Infection สูงสุด"]
     ],
     pitfalls: [
-      "ขูดแผลแรงๆ ในเคส Dry socket — เป็นข้อผิดพลาดใหญ่เพราะยิ่งทำให้กระดูกเปลือยเจ็บมากขึ้นและชะลอการหาย (แค่ Irrigate + Medicated dressing)",
-      "แยก Dry Socket (วันที่ 2–4 ปวดตุ้บ ไม่มีไข้ ไม่มีหนอง) ออกจาก Osteomyelitis / Post-op Infection (ไข้ บวมแดงมีหนอง)"
+      "ยังตอบ Clindamycin 600 mg ในผู้ป่วยแพ้ Penicillin ตาม AHA 2021 — ผิด! AHA 2021 ยกเลิก Clindamycin แล้ว ให้ตอบ Cephalexin 2 g PO (หากไม่แพ้แบบรุนแรง) หรือ Azithromycin 500 mg / Doxycycline 100 mg",
+      "ขูดแผลแรงๆ ในเคส Dry socket หรือสั่งหยุด Warfarin/ASA/Clopidogrel เองโดยไม่มีข้อบ่งชี้ (เสี่ยง Stent thrombosis / Stroke สูงกว่าเลือดออกในช่องปากมาก)"
     ],
-    pearl: "Cryer = Wheel & Axle | Cowhorn #23 = Furcation ฟันกรามล่าง | Dry Socket = วันที่ 2–4 ล้างน้ำเกลือ + ใส่ Dressing ห้ามขูด + ไม่ต้องจ่ายยาฆ่าเชื้อ!",
-    reference: "Hupp's Contemporary Oral and Maxillofacial Surgery 7th ed."
+    pearl: "AHA 2021 ตัด Clindamycin ทิ้ง! ➔ ใช้ Cephalexin 2 g / Azithro 500 mg / Doxy 100 mg | Warfarin INR ≤ 3.5 (<4.0) ถอนเลยไม่ต้องหยุด | Dry socket ห้ามขูด!",
+    reference: "Hupp's Contemporary OMFS 7th ed.; AHA IE Statement 2021; SDCEP Anticoagulants 2nd ed. 2022; ADA 2019 Antibiotic & 2023/2024 Pain Guidelines."
   },
 
   "OMFS-Impacted-Teeth": {
@@ -347,25 +347,25 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     category: "ศัลยศาสตร์ช่องปาก",
     badgeColor: "#f59e0b",
     must_know_topics: [
-      "AAOMS Criteria of MRONJ (Exposed Bone > 8 Weeks)",
-      "IV Zoledronate / Denosumab (สูง) vs Oral Alendronate (ต่ำ)",
-      "CTX Biomarker Controversy & Drug Holiday Guidelines",
-      "Osteoradionecrosis (ORN) & Hyperbaric Oxygen / PENTOCLO"
+      "AAOMS 2022 MRONJ Criteria (Exposed Bone > 8 Weeks)",
+      "IV Zoledronate / Denosumab (3–4 Mo Surgical Window) vs Oral Alendronate",
+      "Bisphosphonate Drug Holiday Controversy (Insufficient Evidence 2022) & Early Stage 1–3 Surgery",
+      "Osteoradionecrosis (ORN > 60 Gy) & PENTOCLO"
     ],
-    overview: "กลไกการเกิดภาวะกระดูกขากรรไกรตายจากยาต้านการสลายกระดูก (Bisphosphonates, Denosumab, Antiangiogenics) เทียบกับรังสีรักษาบริเวณศีรษะและลำคอ พร้อมแนวทางป้องกันก่อนเริ่มยา",
-    core_mechanism: "Bisphosphonates (จับ Hydroxyapatite ค้างในกระดูกนานเป็นปี ยับยั้ง Osteoclasts) และ Denosumab (RANKL inhibitor อายุสั้นกว่า ไม่สะสมในกระดูก) ยับยั้งการผลัดเปลี่ยนกระดูก (Bone remodeling) เมื่อมีบาดแผลในช่องปากหรือถอนฟัน จึงเกิดการติดเชื้อและกระดูกตายโผล่พ้นเหงือก > 8 สัปดาห์ (มักพบในขากรรไกรล่างมากกว่าบน ~2:1) ส่วน ORN (>60 Gy) เกิดจาก Hypovascular-Hypocellular-Hypoxic tissue",
-    matrix_headers: ["เกณฑ์ / ปัจจัยเสี่ยง", "MRONJ (ยา)", "ORN (รังสี > 60 Gy)"],
+    overview: "กลไกการเกิดภาวะกระดูกขากรรไกรตายจากยาต้านการสลายกระดูก (Bisphosphonates, Denosumab, Antiangiogenics/Immune modulators) ตามเกณฑ์ AAOMS 2022 เทียบกับรังสีรักษาบริเวณศีรษะและลำคอ พร้อมแนวทางป้องกันและเวลาที่เหมาะสมในการถอนฟัน",
+    core_mechanism: "Bisphosphonates จับ Hydroxyapatite ค้างในกระดูกนานหลายปี (Half-life ~10 ปี) ส่วน Denosumab เป็น Monoclonal antibody ยับยั้ง RANKL แบบผันกลับได้ (ไม่สะสมในกระดูก) เกณฑ์ MRONJ (AAOMS 2022): (1) กำลัง/เคยได้ Antiresorptive ± Antiangiogenic/Immune modulator (2) กระดูกโผล่/คลำผ่าน Fistula > 8 สัปดาห์ (3) ไม่เคยฉายรังสีและไม่ใช่มะเร็งแพร่กระจายที่ขากรรไกร ส่วน ORN (>60 Gy) เกิดจาก Hypovascular-Hypocellular-Hypoxic tissue",
+    matrix_headers: ["เกณฑ์ / ปัจจัยเสี่ยง", "MRONJ (ยา — AAOMS 2022)", "ORN (รังสี > 60 Gy)"],
     matrix_rows: [
       ["คำนิยามวินิจฉัย", "กระดูกตายโผล่หรือคลำผ่าน Fistula นาน > 8 สัปดาห์ + มีประวัติได้ยา + ‘ไม่เคยฉายรังสีที่ขากรรไกร’", "กระดูกตายโผล่ > 3 เดือนในบริเวณที่เคยฉายรังสีโดยไม่มีมะเร็งกลับมาเป็นซ้ำ"],
-      ["ปัจจัยเสี่ยงสูงสุด", "IV Bisphosphonate (Zoledronic acid ในผู้ป่วยมะเร็ง > Oral osteoporosis ~100 เท่า!), ฉีดยาเกิน 2–4 ปี, ถอนฟัน, Steroid", "ขนาดรังสี > 60 Gy + ถอนฟันในบริเวณฉายรังสี (Mandible posterior เสี่ยงสุด!)"],
-      ["การป้องกันก่อนเริ่มรักษา (Gold Standard)", "เคลียร์ช่องปากถอนฟันพยากรณ์โรคไม่ดีให้แผลหายก่อนเริ่มยา; ในกลุ่ม Risk ต่ำ (<4 ปี Oral) ไม่จำเป็นต้องหยุดยาก่อนถอน", "ถอนฟันเสี่ยงล่วงหน้าอย่างน้อย ‘14–21 วัน’ ก่อนเริ่มฉายรังสี!"],
-      ["แนวทางรักษาตามระยะ", "Stage 0–1: CHX 0.12% ล้างปาก + คุมปวด | Stage 2: เพิ่ม Oral Antibiotics | Stage 3: Debridement / Resection", "คุมติดเชื้อ CHX + Sequestrectomy แบบอนุรักษ์ + Pentoxifylline-Tocopherol (PENTOCLO) / HBO (บางสถาบัน)"]
+      ["ปัจจัยเสี่ยง & Timing ก่อนถอน", "IV Zoledronate ในผู้ป่วยมะเร็ง (เสี่ยงสูงสุด); กลุ่ม Oral < 4 ปีเสี่ยงต่ำไม่ต้องหยุดยา | **Denosumab ทุก 6 เดือน (เช่น ม.ค./ก.ค.)**: ถอนช่วง **3–4 เดือนหลังเข็มล่าสุด (เดือน พ.ค.)** และรอแผลปิด 6–8 wk ก่อนเข็มถัดไป", "ขนาดรังสี > 60 Gy + ถอนฟันในบริเวณฉายรังสี (Mandible posterior เสี่ยงสุด!)"],
+      ["Drug Holiday & การป้องกันก่อนเริ่มยา", "เคลียร์ฟันก่อนเริ่มยาสำคัญที่สุด! | **AAOMS 2022**: ยังไม่มีหลักฐานเพียงพอว่า Bisphosphonate drug holiday ลดเสี่ยง MRONJ ได้จริง (พิจารณาเป็นรายๆ ร่วมกับแพทย์); ส่วน Denosumab ห้ามหยุดเองเสี่ยง Rebound vertebral fracture", "ถอนฟันเสี่ยงล่วงหน้าอย่างน้อย ‘14–21 วัน’ ก่อนเริ่มฉายรังสี!"],
+      ["แนวทางรักษาตามระยะ", "Stage 0–1: CHX 0.12% + คุมปวด | Stage 2: เพิ่ม Antibiotics | **AAOMS 2022**: พิจารณา **Surgical resection / Sequestrectomy ได้ตั้งแต่ Stage 1–3** หากไม่ตอบสนองต่อการรักษาประคับประคอง", "คุมติดเชื้อ CHX + Sequestrectomy แบบอนุรักษ์ + Pentoxifylline-Tocopherol (PENTOCLO) / HBO (บางสถาบัน)"]
     ],
     pitfalls: [
       "วินิจฉัยคนไข้ที่เคยฉายรังสีที่ขากรรไกรว่าเป็น MRONJ — เกณฑ์ AAOMS ข้อที่ 3 ระบุชัดเจนว่าต้อง ‘ไม่มีประวัติฉายรังสีที่ขากรรไกร’ (No history of radiation therapy)",
-      "ประมาทการฉีด Denosumab หรือเข้าใจว่าต้องหยุดยาเหมือน Bisphosphonate ทั้งที่ Denosumab ออกฤทธิ์ย้อนกลับได้เร็วกว่าแต่เพิ่มเสี่ยง Bone loss ย้อนหลัง (Rebound vertebral fracture) หากหยุดโดยไม่ปรึกษาแพทย์"
+      "ประมาทการฉีด Denosumab หรือเข้าใจว่าต้องหยุดยาถาวรเหมือน Bisphosphonate: ต้องประสานถอนช่วงเดือนที่ 4–5 หลังฉีดเข็มล่าสุด (ก่อนครบ 6 เดือน ~6–8 สัปดาห์) และกลับไปฉีดตามนัดเพื่อป้องกัน Rebound vertebral fracture"
     ],
-    pearl: "กฎ 8 สัปดาห์ไม่ฉายแสง = MRONJ (เคลียร์ฟันก่อนเริ่มยาสำคัญที่สุด!) | ฉายแสง > 60 Gy ควรเคลียร์ฟันอย่างน้อย 14–21 วันก่อนฉาย!",
+    pearl: "กฎ 8 สัปดาห์ไม่ฉายแสง = MRONJ | Denosumab ฉีด ม.ค./ก.ค. ➔ ถอนฟันช่วง พ.ค. (เดือนที่ 4–5 หลังฉีด) | AAOMS 2022 ทำ Sequestrectomy/Resection ได้เร็วขึ้นตั้งแต่ Stage 1–3!",
     reference: "AAOMS Position Paper on MRONJ (2022 Update) & Little & Falace 10th ed."
   },
 
@@ -381,20 +381,20 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
       "Zygomaticomaxillary Complex (ZMC) Tripod Fracture & Diplopia"
     ],
     overview: "การคัดกรองภาวะฉุกเฉินคุกคามชีวิตจากอุบัติเหตุใบหน้า ตำแหน่งกระดูกขากรรไกรหักที่พบบ่อย ทิศทางแรงดึงกล้ามเนื้อ (Favorable vs Unfavorable) และระดับการหักของใบหน้าส่วนกลาง",
-    core_mechanism: "การหักของ Symphysis ทั้ง 2 ข้าง (Bilateral parasymphysis) ทำให้กล้ามเนื้อ Genioglossus ขาดแรงยึด ลิ้นตกอุดกั้นทางเดินหายใจทันที (ต้องทำ Jaw thrust / ยึดลิ้น ไม่เหยียดคอหากยังไม่ Rule out C-spine) ส่วน Condyle fracture มักหักร่วมกับ Symphysis ด้านตรงข้าม (Contracoup) ทำให้คางเฉไป ‘ด้านที่หัก’ เวลาอ้าปาก และเกิด Premature contact ด้านเดียวกัน + Open bite ด้านตรงข้าม",
-    matrix_headers: ["ประเภทกระดูกหัก", "ตำแหน่ง & อาการแสดงจำเพาะ (Classic Signs)", "การประเมินและหลักการรักษา"],
+    core_mechanism: "การหักของ Symphysis ทั้ง 2 ข้าง (Bilateral parasymphysis) ทำให้กล้ามเนื้อ Genioglossus ขาดแรงยึด ลิ้นตกอุดกั้นทางเดินหายใจทันที (ต้องทำ Jaw thrust / ยึดลิ้น ไม่เหยียดคอหากยังไม่ Rule out C-spine); Coleman's sign (Sublingual hematoma) เป็นอาการแสดงในช่องปากที่จำเพาะต่อการหักของ Mandibular body/symphysis; ส่วน Condyle fracture มักหักร่วมกับ Symphysis ด้านตรงข้าม (Contracoup) ทำให้คางเฉไป ‘ด้านที่หัก’ เวลาอ้าปาก และเกิด Premature contact ด้านเดียวกัน + Open bite ด้านตรงข้าม\n• Condylar Hyperplasia: เช่น Left CH ➔ คางเฉไป ‘ด้านขวา’ + Left posterior open bite; ตรวจด้วย Tc-99m SPECT scan หากหยุดโตแล้วใช้ Orthognathic surgery + จัดฟัน (ห้ามแก้ด้วย Occlusal adjustment)\n• IADT 2020 Dental Trauma Splinting: Subluxation / Extrusion / Avulsion (≤60 นาที) ➔ Flexible splint 2 สัปดาห์ | Lateral luxation (ฟันเคลื่อนเข้าด้านเพดาน) / Alveolar fracture ➔ Reposition + Flexible splint 4 สัปดาห์",
+    matrix_headers: ["ประเภทกระดูกหัก / ความผิดปกติ", "ตำแหน่ง & อาการแสดงจำเพาะ (Classic Signs)", "การประเมินและหลักการรักษา"],
     matrix_rows: [
-      ["Le Fort I (Guerin / Floating Palate)", "พาดขวางเหนือปลายรากฟันบน ผ่าน Pyriform aperture ถึง Pterygoid plates", "Upper dental arch โยกทั้งชุด (ไม่โยกที่สันจมูกหรือขอบเบ้าตา)"],
-      ["Le Fort II (Pyramidal Fracture)", "ผ่าน Nasal bridge ➔ Medial orbital wall ➔ Infraorbital rim ➔ Pterygoid plates", "จมูก+เพดานปากโยกด้วยกัน + ชาแก้ม (V2) + Step defect ที่ Infraorbital rim + เสี่ยง CSF Rhinorrhea"],
-      ["Le Fort III (Craniofacial Dysjunction)", "ผ่าน Nasofrontal suture ➔ Lateral orbital wall (ZF suture) ➔ Zygomatic arch ➔ Pterygoid plates", "ใบหน้าแยกจากกะโหลกทั้งชุด (Dish-face, Panda/Raccoon eyes, CSF leak, เสี่ยง Airway obstruction สูง)"],
-      ["Mandibular Condyle (พบบ่อยสุด) & Angle", "Unilateral condyle: คางเฉไป ‘ด้านที่หัก’, ฟันหลังด้านหักสบก่อน ➔ ด้านตรงข้าม Open bite | Bilateral: Anterior open bite!", "Favorable line: แรงกล้ามเนื้อดึงแนวหัก ‘เข้าหากัน’ | Unfavorable: ดึง ‘แยกจากกัน’ ต้องยึด Open Reduction Internal Fixation (ORIF)"]
+      ["Le Fort I (Guerin / Floating Palate)", "พาดขวางเหนือปลายรากฟันบน ผ่าน Pyriform aperture ถึง Pterygoid plates", "Upper dental arch โยกทั้งชุด (ไม่โยกที่สันจมูกหรือขอบเบ้าตา) | ภาพรังสี: Water's view"],
+      ["Le Fort II (Pyramidal) & III (Craniofacial Disjunction)", "II: Nasal bridge ➔ Infraorbital rim | III: ใบหน้าแยกจากกะโหลก (Dish-face, Panda eyes, CSF leak)", "ห้ามสอด NG/Nasotracheal tube! ตรวจ CT / Water's view / Reverse Towne / PA Mand"],
+      ["Mandible Fracture & Coleman's Sign", "Sublingual hematoma (Coleman's sign) จำเพาะในช่องปากต่อ Body/Symphysis; Bilateral condyle ➔ Anterior open bite!", "Favorable vs Unfavorable: ผู้ป่วย Asthma ห้ามมัดฟันติดกัน (หลีกเลี่ยง MMF) ➔ ใช้ ORIF without MMF!"],
+      ["Condylar Hyperplasia & IADT 2020 Trauma", "Left CH ➔ คอซ้ายยาว คางเฉขวา + Left posterior open bite | Lateral luxation ➔ ย้ายเข้าเพดาน + ยึดกระดูก", "CH ใช้ Orthognathic surgery + จัดฟัน | Subluxation splint 2 wk / Lateral luxation 4 wk"]
     ],
     pitfalls: [
-      "สับสนทิศทางคางเฉใน Unilateral Condyle Fracture: คางเฉไป ‘ด้านที่หัก’ (ด้านปกติแข็งแรงผลักเข้ามา) และฟันกรามด้านหักจะสบกระแทกก่อนทำให้ด้านตรงข้ามสบเปิด (Open bite)",
-      "เห็นคนไข้ใบหน้าหักที่มีจมูกเลือดออก/น้ำใสหยด แล้วใส่ท่อ Nasotracheal intubation หรือ NG tube — ห้ามเด็ดขาดใน Le Fort II/III / Skull base fracture เพราะท่อทะลุเข้าสมองได้ (Crybriform plate)"
+      "สับสนทิศทางคางเฉ: Unilateral Condyle Fracture คางเฉไป ‘ด้านที่หัก’ | Unilateral Condylar Hyperplasia คางเฉไป ‘ด้านตรงข้าม’ (เช่น Left CH คางเฉขวา และเกิด Open bite ด้านที่โตเกิน)",
+      "ลืมอาการในช่องปากของ Mandibular body/parasymphysis fracture: คำตอบคือ Sublingual hematoma (Coleman's sign) ไม่ใช่ Jaw deflection | และผู้ป่วย Asthma ต้องรักษาด้วย ORIF without MMF"
     ],
-    pearl: "ATLS Airway มาก่อนเสมอ | Contracoup: กระแทกคาง ➔ Condyle หัก! | Le Fort I = ฟันบนโยก, II = พีระมิดใต้ตา, III = กะโหลกแยกทั้งหน้า!",
-    reference: "Hupp's Contemporary Oral & Maxillofacial Surgery 7th ed. & Fonseca Oral and Maxillofacial Trauma"
+    pearl: "Coleman's sign (Sublingual hematoma) = กรามล่างหัก | Asthma + กรามหัก ➔ ORIF without MMF | Condylar Hyperplasia ➔ Orthognathic surgery + จัดฟัน | IADT 2020: Subluxation 2 wk / Lateral luxation 4 wk!",
+    reference: "Hupp's Contemporary Oral & Maxillofacial Surgery 7th ed.; Fonseca Oral and Maxillofacial Trauma; IADT 2020 Guidelines."
   },
 
   // ── PERIODONTOLOGY (9) ────────────────────────────────────────────────────
@@ -662,25 +662,25 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     badgeColor: "#0d9488",
     must_know_topics: [
       "Critical pH: Enamel (5.5) vs Dentin/Cementum (6.2–6.7) vs Fluorapatite (4.5)",
-      "Stephan Curve & Ecological Plaque Hypothesis (S. mutans / Lactobacillus)",
-      "Histologic Zones of Enamel Caries (4 Zones) & Dentin Caries (5 Zones)",
-      "ICDAS II & Active vs Arrested Caries"
+      "Stephan Curve & Ecological Plaque Hypothesis (S. mutans / Lactobacillus / Actinomyces)",
+      "ICDAS II (0–6) & ICCMS Radiographic Score (RA1–RA3, RB4, RC5–RC6)",
+      "ADA 2018 Nonrestorative (38% SDF, 5% NaF, 5000 ppm NaF) & ADA 2023 Selective Removal"
     ],
-    overview: "สมดุลพลวัตระหว่าง Demineralization และ Remineralization ในช่องปาก ค่า pH วิกฤตของโครงสร้างฟันแต่ละชั้น ลักษณะพยาธิวิทยาของรอยผุในเคลือบฟันและเนื้อฟัน และการแปลผลความเสี่ยง",
-    core_mechanism: "เมื่อแบคทีเรียหมักคาร์โบไฮเดรตเกิดกรด pH ต่ำกว่า Critical pH (Enamel 5.5, Dentin 6.2–6.7 เพราะมีแร่ธาตุน้อยและคาร์บอเนตสูงกว่า) แคลเซียม-ฟอสเฟตจึงละลายออก แต่ฟลูออไรด์ช่วยลด Critical pH ลงเป็น ~4.5 ในรูป Fluorapatite และส่งเสริมการคืนแร่ธาตุ ระยะแรกที่ผิวยังไม่เป็นรู (ICDAS 1–2 White spot lesion) เกิดการละลายใต้ผิวใน Body of lesion โดยยังมี Surface zone เหลือคลุม",
-    matrix_headers: ["ชั้น / ตัวชี้วัดฟันผุ", "ลักษณะทางจุลพยาธิวิทยา / ค่าสำคัญ", "การจัดการคลินิกตามหลัก Minimally Invasive"],
+    overview: "สมดุลพลวัตระหว่าง Demineralization และ Remineralization ในช่องปาก เกณฑ์จำแนกรอยผุทางคลินิก ICDAS II และภาพรังสี ICCMS รวมถึงแนวทาง ADA 2018 Nonrestorative และ ADA 2023 Restorative",
+    core_mechanism: "เมื่อแบคทีเรียหมักคาร์โบไฮเดรตเกิดกรด pH ต่ำกว่า Critical pH (Enamel 5.5, Dentin 6.2–6.7) แคลเซียม-ฟอสเฟตจึงละลายออก ฟลูออไรด์ช่วยลด Critical pH เป็น ~4.5 ในรูป Fluorapatite | การอ่านภาพรังสีตามเกณฑ์ **ICCMS**: **RA1** = outer 1/2 enamel, **RA2** = inner 1/2 enamel (± DEJ), **RA3** = outer 1/3 dentin, **RB4** = middle 1/3 dentin, **RC5** = inner 1/3 dentin, **RC6** = ทะลุโพรงประสาทฟัน!",
+    matrix_headers: ["ชั้น / ตัวชี้วัดฟันผุ", "ลักษณะทางจุลพยาธิวิทยา / ค่าสำคัญ", "การจัดการคลินิกตามหลัก Minimally Invasive & ADA"],
     matrix_rows: [
-      ["Enamel Caries (4 Zones จากลึกไปตื้น)", "Translucent ➔ Dark ➔ Body of lesion (พรุนสุด 25–50%!) ➔ Surface zone (~1–5% ยังคงรูปจากการ Re-min ของน้ำลาย)", "ICDAS 1–2 (White spot ไม่มีรู): ห้ามกรออุด! จัดการด้วย Fluoride varnish, Diet control, Sealant หรือ Resin infiltration (Icon)"],
-      ["Dentin Caries (5 Zones จากลึกไปตื้น)", "Normal ➔ Subtransparent ➔ Transparent (Sclerotic) ➔ Turbid (Soft infected มีเชื้อ) ➔ Infected necrosis", "ชั้น Infected (Turbid/Soft): กำจัดออกหมด | ชั้น Affected (Sclerotic/Firm เล็กน้อย): คงไว้เหนือโพรงประสาทเพื่อไม่ให้ Pulp ทะลุ!"],
-      ["Active vs Arrested Lesion", "Active: ขาวขุ่นด้านเหมือนชอล์ก ผิวหยาบ (Chalky rough) ในจุดสะสม Plaque | Arrested: น้ำตาลดำเป็นมันเรียบแข็ง", "Arrested caries ไม่ต้องกรอรักษา (ยกเว้นเพื่อความสวยงามในฟันหน้า)"],
-      ["เชื้อหลักตามระยะฟันผุ", "Streptococcus mutans (ตัวเริ่มผุใน Enamel, สร้าง Glucan ยึดเกาะ) vs Lactobacillus (เด่นในการลุกลามลึกใน Cavitation)", "Actinomyces (เด่นใน Root surface caries ผู้สูงอายุปากแห้ง)"]
+      ["Enamel Caries (ICDAS 1–2 / RA1–RA2)", "Translucent ➔ Dark ➔ Body of lesion (พรุนสุด) ➔ Surface zone (~1–5% ยังคงรูป)", "Non-operative (ADA 2018): ห้ามกรออุด! Occlusal ใช้ Sealant (± 5% NaF); Proximal ใช้ 5% NaF / Resin infiltration (Icon)"],
+      ["Dentin Caries & ICCMS RA3–RC6", "RA3 = Outer 1/3 dentin | RB4 = Middle 1/3 | RC5 = Inner 1/3 | RC6 = Pulp", "รอยผุเป็นโพรงในฟันมีชีวิต: ขอบรอบนอกกรอถึง Hard dentin, ก้นโพรงด้านใกล้พัลพ์ใช้ 1-step Selective removal (ADA 2023) เหลือ Soft/Firm dentin ได้!"],
+      ["Root Caries & Non-restorative (ADA 2018)", "Active: ขุ่นนิ่มในจุดสะสม Plaque | Arrested: น้ำตาลดำแข็งเป็นมัน", "ผู้ใหญ่ที่มี Root caries: อันดับแรกใช้ยาสีฟัน 5,000 ppm (1.1% NaF) ทุกวัน; ทาในคลินิกใช้ 5% NaF varnish หรือ 38% SDF ± KI (ส่วน 1.23% APF ไม่เด่นใน root caries!)"],
+      ["เชื้อหลักตามระยะฟันผุ", "S. mutans / S. sobrinus (เริ่มผุ Enamel) vs Lactobacillus (ลุกลามลึกใน Cavitation)", "Actinomyces viscosus (เด่นใน Root surface caries ผู้สูงอายุปากแห้ง)"]
     ],
     pitfalls: [
-      "ใช้ Explorer แหลมกดจิกลงไปในหลุมร่องฟันที่มี White spot lesion (ICDAS 2) — การจิ้มแรงทำให้ Surface zone ที่บางพังทลายกลายเป็นโพรงรูถาวร (Cavitated)! ให้ใช้แรงเบา/ดูเมื่อเป่าแห้ง",
-      "จำสับสนค่า Critical pH: รากฟัน/Dentin ผุได้ง่ายกว่าตัวฟันมากเพราะ Critical pH สูงถึง ~6.2–6.7 (แค่กรดอ่อนๆ จากผลไม้/น้ำลายแห้งก็ผุแล้ว)"
+      "สับสนเกณฑ์ ICCMS: รอยผุที่เข้าสู่ Outer 1/3 of dentin คือ ‘RA3’ ไม่ใช่ RA2! (RA2 จำกัดแค่ Inner 1/2 ของ Enamel ± ถึง DEJ เท่านั้น)",
+      "ใช้ Explorer แหลมกดจิกลงไปใน White spot lesion (ICDAS 2) — การจิ้มแรงทำให้ Surface zone ที่บางพังทลายกลายเป็นโพรงรูถาวร (Cavitated)"
     ],
-    pearl: "Critical pH: Enamel 5.5, Dentin/Root 6.2–6.7, Fluorapatite 4.5 | White Spot มี Surface zone คลุมอยู่ ➔ ห้ามเจาะด้วย Explorer หรือหัวกรอ!",
-    reference: "Sturdevant's Art and Science of Operative Dentistry 7th ed. & Summit's Fundamentals of Operative Dentistry"
+    pearl: "ICCMS ภาพรังสี: RA1 (นอก 1/2 E) ➔ RA2 (ใน 1/2 E ± DEJ) ➔ RA3 (นอก 1/3 D) ➔ RB4 (กลาง 1/3 D) ➔ RC5 (ใน 1/3 D) | ADA 2018 Root caries = 5,000 ppm NaF / 5% Varnish / 38% SDF!",
+    reference: "ADA Nonrestorative (2018) & Restorative (2023) Guidelines; ICCMS™ Guide; Sturdevant's 7th ed."
   },
 
   "Operative-Dental-Amalgam": {
@@ -691,24 +691,24 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     must_know_topics: [
       "Low-Copper vs High-Copper Amalgam (Elimination of Gamma-2 Phase Sn7-8Hg)",
       "Zinc-Containing Amalgam + Moisture = Delayed Expansion",
-      "Resistance Form & Retention Form (90° Cavosurface Margin, Convergence)",
-      "Minimum Thickness (1.5–2.0 mm) & Isthmus Width (1/4–1/3 ICD)"
+      "Resistance Form & Retention Form (90° Cavosurface Margin, Slot Grooves)",
+      "Minamata Convention (COP-5 <15 ปี/ตั้งครรภ์ & COP-6 2034 Global Phase-out)"
     ],
-    overview: "โลหะวิทยาของอะมัลกัมความต่างระหว่างสูตร Copper ต่ำกับสูตร High-copper และข้อกำหนดเชิงกลของการเตรียมโพรงฟันเพื่อให้วัสดุทนแรงบดเคี้ยวได้โดยไม่แตกหัก",
-    core_mechanism: "High-copper amalgam (>12–30% Cu) ช่วยขจัด Gamma-2 phase (Sn7-8Hg) ซึ่งเป็นเฟสอ่อนแอที่สุดและผุกร่อน (Corrosion) ง่ายที่สุดในปาก เปลี่ยนไปเป็น Eta-prime phase (Cu6Sn5) ทำให้ลด Creep เพิ่มความแข็งแรงและลด Marginal breakdown นอกจากนี้ต้องเตรียมโพรงฟันให้ผนังด้านแก้ม/ลิ้นลู่เข้า (Occlusal convergence) เพื่อ Macro-mechanical retention และทำมุม Cavosurface ~90° เพื่อกันขอบอะมัลกัมบางแตก",
+    overview: "โลหะวิทยาของอะมัลกัม การเตรียมโพรงฟันเชิงกล (รวมถึง Slot preparation) เครื่องมือแต่งขัดที่ถูกต้อง และข้อจำกัดการใช้อะมัลกัมตามอนุสัญญามินามาตะและกรมอนามัย",
+    core_mechanism: "High-copper amalgam (>12–30% Cu) ช่วยขจัด Gamma-2 phase (Sn7-8Hg) เปลี่ยนเป็น Eta-prime (Cu6Sn5) ลด Creep และ Marginal breakdown | การเตรียมโพรงฟัน: 90° Butt-joint cavosurface margin, ลึก ≥ 1.5–2.0 mm, ลบมุม Axio-pulpal line angle และถ้าทำ Box-only/Slot Class II ต้องกรอ Retentive grooves ที่ Axiobuccal/Axiolingual | ด้านสิ่งแวดล้อม: **อนุสัญญามินามาตะ COP-5 (2023) & COP-6** ให้เลี่ยงอะมัลกัมในเด็ก `< 15 ปี`, หญิงตั้งครรภ์/ให้นมบุตร และกำหนด **global phase-out ปี 2034**",
     matrix_headers: ["เฟสของอะมัลกัม / หลัก Cavity Prep", "กลไกโลหะวิทยาและค่าที่ออกสอบ", "ผลกระทบและความสำคัญคลินิก"],
     matrix_rows: [
       ["Gamma (Ag3Sn) / Gamma-1 (Ag2Hg3)", "Gamma: ผงโลหะที่เหลือ (แข็งสุด) | Gamma-1: Matrix หลักที่เกิดขึ้นระหว่างปฏิกิริยา", "ยิ่งเหลือแรงอัด Condensation ดี ไล่ปรอทส่วนเกินออกมาก อะมัลกัมยิ่งแข็งแรงและ Creep ต่ำ"],
       ["Gamma-2 (Sn7-8Hg) vs Eta-prime (Cu6Sn5)", "Gamma-2 เป็นจุดอ่อนสุด (อ่อน ผุกร่อนง่าย Creep สูง) — High-copper ใช้ Cu แย่ง Sn เกิด Cu6Sn5 แทน", "High-copper amalgam จึงมี Creep ต่ำกว่ามาก (สำคัญสุดในข้อสอบวัสดุศาสตร์!)"],
       ["Zinc (>0.01%) + ความชื้นปนเปื้อน", "Zn ทำปฏิกิริยากับน้ำปล่อยก๊าซ H2 ทำให้วัสดุพองตัวหลังอุดหลายวัน/สัปดาห์ (Delayed Expansion)", "ทำให้ปวดฟันเมื่อเคี้ยว วัสดุยื่นพ้นขอบโพรงฟัน ➔ ต้องคุมความชื้นหรือใช้ Non-zinc alloy ถ้าแยกน้ำลายไม่ได้"],
-      ["Resistance & Retention Form", "ลึก ≥ 1.5–2.0 mm, กว้าง Isthmus ~1/4–1/3 intercuspal distance, ผนัง Occlusal convergence (90° CSM), Pulpal floor แบนขนาน", "ข้อสอบชอบถามสาเหตุอะมัลกัมแตกที่ Isthmus: มักเกิดจากกรอลึกไม่พอ (< 1.5 mm) หรือ Axio-pulpal line angle แหลมคม (ต้องลบมน!)"]
+      ["Resistance/Retention & การแต่งขัด", "ลึก ≥ 1.5–2.0 mm, Isthmus ~1/4–1/3 ICD, 90° Butt-joint, Retentive grooves (Axiobuccal/Axiolingual) ใน Class II slot", "แต่งขณะนิ่มใช้ Discoid-Cleoid carver; แต่งขอบ Occlusal incline planes หลังแข็ง (≥ 24 ชม.) ใช้ Round/Flame finishing bur (ไม่ใช้ Abrasive disc!)"]
     ],
     pitfalls: [
-      "กรอ Enamel margin แบบ Bevel สำหรับงาน Amalgam — ห้ามเด็ดขาด! อะมัลกัมเปราะเมื่อบาง (Low edge strength) ต้องทำ 90° Butt-joint margin เท่านั้น (ต่างจาก Composite ที่ทำ Bevel ฟันหน้าได้)",
-      "ลืมลบเหลี่ยม Axio-pulpal line angle ให้โค้งมนใน Class II ทำให้เกิด Stress concentration แตกหักที่แนวคอ Ismthus"
+      "กรอ Enamel margin แบบ Bevel สำหรับงาน Amalgam — ห้ามเด็ดขาด! ต้องทำ 90° Butt-joint margin เท่านั้น (ส่วนการแต่ง Occlusal incline planes หลังเซ็ตตัวใช้ Round finishing bur ไม่ใช่ Abrasive disc ที่จะทำให้ปุ่มฟันแบน!)",
+      "ลืมลบเหลี่ยม Axio-pulpal line angle ให้โค้งมนใน Class II ทำให้เกิด Stress concentration แตกหักที่แนวคอ Isthmus และอย่าลืมข้อจำกัด Minamata (< 15 ปี/หญิงตั้งครรภ์/Phase-out 2034)"
     ],
-    pearl: "High-Copper ขจัด Gamma-2 (Sn-Hg) ➔ ลด Creep & Corrosion | Zn + น้ำ = Delayed Expansion (H2 gas) | Amalgam Margin = 90° เสมอ!",
-    reference: "Anusavice Phillips' Science of Dental Materials 13th ed. & Sturdevant 7th ed."
+    pearl: "High-Copper ขจัด Gamma-2 ➔ ลด Creep | Zn + น้ำ = Delayed Expansion | Finishing Occlusal Incline = Round Finishing Bur | Minamata 2034 Phase-out!",
+    reference: "Anusavice Phillips' Science of Dental Materials 13th ed.; Sturdevant 7th ed.; Minamata Convention COP-5/COP-6 & กรมอนามัย"
   },
 
   "Operative-GIC-RMGIC": {
@@ -789,7 +789,7 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     ],
     pitfalls: [
       "เป่า Dentin จนแห้งผากเสียงดังฟู่หลังกัดกรด Phosphoric ในระบบ Total-etch ➔ คอลลาเจนยุบตัวเกิด White frosted dentin และเสียวฟันหลังอุดรุนแรง! (ต้องซับหมาดด้วยก้อนสำลี/ฟองน้ำ)",
-      "ใช้ All-in-one (1-Step) กับ Dual-cure / Self-cure Core composite โดยไม่ตรวจสอบความเข้ากันได้: กรดที่ตกค้างในขวดเดียวจะทำลาย Tertiary amine ของ Self-cure resin ทำให้ติดไม่อยู่!"
+      "ใช้ All-in-one (1-Step) หรือ Universal Adhesive ที่มีค่ากรดต่ำร่วมกับ Dual-cure / Self-cure Core composite โดยไม่ใช้ Dual-cure activator (หรือระบบปราศจาก Amine): กรดที่ตกค้างในชั้นสารยึดติดจะทำปฏิกิริยากับ Tertiary amine ของ Self-cure resin ทำให้ติดไม่อยู่!"
     ],
     pearl: "Total-etch Dentin ต้อง ‘ชื้นหมาด (Moist)’ กันคอลลาเจนแฟบ | Universal + 10-MDP วิธีดีสุดคือ ‘Selective Enamel Etch’ (กัดเฉพาะ Enamel)!",
     reference: "Van Meerbeek / Sturdevant's Operative Dentistry 7th ed. & Summit's Fundamentals"
@@ -801,26 +801,26 @@ export const CLINICAL_STUDY_GUIDES_EXTRA_1 = {
     category: "ทันตกรรมบูรณะ/หัตถการ",
     badgeColor: "#0d9488",
     must_know_topics: [
-      "Remaining Dentin Thickness (RDT > 2.0 mm vs 0.5–1.5 mm vs < 0.5 mm)",
-      "Selective Caries Removal to Soft/Firm Dentin vs Stepwise Excavation",
-      "Liners: Calcium Hydroxide / MTA / Biodentine vs Bases: RMGIC / GIC",
+      "Remaining Dentin Thickness (RDT ≥ 2.0 mm vs 0.5–<2.0 mm vs < 0.5 mm)",
+      "1-Step Selective Caries Removal (ADA 2023 / ESE 2019 Preferred) vs Stepwise",
+      "Liners: MTA / Biodentine / Ca(OH)2 vs Bases: RMGIC / GIC",
       "ทฤษฎีการป้องกัน Microleakage vs Thermal Insulation"
     ],
-    overview: "หลักการเลือกใช้ Liners และ Bases ตามความหนาของเนื้อฟันที่เหลืออยู่ (RDT) และแนวทางสากลยุคใหม่ในการกำจัดฟันผุลึกเพื่อป้องกัน Pulp Exposure",
-    core_mechanism: "ปัจจัยสำคัญที่สุดในการปกป้องโพรงประสาทฟันไม่ใช่การทารองพื้นหนาๆ แต่คือการป้องกันแบคทีเรียรั่วซึม (Microleakage) และรักษา RDT: เนื้อฟันธรรมชาติเองเป็นฉนวนความร้อนที่ดีที่สุดอยู่แล้ว หาก RDT ≥ 2.0 mm ไม่ต้องใส่ Liner/Base เลย แต่ถ้า RDT < 0.5 mm ใกล้ทะลุโพรงประสาทในฟันมีชีวิตปกติ ให้กรอขอบรอบนอก (Peripheral) ให้สะอาดแข็งแล้วเหลือ Soft/Leathery dentin บนเพดานโพรงประสาทเล็กน้อย (Selective Caries Removal) ปิดทับด้วย Bioceramic/Ca(OH)2 + RMGIC และอุดปิดสนิทถาวรครั้งเดียว",
+    overview: "หลักการเลือกใช้ Liners และ Bases ตามความหนาของเนื้อฟันที่เหลืออยู่ (RDT) และแนวทางสากล ADA (2023) & ESE (2019) ที่แนะนำ 1-step Selective Carious Tissue Removal เพื่อป้องกัน Pulp Exposure",
+    core_mechanism: "ปัจจัยสำคัญที่สุดในการปกป้องโพรงประสาทฟันคือการป้องกันแบคทีเรียรั่วซึม (Microleakage) และรักษา RDT: หาก RDT ≥ 2.0 mm ไม่ต้องใส่ Liner/Base; ในฟันแท้ที่ยัง Vital และไม่มีอาการปวดแบบ Irreversible pulpitis **ADA (2023) และ ESE (2019) แนะนำ `1-Step Selective Removal` เหนือกว่า `Stepwise` และ `Non-selective (Complete) removal`** โดยกรอขอบรอบนอก (Peripheral 1.5–2 mm) ถึง **Hard dentin** สนิท แล้วคง **Soft/Firm dentin** เฉพาะด้านใกล้พัลพ์ ปิดผนึกด้วย RMGIC / Bioceramic และบูรณะถาวรทันทีในครั้งเดียว!",
     matrix_headers: ["ความหนาเนื้อฟัน (RDT)", "คำจำกัดความ & ลักษณะทางคลินิก", "แนวทางการปกป้องโพรงประสาท & วัสดุ"],
     matrix_rows: [
       ["RDT ≥ 2.0 mm (ตื้น - ปานกลาง)", "ผนังเนื้อฟันหนา โอกาสสารเคมีซึมถึง Pulp ต่ำ", "Composite: Adhesive system เลย | Amalgam: Bonding / Varnish (หรือไม่ต้องรองพื้นเลย!)"],
-      ["RDT 0.5–1.5 mm (ลึกปานกลาง)", "เห็นเงาสีเนื้อฟันใกล้โพรงประสาทแต่ยังไม่เห็นสีชมพู", "ใช้ Base/Liner ชนิด RMGIC หรือ GIC ปูพื้น (Amalgam อาจรอง Base เพื่อลดความร้อน/เคมี) ส่วน Composite ใช้ Adhesive ได้หรือ RMGIC เฉพาะจุดลึก"],
-      ["RDT < 0.5 mm (ลึกมาก ใกล้/เห็นเงาชมพู)", "มี Leathery dentin บนเพดาน Pulp ในฟันปกติ/Reversible pulpitis", "ทำ Selective Caries Removal (หยุดกรอตรงกลาง ➔ กรอขอบรอบข้างสะอาด!) รองจุดลึกด้วย Ca(OH)2 / MTA / Biodentine แล้วคลุมด้วย RMGIC ก่อนอุดทับ"],
-      ["Pulp Exposure เล็ก (< 1 mm ปราศจากหนอง)", "ทะลุจุดเข็ม (Pinpoint mechanical exposure หรือ Caries exposure เล็กที่ห้ามเลือดได้)", "Direct Pulp Capping: ล้าง NaOCl ห้ามเลือด ปิดด้วย MTA / Biodentine (ดีกว่า Ca(OH)2 เพราะปิดสนิทกว่าและลด Tunnel defects!)"]
+      ["RDT 0.5–< 2.0 mm (หรือ 0.5–1.5 mm)", "เห็นเงาสีเนื้อฟันใกล้โพรงประสาทแต่ยังไม่เห็นสีชมพู", "ใช้ Base ชนิด RMGIC หรือ GIC ปูพื้น (สำคัญใต้ Amalgam; ส่วน Composite ใช้ Adhesive ได้หรือ RMGIC เฉพาะจุดลึก)"],
+      ["RDT < 0.5 mm (ลึกมาก ใกล้/เห็นเงาชมพู)", "มี Soft/Firm dentin เหนือพัลพ์ในฟันปกติ/Reversible pulpitis", "ทำ 1-Step Selective Removal (ขอบรอบข้างต้อง Hard dentin!) รองจุดลึกด้วย MTA / Biodentine / Ca(OH)2 (แนวทาง NL เก่า) + คลุม RMGIC แล้วบูรณะถาวร (ADA 2023 เสนอ Selective removal เหนือ Stepwise)"],
+      ["Pulp Exposure เล็ก (< 1 mm ปราศจากหนอง)", "ทะลุจุดเข็ม (Mechanical หรือ Caries exposure เล็กที่ห้ามเลือดได้ ≤ 5 นาที)", "Direct Pulp Capping: ล้าง NaOCl ห้ามเลือด ปิดด้วย **MTA / Biodentine (ESE 2019 Gold Standard)** ดีกว่า Ca(OH)2 เพราะปิดสนิทกว่าและลด Tunnel defects!"]
     ],
     pitfalls: [
-      "กรอฟันผุลึกในห้องคลินิกจน Hard dentin สนิทกลางเพดานโพรงประสาทจน Pulp ทะลุ ทั้งที่ไม่มีอาการปวด (Irreversible) — ขัดต่อคำแนะนำ AAE/ESE ล่าสุดที่ให้ทำ Selective Caries Removal!",
+      "กรอฟันผุลึกในฟัน Vital ไม่มีอาการปวดจน Hard dentin กลางเพดานโพรงประสาทจน Pulp ทะลุ (Non-selective removal) หรือเปิดซ้ำรอบ 2 โดยไม่จำเป็น — ขัดต่อคำแนะนำ ADA (2023) & ESE (2019) ที่เน้น 1-Step Selective Removal!",
       "ใช้ Zinc Oxide Eugenol (ZOE) เป็น Base/Liner ใต้การอุด Composite Resin ➔ Eugenol เป็น Phenolic compound ที่ยับยั้ง Polymerization ของ Resin ทำให้วัสดุไม่แข็งตัว"
     ],
-    pearl: "ห้ามใช้ ZOE ใต้ Composite! | RDT < 0.5 mm + ไม่มีอาการ = Selective Removal เหลือ Firm/Leathery ตรงกลาง + ปิดขอบรอบด้านให้สนิท ➔ ปิดด้วย Bioceramic/RMGIC!",
-    reference: "ESE Position Statement on Deep Caries & Sturdevant's Operative Dentistry 7th ed."
+    pearl: "ห้ามใช้ ZOE ใต้ Composite! | Deep Caries + Vital Pulp = ADA (2023) & ESE (2019) แนะนำ 1-Step Selective Removal > Stepwise! | Direct Pulp Cap = MTA / Biodentine!",
+    reference: "ADA Restorative Carious Lesions Guideline (JADA 2023), ESE Position Statement on Deep Caries (2019) & Sturdevant's Operative Dentistry 7th ed."
   },
 
   "Operative-Bleaching-Esthetics": {

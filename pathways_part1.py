@@ -123,7 +123,7 @@ PATHWAYS_PART1: Dict[str, List[Dict[str, Any]]] = {
                     {"condition": "ฟันกรามล่าง (Mandibular Molars)", "outcome": "Buccal cortical plate หนา ➔ ใช้ Cowhorn / รู้ทิศทางโยก Buccal-Lingual + Figure-8", "color": "#38bdf8"},
                 ]),
                 _node(3, "แผลถอนฟันและการหาย (Socket Healing)", "Blood clot (วัน 1) ➔ Granulation tissue (สัปดาห์ 1) ➔ Woven bone (สัปดาห์ 4–6)", "ห้ามบ้วนน้ำแรง/ดูดหลอด 24 ชม. แรก เพื่อป้องกัน Alveolar Osteitis (Dry socket) ที่มักปวดรุนแรงวันที่ 3–5 หลังถอน", "warning"),
-                _node(4, "การห้ามเลือดและคำแนะนำ", "กัดผ้าก๊อซแน่น 30–60 นาที + ตรวจ Sharp bony edge", "กรณีผู้ป่วยทานยาละลายลิ่มเลือด (NOACs/Warfarin) ห้ามหยุดยาเอง ➔ ให้ใช้ Local hemostatic (Gelfoam + Suturing)", "outcome"),
+                _node(4, "ยาละลายลิ่มเลือด & AHA 2021 IE Prophylaxis", "Warfarin INR ≤ 3.5 (<4.0) / Antiplatelets: ไม่หยุดยา + Local hemostasis", "High-risk DOACs (SDCEP 2022): Miss Apixaban/Dabigatran, Delay Rivaroxaban/Edoxaban | AHA 2021 IE: Amox 2g, แพ้ Pen ให้ Cephalexin 2g/Azithro 500mg/Doxy 100mg (**ไม่ใช้ Clindamycin แล้ว!**)", "outcome"),
             ],
         }
     ],
@@ -171,9 +171,9 @@ PATHWAYS_PART1: Dict[str, List[Dict[str, Any]]] = {
             "steps": [
                 _node(1, "ซักประวัติคัดกรองความเสี่ยง", "ประวัติได้ยากลุ่ม Antiresorptive / Antiangiogenic (Bisphosphonates IV/Oral, Denosumab) หรือฉายรังสีศีรษะ-คอ", "ความเสี่ยงสูงสุด: IV Zoledronic acid ในผู้ป่วยมะเร็ง และรังสีรักษา > 6,000 cGy (60 Gy) ในขากรรไกรล่าง", "trigger"),
                 _node(2, "เกณฑ์วินิจฉัย MRONJ (ครบ 3 ข้อ)", "1) กำลัง/เคยได้ยา 2) กระดูกโผล่หรือคลำผ่าน Fistula นาน > 8 สัปดาห์ 3) ไม่เคยฉายรังสีที่ขากรรไกร", "หากเคยฉายรังสีและกระดูกตายจากภาวะ Hypovascular-Hypocellular-Hypoxic จะจัดเป็น Osteoradionecrosis (ORN)", "decision", [
-                    {"condition": "Stage 1–2 MRONJ (กระดูกโผล่ มีหรือไม่มีการติดเชื้อ)", "outcome": "0.12% CHX mouthwash + ยาปฏิชีวนะเมื่อติดเชื้อ + เอาเฉพาะ Sequestrum ที่หลุดลอกออก (Conservative)", "color": "#f59e0b"},
-                    {"condition": "Stage 3 MRONJ (Pathologic fracture / Extraoral fistula)", "outcome": "Surgical resection + Antibiotic + พิจารณาส่งต่อศัลยแพทย์ช่องปากและแม็กซิลโลเฟเชียล", "color": "#ef4444"},
-                    {"condition": "จำเป็นต้องถอนฟันก่อนเริ่มฉายรังสี/ยา IV", "outcome": "ทำฟันให้เสร็จก่อนเริ่มยา/ฉายรังสี อย่างน้อย 14–21 วัน และให้ RCT แทนการถอนเมื่อเริ่มยาแล้ว", "color": "#10b981"},
+                    {"condition": "Stage 1–3 MRONJ ที่รักษาประคับประคองไม่ดีขึ้น (AAOMS 2022)", "outcome": "0.12% CHX + ยาปฏิชีวนะเมื่อติดเชื้อ + พิจารณา Surgical Sequestrectomy / Resection ได้ตั้งแต่ระยะแรก–ท้าย", "color": "#f59e0b"},
+                    {"condition": "Denosumab (ทุก 6 เดือน เช่น ม.ค./ก.ค.) vs Bisphosphonates", "outcome": "Denosumab ถอนช่วงเดือน 4–5 (พ.ค.) ก่อนฉีดถัดไป 6–8 wk | Bisphosphonate drug holiday หลักฐานปี 2022 ยังไม่ชัด (Oral < 4 ปีถอนได้)", "color": "#ef4444"},
+                    {"condition": "จำเป็นต้องถอนฟันก่อนเริ่มฉายรังสี > 60 Gy / ยา IV", "outcome": "ทำฟันให้เสร็จก่อนเริ่มยา/ฉายรังสี อย่างน้อย 14–21 วัน และให้ RCT แทนการถอนเมื่อเริ่มยาแล้ว", "color": "#10b981"},
                 ]),
             ],
         }
@@ -187,12 +187,12 @@ PATHWAYS_PART1: Dict[str, List[Dict[str, Any]]] = {
             "reference": "Peterson's Principles of Oral and Maxillofacial Surgery",
             "steps": [
                 _node(1, "Primary Survey (ABCDE)", "ประเมิน Airway เสมอ (ระวัง Bilateral Mandibular / Parasymphysis fracture ที่ลิ้นตกอุดทางเดินหายใจ)", "ในผู้ป่วย Trauma ให้ดึงลิ้น/Jaw thrust โดยระวัง Cervical spine injury เสมอ", "warning"),
-                _node(2, "จำแนกแนวกระดูกหัก (Fracture Patterns)", "ตรวจ Occlusion (Anterior open bite ใน Bilateral condyle fracture), Panda eyes, CSF rhinorrhea", "คลำ Step deformity ขอบเบ้าตา/ขากรรไกร และตรวจ Cranial nerves (โดยเฉพาะ Infraorbital V2, IAN V3)", "decision", [
+                _node(2, "จำแนกแนวกระดูกหัก & Signs จำเพาะ", "Coleman's sign (Sublingual hematoma ในช่องปาก = Mandibular fracture) | Anterior open bite = Bilateral condyle", "ถ่ายภาพรังสี: PA mandible + Reverse Towne (Condyle) + Water's view (Midface) และตรวจ Cranial nerves (V2, IAN V3)", "decision", [
                     {"condition": "Le Fort I (Horizontal Maxillary)", "outcome": "แยกส่วน Alveolus & Hard palate เหนือปลายรากฟัน (Floating palate)", "color": "#38bdf8"},
                     {"condition": "Le Fort II (Pyramidal)", "outcome": "ผ่าน Nasal bridge ➔ Medial orbital floor ➔ Infraorbital rim ➔ Pterygoid plates (Step ขอบเบ้าตาล่าง)", "color": "#f59e0b"},
                     {"condition": "Le Fort III (Craniofacial Disjunction)", "outcome": "แยกใบหน้าออกจากฐานกะโหลก (ผ่าน Frontonasal + Zygomaticofrontal sutures + เสี่ยง CSF rhinorrhea)", "color": "#ef4444"},
                 ]),
-                _node(3, "การตรึงกระดูก (Fixation Principles)", "Closed Reduction (IMF/Arch bars) vs Open Reduction Internal Fixation (ORIF Plates)", "เป้าหมายสูงสุดของการรักษาคือการคืน Occlusion ที่ถูกต้องให้ผู้ป่วย", "outcome"),
+                _node(3, "การตรึงกระดูก, Asthma & IADT Trauma Splint", "Unfavorable fracture ในผู้ป่วย Asthma ➔ ORIF without MMF (ห้ามมัดขากรรไกรติดกัน!)", "เป้าหมายสูงสุดคือคืน Occlusion (Condylar hyperplasia ที่โตหยุดแล้วใช้ Orthognathic surgery + จัดฟัน) | IADT 2020: Subluxation 2 wk / Lateral luxation 4 wk", "outcome"),
             ],
         }
     ],
@@ -355,11 +355,11 @@ PATHWAYS_PART1: Dict[str, List[Dict[str, Any]]] = {
             "title": "Mechanical Retention, High-Copper Amalgam & Mercury Safety Pathway",
             "pathway_type": "procedure",
             "subtitle": "90° Cavosurface Margin + Resistance/Retention Form ➔ กําจัด Gamma-2 Phase & การจัดการปรอท",
-            "reference": "Sturdevant's Operative Dentistry & มติ Minamata / กระทรวงสาธารณสุขไทย",
+            "reference": "Sturdevant's Operative Dentistry & มติ Minamata (COP-5 2023 / Phase-out 2034) / กระทรวงสาธารณสุขไทย",
             "steps": [
-                _node(1, "หลักการเตรียมโพรงฟัน (Black's Principles for Amalgam)", "ความลึกอย่างน้อย 1.5–2 mm + ผนังด้าน Occlusal ลู่เข้าหากัน (Convergent) + 90° Butt-joint Margin", "อมัลกัมทนแรงอัดสูง (Compressive) แต่เปราะเมื่อรับแรงดึง/เฉือน จึงต้องทำ Isthmus กว้าง ~1/4 ของระยะ Intercuspal และ Internal line angles มนกลม", "action"),
+                _node(1, "หลักการเตรียมโพรงฟัน (Black's Principles & Slot Prep)", "ความลึก ≥ 1.5–2 mm + 90° Butt-joint Margin + ลบมุม Axiopulpal line angle (Slot Class II ใช้ Retentive grooves ที่ Axiobuccal/Axiolingual)", "แต่งขณะนิ่มใช้ Discoid-Cleoid carver; แต่งขอบ Occlusal incline planes หลังเซ็ตตัว (≥ 24 ชม.) ใช้ Round multi-fluted finishing bur (ไม่ใช้ Abrasive disc)", "action"),
                 _node(2, "ปฏิกิริยาเซ็ตตัว & คุณสมบัติอัลลอยด์", "Low-copper มี Gamma-2 (Sn7-8Hg) ที่ผุกร่อนง่าย ➔ High-copper Amalgam (>12% Cu) เปลี่ยนเป็น Eta-prime (Cu6Sn5)", "High-copper ช่วยกำจัด Gamma-2 phase ทำให้ลด Creep, ลด Marginal ditching และแข็งแรงสูงขึ้นมาก", "mechanism"),
-                _node(3, "ข้อบ่งชี้ทางคลินิก & ความปลอดภัยปรอท", "ห้ามใช้ Zinc-containing amalgam หากปนเปื้อนความชื้น ➔ เกิด Delayed Expansion (H2 gas) หลังอุด 3–5 วัน", "การเก็บเศษ Amalgam ใช้ภาชนะปิดสนิทใต้น้ำยา X-ray fixer หรือน้ำ และตามอนุสัญญามินามาตะในไทย: เลี่ยงการใช้อมัลกัมในเด็กเล็ก/หญิงตั้งครรภ์เมื่อมีทางเลือกอื่น", "warning"),
+                _node(3, "ความปลอดภัยปรอท & อนุสัญญามินามาตะ (2023–2034)", "ห้ามใช้ Zinc-containing amalgam หากปนเปื้อนความชื้น ➔ เกิด Delayed Expansion (H2 gas) หลังอุด 3–5 วัน", "ใช้ภาชนะปิดสนิทใต้น้ำยา X-ray fixer เก็บเศษ; ตาม Minamata (COP-5 2023 & กรมอนามัย): เลี่ยงในเด็ก < 15 ปี, หญิงตั้งครรภ์/ให้นมบุตร และกำหนด Global Phase-out ปี 2034", "warning"),
             ],
         }
     ],
@@ -417,14 +417,14 @@ PATHWAYS_PART1: Dict[str, List[Dict[str, Any]]] = {
             "title": "Complete Denture Jaw Relations & Bilateral Balanced Occlusion Pathway",
             "pathway_type": "procedure",
             "subtitle": "VDR − Freeway Space (2–4 mm) = VDO ➔ Centric Relation (CR) & Bilateral Balanced Articulation",
-            "reference": "Zarb's Prosthodontic Treatment for Edentulous Patients 13th ed.",
+            "reference": "Zarb's Prosthodontic Treatment for Edentulous Patients 14th ed. / GPT-10 (2023)",
             "steps": [
-                _node(1, "กำหนดมิติแนวดิ่ง (Vertical Dimension)", "วัด VDR (ขณะพักไม่มีฟันสบกัน) แล้วหักออกด้วย Freeway Space (Interocclusal distance) 2–4 mm = VDO", "เช็กด้วย Silvermann's Closest Speaking Space (ออกเสียง 'S' ห้ามแท่นขี้ผึ้งชนกัน เหลือช่อง 1–2 mm) และสัดส่วนใบหน้า", "decision", [
-                    {"condition": "VDO สูงเกินไป (Excessive VDO)", "outcome": "ปวดกล้ามเนื้อ, กัดฟันดัง, กระดูกสันเหงือกละลายเร็ว, ไม่มี Freeway space", "color": "#ef4444"},
-                    {"condition": "VDO ต่ำเกินไป (Insufficient VDO)", "outcome": "มุมปากตก/Angular cheilitis, หน้าดูแก่, ประสิทธิภาพเคี้ยวลดลง", "color": "#f59e0b"},
+                _node(1, "กำหนดมิติแนวดิ่งและระนาบสบ (Vertical Dimension & Occlusal Plane)", "ปรับระนาบสบฟันบนขนาน Interpupillary line (ด้านหน้า) และ Ala-tragus / Camper's line (ด้านข้างด้วย Fox plane); วัด VDR − Freeway Space 2–4 mm = VDO", "เช็กด้วย Silverman's Closest Speaking Space (ออกเสียง 'S' เหลือช่อง 1–2 mm) และเสียง 'F/V' ปลายฟันหน้าบนแตะ Wet-dry line ริมฝีปากล่าง", "decision", [
+                    {"condition": "VDO สูงเกินไป (Excessive VDO)", "outcome": "ปวดเมื่อยกล้ามเนื้อบดเคี้ยว, ฟันกระทบกันเสียงดังคลิกๆ (Clicking teeth), ไม่มี Freeway space", "color": "#ef4444"},
+                    {"condition": "VDO ต่ำเกินไป (Insufficient VDO)", "outcome": "มุมปากตก/Angular cheilitis, หน้าดูแก่คางยื่นใกล้จมูก, ประสิทธิภาพเคี้ยวลดลง", "color": "#f59e0b"},
                 ]),
-                _node(2, "บันทึกความสัมพันธ์แนวนอน (Centric Relation)", "CR = ตำแหน่ง Condyle อยู่สูงสุดและหน้าสุดชิด Posterior slope ของ Articular eminence (Repeatable bone-to-bone)", "ใช้เทคนิค Bimanual manipulation หรือให้ผู้ป่วยกลืนน้ำลาย/แตะปลายลิ้นเพดานด้านหลัง เพื่อลดแรงเบี่ยงเบนของกล้ามเนื้อ", "action"),
-                _node(3, "ระบบสบฟันเทียม (Complete Denture Occlusion)", "Bilateral Balanced Occlusion: เมื่อเยื้องคางซ้าย-ขวาหรือยื่นคาง ฟันทั้งสองข้างต้องสัมผัสประคองฐานฟันเทียมพร้อมกัน", "ใช้กฎ Hanau's Quint 5 ปัจจัย; หากสันเหงือกล่างแบนราบมาก พิจารณา Lingualized occlusion หรือ Non-anatomic (Monoplane) teeth เพื่อลดแรงเยื้องด้านข้าง", "outcome"),
+                _node(2, "บันทึกความสัมพันธ์แนวนอน (Centric Relation)", "CR (GPT-10) = ตำแหน่งความสัมพันธ์ขากรรไกรที่หัวต่อ Condyle อยู่ในตำแหน่งหน้าสุดและบนสุด (Anterosuperior) แนบกับ Posterior slope ของ Articular eminence", "ใช้เทคนิค Bimanual manipulation หรือให้ผู้ป่วยกลืนน้ำลาย/แตะปลายลิ้นเพดานด้านหลัง เพื่อลดแรงเบี่ยงเบนของกล้ามเนื้อ", "action"),
+                _node(3, "ระบบสบฟันเทียม (Complete Denture Occlusion)", "Bilateral Balanced Occlusion: เมื่อเยื้องคางซ้าย-ขวาหรือยื่นคาง ฟันทั้งสองข้างต้องสัมผัสประคองฐานฟันเทียมพร้อมกันตาม Hanau's Quint", "หากสันเหงือกล่างละลายมากหรือต้องการลดแรงด้านข้างแต่คงความงาม: ใช้ Lingualized occlusion (ฟันบนมีปุ่ม Anatomic สบกับฟันล่างไร้ปุ่ม Zero-degree); หากบันทึก CR ไม่เที่ยงตรง/สันแบนราบมาก: ใช้ Monoplane (0° บน-ล่าง)", "outcome"),
             ],
         }
     ],
@@ -434,11 +434,11 @@ PATHWAYS_PART1: Dict[str, List[Dict[str, Any]]] = {
             "title": "Denture Bearing Anatomy & Border Molding Functional Pathway",
             "pathway_type": "mechanism",
             "subtitle": "Primary Stress-Bearing Areas vs Relief Areas ➔ Posterior Palatal Seal & Flanges",
-            "reference": "Zarb's Prosthodontic Treatment for Edentulous Patients 13th ed.",
+            "reference": "Zarb's Prosthodontic Treatment for Edentulous Patients 14th ed. / ACP Complete Denture Guidelines",
             "steps": [
-                _node(1, "แยกพื้นที่รับแรง (Stress-Bearing vs Relief)", "บน: Horizontal plate ของ Hard palate + สันเหงือกเป็นตัวรับแรงหลัก; หลบ Incisive papilla & Midpalatine raphe", "ล่าง: Buccal shelf (รับแรงหลัก — เป็น Cortical bone วางตัวตั้งฉากกับแรงเคี้ยว!) + สันเหงือก; หลบ Mylohyoid ridge & Mental foramen (เมื่อสันร่น)", "mechanism"),
-                _node(2, "การแต่งขอบถาด (Border Molding & Distobuccal Notch)", "Distobuccal flange ของฟันเทียมบน: สร้างความหนาตาม Coronoid process เมื่ออ้าปาก-ขยับคางซ้ายขวา", "Distobuccal flange ของฟันเทียมล่าง: Masseter muscle ออกแรงดันขอบเวลาเคี้ยว (Masseteric notch); ด้านหลังสุดคลุม Retromolar pad 2/3 เพื่อ Peripheral seal", "action"),
-                _node(3, "Posterior Palatal Seal (Ah-line / Butterfly Area)", "อยู่บริเวณรอยต่อ Hard-Soft Palate (ระหว่าง Fovea palatinae กับ Hamular notches)", "หากทำลึก/ยาวเกินจะกดรัดกล้ามเนื้อและคลื่นไส้; หากสั้น/ตื้นเกินฟันเทียมบนจะหลุดเวลากัดอาหารหรือออกเสียง", "decision", [
+                _node(1, "แยกพื้นที่รับแรง (Stress-Bearing vs Relief)", "บน: Firm Residual Ridge Crest + Horizontal Hard Palate เป็น Primary stress-bearing; กรอหลบ (Relief) Incisive papilla, Median palatal raphe & Torus palatinus", "ล่าง: Buccal shelf (รับแรงหลัก — Cortical bone ตั้งฉากแรงเคี้ยว & Buccinator ทอดขนาน) + Retromolar pad (Zarb Ch. 11); กรอหลบ Crest of mandibular ridge ที่คมบาง, Mylohyoid ridge & Mental foramen", "mechanism"),
+                _node(2, "การแต่งขอบถาด (Border Molding & Distobuccal Notch)", "Distobuccal flange ของฟันเทียมบน: สร้างความหนาตาม Coronoid process เมื่ออ้าปาก-ขยับคางซ้ายขวา", "Distobuccal flange ของฟันเทียมล่าง: Masseter muscle ออกแรงดันขอบเวลาเคี้ยว (Masseteric notch); ด้านหลังสุดคลุม Retromolar pad เพื่อ Peripheral seal", "action"),
+                _node(3, "Posterior Palatal Seal (Ah-line / Butterfly Area)", "อยู่บริเวณรอยต่อเพดานอ่อนที่ขยับกับไม่ขยับเมื่อออกเสียง 'อา' (Vibrating line ผ่าน/หน้าต่อ Fovea palatinae 1–2 mm ถึง Hamular notches)", "หากทำลึก/ยาวเกินไปบนเพดานอ่อนที่ขยับหรือ Pterygomandibular raphe จะกดเจ็บ คลื่นไส้ และดีดฟันเทียมหลุดเวลาอ้าปาก; หากสั้นเกินไปฟันเทียมบนจะหลุดเวลากัดอาหารหน้า", "decision", [
                     {"condition": "เพดานอ่อนมุมชันมาก (House Class III)", "outcome": "โซนทำ Seal แคบมาก (~1–2 mm) ต้องตรวจขอบให้แม่นยำเป็นพิเศษ", "color": "#f59e0b"},
                     {"condition": "เกิดแผลกดทับด้านข้างหรือขอบยาวเวลาพูด", "outcome": "ใช้ Pressure Indicating Paste (PIP) ป้ายเช็กจุดกดก่อนกรอแต่ง ไม่กรอสุ่ม", "color": "#10b981"},
                 ]),
@@ -451,14 +451,14 @@ PATHWAYS_PART1: Dict[str, List[Dict[str, Any]]] = {
             "title": "Kennedy Classification, Applegate's Rules & Dental Surveying Pathway",
             "pathway_type": "procedure",
             "subtitle": "จำแนก Class I–IV ตามช่องว่างหลังสุด ➔ วิเคราะห์ 4 ปัจจัยบนเครื่อง Surveyor (Path of Insertion)",
-            "reference": "McCracken's Removable Partial Prosthodontics 13th ed.",
+            "reference": "McCracken's Removable Partial Prosthodontics 14th ed.",
             "steps": [
-                _node(1, "กฎจำแนก Kennedy & Applegate", "1) จำแนกหลังถอนฟันเสร็จแล้ว 2) ช่องว่างที่อยู่หลังสุด (Most posterior edentulous area) เป็นตัวกำหนด Class เสมอ", "Class I (ไม่มีฟันท้าย 2 ข้าง), Class II (ไม่มีฟันท้าย 1 ข้าง), Class III (มีฟันหลักหัว-ท้าย), Class IV (ช่องว่างข้าม Midline อยู่หน้าสุด — ไม่มี Modification!)", "decision", [
-                    {"condition": "ซี่ 8 ไม่มีและไม่ใส่ทดแทน", "outcome": "ไม่นับซี่ 8 ในการจำแนก Class; แต่ซี่ 7 ต้องพิจารณาว่าควรใส่แทนหรือไม่ตามการสบ", "color": "#38bdf8"},
-                    {"condition": "มีช่องว่างเพิ่มอีก 2 จุดนอกเหนือจากพื้นที่หลัก", "outcome": "นับเป็น Modification 2 (เช่น Kennedy Class II Mod 2)", "color": "#10b981"},
+                _node(1, "กฎจำแนก Kennedy & Applegate", "1) จำแนกหลังถอนฟันเสร็จแล้ว 2) ช่องว่างที่อยู่หลังสุด (Most posterior edentulous area) เป็นตัวกำหนด Class เสมอ", "Class I (ไม่มีฟันท้าย 2 ข้าง), Class II (ไม่มีฟันท้าย 1 ข้าง), Class III (มีฟันหลักหัว-ท้าย), Class IV (ช่องว่างเดี่ยวข้าม Midline อยู่หน้าสุด — ไม่มี Modification!)", "decision", [
+                    {"condition": "ซี่ 8 ไม่มีและไม่ใส่ทดแทน vs ซี่ 8 ยังอยู่และใช้เป็น Abutment", "outcome": "ถ้าไม่มีและไม่ทดแทนไม่ต้องนำมาคิด; แต่ถ้าซี่ 8 ยังอยู่และใช้เป็นฟันหลักต้องนำมาคิดเป็นขอบเขตช่องว่างเสมอ", "color": "#38bdf8"},
+                    {"condition": "มีช่องว่างเพิ่มอีก 2 จุดนอกเหนือจากพื้นที่หลัก", "outcome": "นับเป็นจำนวนช่องว่างเรียกเป็น Modification 2 (ไม่ขึ้นกับจำนวนซี่ฟันที่หายในช่องว่างนั้น)", "color": "#10b981"},
                 ]),
-                _node(2, "ลำดับการใช้งาน Dental Surveyor", "Tilt Cast เพื่อหาสมดุล 4 อย่าง: 1) Guiding planes 2) Retentive areas 3) Interference 4) Esthetics", "ใช้ Carbon marker วาด Survey line (Height of contour) และ Undercut gauge (0.01\", 0.02\", 0.03\") กำหนดจุดสิ้นสุดของ Retentive clasp arm", "action"),
-                _node(3, "สรุปทิศทางปลายตะขอ", "ปลาย Retentive arm (1/3 ปลายที่ยืดหยุ่น) เท่านั้นที่อยู่ใต้ Survey line", "Shoulder และ Reciprocal arm ต้องอยู่บน/เหนือ Survey line เพื่อโอบประคอง (Bracing) ตลอดเวลา", "outcome"),
+                _node(2, "ลำดับการใช้งาน Dental Surveyor", "Tilt Cast เพื่อหาสมดุล 4 อย่าง: 1) Guiding planes 2) Retentive areas 3) Interference 4) Esthetics", "ใช้ Carbon marker วาด Survey line (Height of contour) และ Undercut gauge (0.01\" สำหรับ Cast Co-Cr / I-bar, 0.02\" สำหรับ Wrought wire) กำหนดจุดสิ้นสุดของ Retentive clasp arm", "action"),
+                _node(3, "สรุปทิศทางปลายตะขอ", "ปลาย Retentive arm (1/3 ปลายที่ยืดหยุ่น) เท่านั้นที่อยู่ใต้ Survey line", "Shoulder และ Reciprocal arm ต้องอยู่บน/เหนือ Survey line เพื่อโอบประคอง (Bracing) ก่อนหรือพร้อมกับที่ Retentive tip ผ่านส่วนป่องสุดของฟัน", "outcome"),
             ],
         }
     ],
@@ -467,16 +467,16 @@ PATHWAYS_PART1: Dict[str, List[Dict[str, Any]]] = {
             "id": "pros-fixed-prep-principles",
             "title": "Biomechanics of Tooth Preparation Pathway: Taper, Reduction & Margin Design",
             "pathway_type": "procedure",
-            "subtitle": "Total Occlusal Convergence (6–10°), Retention vs Resistance Form & Margin Selection",
-            "reference": "Shillingburg: Fundamentals of Fixed Prosthodontics 4th ed.",
+            "subtitle": "Total Occlusal Convergence (6–12°), Retention vs Resistance Form, Margin Selection & STA (≥ 3 mm)",
+            "reference": "Rosenstiel's Contemporary Fixed Prosthodontics 6th ed. (2022) / Shillingburg 4th ed.",
             "steps": [
-                _node(1, "ความลู่เอียงและความสูง (Retention & Resistance Form)", "Taper / Total Occlusal Convergence (TOC) อุดมคติ 6°–10° (ทำจริงในคลินิก 10°–20°)", "ฟันกรอเตี้ยหรืออ้วนกว้างเสี่ยงหลุดเวลาเคี้ยว (Resistance form เสีย) ➔ แก้โดยเติม Proximal grooves/boxes ลดการหมุนหลุด (Arc of displacement)", "mechanism"),
-                _node(2, "ความหนาที่ต้องกรอลด (Tooth Reduction by Material)", "เลือกชนิดครอบฟันให้เหมาะกับแรงสบและพื้นที่กรอฟัน", "การกรอไม่พอทำให้วัสดุบางแตกหรือได้ Overcontoured crown ก่อให้เกิดเหงือกอักเสบ", "decision", [
-                    {"condition": "Full Metal Crown (Gold)", "outcome": "Occlusal Functional cusp 1.5 mm / Non-functional 1.0 mm + Chamfer 0.3–0.5 mm", "color": "#f59e0b"},
-                    {"condition": "PFM (Porcelain-Fused-to-Metal)", "outcome": "Labial 1.5 mm (เพื่อสีพอร์ซเลน+โลหะ), Lingual 0.7–1.0 mm + Shoulder/Heavy Chamfer 1.0–1.2 mm ด้านหน้า", "color": "#38bdf8"},
-                    {"condition": "Monolithic Zirconia vs Lithium Disilicate (E.max)", "outcome": "Monolithic Zirconia กรอน้อยได้ ~1.0 mm (Chamfer); Lithium Disilicate ต้องกรอ Occlusal 1.5–2.0 mm + Shoulder/Heavy Chamfer 1.0 mm มนกลม", "color": "#10b981"},
+                _node(1, "ความลู่เอียงและความสูง (Retention & Resistance Form)", "Taper / Total Occlusal Convergence (TOC) อุดมคติ 6° (ยอมรับในคลินิก 10°–12°); อัตราส่วนความสูงต่อฐาน (OC/MD ratio) ≥ 0.4", "ฟันกรอเตี้ยหรืออ้วนกว้างเสี่ยงหมุนหลุดเวลาเคี้ยว (Resistance form เสีย) ➔ แก้โดยทำผายน้อยที่สุดและเติม Proximal / Buccal-Lingual grooves หรือ Boxes บล็อกรัศมีการหมุน", "mechanism"),
+                _node(2, "ความหนาที่ต้องกรอลด (Tooth Reduction by Material)", "เลือกชนิดครอบฟันให้เหมาะกับแรงสบและพื้นที่กรอฟัน พร้อมทำ Functional cusp bevel 45°", "การกรอไม่พอทำให้วัสดุบางแตก จุดสบสูง หรือได้ Overcontoured crown ก่อให้เกิดเหงือกอักเสบ", "decision", [
+                    {"condition": "Full Metal Crown (Gold / Noble Alloy)", "outcome": "Occlusal Functional cusp 1.5 mm / Non-functional 1.0 mm + Chamfer 0.3–0.5 mm", "color": "#f59e0b"},
+                    {"condition": "PFM (Porcelain-Fused-to-Metal)", "outcome": "Labial 1.2–1.5 mm (เพื่อสีพอร์ซเลน+โลหะ), Lingual 0.7–1.0 mm + Shoulder/Heavy Chamfer 1.0–1.2 mm ด้านหน้า", "color": "#38bdf8"},
+                    {"condition": "Monolithic Zirconia vs Lithium Disilicate (e.max)", "outcome": "Monolithic Zirconia กรอน้อยได้ ~0.8–1.0 mm (Chamfer); Lithium Disilicate ต้องกรอ Occlusal 1.5–2.0 mm + Shoulder/Heavy Chamfer 1.0 mm มนกลม", "color": "#10b981"},
                 ]),
-                _node(3, "ตำแหน่งขอบครอบฟัน (Finish Line Placement)", "Supra-gingival ดีที่สุดต่อปริทันต์; ถ้าต้องซ่อนขอบเพื่อความสวยงามหรือ Ferrule ให้ลง Subgingival ≤ 0.5–1.0 mm และไม่รุกล้ำ Biologic width (≥ 2 mm)", "outcome"),
+                _node(3, "ตำแหน่งขอบครอบฟัน & Supracrestal Tissue Attachment (STA)", "Supra-gingival ดีที่สุดต่อปริทันต์; ถ้าต้องลง Subgingival (≤ 0.5–1.0 mm) ต้องไม่รุกล้ำ Supracrestal Tissue Attachment (STA; เดิมเรียก Biologic width ≈ 2 mm attachment + 1 mm sulcus = ขอบครอบฟันต้องห่างยอดกระดูกเบ้าฟัน ≥ 3.0 mm)", "outcome"),
             ],
         }
     ],
