@@ -793,7 +793,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
                 <Scale size={12} /> HIGH-YIELD PASS CRITICAL
               </span>
               <span className="badge" style={{ background: 'rgba(16,185,129,0.14)', color: 'var(--ink-emerald)', border: '1px solid rgba(16,185,129,0.35)' }}>
-                133 ข้อครอบคลุม 100%
+                153 ข้อครอบคลุม 100%
               </span>
             </div>
             <h1 className="gradient-text" style={{ fontSize: '1.85rem', marginBottom: '0.4rem' }}>
@@ -814,7 +814,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
               textAlign: 'center',
               minWidth: '110px'
             }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary-light)' }}>133</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary-light)' }}>153</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>ข้อสอบจริง</div>
             </div>
             <div style={{ 
@@ -863,7 +863,7 @@ export default function LawStudyHub({ onBack, onStartExam }) {
           onClick={() => setActiveTab('exams')}
         >
           <Target size={15} />
-          <span>คลังข้อสอบกฎหมาย (133 ข้อ)</span>
+          <span>คลังข้อสอบกฎหมาย (153 ข้อ)</span>
         </button>
       </div>
 
@@ -1507,16 +1507,16 @@ export default function LawStudyHub({ onBack, onStartExam }) {
       )}
 
       {/* ══════════════════════════════════════════════════════
-          TAB 4: DENTAL LAW EXAM VAULT (133 QUESTIONS)
+          TAB 4: DENTAL LAW EXAM VAULT (153 QUESTIONS)
       ══════════════════════════════════════════════════════ */}
       {activeTab === 'exams' && (
         <div className="animate-fade-in">
           <div style={{ marginBottom: '1.25rem' }}>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.4rem' }}>
-              คลังข้อสอบกฎหมายและจรรยาบรรณจริง ศ.ป.ท. (133 ข้อ · แยกออกจากชุด Mock)
+              คลังข้อสอบกฎหมายและจรรยาบรรณจริง ศ.ป.ท. (153 ข้อ · แยกออกจากชุด Mock)
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-              รวมเฉพาะข้อสอบจริง พ.ศ. 2565–2569 (ไม่รวม DSAT Mock 90 ข้อ และ Mock สร้างเสริม 60 ข้อ ซึ่งแยกไว้ในแท็บสนามสอบจำลอง)
+              รวมเฉพาะข้อสอบจริง พ.ศ. 2563–2569 (ไม่รวม DSAT Mock 90 ข้อ และ Mock สร้างเสริม 60 ข้อ ซึ่งแยกไว้ในแท็บสนามสอบจำลอง)
             </p>
           </div>
 
@@ -1528,17 +1528,17 @@ export default function LawStudyHub({ onBack, onStartExam }) {
                 All-in-One Master Exam
               </div>
               <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.4rem' }}>
-                ทำข้อสอบกฎหมายทั้งหมด (133 ข้อ)
+                ทำข้อสอบกฎหมายทั้งหมด (153 ข้อ)
               </h4>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-sub)', marginBottom: '1rem', lineHeight: 1.5 }}>
                 รวบรวมข้อสอบกฎหมายและจรรยาบรรณครบทุกปี เหมาะสำหรับทดสอบความแม่นยำขั้นสูงสุด
               </p>
               <button
                 className="btn btn-primary"
-                onClick={() => onStartExam({ category: 'กฎหมายและจรรยาบรรณ', mode: 'practice', count: 133 })}
+                onClick={() => onStartExam({ category: 'กฎหมายและจรรยาบรรณ', mode: 'practice', count: 153 })}
                 style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.4rem' }}
               >
-                <Play size={15} /> เริ่มทำทั้งหมด (133 ข้อ)
+                <Play size={15} /> เริ่มทำทั้งหมด (153 ข้อ)
               </button>
             </div>
 
