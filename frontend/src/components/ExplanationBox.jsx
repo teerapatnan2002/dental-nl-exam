@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   Lightbulb, AlertTriangle, BookOpen, Sparkles,
   CheckCircle2, XCircle, Eye, EyeOff, Target, Layers, GitBranch,
@@ -248,6 +248,7 @@ export default function ExplanationBox({
   onPracticeTopic = null,
 }) {
   const [studyModalGuideId, setStudyModalGuideId] = useState(null);
+  const [studyModalTab, setStudyModalTab] = useState('synthesized');
   const [selfTestMask, setSelfTestMask] = useState(false);
   const [showAllChoices, setShowAllChoices] = useState(false);
   const [principleViewMode, setPrincipleViewMode] = useState('pathway'); // 'pathway' | 'text'
@@ -255,18 +256,19 @@ export default function ExplanationBox({
   const [topicPathways, setTopicPathways] = useState(null);
   const [loadingTopicPathway, setLoadingTopicPathway] = useState(false);
 
-  let parsed = null;
-  if (explanation) {
-    if (typeof explanation === 'object') {
-      parsed = explanation;
-    } else {
-      try {
-        parsed = JSON.parse(explanation);
-      } catch (e) {
-        // plain text fallback
-      }
+  const parsed = useMemo(() => {
+    if (!explanation) return null;
+    if (typeof explanation === 'object') return explanation;
+    try {
+      return JSON.parse(explanation);
+    } catch {
+      return null;
     }
-  }
+  }, [explanation]);
+
+  const handleCloseStudyModal = useCallback(() => {
+    setStudyModalGuideId(null);
+  }, []);
 
   // Find matching clinical masterclass study guide or exact DB must_know_topic
   const matchingGuide = findGuideForQuestion(question || parsed);
@@ -300,6 +302,15 @@ export default function ExplanationBox({
   );
 
   const coreSteps = useMemo(() => splitReadableSteps(core_principle), [core_principle]);
+
+  const modalQuestion = useMemo(() => {
+    if (!question && !explanation) return null;
+    return {
+      ...(question || {}),
+      explanation: question?.explanation || explanation,
+      correct_answer: question?.correct_answer || parsed?.correct_answer || correctAnswer || '',
+    };
+  }, [question, explanation, parsed, correctAnswer]);
 
   const questionPathway = useMemo(() => {
     if (!core_principle && !key_takeaway) return null;
@@ -380,6 +391,7 @@ export default function ExplanationBox({
               className="expl-study-btn"
               onClick={(e) => {
                 e.stopPropagation();
+                setStudyModalTab('synthesized');
                 setStudyModalGuideId(targetTopicId);
               }}
             >
@@ -399,8 +411,11 @@ export default function ExplanationBox({
           <ClinicalStudyHub
             isModal={true}
             initialTopicId={studyModalGuideId}
+            initialClassroomTab={studyModalTab}
+            initialQuestion={modalQuestion}
+            initialQuestionId={question?.id || null}
             onStartExam={onPracticeTopic}
-            onClose={() => setStudyModalGuideId(null)}
+            onClose={handleCloseStudyModal}
           />
         )}
       </div>
@@ -475,6 +490,7 @@ export default function ExplanationBox({
             className="expl-study-btn"
             onClick={(e) => {
               e.stopPropagation();
+              setStudyModalTab('synthesized');
               setStudyModalGuideId(targetTopicId);
             }}
             title="คลิกเพื่อเปิดห้องเรียน Textbook & Evidence เจาะลึกหัวข้อนี้"
@@ -827,6 +843,7 @@ export default function ExplanationBox({
               className="expl-study-btn"
               onClick={(e) => {
                 e.stopPropagation();
+                setStudyModalTab('synthesized');
                 setStudyModalGuideId(targetTopicId);
               }}
             >
@@ -851,8 +868,11 @@ export default function ExplanationBox({
         <ClinicalStudyHub
           isModal={true}
           initialTopicId={studyModalGuideId}
+          initialClassroomTab={studyModalTab}
+          initialQuestion={modalQuestion}
+          initialQuestionId={question?.id || null}
           onStartExam={onPracticeTopic}
-          onClose={() => setStudyModalGuideId(null)}
+          onClose={handleCloseStudyModal}
         />
       )}
 

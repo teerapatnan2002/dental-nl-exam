@@ -3502,29 +3502,45 @@ textarea:focus-visible {
 }
 
 .clinical-study-modal-panel {
-  animation: clinicalModalOpacity 0.2s ease-out;
-  height: min(92vh, 920px) !important;
-  height: min(92dvh, 920px) !important;
-  max-height: 92vh !important;
-  max-height: 92dvh !important;
+  width: min(1180px, calc(100vw - 1.5rem)) !important;
+  max-width: calc(100vw - 1.5rem) !important;
+  height: min(88dvh, 860px) !important;
+  max-height: calc(100dvh - 1.5rem) !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 .clinical-study-modal-body {
   flex: 1 1 0% !important;
   min-height: 0 !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
+  backface-visibility: hidden;
+  will-change: scroll-position;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   touch-action: pan-y;
+}
+
+.clinical-study-grid,
+.clinical-classroom-panel,
+.clinical-sidebar-panel,
+.specialty-chapter-nav-bar {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 @media (min-width: 961px) {
   .clinical-study-modal-panel .clinical-sidebar-panel {
     position: sticky;
     top: 0;
-    max-height: calc(92vh - 96px);
-    max-height: calc(92dvh - 96px);
+    max-height: calc(88dvh - 96px);
     overflow-y: auto !important;
   }
 }
@@ -3662,6 +3678,18 @@ textarea:focus-visible {
 
   .responsive-2col {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .clinical-study-modal-panel {
+    width: calc(100vw - 1rem) !important;
+    max-width: calc(100vw - 1rem) !important;
+    max-height: calc(100dvh - 1rem) !important;
+  }
+
+  .clinical-classroom-panel {
+    padding: 0.9rem 0.95rem 1.5rem !important;
   }
 }
 

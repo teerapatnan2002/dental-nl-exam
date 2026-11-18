@@ -163,6 +163,8 @@ export default function ClinicalStudyHub({
   initialTopicId = null,
   initialClassroomTab = null,
   initialHubMode = null,
+  initialQuestion = null,
+  initialQuestionId = null,
   isModal = false,
   onClose = null 
 }) {
@@ -255,6 +257,13 @@ export default function ClinicalStudyHub({
   const [masterclassAsPathway, setMasterclassAsPathway] = useState(true);
   const [selectedPathwayFilter, setSelectedPathwayFilter] = useState('all');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [showModalSidebar, setShowModalSidebar] = useState(false);
+  const [focusedQuestionPathwayOpen, setFocusedQuestionPathwayOpen] = useState(true);
+  const focusedQuestionRef = useRef(null);
+  const initialQuestionIdRef = useRef(initialQuestionId || initialQuestion?.id || null);
+  initialQuestionIdRef.current = initialQuestionId || initialQuestion?.id || null;
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   // Flashcards Active Recall Deck State (DB-synced SM-2 + localStorage fallback)
   const [cardIndex, setCardIndex] = useState(0);
@@ -532,7 +541,11 @@ export default function ClinicalStudyHub({
         setModuleData(data);
         setSelectedTaskFilter('all');
         setSelectedCogFilter('all');
-        setActiveCaseIndex(0);
+        const targetQId = initialQuestionIdRef.current;
+        const matchedCaseIdx = targetQId && Array.isArray(data?.guided_cases)
+          ? data.guided_cases.findIndex(c => Number(c.id) === Number(targetQId))
+          : -1;
+        setActiveCaseIndex(matchedCaseIdx >= 0 ? matchedCaseIdx : 0);
         setGuidedStep(1);
         setSelectedChoice(null);
         setCardIndex(0);
@@ -779,6 +792,82 @@ export default function ClinicalStudyHub({
     return null;
   }, [hubMode, selectedMasterclassId, selectedTopicId, allStudyGuides]);
 
+  // Question-specific focused lesson & textbook card (deep-linked from Practice / Review)
+  const focusedQuestionLesson = useMemo(() => {
+    const targetQId = initialQuestionId || initialQuestion?.id || null;
+    if (!targetQId && !initialQuestion) return null;
+
+    let matchedLesson = null;
+    if (targetQId && Array.isArray(moduleData?.task_modules)) {
+      for (const tm of moduleData.task_modules) {
+        const found = tm.lessons?.find(l => Number(l.question_id) === Number(targetQId));
+        if (found) {
+          matchedLesson = found;
+          break;
+        }
+      }
+    }
+
+    const matchedGuidedCase = targetQId && Array.isArray(moduleData?.guided_cases)
+      ? moduleData.guided_cases.find(c => Number(c.id) === Number(targetQId))
+      : null;
+
+    let parsedExpl = null;
+    const rawExpl = initialQuestion?.explanation;
+    if (rawExpl) {
+      if (typeof rawExpl === 'object') {
+        parsedExpl = rawExpl;
+      } else if (typeof rawExpl === 'string') {
+        try {
+          parsedExpl = JSON.parse(rawExpl);
+        } catch {
+          parsedExpl = { core_principle: rawExpl };
+        }
+      }
+    }
+
+    const keyTakeaway = matchedLesson?.key_takeaway || parsedExpl?.key_takeaway || parsedExpl?.why_correct || '';
+    const corePrinciple = matchedLesson?.core_principle || parsedExpl?.core_principle || '';
+    const clinicalPearl = matchedLesson?.clinical_pearl || parsedExpl?.clinical_pearl || parsedExpl?.future_prediction || '';
+    const commonPitfall = matchedLesson?.common_pitfall || parsedExpl?.common_pitfall || '';
+    const reference = matchedLesson?.reference || parsedExpl?.reference || parsedExpl?.legal_citation || '';
+
+    if (!corePrinciple && !keyTakeaway) return null;
+
+    return {
+      question_id: targetQId || matchedLesson?.question_id || null,
+      category: initialQuestion?.category || moduleData?.module_info?.category || '',
+      task: matchedLesson?.task || initialQuestion?.task || '',
+      cognitive_level: matchedLesson?.cognitive_level || initialQuestion?.cognitive_level || parsedExpl?.cognitive_level || 'A',
+      stem: initialQuestion?.stem || matchedGuidedCase?.raw_question?.stem || '',
+      proposition: initialQuestion?.proposition || matchedGuidedCase?.raw_question?.proposition || '',
+      question_text: initialQuestion?.question_text || matchedGuidedCase?.raw_question?.question_text || '',
+      correct_answer: initialQuestion?.correct_answer || parsedExpl?.correct_answer || matchedGuidedCase?.step3_evidence_resolution?.correct_answer || '',
+      choices: initialQuestion?.choices || matchedGuidedCase?.raw_question?.choices || [],
+      key_takeaway: keyTakeaway,
+      core_principle: corePrinciple,
+      clinical_pearl: clinicalPearl,
+      common_pitfall: commonPitfall,
+      reference,
+      choice_explanations: parsedExpl?.choice_explanations || matchedGuidedCase?.step3_evidence_resolution?.choice_explanations || null,
+    };
+  }, [initialQuestionId, initialQuestion, moduleData]);
+
+  const focusedQuestionPathway = useMemo(() => {
+    if (!focusedQuestionLesson?.core_principle && !focusedQuestionLesson?.key_takeaway) return null;
+    return buildDynamicPathwayFromText({
+      title: `แผนผังกลไกทฤษฎีจาก Textbook (Q#${focusedQuestionLesson.question_id || '-'})`,
+      corePrinciple: focusedQuestionLesson.core_principle,
+      keyTakeaway: focusedQuestionLesson.key_takeaway,
+      clinicalPearl: focusedQuestionLesson.clinical_pearl,
+      commonPitfall: focusedQuestionLesson.common_pitfall,
+      reference: focusedQuestionLesson.reference,
+      category: focusedQuestionLesson.category,
+      task: focusedQuestionLesson.task,
+      isLegal: String(focusedQuestionLesson.category || '').includes('กฎหมาย'),
+    });
+  }, [focusedQuestionLesson]);
+
   // Combined Curated + Dynamic + Thai National Protocol Pathways
   const allModulePathways = useMemo(() => {
     const curatedAndExtracted = moduleData?.pathways || [];
@@ -897,7 +986,7 @@ export default function ClinicalStudyHub({
     if (!moduleData?.guided_cases) return;
     setSelectedCogFilter('all');
     setSelectedTaskFilter('all');
-    const idx = moduleData.guided_cases.findIndex(c => c.id === questionId);
+    const idx = moduleData.guided_cases.findIndex(c => Number(c.id) === Number(questionId));
     if (idx !== -1) {
       setActiveCaseIndex(idx);
       setGuidedStep(1);
@@ -946,8 +1035,8 @@ export default function ClinicalStudyHub({
       modalBodyRef.current?.focus({ preventScroll: true });
     }, 0);
     const onKeyDown = (e) => {
-      if (e.key === 'Escape' && onClose) {
-        onClose();
+      if (e.key === 'Escape' && onCloseRef.current) {
+        onCloseRef.current();
       }
     };
     window.addEventListener('keydown', onKeyDown);
@@ -957,7 +1046,7 @@ export default function ClinicalStudyHub({
       document.documentElement.style.overflow = prevHtmlOverflow;
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [isModal, onClose]);
+  }, [isModal]);
 
   useEffect(() => {
     if (isModal && modalBodyRef.current) {
@@ -969,14 +1058,13 @@ export default function ClinicalStudyHub({
     position: 'fixed',
     inset: 0,
     zIndex: 100000,
-    background: 'rgba(15, 23, 42, 0.58)',
-    backdropFilter: 'blur(6px)',
-    WebkitBackdropFilter: 'blur(6px)',
+    background: 'rgba(15, 23, 42, 0.74)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 'clamp(0.5rem, 2vw, 1.25rem)',
+    padding: 'clamp(0.6rem, 2vw, 1.5rem)',
     boxSizing: 'border-box',
+    overflow: 'hidden',
     overscrollBehavior: 'contain',
   } : {
     width: '100%',
@@ -985,15 +1073,17 @@ export default function ClinicalStudyHub({
 
   const innerStyle = isModal ? {
     width: '100%',
-    maxWidth: '1280px',
-    height: 'min(92vh, 920px)',
-    maxHeight: '92vh',
+    maxWidth: 'min(1180px, calc(100vw - 1.5rem))',
+    height: 'min(88dvh, 860px)',
+    maxHeight: 'calc(100dvh - 1.5rem)',
     background: 'var(--bg-panel)',
     borderRadius: '18px',
     border: '1px solid var(--border-hover)',
     overflow: 'hidden',
+    boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
+    transform: 'translateZ(0)',
     boxShadow: 'var(--shadow-elevated)',
   } : {};
 
@@ -1018,6 +1108,241 @@ export default function ClinicalStudyHub({
     }
   }, [hubMode, overviewData, allStudyGuides]);
 
+  const renderFocusedQuestionLessonCard = (canOpenTeacher = false) => {
+    if (!focusedQuestionLesson) return null;
+    const ansUpper = String(focusedQuestionLesson.correct_answer || '').trim().toUpperCase();
+    const matchedChoice = Array.isArray(focusedQuestionLesson.choices)
+      ? focusedQuestionLesson.choices.find(c => String(c?.label || '').trim().toUpperCase() === ansUpper)
+      : null;
+    const askText = focusedQuestionLesson.proposition || focusedQuestionLesson.question_text || focusedQuestionLesson.stem || '';
+    const hasGuidedMatch = Boolean(
+      canOpenTeacher &&
+      focusedQuestionLesson.question_id &&
+      moduleData?.guided_cases?.some(c => Number(c.id) === Number(focusedQuestionLesson.question_id))
+    );
+
+    return (
+      <div
+        ref={focusedQuestionRef}
+        id="focused-question-lesson-card"
+        style={{
+          marginBottom: '1.35rem',
+          padding: 'clamp(1rem, 2vw, 1.35rem)',
+          borderRadius: '14px',
+          background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.09), rgba(16, 185, 129, 0.05))',
+          border: '2px solid rgba(37, 99, 235, 0.38)',
+          boxShadow: '0 6px 20px rgba(37, 99, 235, 0.1)',
+          minWidth: 0,
+          maxWidth: '100%',
+          boxSizing: 'border-box',
+        }}
+      >
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.55rem',
+          marginBottom: '0.85rem',
+          paddingBottom: '0.7rem',
+          borderBottom: '1px solid var(--border)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap', minWidth: 0 }}>
+            <span style={{
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              padding: '0.24rem 0.72rem',
+              borderRadius: '999px',
+              background: 'var(--primary)',
+              color: '#ffffff',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+            }}>
+              <Target size={13} /> บทเรียน & Textbook เฉพาะข้อที่คุณกำลังทำอยู่ {focusedQuestionLesson.question_id ? `(Q#${focusedQuestionLesson.question_id})` : ''}
+            </span>
+            {focusedQuestionLesson.cognitive_level && (
+              <span style={{
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                padding: '0.18rem 0.55rem',
+                borderRadius: '8px',
+                background: 'rgba(16, 185, 129, 0.14)',
+                color: 'var(--ink-emerald)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+              }}>
+                ระดับ {focusedQuestionLesson.cognitive_level}
+              </span>
+            )}
+            {focusedQuestionLesson.task && (
+              <span style={{
+                fontSize: '0.72rem',
+                fontWeight: 600,
+                padding: '0.18rem 0.55rem',
+                borderRadius: '8px',
+                background: 'var(--surface-card)',
+                color: 'var(--text-sub)',
+                border: '1px solid var(--border)',
+              }}>
+                {focusedQuestionLesson.task}
+              </span>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+            {focusedQuestionPathway && (
+              <button
+                type="button"
+                onClick={() => setFocusedQuestionPathwayOpen(prev => !prev)}
+                className="btn btn-secondary btn-sm"
+                style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.28rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+              >
+                <GitBranch size={13} />
+                {focusedQuestionPathwayOpen ? '📄 ซ่อนแผนผัง Pathway' : '🔀 ดูเป็นแผนผัง Pathway'}
+              </button>
+            )}
+            {hasGuidedMatch && (
+              <button
+                type="button"
+                onClick={() => handleOpenCaseInTeacher(focusedQuestionLesson.question_id)}
+                className="btn btn-primary btn-sm"
+                style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.28rem 0.7rem' }}
+              >
+                🧑‍🏫 ฝึกวิเคราะห์โจทย์ข้อนี้ทีละก้าว
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => document.getElementById('topic-overview-anchor')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              className="btn btn-secondary btn-sm"
+              style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.28rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+            >
+              <BookOpen size={13} /> ดูเนื้อหารวมทั้งหัวข้อด้านล่าง
+            </button>
+          </div>
+        </div>
+
+        {(askText || matchedChoice || ansUpper) && (
+          <div style={{
+            padding: '0.75rem 0.95rem',
+            borderRadius: '10px',
+            background: 'var(--surface-card)',
+            border: '1px solid var(--border)',
+            marginBottom: '0.85rem',
+            fontSize: '0.84rem',
+            lineHeight: 1.55,
+          }}>
+            {askText && (
+              <div style={{ color: 'var(--text-sub)', marginBottom: (matchedChoice || ansUpper) ? '0.4rem' : 0, overflowWrap: 'anywhere' }}>
+                <strong style={{ color: 'var(--text)' }}>โจทย์ข้อนี้: </strong>
+                {askText.length > 220 ? `${askText.slice(0, 220)}...` : askText}
+              </div>
+            )}
+            {(ansUpper || matchedChoice?.text) && (
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap', color: 'var(--ink-emerald)', fontWeight: 700 }}>
+                <CheckCircle2 size={14} style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span>เฉลย {ansUpper}{matchedChoice?.text ? `: ${matchedChoice.text}` : ''}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {focusedQuestionLesson.key_takeaway && (
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(2, 132, 199, 0.1), rgba(37, 99, 235, 0.08))',
+            borderLeft: '4px solid var(--accent)',
+            borderRadius: '8px',
+            padding: '0.8rem 1rem',
+            marginBottom: '0.9rem',
+            fontSize: '0.92rem',
+            fontWeight: 700,
+            color: 'var(--text)',
+            lineHeight: 1.6,
+            overflowWrap: 'anywhere',
+          }}>
+            📌 สรุปหลักการสำคัญ (Core Rule): {focusedQuestionLesson.key_takeaway}
+          </div>
+        )}
+
+        {focusedQuestionLesson.core_principle && (
+          <div style={{ marginBottom: '0.9rem', minWidth: 0 }}>
+            <div style={{ fontSize: '0.84rem', fontWeight: 800, color: 'var(--primary-light)', marginBottom: '0.45rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <BookOpen size={15} /> ทฤษฎีและกลไกจาก Textbook & Evidence (Core Principle)
+            </div>
+            {focusedQuestionPathwayOpen && focusedQuestionPathway && (
+              <div style={{ marginBottom: '0.75rem', minWidth: 0, maxWidth: '100%' }}>
+                <ClinicalPathwayDiagram pathway={focusedQuestionPathway} compact={true} />
+              </div>
+            )}
+            <div style={{
+              color: 'var(--text)',
+              fontSize: '0.91rem',
+              lineHeight: 1.75,
+              whiteSpace: 'pre-wrap',
+              background: 'var(--surface)',
+              padding: '0.95rem 1.1rem',
+              borderRadius: '10px',
+              border: '1px solid var(--border)',
+              overflowWrap: 'anywhere',
+            }}>
+              {focusedQuestionLesson.core_principle}
+            </div>
+          </div>
+        )}
+
+        {(focusedQuestionLesson.clinical_pearl || focusedQuestionLesson.common_pitfall) && (
+          <div className={focusedQuestionLesson.clinical_pearl && focusedQuestionLesson.common_pitfall ? 'responsive-2col' : ''} style={{ display: 'grid', gridTemplateColumns: focusedQuestionLesson.clinical_pearl && focusedQuestionLesson.common_pitfall ? undefined : '1fr', gap: '0.75rem', marginBottom: focusedQuestionLesson.reference ? '0.85rem' : 0 }}>
+            {focusedQuestionLesson.clinical_pearl && (
+              <div style={{
+                background: 'rgba(37, 99, 235, 0.08)',
+                border: '1px solid rgba(37, 99, 235, 0.28)',
+                borderRadius: '8px',
+                padding: '0.75rem 0.9rem',
+                fontSize: '0.84rem',
+                color: 'var(--text-sub)',
+                lineHeight: 1.6,
+                overflowWrap: 'anywhere',
+              }}>
+                <strong style={{ color: 'var(--primary-light)', display: 'block', marginBottom: '3px' }}>💎 Clinical Pearl:</strong>
+                {focusedQuestionLesson.clinical_pearl}
+              </div>
+            )}
+            {focusedQuestionLesson.common_pitfall && (
+              <div style={{
+                background: 'rgba(245, 158, 11, 0.08)',
+                border: '1px solid rgba(245, 158, 11, 0.28)',
+                borderRadius: '8px',
+                padding: '0.75rem 0.9rem',
+                fontSize: '0.84rem',
+                color: 'var(--text-sub)',
+                lineHeight: 1.6,
+                overflowWrap: 'anywhere',
+              }}>
+                <strong style={{ color: 'var(--warning)', display: 'block', marginBottom: '3px' }}>⚠️ กับดักข้อสอบ (Trap):</strong>
+                {focusedQuestionLesson.common_pitfall}
+              </div>
+            )}
+          </div>
+        )}
+
+        {focusedQuestionLesson.reference && (
+          <div style={{
+            fontSize: '0.8rem',
+            color: 'var(--text-sub)',
+            padding: '0.6rem 0.85rem',
+            borderRadius: '8px',
+            background: 'var(--surface-card)',
+            border: '1px solid var(--border)',
+            lineHeight: 1.5,
+            overflowWrap: 'anywhere',
+          }}>
+            📚 <strong style={{ color: 'var(--text)' }}>ตำราและเกณฑ์อ้างอิง:</strong> {focusedQuestionLesson.reference}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderSpecialtyChapterBar = () => {
     if (!currentSpecialtyNav) return null;
     const { specSec, items, currentIndex, prevItem, nextItem } = currentSpecialtyNav;
@@ -1034,6 +1359,9 @@ export default function ClinicalStudyHub({
           display: 'flex',
           flexDirection: 'column',
           gap: '0.65rem',
+          minWidth: 0,
+          maxWidth: '100%',
+          boxSizing: 'border-box',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -1113,6 +1441,8 @@ export default function ClinicalStudyHub({
           overflowX: 'auto',
           paddingBottom: '2px',
           scrollbarWidth: 'thin',
+          minWidth: 0,
+          maxWidth: '100%',
         }}>
           {items.map((chap, cIdx) => {
             const isCurr = cIdx === currentIndex;
@@ -1223,17 +1553,29 @@ export default function ClinicalStudyHub({
                 </div>
               </div>
             </div>
-            {isModal && onClose && (
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="ปิดหน้าต่างบทเรียน"
-                className="btn btn-secondary btn-sm"
-                style={{ width: '36px', height: '36px', padding: 0, borderRadius: '999px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-              >
-                <X size={18} />
-              </button>
-            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+              {isModal && (
+                <button
+                  type="button"
+                  onClick={() => setShowModalSidebar(prev => !prev)}
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.76rem', fontWeight: 700, padding: '0.35rem 0.7rem', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                >
+                  <Layers size={14} /> {showModalSidebar ? 'ซ่อนสารบัญ' : 'สารบัญ 83 หัวข้อ'}
+                </button>
+              )}
+              {isModal && onClose && (
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="ปิดหน้าต่างบทเรียน"
+                  className="btn btn-secondary btn-sm"
+                  style={{ width: '36px', height: '36px', padding: 0, borderRadius: '999px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                >
+                  <X size={18} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -1443,6 +1785,7 @@ export default function ClinicalStudyHub({
         {/* ══════════════════════════════════════════════════════════════════
             2. SEARCH & SPECIALTY PILL FILTERS
         ══════════════════════════════════════════════════════════════════ */}
+        {(!isModal || showModalSidebar) && (
         <div
           className={`clinical-filter-bar ${(hubMode === 'exam_topics' || hubMode === 'textbooks' || hubMode === 'masterclass' || hubMode === 'mistake_clinic') && !mobileSidebarOpen ? 'is-collapsed-mobile' : ''}`}
           style={{
@@ -1543,6 +1886,7 @@ export default function ClinicalStudyHub({
             })}
           </div>
         </div>
+        )}
 
         {/* ══════════════════════════════════════════════════════════════════
             3. MAIN SPLIT LAYOUT OR INTERACTIVE FULL-WIDTH LABS
@@ -2000,14 +2344,20 @@ export default function ClinicalStudyHub({
           </div>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '340px 1fr',
+          gridTemplateColumns: isModal
+            ? (showModalSidebar ? 'minmax(240px, 280px) minmax(0, 1fr)' : 'minmax(0, 1fr)')
+            : '320px minmax(0, 1fr)',
           alignItems: isModal ? 'start' : undefined,
           minHeight: isModal ? 0 : '780px',
           height: 'auto',
+          width: '100%',
+          maxWidth: '100%',
+          boxSizing: 'border-box',
           overflow: isModal ? 'visible' : 'hidden'
         }} className="clinical-study-grid">
           
           {/* ── LEFT COLUMN: CURRICULUM NAVIGATOR ───────────────────────── */}
+          {(!isModal || showModalSidebar || mobileSidebarOpen) && (
           <div
             className={`clinical-sidebar-panel ${mobileSidebarOpen ? '' : 'is-collapsed-mobile'}`}
             style={{
@@ -2432,14 +2782,20 @@ export default function ClinicalStudyHub({
               </>
             )}
           </div>
+          )}
 
           {/* ── RIGHT COLUMN: INTERACTIVE PEDAGOGICAL CLASSROOM ─────────── */}
           <div
             className="clinical-classroom-panel"
             style={{
               overflowY: isModal ? 'visible' : 'auto',
+              overflowX: 'hidden',
               minHeight: 0,
-              padding: isModal ? '1.5rem 2rem 2.25rem' : '1.75rem 2.25rem',
+              minWidth: 0,
+              maxWidth: '100%',
+              width: '100%',
+              boxSizing: 'border-box',
+              padding: isModal ? '1.15rem 1.35rem 2rem' : '1.75rem 2.25rem',
               background: 'var(--bg-surface)',
             }}
           >
@@ -2458,11 +2814,12 @@ export default function ClinicalStudyHub({
                   </div>
                 </div>
               ) : moduleData ? (
-                <div style={{ maxWidth: '960px', margin: '0 auto' }}>
+                <div style={{ maxWidth: '960px', width: '100%', minWidth: 0, boxSizing: 'border-box', margin: '0 auto' }}>
+                  {hubMode === 'exam_topics' && renderFocusedQuestionLessonCard(true)}
                   {hubMode === 'exam_topics' && renderSpecialtyChapterBar()}
                   
                   {/* ── Classroom Topic/Textbook Header Banner ── */}
-                  <div style={{
+                  <div id="topic-overview-anchor" style={{
                     marginBottom: '1.5rem',
                     padding: '1.35rem 1.5rem',
                     borderRadius: '14px',
@@ -2841,13 +3198,23 @@ export default function ClinicalStudyHub({
                             </div>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                              {tm.lessons.map((lesson, lIdx) => (
-                                <div key={lesson.question_id} style={{
-                                  background: 'var(--surface-subtle)',
-                                  border: '1px solid var(--border)',
-                                  borderRadius: '12px',
-                                  padding: '1.25rem 1.4rem',
-                                }}>
+                              {tm.lessons.map((lesson, lIdx) => {
+                                const isFocusedLesson = Boolean(
+                                  focusedQuestionLesson?.question_id &&
+                                  Number(lesson.question_id) === Number(focusedQuestionLesson.question_id)
+                                );
+                                return (
+                                <div
+                                  key={lesson.question_id}
+                                  id={`study-lesson-q-${lesson.question_id}`}
+                                  style={{
+                                    background: 'var(--surface-subtle)',
+                                    border: isFocusedLesson ? '2px solid var(--primary)' : '1px solid var(--border)',
+                                    boxShadow: isFocusedLesson ? '0 0 0 3px rgba(37, 99, 235, 0.15)' : undefined,
+                                    borderRadius: '12px',
+                                    padding: '1.25rem 1.4rem',
+                                  }}
+                                >
                                   {/* Lesson Card Top Meta */}
                                   <div style={{
                                     display: 'flex',
@@ -2860,6 +3227,18 @@ export default function ClinicalStudyHub({
                                     borderBottom: '1px solid rgba(255,255,255,0.06)'
                                   }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                      {isFocusedLesson && (
+                                        <span style={{
+                                          fontSize: '0.72rem',
+                                          fontWeight: 800,
+                                          padding: '0.15rem 0.55rem',
+                                          borderRadius: '6px',
+                                          background: 'var(--primary)',
+                                          color: '#ffffff',
+                                        }}>
+                                          📍 ข้อที่กำลังเปิดดู
+                                        </span>
+                                      )}
                                       <span style={{
                                         fontSize: '0.72rem',
                                         fontWeight: 800,
@@ -3019,7 +3398,8 @@ export default function ClinicalStudyHub({
                                     </div>
                                   )}
                                 </div>
-                              ))}
+                                );
+                              })}
                             </div>
                           </div>
                         ))}
@@ -4256,11 +4636,12 @@ export default function ClinicalStudyHub({
 
                 </div>
               ) : (authRequiredModule || !token) ? (
-                <div style={{ maxWidth: '960px', margin: '0 auto' }}>
+                <div style={{ maxWidth: '960px', width: '100%', minWidth: 0, boxSizing: 'border-box', margin: '0 auto' }}>
+                  {hubMode === 'exam_topics' && renderFocusedQuestionLessonCard(false)}
                   {hubMode === 'exam_topics' && renderSpecialtyChapterBar()}
 
                   {hubMode === 'exam_topics' && matchingMasterclass && (
-                    <div style={{
+                    <div id="topic-overview-anchor" style={{
                       marginBottom: '1.5rem',
                       padding: '1.35rem 1.5rem',
                       borderRadius: '14px',
@@ -4411,7 +4792,7 @@ export default function ClinicalStudyHub({
                 MODE 3: CURATED MASTERCLASS GUIDES & DECISION MATRICES
             ══════════════════════════════════════════════════════════════ */}
             {hubMode === 'masterclass' && matchingMasterclass && (
-              <div style={{ maxWidth: '920px', margin: '0 auto' }}>
+              <div style={{ maxWidth: '920px', width: '100%', minWidth: 0, boxSizing: 'border-box', margin: '0 auto' }}>
                 {renderSpecialtyChapterBar()}
                 <div style={{ marginBottom: '1.75rem', paddingBottom: '1.25rem', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
