@@ -124,6 +124,19 @@ _INDEX_MIGRATIONS = [
     "CREATE INDEX IF NOT EXISTS ix_user_notes_tag ON user_notes (user_id, mistake_tag)",
     "CREATE INDEX IF NOT EXISTS ix_user_topic_notes_user_updated ON user_topic_notes (user_id, updated_at)",
     "CREATE INDEX IF NOT EXISTS ix_active_presence_last_seen ON active_presence (last_seen_at)",
+    "CREATE INDEX IF NOT EXISTS ix_ai_tutor_logs_created ON ai_tutor_logs (created_at)",
+    "CREATE INDEX IF NOT EXISTS ix_ai_tutor_logs_user_created ON ai_tutor_logs (user_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS ix_ai_tutor_logs_question_created ON ai_tutor_logs (question_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS ix_ai_tutor_logs_mode_created ON ai_tutor_logs (mode, created_at)",
+    "CREATE INDEX IF NOT EXISTS ix_auth_events_created ON auth_events (created_at)",
+    "CREATE INDEX IF NOT EXISTS ix_auth_events_type_created ON auth_events (event_type, created_at)",
+    "CREATE INDEX IF NOT EXISTS ix_auth_events_ip_created ON auth_events (ip_address, created_at)",
+    "CREATE INDEX IF NOT EXISTS ix_auth_events_user_created ON auth_events (user_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS ix_admin_audit_logs_created ON admin_audit_logs (created_at)",
+    "CREATE INDEX IF NOT EXISTS ix_admin_audit_logs_action_created ON admin_audit_logs (action, created_at)",
+    "CREATE INDEX IF NOT EXISTS ix_admin_audit_logs_admin_created ON admin_audit_logs (admin_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS ix_question_edit_logs_question_created ON question_edit_logs (question_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS ix_question_edit_logs_sync_created ON question_edit_logs (sync_status, created_at)",
 ]
 
 
@@ -282,6 +295,10 @@ def run_migrations():
                 "user_notes",
                 "user_topic_notes",
                 "active_presence",
+                "ai_tutor_logs",
+                "auth_events",
+                "admin_audit_logs",
+                "question_edit_logs",
             ):
                 if rls_table not in existing_tables or rls_table in rls_enabled_tables:
                     continue

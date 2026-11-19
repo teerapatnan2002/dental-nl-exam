@@ -238,3 +238,95 @@ class ActivePresence(Base):
     session_key = Column(String(64), primary_key=True)
     identity_key = Column(String(64), nullable=False)
     last_seen_at = Column(BigInteger, nullable=False, index=True)
+
+
+class AiTutorLog(Base):
+    """Telemetry log for AI Tutor requests (LLM vs fallback, latency, token usage, topic/question demand)."""
+
+    __tablename__ = "ai_tutor_logs"
+    __table_args__ = (
+        Index("ix_ai_tutor_logs_created", "created_at"),
+        Index("ix_ai_tutor_logs_user_created", "user_id", "created_at"),
+        Index("ix_ai_tutor_logs_question_created", "question_id", "created_at"),
+        Index("ix_ai_tutor_logs_mode_created", "mode", "created_at"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    question_id = Column(Integer, ForeignKey("questions.id", ondelete="SET NULL"), nullable=True, index=True)
+    topic_id = Column(String(160), nullable=True, index=True)
+    category = Column(String(160), nullable=True, index=True)
+    mode = Column(String(32), nullable=False)  # 'llm' | 'evidence_fallback'
+    model_used = Column(String(120), nullable=True)
+    suggested_tag = Column(String(64), nullable=True)
+    prompt_chars = Column(Integer, default=0, nullable=False)
+    response_chars = Column(Integer, default=0, nullable=False)
+    prompt_tokens = Column(Integer, nullable=True)
+    completion_tokens = Column(Integer, nullable=True)
+    total_tokens = Column(Integer, nullable=True)
+    latency_ms = Column(Integer, default=0, nullable=False)
+    status = Column(String(32), nullable=False)  # 'ok' | 'fallback_no_key' | 'fallback_error'
+    error_code = Column(String(120), nullable=True)
+    created_at = Column(Integer, nullable=False)
+
+
+class AuthEvent(Base):
+    """Security & authentication event log (login success/fail, 2FA, register, password change, rate limits)."""
+
+    __tablename__ = "auth_events"
+    __table_args__ = (
+        Index("ix_auth_events_created", "created_at"),
+        Index("ix_auth_events_type_created", "event_type", "created_at"),
+        Index("ix_auth_events_ip_created", "ip_address", "created_at"),
+        Index("ix_auth_events_user_created", "user_id", "created_at"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    identifier_masked = Column(String(120), nullable=True)
+    event_type = Column(String(48), nullable=False)
+    success = Column(Integer, default=1, nullable=False)  # 1 = ok, 0 = failed/blocked
+    ip_address = Column(String(64), nullable=True)
+    user_agent = Column(String(220), nullable=True)
+    detail = Column(String(160), nullable=True)
+    created_at = Column(Integer, nullable=False)
+
+
+class AdminAuditLog(Base):
+    """Persistent immutable audit trail of privileged admin operations."""
+
+    __tablename__ = "admin_audit_logs"
+    __table_args__ = (
+        Index("ix_admin_audit_logs_created", "created_at"),
+        Index("ix_admin_audit_logs_action_created", "action", "created_at"),
+        Index("ix_admin_audit_logs_admin_created", "admin_id", "created_at"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    admin_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    action = Column(String(64), nullable=False)
+    target_type = Column(String(48), nullable=False)
+    target_id = Column(String(64), nullable=True)
+    details_json = Column(Text, nullable=True)
+    ip_address = Column(String(64), nullable=True)
+    created_at = Column(Integer, nullable=False)
+
+
+class QuestionEditLog(Base):
+    """Tracks admin inline question/key edits and sync status back to Obsidian/offline repo."""
+
+    __tablename__ = "question_edit_logs"
+    __table_args__ = (
+        Index("ix_question_edit_logs_question_created", "question_id", "created_at"),
+        Index("ix_question_edit_logs_sync_created", "sync_status", "created_at"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    question_id = Column(Integer, ForeignKey("questions.id", ondelete="CASCADE"), nullable=False, index=True)
+    admin_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    report_id = Column(Integer, ForeignKey("reported_questions.id", ondelete="SET NULL"), nullable=True, index=True)
+    field_changes_json = Column(Text, nullable=False)
+    edit_reason = Column(String(500), nullable=True)
+    sync_status = Column(String(24), default="pending_sync", nullable=False)  # 'pending_sync' | 'synced'
+    created_at = Column(Integer, nullable=False)
+    synced_at = Column(Integer, nullable=True)

@@ -19,6 +19,7 @@ import models
 import schema
 import totp_service
 from database import get_db
+from observability import record_admin_audit, record_auth_event
 
 logger = logging.getLogger(__name__)
 
@@ -241,6 +242,15 @@ def register_user(user: schema.UserCreate, request: Request, db: Session = Depen
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    record_auth_event(
+        db,
+        event_type="register",
+        success=True,
+        request=request,
+        user_id=db_user.id,
+        identifier=db_user.email,
+        detail="registered",
+    )
     return db_user
 
 
@@ -248,9 +258,21 @@ def register_user(user: schema.UserCreate, request: Request, db: Session = Depen
 def login_user(user: schema.UserLogin, request: Request, db: Session = Depends(get_db)):
     client_ip = _get_client_ip(request)
     ident = (user.email or "").strip()
-    _check_rate_limit(f"login:{client_ip}", max_attempts=25)
-    if ident:
-        _check_rate_limit(f"login-acct:{ident.lower()}", max_attempts=12)
+    try:
+        _check_rate_limit(f"login:{client_ip}", max_attempts=25)
+        if ident:
+            _check_rate_limit(f"login-acct:{ident.lower()}", max_attempts=12)
+    except HTTPException as exc:
+        if exc.status_code == 429:
+            record_auth_event(
+                db,
+                event_type="rate_limited",
+                success=False,
+                request=request,
+                identifier=ident,
+                detail="login_rate_limit",
+            )
+        raise
 
     db_user = db.query(models.User).filter(
         or_(
@@ -260,6 +282,15 @@ def login_user(user: schema.UserLogin, request: Request, db: Session = Depends(g
     ).first()
 
     if not db_user or not verify_password(user.password, db_user.hashed_password):
+        record_auth_event(
+            db,
+            event_type="login_fail",
+            success=False,
+            request=request,
+            user_id=db_user.id if db_user else None,
+            identifier=ident,
+            detail="invalid_credentials",
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="อีเมล/ชื่อผู้ใช้งาน หรือรหัสผ่านไม่ถูกต้อง (Incorrect email/username or password)",
@@ -268,12 +299,30 @@ def login_user(user: schema.UserLogin, request: Request, db: Session = Depends(g
 
     pwd_sig = _password_fingerprint(db_user.hashed_password)
     if bool(db_user.two_factor_enabled):
+        record_auth_event(
+            db,
+            event_type="login_2fa_challenge",
+            success=True,
+            request=request,
+            user_id=db_user.id,
+            identifier=db_user.username,
+            detail="challenge_issued",
+        )
         return {
             "requires_2fa": True,
             "challenge_token": create_2fa_challenge_token(db_user.username, pwd_sig=pwd_sig),
             "token_type": "bearer",
         }
 
+    record_auth_event(
+        db,
+        event_type="login_success",
+        success=True,
+        request=request,
+        user_id=db_user.id,
+        identifier=db_user.username,
+        detail="password",
+    )
     token_data = {"sub": db_user.username, "pwd_sig": pwd_sig}
     access_token = create_access_token(data=token_data)
     refresh_token = create_refresh_token(data=token_data)
@@ -420,6 +469,15 @@ def change_user_password(
     _check_rate_limit(f"pwd-change:{current_user.id}:{client_ip}", max_attempts=10)
 
     if not verify_password(payload.current_password, current_user.hashed_password):
+        record_auth_event(
+            db,
+            event_type="password_change_fail",
+            success=False,
+            request=request,
+            user_id=current_user.id,
+            identifier=current_user.username,
+            detail="wrong_current_password",
+        )
         raise HTTPException(status_code=400, detail="รหัสผ่านปัจจุบันไม่ถูกต้อง")
     if payload.current_password == payload.new_password:
         raise HTTPException(status_code=400, detail="รหัสผ่านใหม่ต้องไม่ซ้ำกับรหัสผ่านเดิม")
@@ -428,6 +486,15 @@ def change_user_password(
     db.add(current_user)
     db.commit()
     db.refresh(current_user)
+    record_auth_event(
+        db,
+        event_type="password_change",
+        success=True,
+        request=request,
+        user_id=current_user.id,
+        identifier=current_user.username,
+        detail="changed",
+    )
 
     pwd_sig = _password_fingerprint(current_user.hashed_password)
     token_data = {"sub": current_user.username, "pwd_sig": pwd_sig}
@@ -554,6 +621,15 @@ def enable_two_factor(
     db.add(current_user)
     db.commit()
     db.refresh(current_user)
+    record_auth_event(
+        db,
+        event_type="2fa_enable",
+        success=True,
+        request=request,
+        user_id=current_user.id,
+        identifier=current_user.username,
+        detail="totp_enabled",
+    )
 
     return {
         "enabled": True,
@@ -580,12 +656,42 @@ def verify_two_factor_login(
 
     db_user = db.query(models.User).filter(models.User.username == username).first()
     if not db_user or not bool(db_user.two_factor_enabled):
+        record_auth_event(
+            db,
+            event_type="login_2fa_fail",
+            success=False,
+            request=request,
+            identifier=username,
+            detail="invalid_challenge",
+        )
         raise HTTPException(status_code=401, detail="คำขอเข้าสู่ระบบ 2FA ไม่ถูกต้องหรือหมดอายุแล้ว")
     _verify_token_password_sig(token_payload, db_user)
 
-    _verify_user_second_factor(db_user, payload.code, allow_backup=True)
+    try:
+        method = _verify_user_second_factor(db_user, payload.code, allow_backup=True)
+    except HTTPException:
+        record_auth_event(
+            db,
+            event_type="login_2fa_fail",
+            success=False,
+            request=request,
+            user_id=db_user.id,
+            identifier=db_user.username,
+            detail="invalid_code",
+        )
+        raise
+
     db.add(db_user)
     db.commit()
+    record_auth_event(
+        db,
+        event_type="login_2fa_success",
+        success=True,
+        request=request,
+        user_id=db_user.id,
+        identifier=db_user.username,
+        detail=method,
+    )
 
     token_data = {"sub": db_user.username, "pwd_sig": _password_fingerprint(db_user.hashed_password)}
     return {
@@ -648,6 +754,15 @@ def disable_two_factor(
     current_user.two_factor_enabled_at = None
     db.add(current_user)
     db.commit()
+    record_auth_event(
+        db,
+        event_type="2fa_disable",
+        success=True,
+        request=request,
+        user_id=current_user.id,
+        identifier=current_user.username,
+        detail="disabled",
+    )
 
     return {
         "enabled": False,
@@ -674,6 +789,7 @@ def _sanitize_csv_cell(val: object) -> object:
 
 @router.get("/admin/users/export")
 def export_users_csv(
+    request: Request,
     admin: models.User = Depends(get_current_admin),
     db: Session = Depends(get_db),
 ):
@@ -682,6 +798,14 @@ def export_users_csv(
     import csv
 
     users = db.query(models.User).order_by(models.User.id.asc()).all()
+    record_admin_audit(
+        db,
+        admin_id=admin.id,
+        action="admin_users_export",
+        target_type="users_csv_legacy",
+        details={"row_count": len(users)},
+        request=request,
+    )
     output = io.StringIO()
     # Write UTF-8 BOM for seamless Thai & Excel compatibility
     output.write("\ufeff")

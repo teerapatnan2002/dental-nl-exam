@@ -1,5 +1,6 @@
 import os
 import re
+import time
 from typing import Any, Dict, List, Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -17,6 +18,7 @@ from learning import (
     _parse_explanation,
     get_topic_meta,
 )
+from observability import record_ai_tutor_log
 from pathways import CURATED_TOPIC_PATHWAYS, get_topic_pathways
 from tos_blueprint import is_mock_70_locked
 
@@ -24,6 +26,11 @@ router = APIRouter(prefix="/api/tutor", tags=["tutor"])
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 MODEL = os.environ.get("TUTOR_MODEL", "openrouter/free")
+
+
+def _is_live_ai_enabled() -> bool:
+    """Global kill-switch preventing paid LLM API calls in Zero-Cost free hosting mode."""
+    return os.environ.get("ENABLE_LIVE_AI", "false").strip().lower() in ("1", "true", "yes", "on")
 
 
 class ChatMessage(BaseModel):
@@ -253,10 +260,28 @@ async def call_openrouter_chat(
     system_prompt: str,
     history: List[ChatMessage],
     user_prompt: str,
-) -> Optional[str]:
-    """Non-blocking multi-turn OpenRouter chat call. Returns None when unconfigured or on error."""
+) -> Dict[str, Any]:
+    """Non-blocking multi-turn OpenRouter chat call returning reply + token/error metadata."""
+    if not _is_live_ai_enabled():
+        return {
+            "reply": None,
+            "model_used": "evidence_fallback",
+            "prompt_tokens": None,
+            "completion_tokens": None,
+            "total_tokens": None,
+            "status": "fallback_disabled",
+            "error_code": "LIVE_AI_DISABLED",
+        }
     if not OPENROUTER_API_KEY:
-        return None
+        return {
+            "reply": None,
+            "model_used": None,
+            "prompt_tokens": None,
+            "completion_tokens": None,
+            "total_tokens": None,
+            "status": "fallback_no_key",
+            "error_code": "NO_API_KEY",
+        }
     client = _build_async_client()
     messages: List[Dict[str, str]] = [{"role": "system", "content": system_prompt}]
     for h in history[-10:]:
@@ -276,10 +301,28 @@ async def call_openrouter_chat(
                 "X-Title": "NL Dental Exam Tutor",
             },
         )
-        return response.choices[0].message.content
+        content_out = response.choices[0].message.content if response.choices else None
+        usage = getattr(response, "usage", None)
+        return {
+            "reply": content_out,
+            "model_used": getattr(response, "model", None) or MODEL,
+            "prompt_tokens": getattr(usage, "prompt_tokens", None) if usage else None,
+            "completion_tokens": getattr(usage, "completion_tokens", None) if usage else None,
+            "total_tokens": getattr(usage, "total_tokens", None) if usage else None,
+            "status": "ok" if content_out else "fallback_error",
+            "error_code": None if content_out else "EMPTY_RESPONSE",
+        }
     except Exception as e:
         print(f"Error calling OpenRouter: {e}")
-        return None
+        return {
+            "reply": None,
+            "model_used": MODEL,
+            "prompt_tokens": None,
+            "completion_tokens": None,
+            "total_tokens": None,
+            "status": "fallback_error",
+            "error_code": type(e).__name__[:120],
+        }
 
 
 def _collect_tutor_context(req: ChatRequest, current_user: models.User, db: Session) -> Dict[str, Any]:
@@ -467,14 +510,36 @@ async def chat_with_tutor(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    t_start = time.perf_counter()
     _check_rate_limit(f"tutor:u:{current_user.id}", max_attempts=30, window_seconds=300)
     _check_rate_limit(f"tutor:ip:{_get_client_ip(request)}", max_attempts=60, window_seconds=300)
     ctx = _collect_tutor_context(req, current_user, db)
     system_prompt = _build_system_prompt(req, ctx)
     suggested_tag = _infer_suggested_tag(req.message, ctx)
+    prompt_chars = len(system_prompt) + len(req.message) + sum(len(h.content or "") for h in req.history[-10:])
 
-    llm_reply = await call_openrouter_chat(system_prompt, req.history, req.message)
+    llm_res = await call_openrouter_chat(system_prompt, req.history, req.message)
+    llm_reply = llm_res.get("reply")
     if llm_reply:
+        latency_ms = int((time.perf_counter() - t_start) * 1000)
+        record_ai_tutor_log(
+            db,
+            user_id=current_user.id,
+            question_id=req.question_id,
+            topic_id=ctx.get("topic_id"),
+            category=ctx.get("category") or None,
+            mode="llm",
+            model_used=llm_res.get("model_used"),
+            suggested_tag=suggested_tag,
+            prompt_chars=prompt_chars,
+            response_chars=len(llm_reply),
+            prompt_tokens=llm_res.get("prompt_tokens"),
+            completion_tokens=llm_res.get("completion_tokens"),
+            total_tokens=llm_res.get("total_tokens"),
+            latency_ms=latency_ms,
+            status="ok",
+            error_code=None,
+        )
         return {
             "reply": llm_reply,
             "mode": "llm",
@@ -482,12 +547,32 @@ async def chat_with_tutor(
             "suggested_tag": suggested_tag,
         }
 
-    fallback_note = (
-        "ตอบโดยคลังหลักฐานวิชาการ, Clinical Pathway และแนวทางทันตแพทย์ไทยของระบบ (เนื่องจากยังไม่ได้ตั้งค่า OPENROUTER_API_KEY)"
-        if not OPENROUTER_API_KEY
-        else "ตอบโดยคลังหลักฐานวิชาการของระบบชั่วคราว เนื่องจากไม่สามารถเชื่อมต่อโมเดล AI ภายนอกได้"
-    )
+    if not _is_live_ai_enabled():
+        fallback_note = "ตอบโดยคลังหลักฐานวิชาการ, Clinical Pathway และแนวทางทันตแพทย์ไทยของระบบ (โหมดให้บริการฟรี 100%)"
+    elif not OPENROUTER_API_KEY:
+        fallback_note = "ตอบโดยคลังหลักฐานวิชาการ, Clinical Pathway และแนวทางทันตแพทย์ไทยของระบบ (เนื่องจากยังไม่ได้ตั้งค่า OPENROUTER_API_KEY)"
+    else:
+        fallback_note = "ตอบโดยคลังหลักฐานวิชาการของระบบชั่วคราว เนื่องจากไม่สามารถเชื่อมต่อโมเดล AI ภายนอกได้"
     fallback_reply = _build_evidence_fallback_reply(req, ctx, fallback_note)
+    latency_ms = int((time.perf_counter() - t_start) * 1000)
+    record_ai_tutor_log(
+        db,
+        user_id=current_user.id,
+        question_id=req.question_id,
+        topic_id=ctx.get("topic_id"),
+        category=ctx.get("category") or None,
+        mode="evidence_fallback",
+        model_used=llm_res.get("model_used") or "evidence_fallback",
+        suggested_tag=suggested_tag,
+        prompt_chars=prompt_chars,
+        response_chars=len(fallback_reply),
+        prompt_tokens=llm_res.get("prompt_tokens"),
+        completion_tokens=llm_res.get("completion_tokens"),
+        total_tokens=llm_res.get("total_tokens"),
+        latency_ms=latency_ms,
+        status=llm_res.get("status") or "fallback_no_key",
+        error_code=llm_res.get("error_code"),
+    )
     return {
         "reply": fallback_reply,
         "mode": "evidence_fallback",

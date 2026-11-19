@@ -77,16 +77,23 @@ def health_check(db: Session = Depends(get_db)):
 from auth import (
     router as auth_router,
     get_current_user,
+    get_current_admin,
     get_optional_current_user,
     _check_rate_limit,
     _get_client_ip,
 )
+
+
+def _is_live_ai_enabled() -> bool:
+    """Global kill-switch for paid live LLM endpoints (default False for 100% free hosting)."""
+    return os.environ.get("ENABLE_LIVE_AI", "false").strip().lower() in ("1", "true", "yes", "on")
 from tracking import router as tracking_router
 from tutor import router as tutor_router
 from reports import router as reports_router
 from bookmarks import router as bookmarks_router
 from learning import router as learning_router
 from presence import router as presence_router
+from admin import router as admin_router
 
 app.include_router(auth_router)
 app.include_router(tracking_router)
@@ -95,6 +102,7 @@ app.include_router(reports_router)
 app.include_router(bookmarks_router)
 app.include_router(learning_router)
 app.include_router(presence_router)
+app.include_router(admin_router)
 
 # ── CORS: read allowed origins from env, reject wildcard '*' when credentials=True ──
 _allowed_origins_env = os.environ.get("ALLOWED_ORIGINS", "")
@@ -945,7 +953,17 @@ async def explain(
     if current_user is None:
         raise HTTPException(
             status_code=401,
-            detail="กรุณาเข้าสู่ระบบเพื่อใช้ AI สร้างคำอธิบายสำหรับข้อนี้",
+            detail="กรุณาเข้าสู่ระบบเพื่อดูคำอธิบายข้อสอบ",
+        )
+    if getattr(current_user, "role", "user") != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="ข้อสอบข้อนี้ยังไม่มีเฉลยในคลัง ระบบสงวนการสร้างคำอธิบาย AI สดไว้สำหรับผู้ดูแลระบบเท่านั้น",
+        )
+    if not _is_live_ai_enabled():
+        raise HTTPException(
+            status_code=503,
+            detail="ระบบปิดการเรียก AI สดชั่วคราว (Zero-Cost Mode: ENABLE_LIVE_AI=false)",
         )
 
     _check_rate_limit(f"ai-explain:{current_user.id}", max_attempts=20, window_seconds=300)
@@ -985,11 +1003,16 @@ from generator import predict_trends_async, generate_mock_questions_async
 
 @app.get("/api/prediction")
 async def get_prediction(
-    current_user: models.User = Depends(get_current_user),
+    admin: models.User = Depends(get_current_admin),
     db: Session = Depends(get_db),
 ):
-    """Fetch database stats and generate an AI prediction report (requires auth)."""
-    _check_rate_limit(f"ai-prediction:{current_user.id}", max_attempts=10, window_seconds=300)
+    """Fetch database stats and generate an AI prediction report (admin only, requires ENABLE_LIVE_AI=true)."""
+    if not _is_live_ai_enabled():
+        raise HTTPException(
+            status_code=503,
+            detail="ระบบปิดการวิเคราะห์แนวโน้มด้วย AI สดชั่วคราว (Zero-Cost Mode: ENABLE_LIVE_AI=false)",
+        )
+    _check_rate_limit(f"ai-prediction:{admin.id}", max_attempts=10, window_seconds=300)
     stats = (
         db.query(models.Question.category, models.Question.task, func.count(models.Question.id))
         .filter(models.Question.exam_origin == "real_exam")
@@ -1017,11 +1040,16 @@ class MockGenerateRequest(BaseModel):
 @app.post("/api/mock/generate", response_model=List[QuestionResponse])
 async def generate_mock_exam(
     req: MockGenerateRequest,
-    current_user: models.User = Depends(get_current_user),
+    current_user: models.User = Depends(get_current_admin),
     db: Session = Depends(get_db),
 ):
+    """Generate new mock questions via AI (admin only, requires ENABLE_LIVE_AI=true)."""
+    if not _is_live_ai_enabled():
+        raise HTTPException(
+            status_code=503,
+            detail="ระบบปิดการสร้างข้อสอบจำลองด้วย AI สดชั่วคราว (Zero-Cost Mode: ENABLE_LIVE_AI=false)",
+        )
     _check_rate_limit(f"ai-mock:{current_user.id}", max_attempts=10, window_seconds=300)
-    """Generate new mock questions via AI (requires auth)."""
     examples = (
         db.query(models.Question)
         .filter(
